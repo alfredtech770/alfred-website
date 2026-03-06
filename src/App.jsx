@@ -71,13 +71,13 @@ function GridCard(p){
       {!loaded && <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,#1a1a22,#252530)"}}/>}
       <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0) 35%,rgba(10,10,11,0.5) 65%,rgba(10,10,11,0.92) 100%)"}}/>
       {/* Tag */}
-      <div style={{position:"absolute",top:14,left:14,...sf(9,600),letterSpacing:0.5,textTransform:"uppercase",color:C.s1,padding:"4px 9px",borderRadius:8,background:"rgba(0,0,0,0.35)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>{p.tag}</div>
+      <div className="card-tag" style={{position:"absolute",top:14,left:14,...sf(9,600),letterSpacing:0.5,textTransform:"uppercase",color:C.s1,padding:"4px 9px",borderRadius:8,background:"rgba(0,0,0,0.35)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>{p.tag}</div>
       {/* Bottom */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 18px 20px",display:"flex",flexDirection:"column",justifyContent:"flex-end",minHeight:90}}>
-        <div className="card-title" style={{...sf(20,700),color:"#fff",marginBottom:4,letterSpacing:-0.3}}>{p.title}</div>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <span className="card-sub" style={{...sf(12,400),color:"rgba(255,255,255,0.5)"}}>{p.count}</span>
-          <div style={{display:"flex",alignItems:"center",gap:4,...sf(11,500),color:"#fff",padding:"5px 12px",borderRadius:8,background:hover?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)",transition:"background 0.3s"}}>
+      <div className="card-bottom" style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 18px 16px"}}>
+        <div className="card-title" style={{...sf(20,700),color:"#fff",marginBottom:6,letterSpacing:-0.3}}>{p.title}</div>
+        <div className="card-row" style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:28}}>
+          <span className="card-sub" style={{...sf(12,400),color:"rgba(255,255,255,0.5)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1,marginRight:8}}>{p.count}</span>
+          <div className="card-explore" style={{display:"flex",alignItems:"center",gap:4,...sf(11,500),color:"#fff",padding:"5px 12px",borderRadius:8,background:hover?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)",transition:"background 0.3s"}}>
             Explore
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style={{transform:hover?"translateX(2px)":"translateX(0)",transition:"transform 0.3s"}}><path d="M5 12H19M12 5L19 12L12 19" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
@@ -544,7 +544,7 @@ function AlfredSite(){
 input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ── Hero ── */
-.hero-title span{font-size:160px!important;letter-spacing:8px!important}
+.hero-title{font-size:160px!important;letter-spacing:8px!important}
 .hero-nav{display:flex!important}
 .hero-corner{display:flex!important}
 .hero-scroll-l,.hero-scroll-r{display:block!important}
@@ -590,7 +590,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ═══════ TABLET ≤ 1024px ═══════ */
 @media(max-width:1024px){
-  .hero-title span{font-size:110px!important;letter-spacing:5px!important}
+  .hero-title{font-size:110px!important;letter-spacing:5px!important}
   .sec-head{font-size:38px!important}
   .sec-sub{font-size:36px!important}
   .exp-grid{grid-template-columns:repeat(2,1fr)!important;padding:0 28px!important}
@@ -610,7 +610,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ═══════ MOBILE ≤ 640px ═══════ */
 @media(max-width:640px){
-  .hero-title span{font-size:42px!important;letter-spacing:1px!important}
+  .hero-title{font-size:36px!important;letter-spacing:1px!important}
   .hero-nav{display:none!important}
   .hero-corner{display:none!important}
   .hero-scroll-l,.hero-scroll-r{display:none!important}
@@ -619,9 +619,13 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .hero-cta{margin-top:28px!important}
   .sec-head{font-size:28px!important;letter-spacing:-1px!important}
   .sec-sub{font-size:28px!important;letter-spacing:-1px!important}
-  .exp-grid{grid-template-columns:1fr 1fr!important;padding:0 20px!important;gap:12px!important;max-width:100%!important}
-  .card-title{font-size:16px!important}
-  .card-sub{font-size:11px!important}
+  .exp-grid{grid-template-columns:1fr 1fr!important;padding:0 16px!important;gap:10px!important;max-width:100%!important}
+  .card-title{font-size:14px!important}
+  .card-sub{font-size:10px!important}
+  .card-explore{font-size:9px!important;padding:4px 8px!important}
+  .card-tag{font-size:7px!important;padding:3px 6px!important;top:10px!important;left:10px!important}
+  .card-bottom{padding:0 10px 12px!important}
+  .card-row{height:22px!important}
   .stats-grid{grid-template-columns:repeat(2,1fr)!important}
   .stat-cell{padding:28px 16px!important}
   .stat-num{font-size:36px!important}
@@ -650,7 +654,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ═══════ SMALL PHONE ≤ 390px ═══════ */
 @media(max-width:390px){
-  .hero-title span{font-size:32px!important;letter-spacing:0px!important}
+  .hero-title{font-size:32px!important;letter-spacing:0px!important}
   .hero-tagline{font-size:12px!important;max-width:240px!important}
   .sec-head{font-size:24px!important}
   .sec-sub{font-size:24px!important}
