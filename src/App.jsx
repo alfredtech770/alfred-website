@@ -24,7 +24,7 @@ function DrawMark(p){
 }
 
 function Step(p){
-  return(<div style={{display:"flex",gap:40,alignItems:"flex-start",opacity:p.vis?1:0,transform:p.vis?"translateY(0)":"translateY(40px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) "+p.delay+"s"}}>
+  return(<div className="step-item" style={{display:"flex",gap:40,alignItems:"flex-start",opacity:p.vis?1:0,transform:p.vis?"translateY(0)":"translateY(40px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) "+p.delay+"s"}}>
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",flexShrink:0,width:48}}>
       <div style={{width:48,height:48,borderRadius:"50%",border:"1px solid "+(p.vis?C.s7:C.bd),display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
         <span style={{...sf(16,600),color:C.s1}}>{p.num}</span>
@@ -73,10 +73,10 @@ function GridCard(p){
       {/* Tag */}
       <div style={{position:"absolute",top:14,left:14,...sf(9,600),letterSpacing:0.5,textTransform:"uppercase",color:C.s1,padding:"4px 9px",borderRadius:8,background:"rgba(0,0,0,0.35)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>{p.tag}</div>
       {/* Bottom */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 18px 20px"}}>
-        <div style={{...sf(20,700),color:"#fff",marginBottom:4,letterSpacing:-0.3}}>{p.title}</div>
+      <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 18px 20px",display:"flex",flexDirection:"column",justifyContent:"flex-end",minHeight:90}}>
+        <div className="card-title" style={{...sf(20,700),color:"#fff",marginBottom:4,letterSpacing:-0.3}}>{p.title}</div>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <span style={{...sf(12,400),color:"rgba(255,255,255,0.5)"}}>{p.count}</span>
+          <span className="card-sub" style={{...sf(12,400),color:"rgba(255,255,255,0.5)"}}>{p.count}</span>
           <div style={{display:"flex",alignItems:"center",gap:4,...sf(11,500),color:"#fff",padding:"5px 12px",borderRadius:8,background:hover?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)",transition:"background 0.3s"}}>
             Explore
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style={{transform:hover?"translateX(2px)":"translateX(0)",transition:"transform 0.3s"}}><path d="M5 12H19M12 5L19 12L12 19" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -210,10 +210,10 @@ function MarkCanvas(props){
       var isLit=litRef.current;
       if(isLit){lightT=Math.min(lightT+0.018,1);flashT=Math.min(flashT+0.022,1)}
       var breathe=0.5+0.5*Math.sin(pulse*0.6);
-      var gr=120+lightT*80,gs=0.008+breathe*0.008+lightT*0.04;
+      var gr=100+lightT*50,gs=0.006+breathe*0.006+lightT*0.025;
       var ag=ctx.createRadialGradient(cx,cy,0,cx,cy,gr);ag.addColorStop(0,"rgba(244,244,245,"+gs+")");ag.addColorStop(1,"transparent");ctx.fillStyle=ag;ctx.fillRect(0,0,W,W);
-      if(isLit&&flashT<1){var fa=(1-flashT)*0.15,fr=40+flashT*180;var fg=ctx.createRadialGradient(cx,cy-8,0,cx,cy-8,fr);fg.addColorStop(0,"rgba(244,244,245,"+fa+")");fg.addColorStop(0.3,"rgba(244,244,245,"+(fa*0.2)+")");fg.addColorStop(1,"transparent");ctx.fillStyle=fg;ctx.fillRect(0,0,W,W)}
-      var el=1-Math.pow(1-lightT,3);drawMark(0.035+breathe*0.015+el*0.75,sc*0.25+el*0.8);
+      if(isLit&&flashT<1){var fa=(1-flashT)*0.06,fr=40+flashT*120;var fg=ctx.createRadialGradient(cx,cy-8,0,cx,cy-8,fr);fg.addColorStop(0,"rgba(244,244,245,"+fa+")");fg.addColorStop(0.3,"rgba(244,244,245,"+(fa*0.15)+")");fg.addColorStop(1,"transparent");ctx.fillStyle=fg;ctx.fillRect(0,0,W,W)}
+      var el=1-Math.pow(1-lightT,3);drawMark(0.035+breathe*0.015+el*0.55,sc*0.25+el*0.5);
       if(lightT<0.9){var tm=1-lightT,head=Math.floor(time)%(total+65);
         for(var ti=0;ti<60;ti++){var idx=head-ti;if(idx<0||idx>=total)continue;var pt=pts[idx];if(pt.s===-1)continue;
           var prog=1-ti/60,alpha=prog*prog*prog*tm,w=(sc*0.28)*(0.2+prog*0.8);
@@ -223,9 +223,9 @@ function MarkCanvas(props){
           ctx.beginPath();ctx.arc(hp.x,hp.y,1.8,0,Math.PI*2);ctx.fillStyle="rgba(244,244,245,"+(0.9*ha)+")";ctx.fill();
           if(Math.random()>0.7){var a=Math.random()*Math.PI*2,sp=0.08+Math.random()*0.25;
             particles.push({x:hp.x+(Math.random()-0.5)*3,y:hp.y+(Math.random()-0.5)*3,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-0.08,life:1,decay:0.015+Math.random()*0.02,sz:0.3+Math.random()*0.8})}}}
-      if(isLit&&!burstDone&&flashT<0.1){for(var b=0;b<5;b++){var bs=segs[Math.floor(Math.random()*4)],bt=Math.random();
-        var bx=ox+(bs.x1+(bs.x2-bs.x1)*bt)*sc,by=oy+(bs.y1+(bs.y2-bs.y1)*bt)*sc,ba=Math.random()*Math.PI*2,bsp=0.2+Math.random()*0.5;
-        particles.push({x:bx,y:by,vx:Math.cos(ba)*bsp,vy:Math.sin(ba)*bsp-0.2,life:1,decay:0.012+Math.random()*0.018,sz:0.5+Math.random()*1.2})}}
+      if(isLit&&!burstDone&&flashT<0.08){for(var b=0;b<3;b++){var bs=segs[Math.floor(Math.random()*4)],bt=Math.random();
+        var bx=ox+(bs.x1+(bs.x2-bs.x1)*bt)*sc,by=oy+(bs.y1+(bs.y2-bs.y1)*bt)*sc,ba=Math.random()*Math.PI*2,bsp=0.15+Math.random()*0.3;
+        particles.push({x:bx,y:by,vx:Math.cos(ba)*bsp,vy:Math.sin(ba)*bsp-0.15,life:1,decay:0.015+Math.random()*0.02,sz:0.3+Math.random()*0.8})}}
       if(isLit&&flashT>=0.1)burstDone=true;
       for(var pi=particles.length-1;pi>=0;pi--){var p=particles[pi];p.x+=p.vx;p.y+=p.vy;p.vy-=0.002;p.vx*=0.997;p.life-=p.decay;
         if(p.life<=0){particles.splice(pi,1);continue}var pa=p.life*p.life*0.35;
@@ -270,7 +270,7 @@ function AlfredLoader(p){
   },[]);
 
   return (
-    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transform:loaderDone?"scale(1.03)":"scale(1)",transition:"opacity 1.5s ease, transform 1.5s ease"}}>
+    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transition:"opacity 1.8s ease"}}>
       <style>{`
         @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
         @keyframes ldFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -349,7 +349,7 @@ export default function App(){
   return (
     <div>
       {showLoader && <AlfredLoader onComplete={handleLoaderComplete}/>}
-      <div style={{opacity:siteVisible?1:0,transition:"opacity 0.8s ease"}}>
+      <div style={{opacity:siteVisible?1:0,transition:"opacity 1.2s ease"}}>
         <AlfredSite/>
       </div>
     </div>
@@ -603,13 +603,14 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .footer-grid{grid-template-columns:1fr 1fr!important;gap:40px 32px!important}
   .footer-alfred{font-size:180px!important;letter-spacing:-8px!important}
   .step-wrap{padding:0 28px!important}
+  .step-line{left:51px!important}
   .venue-wrap{padding:0 28px!important}
   .test-card{padding:36px 28px!important}
 }
 
 /* ═══════ MOBILE ≤ 640px ═══════ */
 @media(max-width:640px){
-  .hero-title span{font-size:48px!important;letter-spacing:2px!important}
+  .hero-title span{font-size:42px!important;letter-spacing:1px!important}
   .hero-nav{display:none!important}
   .hero-corner{display:none!important}
   .hero-scroll-l,.hero-scroll-r{display:none!important}
@@ -619,6 +620,8 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .sec-head{font-size:28px!important;letter-spacing:-1px!important}
   .sec-sub{font-size:28px!important;letter-spacing:-1px!important}
   .exp-grid{grid-template-columns:1fr 1fr!important;padding:0 20px!important;gap:12px!important;max-width:100%!important}
+  .card-title{font-size:16px!important}
+  .card-sub{font-size:11px!important}
   .stats-grid{grid-template-columns:repeat(2,1fr)!important}
   .stat-cell{padding:28px 16px!important}
   .stat-num{font-size:36px!important}
@@ -627,12 +630,16 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .noir-bar{margin:24px 20px 0!important;padding:24px 20px 20px!important}
   .noir-perks{grid-template-columns:1fr!important}
   .noir-bottom{flex-direction:column!important;gap:16px!important;align-items:flex-start!important}
+  .noir-invite{display:none!important}
+  .noir-header{flex-direction:column!important;gap:12px!important}
   .venue-wrap{flex-direction:column!important;align-items:center!important;padding:0 20px!important}
   .venue-peek{display:none!important}
   .venue-center{width:100%!important;max-width:380px!important;height:240px!important;border-radius:18px!important}
   .footer-grid{grid-template-columns:1fr!important;gap:36px!important;padding:48px 20px 40px!important}
   .footer-alfred{font-size:56px!important;letter-spacing:-2px!important}
   .step-wrap{padding:0 20px!important}
+  .step-line{left:43px!important}
+  .step-item{gap:24px!important}
   .test-card{padding:28px 20px!important;border-radius:18px!important}
   .test-quote{font-size:17px!important}
   .modal-inner{width:calc(100vw - 32px)!important;max-height:90vh!important;border-radius:20px!important}
@@ -643,17 +650,21 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ═══════ SMALL PHONE ≤ 390px ═══════ */
 @media(max-width:390px){
-  .hero-title span{font-size:38px!important;letter-spacing:1px!important}
+  .hero-title span{font-size:32px!important;letter-spacing:0px!important}
   .hero-tagline{font-size:12px!important;max-width:240px!important}
   .sec-head{font-size:24px!important}
   .sec-sub{font-size:24px!important}
   .exp-grid{grid-template-columns:1fr!important;max-width:300px!important;margin-left:auto!important;margin-right:auto!important}
+  .card-title{font-size:18px!important}
+  .step-line{left:43px!important}
+  .step-item{gap:20px!important}
   .stats-grid{grid-template-columns:1fr 1fr!important}
   .stat-cell{padding:24px 12px!important}
   .stat-num{font-size:32px!important}
   .footer-alfred{font-size:42px!important;letter-spacing:-1px!important}
   .tiers-row{max-width:100%!important}
   .noir-bar{margin:24px 12px 0!important;padding:20px 16px 16px!important}
+  .noir-header{flex-direction:column!important;gap:10px!important}
   .cta-heading{font-size:30px!important}
 }`}</style>
 
@@ -693,7 +704,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
       {/* ═══ HOW IT WORKS ═══ */}
       <section ref={stepsRef} aria-label="How it works" style={{padding:"140px 0 120px",position:"relative"}}><div style={divider}/>
         <div style={{textAlign:"center",maxWidth:600,margin:"0 auto 80px"}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:stepsVis?1:0,transition:"all 0.8s ease"}}>How it works</p><h2 className="sec-sub" style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:stepsVis?1:0,transform:stepsVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Three steps to<br/>everything.</h2></div>
-        <div className="step-wrap" style={{maxWidth:560,margin:"0 auto",position:"relative",padding:"0 40px"}}><div style={{position:"absolute",top:24,bottom:80,left:63,width:1,background:"#1F1F23"}}><div style={{width:"100%",height:(stepsProgress*100)+"%",background:"linear-gradient(180deg,#3F3F46,#2C2C31)",transition:"height 0.1s linear"}}/></div>
+        <div className="step-wrap" style={{maxWidth:560,margin:"0 auto",position:"relative",padding:"0 40px"}}><div className="step-line" style={{position:"absolute",top:24,bottom:80,left:63,width:1,background:"#1F1F23"}}><div style={{width:"100%",height:(stepsProgress*100)+"%",background:"linear-gradient(180deg,#3F3F46,#2C2C31)",transition:"height 0.1s linear"}}/></div>
           <Step num="1" title="Tell Alfred" icon="💬" desc="Type what you want in plain language. A table for tonight, a yacht this weekend, a private chef for Saturday — anything." detail="Alfred checks it · responds in seconds" vis={stepsVis} delay={0.3}/>
           <Step num="2" title="We handle it" icon="⚡" desc="Your request goes straight to a real human concierge who finds the best options, makes the calls, and confirms everything — no bots, no waiting." detail="100% human · always available" vis={stepsVis} delay={0.55}/>
           <Step num="3" title="Show up" icon="✦" desc="Get your confirmation, show up, enjoy. No calls, no back-and-forth, no hassle. That's it." detail="One tap · done" vis={stepsVis} delay={0.8}/>
@@ -767,14 +778,14 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             <div style={{position:"absolute",inset:0,pointerEvents:"none",background:"linear-gradient(105deg, transparent 20%, rgba(244,244,245,0.02) 40%, rgba(244,244,245,0.01) 60%, transparent 80%)",backgroundSize:"250% 100%"}}/>
 
             {/* Header row */}
-            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:24,position:"relative"}}>
-              <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <div className="noir-header" style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:24,position:"relative"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12,minWidth:0}}>
                 {/* Key icon in box */}
                 <div style={{width:32,height:32,borderRadius:9,background:"rgba(244,244,245,0.05)",border:"0.5px solid rgba(244,244,245,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s2} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.78 7.78 5.5 5.5 0 017.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                 </div>
-                <div>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{minWidth:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
                     <span style={{...sf(22,700),color:C.s2}}>Alfred Noir</span>
                     <div style={{padding:"2px 7px",borderRadius:5,background:"rgba(244,244,245,0.05)",border:"0.5px solid rgba(244,244,245,0.08)"}}>
                       <span style={{...sf(8,700),color:C.s5,letterSpacing:0.8,textTransform:"uppercase"}}>Invite Only</span>
@@ -783,7 +794,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
                   <div style={{...sf(12,400),color:C.s6,marginTop:3}}>The black card</div>
                 </div>
               </div>
-              <div style={{...sf(12,500),color:C.s5}}>By invitation</div>
+              <div className="noir-invite" style={{...sf(12,500),color:C.s5,flexShrink:0}}>By invitation</div>
             </div>
 
             {/* Divider */}
