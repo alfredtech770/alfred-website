@@ -89,12 +89,12 @@ function GridCard(p){
 
 /* ═══ Category venue data for modal ═══ */
 var catVenues = {
-  "Fine Dining":["Carbone · Miami","Le Cinq · Paris","Papi Steak · Miami","Girafe · Paris","Komodo · Miami","L'Ambroisie · Paris","Nobu · Miami","Septime · Paris","Gekko · Miami","Le Clarence · Paris","COTE · Miami","Epicure · Paris","Zuma · Miami","La Tour d'Argent · Paris","Swan · Miami","Pavyllon · Paris"],
-  "Nightlife & Clubs":["LIV · Miami","CoCo Club · Paris","E11even · Miami","Raspoutine · Paris","Story · Miami","L'Arc · Paris","Basement · Miami","Castel · Paris","Club Space · Miami","Silencio · Paris"],
-  "Wellness & Spa":["The Setai Spa · Miami","Dior Spa · Paris","Bamford Spa · Miami","Le Spa Ritz · Paris","The Standard Spa · Miami","Guerlain Spa · Paris","Lapis Spa · Miami","Spa Le Bristol · Paris","Carillon Wellness · Miami"],
-  "Luxury Cars":["mph Club · Miami","Blacklane · Paris","Pugachev Luxury · Miami","Paris VTC Premium · Paris","Prestige Rentals · Miami","F1 Luxury · Miami"],
-  "Private Chefs":["Chef at Home · Miami","Chef Privé · Paris","Yacht Chef Service · Miami","La Belle Assiette · Paris","Private Dining Co · Miami"],
-  "Yachts & Jets":["Miami Yacht Charters","Côte d'Azur Yachts","NetJets Private","XO Aviation","Blade Helicopters","Ahoy Club"],
+  "Services":["Personal Shopping · Miami","Event Planning · Paris","Home Management · Miami","Relocation Assistance · Paris","Travel Planning · Miami","Pet Services · Paris","Gift Sourcing · Miami","VIP Access · Paris"],
+  "Dining":["Carbone · Miami","Le Cinq · Paris","Papi Steak · Miami","Girafe · Paris","Komodo · Miami","L'Ambroisie · Paris","Nobu · Miami","Septime · Paris","Gekko · Miami","Le Clarence · Paris","COTE · Miami","Epicure · Paris","Zuma · Miami","La Tour d'Argent · Paris","Swan · Miami","Pavyllon · Paris"],
+  "Nightlife":["LIV · Miami","CoCo Club · Paris","E11even · Miami","Raspoutine · Paris","Story · Miami","L'Arc · Paris","Basement · Miami","Castel · Paris","Club Space · Miami","Silencio · Paris"],
+  "Wellness":["The Setai Spa · Miami","Dior Spa · Paris","Bamford Spa · Miami","Le Spa Ritz · Paris","The Standard Spa · Miami","Guerlain Spa · Paris","Lapis Spa · Miami","Spa Le Bristol · Paris","Carillon Wellness · Miami"],
+  "Exotic Cars":["mph Club · Miami","Pugachev Luxury · Miami","Prestige Rentals · Miami","South Beach Exotic Rentals · Miami","F1 Luxury · Miami","Classic Car Club · Paris"],
+  "Private Transportation":["NetJets Private","XO Aviation","Blade Helicopters","Miami Yacht Charters","Côte d'Azur Yachts","Blacklane · Paris","Ahoy Club"],
 };
 
 function CityCarousel(p){
@@ -165,7 +165,198 @@ function MetalTier(p){
   );
 }
 
-export default function AlfredSite(){
+/* ═══ LOADER CITIES ═══ */
+var LOADER_CITIES = [
+  "Miami", "Paris", "London", "New York", "Dubai", "Tokyo",
+  "Milan", "Monaco", "Los Angeles", "Ibiza", "Saint-Tropez",
+  "Mykonos", "Aspen", "Marbella", "Tulum",
+];
+
+/* ═══ CANVAS MARK — thin glowing dot traces the A ═══ */
+function MarkCanvas(props){
+  var canvasRef = useRef(null);
+  var litRef = useRef(false);
+  useEffect(function(){ litRef.current = props.lit; }, [props.lit]);
+
+  useEffect(function(){
+    var c = canvasRef.current;
+    if (!c) return;
+    var ctx = c.getContext("2d");
+    c.width = 380; c.height = 380;
+    var W = 380, cx = W/2, cy = W/2, sc = 2.1;
+    var ox = cx - 50*sc, oy = cy - 52*sc;
+    var segs = [
+      {x1:20,y1:82,x2:38,y2:22},{x1:38,y1:22,x2:62,y2:22},
+      {x1:62,y1:22,x2:80,y2:82},{x1:30,y1:62,x2:70,y2:62},
+    ];
+    var pts = [];
+    for (var si=0;si<segs.length;si++){
+      var s=segs[si],dx=s.x2-s.x1,dy=s.y2-s.y1;
+      var len=Math.sqrt(dx*dx+dy*dy),steps=Math.max(Math.floor(len*3),10);
+      for(var i=0;i<=steps;i++){var t=i/steps;pts.push({x:ox+(s.x1+dx*t)*sc,y:oy+(s.y1+dy*t)*sc,s:si})}
+      if(si===2){
+        var gsx=ox+80*sc,gsy=oy+82*sc,gex=ox+30*sc,gey=oy+62*sc;
+        var gdx=gex-gsx,gdy=gey-gsy,gl=Math.sqrt(gdx*gdx+gdy*gdy),gn=Math.max(Math.floor(gl*0.8),8);
+        for(var gi=1;gi<=gn;gi++)pts.push({x:gsx+gdx*(gi/gn),y:gsy+gdy*(gi/gn),s:-1})
+      }
+    }
+    var total=pts.length,particles=[],time=0,pulse=0,lightT=0,flashT=0,burstDone=false,id;
+    var drawMark=function(op,lw){
+      ctx.strokeStyle="rgba(244,244,245,"+op+")";ctx.lineWidth=lw;ctx.lineCap="round";
+      for(var mi=0;mi<segs.length;mi++){var sg=segs[mi];ctx.beginPath();ctx.moveTo(ox+sg.x1*sc,oy+sg.y1*sc);ctx.lineTo(ox+sg.x2*sc,oy+sg.y2*sc);ctx.stroke()}
+    };
+    var frame=function(){
+      time+=1.0;pulse+=0.015;ctx.clearRect(0,0,W,W);
+      var isLit=litRef.current;
+      if(isLit){lightT=Math.min(lightT+0.018,1);flashT=Math.min(flashT+0.022,1)}
+      var breathe=0.5+0.5*Math.sin(pulse*0.6);
+      var gr=120+lightT*80,gs=0.008+breathe*0.008+lightT*0.04;
+      var ag=ctx.createRadialGradient(cx,cy,0,cx,cy,gr);ag.addColorStop(0,"rgba(244,244,245,"+gs+")");ag.addColorStop(1,"transparent");ctx.fillStyle=ag;ctx.fillRect(0,0,W,W);
+      if(isLit&&flashT<1){var fa=(1-flashT)*0.15,fr=40+flashT*180;var fg=ctx.createRadialGradient(cx,cy-8,0,cx,cy-8,fr);fg.addColorStop(0,"rgba(244,244,245,"+fa+")");fg.addColorStop(0.3,"rgba(244,244,245,"+(fa*0.2)+")");fg.addColorStop(1,"transparent");ctx.fillStyle=fg;ctx.fillRect(0,0,W,W)}
+      var el=1-Math.pow(1-lightT,3);drawMark(0.035+breathe*0.015+el*0.75,sc*0.25+el*0.8);
+      if(lightT<0.9){var tm=1-lightT,head=Math.floor(time)%(total+65);
+        for(var ti=0;ti<60;ti++){var idx=head-ti;if(idx<0||idx>=total)continue;var pt=pts[idx];if(pt.s===-1)continue;
+          var prog=1-ti/60,alpha=prog*prog*prog*tm,w=(sc*0.28)*(0.2+prog*0.8);
+          if(idx>0&&pts[idx-1].s===pt.s){var pv=pts[idx-1];ctx.beginPath();ctx.moveTo(pv.x,pv.y);ctx.lineTo(pt.x,pt.y);ctx.strokeStyle="rgba(244,244,245,"+(alpha*0.85)+")";ctx.lineWidth=w;ctx.lineCap="round";ctx.stroke()}}
+        if(head>=0&&head<total&&pts[head].s!==-1){var hp=pts[head],ha=tm;
+          var hg=ctx.createRadialGradient(hp.x,hp.y,0,hp.x,hp.y,18);hg.addColorStop(0,"rgba(244,244,245,"+(0.12*ha)+")");hg.addColorStop(0.5,"rgba(244,244,245,"+(0.03*ha)+")");hg.addColorStop(1,"transparent");ctx.fillStyle=hg;ctx.fillRect(hp.x-18,hp.y-18,36,36);
+          ctx.beginPath();ctx.arc(hp.x,hp.y,1.8,0,Math.PI*2);ctx.fillStyle="rgba(244,244,245,"+(0.9*ha)+")";ctx.fill();
+          if(Math.random()>0.7){var a=Math.random()*Math.PI*2,sp=0.08+Math.random()*0.25;
+            particles.push({x:hp.x+(Math.random()-0.5)*3,y:hp.y+(Math.random()-0.5)*3,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-0.08,life:1,decay:0.015+Math.random()*0.02,sz:0.3+Math.random()*0.8})}}}
+      if(isLit&&!burstDone&&flashT<0.1){for(var b=0;b<5;b++){var bs=segs[Math.floor(Math.random()*4)],bt=Math.random();
+        var bx=ox+(bs.x1+(bs.x2-bs.x1)*bt)*sc,by=oy+(bs.y1+(bs.y2-bs.y1)*bt)*sc,ba=Math.random()*Math.PI*2,bsp=0.2+Math.random()*0.5;
+        particles.push({x:bx,y:by,vx:Math.cos(ba)*bsp,vy:Math.sin(ba)*bsp-0.2,life:1,decay:0.012+Math.random()*0.018,sz:0.5+Math.random()*1.2})}}
+      if(isLit&&flashT>=0.1)burstDone=true;
+      for(var pi=particles.length-1;pi>=0;pi--){var p=particles[pi];p.x+=p.vx;p.y+=p.vy;p.vy-=0.002;p.vx*=0.997;p.life-=p.decay;
+        if(p.life<=0){particles.splice(pi,1);continue}var pa=p.life*p.life*0.35;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.sz*p.life,0,Math.PI*2);ctx.fillStyle="rgba(244,244,245,"+pa+")";ctx.fill()}
+      id=requestAnimationFrame(frame)};
+    id=requestAnimationFrame(frame);
+    return function(){cancelAnimationFrame(id)};
+  }, []);
+  return <canvas ref={canvasRef} style={{width:380,height:380}} />;
+}
+
+/* ═══ LOADER ═══ */
+function AlfredLoader(p){
+  var [percent,setPercent] = useState(0);
+  var [lit,setLit] = useState(false);
+  var [ready,setReady] = useState(false);
+  var [loaderDone,setLoaderDone] = useState(false);
+
+  useEffect(function(){
+    var start=null,raf;
+    var duration=6000;
+    var ease=function(t){
+      if(t<0.6)return(t/0.6)*0.8;
+      if(t<0.85)return 0.8+((t-0.6)/0.25)*0.12;
+      if(t<0.95)return 0.92+((t-0.85)/0.1)*0.04;
+      return 0.96+((t-0.95)/0.05)*0.04;
+    };
+    var tick=function(ts){
+      if(!start)start=ts;
+      var t=Math.min((ts-start)/duration,1);
+      setPercent(Math.floor(ease(t)*100));
+      if(t<1){raf=requestAnimationFrame(tick)}
+      else{setPercent(100);
+        setTimeout(function(){setLit(true)},400);
+        setTimeout(function(){setReady(true)},2200);
+        setTimeout(function(){setLoaderDone(true)},4000);
+        setTimeout(function(){p.onComplete()},5000);
+      }
+    };
+    raf=requestAnimationFrame(tick);
+    return function(){cancelAnimationFrame(raf)};
+  },[]);
+
+  return (
+    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transform:loaderDone?"scale(1.03)":"scale(1)",transition:"opacity 1.5s ease, transform 1.5s ease"}}>
+      <style>{`
+        @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
+        @keyframes ldFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes ldWordIn{from{opacity:0;letter-spacing:20px}to{opacity:0.4;letter-spacing:10px}}
+        @keyframes ldDotPulse{0%,100%{opacity:0.12}50%{opacity:0.4}}
+        @keyframes ldCityScroll{from{transform:translateX(0)}to{transform:translateX(-33.333%)}}
+      `}</style>
+
+      {/* Grain */}
+      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:100,opacity:0.2,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"ldGrain 4s steps(5) infinite"}} />
+
+      {/* Canvas */}
+      <div style={{zIndex:2}}><MarkCanvas lit={lit}/></div>
+
+      {/* Wordmark */}
+      <p style={{...sf(11,300),color:"#F4F4F5",letterSpacing:10,textTransform:"uppercase",marginTop:-20,zIndex:2,animation:"ldWordIn 3s ease 0.8s both",opacity:lit?0.85:undefined,transition:"opacity 2s"}}>Alfred</p>
+
+      {/* Percentage / Ready */}
+      <div style={{marginTop:32,zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:12,animation:"ldFadeUp 1.5s ease 1s both",minHeight:60}}>
+        {ready ? (
+          <p style={{...sf(13,300),color:"#71717A",opacity:0,animation:"ldFadeUp 1s ease 0.1s forwards"}}>Your concierge is ready</p>
+        ) : (
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
+            <div style={{display:"flex",alignItems:"baseline",gap:2}}>
+              <span style={{...sf(22,300),color:"#F4F4F5",letterSpacing:2,minWidth:40,textAlign:"right",display:"inline-block"}}>{percent}</span>
+              <span style={{...sf(13,300),color:"#52525B"}}>%</span>
+            </div>
+            <div style={{width:100,height:1,background:"rgba(63,63,70,0.4)",borderRadius:1,overflow:"hidden",opacity:lit?0:0.5,transition:"opacity 0.8s"}}>
+              <div style={{height:"100%",width:percent+"%",background:"linear-gradient(90deg,#3F3F46,#71717A)",borderRadius:1,transition:"width 0.1s linear"}} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Dots */}
+      {!ready && (
+        <div style={{display:"flex",gap:5,marginTop:20,zIndex:2,animation:"ldFadeUp 1s ease 2s both"}}>
+          {[0,1,2].map(function(i){return <div key={i} style={{width:2,height:2,borderRadius:"50%",background:"#3F3F46",animation:"ldDotPulse 1.6s ease infinite "+i*0.3+"s"}} />})}
+        </div>
+      )}
+
+      {/* City carousel */}
+      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2}}>
+        <div style={{position:"absolute",left:0,top:0,bottom:0,width:120,background:"linear-gradient(to right,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
+        <div style={{position:"absolute",right:0,top:0,bottom:0,width:120,background:"linear-gradient(to left,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
+        <div style={{height:1,margin:"0 48px",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.35) 20%,rgba(44,44,49,0.35) 80%,transparent)"}} />
+        <div style={{padding:"16px 0 20px",display:"flex",whiteSpace:"nowrap"}}>
+          <div style={{display:"inline-flex",alignItems:"center",animation:"ldCityScroll 40s linear infinite"}}>
+            {[0,1,2].map(function(rep){return(
+              <span key={rep} style={{display:"inline-flex",alignItems:"center"}}>
+                {LOADER_CITIES.map(function(city,ci){return(
+                  <span key={rep+"-"+ci} style={{display:"inline-flex",alignItems:"center"}}>
+                    <span style={{...sf(9,300),color:"#3F3F46",letterSpacing:4,textTransform:"uppercase",whiteSpace:"nowrap"}}>{city}</span>
+                    <span style={{display:"inline-block",width:2,height:2,borderRadius:"50%",background:"#2C2C31",margin:"0 24px",flexShrink:0}} />
+                  </span>
+                )})}
+              </span>
+            )})}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ MAIN WRAPPER ═══ */
+export default function App(){
+  var [showLoader, setShowLoader] = useState(true);
+  var [siteVisible, setSiteVisible] = useState(false);
+
+  function handleLoaderComplete(){
+    setShowLoader(false);
+    setTimeout(function(){ setSiteVisible(true); }, 100);
+  }
+
+  return (
+    <div>
+      {showLoader && <AlfredLoader onComplete={handleLoaderComplete}/>}
+      <div style={{opacity:siteVisible?1:0,transition:"opacity 0.8s ease"}}>
+        <AlfredSite/>
+      </div>
+    </div>
+  );
+}
+
+function AlfredSite(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [mouse,setMouse]=useState({x:0.5,y:0.5});
@@ -204,16 +395,15 @@ export default function AlfredSite(){
   },[]);
 
   var venues=[
-    {n:"Carbone",sub:"Italian · Miami",img:"https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=500&fit=crop&q=80",tag:"4.9",color:"#2563EB"},
-    {n:"Le Cinq",sub:"French · Paris",img:"https://images.unsplash.com/photo-1550966871-3ed3cdb51f3a?w=800&h=500&fit=crop&q=80",tag:"4.8",color:"#7C3AED"},
-    {n:"LIV",sub:"Nightclub · Miami",img:"https://images.unsplash.com/photo-1571204829887-3b8d69e4094d?w=800&h=500&fit=crop&q=80",tag:"4.7",color:"#1E293B"},
-    {n:"Girafe",sub:"Seafood · Paris",img:"https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?w=800&h=500&fit=crop&q=80",tag:"4.9",color:"#0D9488"},
-    {n:"Papi Steak",sub:"Steakhouse · Miami",img:"https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&h=500&fit=crop&q=80",tag:"4.8",color:"#DC2626"},
-    {n:"CoCo Club",sub:"Members Club · Paris",img:"https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=800&h=500&fit=crop&q=80",tag:"4.7",color:"#6D28D9"},
-    {n:"The Setai",sub:"Wellness · Miami",img:"https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=800&h=500&fit=crop&q=80",tag:"4.9",color:"#047857"},
-    {n:"L'Ambroisie",sub:"Haute Cuisine · Paris",img:"https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=500&fit=crop&q=80",tag:"5.0",color:"#B45309"},
-    {n:"mph Club",sub:"Supercars · Miami",img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=500&fit=crop&q=80",tag:"4.8",color:"#1E3A5F"},
-    {n:"Raspoutine",sub:"Nightclub · Paris",img:"https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?w=800&h=500&fit=crop&q=80",tag:"4.6",color:"#9F1239"},
+    {n:"Hôtel de Crillon",sub:"Palace · Paris",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/AlfedHotelCrillionParis.jpeg",tag:"5.0"},
+    {n:"Four Seasons",sub:"Hotel · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/MFL_1008_original.jpg",tag:"4.9"},
+    {n:"Space",sub:"Nightclub · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/image.jpg",tag:"4.8"},
+    {n:"Zuma",sub:"Restaurant · Mykonos",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/zuma-mykonos.jpg",tag:"4.9"},
+    {n:"Bvlgari Resort",sub:"Hotel · Bali",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Bulgari-Resort-Bali-Exterior.webp",tag:"5.0"},
+    {n:"F1 Experience",sub:"VIP · Global",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg",tag:"4.9"},
+    {n:"Carbone",sub:"Italian · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Carbone-Miami---Photo-Credit---Douglas-Friedman_Carbone-Miami-Dining-Room-4---PC-Douglas-Friedman.webp",tag:"4.9"},
+    {n:"Nao Beach",sub:"Beach Club · St. Barths",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/1-st-barts-nao-beach-restaurant-st-jean-st-barth.jpg",tag:"4.8"},
+    {n:"Bugatti Chiron",sub:"Exotic Car · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(78).jpeg",tag:"5.0"},
   ];
 
   useEffect(function(){if(!dirVis)return;var t=setInterval(function(){setCenterIdx(function(prev){setPrevIdx(prev);return(prev+1)%venues.length})},3000);return function(){clearInterval(t)}},[dirVis]);
@@ -230,12 +420,12 @@ export default function AlfredSite(){
   var stepsProgress=Math.max(0,Math.min((scrollY-stepsTop+wh*0.6)/(wh*0.8),1));
 
   var exps=[
-    {title:"Fine Dining",count:"84 restaurants",tag:"Most Popular",img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=800&fit=crop&q=80"},
-    {title:"Nightlife & Clubs",count:"23 exclusive venues",tag:"Members Only",img:"https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=600&h=800&fit=crop&q=80"},
-    {title:"Wellness & Spa",count:"35 wellness partners",tag:"New",img:"https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&h=800&fit=crop&q=80"},
-    {title:"Luxury Cars",count:"Supercars & chauffeurs",tag:"On Demand",img:"https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&h=800&fit=crop&q=80"},
-    {title:"Private Chefs",count:"Michelin-trained",tag:"Bespoke",img:"https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=800&fit=crop&q=80"},
-    {title:"Yachts & Jets",count:"Day charters",tag:"Ultra Premium",img:"https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&h=800&fit=crop&q=80"},
+    {title:"Services",count:"Full concierge service",tag:"New",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Hotel%20ringbell%20AI%20generation.jpeg"},
+    {title:"Dining",count:"200+ restaurants",tag:"Most Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg"},
+    {title:"Nightlife",count:"23 exclusive venues",tag:"Members Only",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg"},
+    {title:"Wellness",count:"120+ wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
+    {title:"Exotic Cars",count:"Supercars & classics",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
+    {title:"Private Transportation",count:"Jets, yachts & chauffeurs",tag:"Ultra Premium",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg"},
   ];
 
   var centerCard=venues[centerIdx];
@@ -253,7 +443,38 @@ export default function AlfredSite(){
 
   return(
     <div lang="en" style={{width:"100%",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      {/* ═══ SEO: Structured Data (meta tags in index.html) ═══ */}
+      {/* ═══ SEO: Meta Tags ═══ */}
+      <title>Alfred Concierge — Luxury Concierge App for Miami & Paris | Restaurants, Nightlife, Wellness</title>
+      <meta name="description" content="Alfred is the luxury concierge app for Miami and Paris. Book Michelin-starred restaurants, VIP nightlife, wellness spas, private chefs, luxury cars, yachts and jets. Real human concierge, 24/7. Download on iOS."/>
+      <meta name="keywords" content="luxury concierge app, Miami concierge, Paris concierge, restaurant reservations Miami, best restaurants Miami, best restaurants Paris, VIP nightlife Miami, nightclub VIP tables, wellness spa booking, private chef Miami, luxury car rental, yacht charter, private jet booking, Carbone Miami, LIV Miami, Le Cinq Paris, concierge service, Alfred app"/>
+      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <link rel="canonical" href="https://alfredconcierge.app"/>
+      <meta name="author" content="Alfred Concierge"/>
+      <meta name="theme-color" content="#0A0A0B"/>
+
+      {/* Open Graph */}
+      <meta property="og:type" content="website"/>
+      <meta property="og:title" content="Alfred — Luxury Concierge App for Miami & Paris"/>
+      <meta property="og:description" content="Book the best restaurants, nightlife, wellness, private chefs, luxury cars, yachts and jets through one app. Real human concierge available 24/7."/>
+      <meta property="og:url" content="https://alfredconcierge.app"/>
+      <meta property="og:site_name" content="Alfred Concierge"/>
+      <meta property="og:image" content="https://alfredconcierge.app/og-image.jpg"/>
+      <meta property="og:image:width" content="1200"/>
+      <meta property="og:image:height" content="630"/>
+      <meta property="og:locale" content="en_US"/>
+
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary_large_image"/>
+      <meta name="twitter:title" content="Alfred — Luxury Concierge App"/>
+      <meta name="twitter:description" content="Restaurants, nightlife, wellness, private chefs, luxury cars, yachts & jets. One app. Miami & Paris."/>
+      <meta name="twitter:image" content="https://alfredconcierge.app/og-image.jpg"/>
+      <meta name="twitter:site" content="@alfredconcierge"/>
+
+      {/* Apple Smart Banner */}
+      <meta name="apple-itunes-app" content="app-id=YOURAPPID"/>
+
+      {/* ═══ SEO: Structured Data ═══ */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({
         "@context":"https://schema.org",
         "@type":"MobileApplication",
@@ -388,28 +609,52 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ═══════ MOBILE ≤ 640px ═══════ */
 @media(max-width:640px){
-  .hero-title span{font-size:52px!important;letter-spacing:3px!important}
+  .hero-title span{font-size:48px!important;letter-spacing:2px!important}
   .hero-nav{display:none!important}
   .hero-corner{display:none!important}
   .hero-scroll-l,.hero-scroll-r{display:none!important}
+  .hero-tagline{font-size:13px!important;max-width:280px!important;margin-top:24px!important}
+  .hero-label{font-size:9px!important;letter-spacing:3px!important}
+  .hero-cta{margin-top:28px!important}
   .sec-head{font-size:28px!important;letter-spacing:-1px!important}
   .sec-sub{font-size:28px!important;letter-spacing:-1px!important}
-  .exp-grid{grid-template-columns:1fr!important;padding:0 20px!important;max-width:360px!important;margin-left:auto!important;margin-right:auto!important}
+  .exp-grid{grid-template-columns:1fr 1fr!important;padding:0 20px!important;gap:12px!important;max-width:100%!important}
   .stats-grid{grid-template-columns:repeat(2,1fr)!important}
   .stat-cell{padding:28px 16px!important}
+  .stat-num{font-size:36px!important}
   .trust-row{flex-direction:column!important;gap:16px!important}
-  .tiers-row{padding:0 20px!important;max-width:360px!important}
+  .tiers-row{padding:0 20px!important;max-width:400px!important;flex-direction:column!important}
   .noir-bar{margin:24px 20px 0!important;padding:24px 20px 20px!important}
   .noir-perks{grid-template-columns:1fr!important}
+  .noir-bottom{flex-direction:column!important;gap:16px!important;align-items:flex-start!important}
   .venue-wrap{flex-direction:column!important;align-items:center!important;padding:0 20px!important}
   .venue-peek{display:none!important}
   .venue-center{width:100%!important;max-width:380px!important;height:240px!important;border-radius:18px!important}
   .footer-grid{grid-template-columns:1fr!important;gap:36px!important;padding:48px 20px 40px!important}
-  .footer-alfred{font-size:72px!important;letter-spacing:-3px!important}
+  .footer-alfred{font-size:56px!important;letter-spacing:-2px!important}
   .step-wrap{padding:0 20px!important}
   .test-card{padding:28px 20px!important;border-radius:18px!important}
   .test-quote{font-size:17px!important}
   .modal-inner{width:calc(100vw - 32px)!important;max-height:90vh!important;border-radius:20px!important}
+  .cta-section{padding:80px 0 100px!important}
+  .cta-heading{font-size:36px!important}
+  .section-pad{padding-left:20px!important;padding-right:20px!important}
+}
+
+/* ═══════ SMALL PHONE ≤ 390px ═══════ */
+@media(max-width:390px){
+  .hero-title span{font-size:38px!important;letter-spacing:1px!important}
+  .hero-tagline{font-size:12px!important;max-width:240px!important}
+  .sec-head{font-size:24px!important}
+  .sec-sub{font-size:24px!important}
+  .exp-grid{grid-template-columns:1fr!important;max-width:300px!important;margin-left:auto!important;margin-right:auto!important}
+  .stats-grid{grid-template-columns:1fr 1fr!important}
+  .stat-cell{padding:24px 12px!important}
+  .stat-num{font-size:32px!important}
+  .footer-alfred{font-size:42px!important;letter-spacing:-1px!important}
+  .tiers-row{max-width:100%!important}
+  .noir-bar{margin:24px 12px 0!important;padding:20px 16px 16px!important}
+  .cta-heading{font-size:30px!important}
 }`}</style>
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
@@ -423,14 +668,14 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Experience","Membership","Contact"].map(function(item){return <a key={item} href={"#"+item.toLowerCase()} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
           <div style={{textAlign:"center",transform:"translateY("+(heroY+my)+"px) translateX("+mx+"px) scale("+heroScale+")",opacity:heroOp,filter:"blur("+heroBlur+"px)",willChange:"transform,opacity,filter",transition:"transform 0.5s cubic-bezier(0.16,1,0.3,1)"}}>
-            <p style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
-            <div style={{overflow:"hidden",lineHeight:0.88,position:"relative"}}>
+            <p className="hero-label" style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
+            <div style={{overflow:"hidden",lineHeight:0.88,position:"relative",whiteSpace:"nowrap"}}>
               {LETTERS.map(function(ch,i){return <span key={i} className="hero-title" style={{display:"inline-block",...sf(160,700),letterSpacing:8,opacity:loaded?1:0,transform:loaded?"translateY(0) scale(1)":"translateY(100%) scale(0.9)",transition:"transform 1.1s cubic-bezier(0.16,1,0.3,1) "+(0.7+i*0.07)+"s, opacity 0.6s ease "+(0.7+i*0.07)+"s"}}>{ch}</span>})}
               {shimmer && <div style={{position:"absolute",top:0,bottom:0,width:"25%",background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.08) 50%,transparent)",animation:"shimmerSweep 1.2s cubic-bezier(0.16,1,0.3,1) forwards",pointerEvents:"none"}}/>}
             </div>
             <CityCarousel loaded={loaded}/>
-            <p style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
-            <div style={{marginTop:40,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
+            <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
+            <div className="hero-cta" style={{marginTop:40,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
               <div style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 24px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)"}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
                 <svg width="18" height="22" viewBox="0 0 24 30" fill={hoverCta?C.bg:C.s1} style={{transition:"fill 0.4s"}}><path d={appSvg}/></svg>
                 <div style={{display:"flex",flexDirection:"column",gap:1}}>
@@ -482,7 +727,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
       {/* ═══ SOCIAL PROOF ═══ */}
       <section ref={statsRef} aria-label="Statistics" style={{padding:"140px 0 160px",position:"relative"}}><div style={divider}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",marginBottom:80}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:statsVis?1:0,transition:"all 0.8s ease"}}>By the numbers</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Built to exceed<br/>every expectation.</h2></div>
-        <div className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,maxWidth:880,margin:"0 auto",background:C.bd,borderRadius:20,overflow:"hidden",opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 1s ease 0.3s"}}>{[{n:200,s:"+",l:"Curated Venues",sb:"Restaurants, clubs & bars",c:"#818CF8"},{n:120,s:"+",l:"Wellness Partners",sb:"Spas, trainers & retreats",c:"#34D399"},{px:"< ",n:2,s:" min",l:"Response Time",sb:"Average concierge reply",c:"#F472B6"},{n:24,s:"/7",l:"Concierge",sb:"Real humans, always on",c:"#FBBF24"}].map(function(stat,i){return <div key={i} className="stat-cell" style={{background:C.bg,padding:"44px 28px",textAlign:"center"}}><div style={{...sf(48,600),color:stat.c,marginBottom:8,lineHeight:1}}>{stat.px||""}<AnimCounter end={stat.n} suffix={stat.s} duration={1800} active={statsVis}/></div><div style={{...sf(14,600),color:C.s2,marginBottom:4}}>{stat.l}</div><div style={{...sf(12,400),color:C.s6}}>{stat.sb}</div></div>})}</div>
+        <div className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,maxWidth:880,margin:"0 auto",background:C.bd,borderRadius:20,overflow:"hidden",opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 1s ease 0.3s"}}>{[{n:200,s:"+",l:"Curated Venues",sb:"Restaurants, clubs & bars",c:"#818CF8"},{n:120,s:"+",l:"Wellness Partners",sb:"Spas, trainers & retreats",c:"#34D399"},{px:"< ",n:2,s:" min",l:"Response Time",sb:"Average concierge reply",c:"#F472B6"},{n:24,s:"/7",l:"Concierge",sb:"Real humans, always on",c:"#FBBF24"}].map(function(stat,i){return <div key={i} className="stat-cell" style={{background:C.bg,padding:"44px 28px",textAlign:"center"}}><div className="stat-num" style={{...sf(48,600),color:stat.c,marginBottom:8,lineHeight:1,whiteSpace:"nowrap"}}>{stat.px||""}<AnimCounter end={stat.n} suffix={stat.s} duration={1800} active={statsVis}/></div><div style={{...sf(14,600),color:C.s2,marginBottom:4}}>{stat.l}</div><div style={{...sf(12,400),color:C.s6}}>{stat.sb}</div></div>})}</div>
         <div style={{maxWidth:880,margin:"80px auto 0",opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.6s",padding:"0 40px"}}>
           <div className="test-card" style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"48px 44px",textAlign:"center",position:"relative",overflow:"hidden"}}>
             {/* Subtle top shine */}
@@ -495,12 +740,9 @@ input::placeholder{color:#52525B}input:focus{outline:none}
               {[1,2,3,4,5].map(function(s){return <svg key={s} width="16" height="16" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>})}
             </div>
             {/* Author */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:14}}>
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face&q=80" alt="Bruce Wayne testimonial" loading="lazy" style={{width:46,height:46,borderRadius:"50%",objectFit:"cover",border:"2px solid rgba(255,255,255,0.08)"}}/>
-              <div style={{textAlign:"left"}}>
-                <div style={{...sf(14,600),color:C.s2}}>Bruce Wayne</div>
-                <div style={{...sf(12,400),color:C.s6}}>Founding Member · Miami</div>
-              </div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+              <div style={{...sf(14,600),color:C.s3}}>Bruce Wayne</div>
+              <div style={{...sf(12,400),color:C.s6}}>· Founding Member · Miami</div>
             </div>
           </div>
         </div>
@@ -570,7 +812,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             </div>
 
             {/* Bottom CTA */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div className="noir-bottom" style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
               <div style={{...sf(12,400),color:C.s7}}>Membership by invitation or application</div>
               <div style={{display:"flex",alignItems:"center",gap:8,...sf(13,600),color:C.s1,padding:"11px 24px",borderRadius:12,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
                 Apply for Noir
@@ -589,13 +831,13 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
       {/* ═══ VENUE CROSSFADE CAROUSEL ═══ */}
       <section ref={dirRef} aria-label="Venues" style={{padding:"140px 0 140px",position:"relative",overflow:"hidden"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:20}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:dirVis?1:0,transition:"all 0.8s ease"}}>Our Venues</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:12,opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Hand-picked.<br/>Verified. Yours.</h2><p style={{...sf(14,400),color:C.s5,opacity:dirVis?1:0,transition:"all 0.8s ease 0.3s"}}>{venues.length} exclusive venues across Miami and Paris</p></div>
+        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:20}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:dirVis?1:0,transition:"all 0.8s ease"}}>Our Venues</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:12,opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Hand-picked.<br/>Verified. Yours.</h2><p style={{...sf(14,400),color:C.s5,opacity:dirVis?1:0,transition:"all 0.8s ease 0.3s"}}>{venues.length} exclusive venues worldwide</p></div>
 
         <div className="venue-wrap" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:24,margin:"48px auto",maxWidth:900,padding:"0 40px",opacity:dirVis?1:0,transition:"all 1s ease 0.4s"}}>
           {/* Left peek */}
           <div className="venue-peek" style={{width:200,height:240,borderRadius:18,overflow:"hidden",flexShrink:0,opacity:0.4,transform:"scale(0.92)",position:"relative"}}>
             <img src={leftCard.img} alt={leftCard.n} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,"+leftCard.color+"C0 0%,transparent 60%)"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(10,10,11,0.7) 0%,transparent 60%)"}}/>
             <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.4) 100%)"}}/>
             <div style={{position:"absolute",bottom:16,left:16,...sf(15,700),color:"#fff"}}>{leftCard.n}</div>
           </div>
@@ -615,7 +857,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
                   backfaceVisibility:"hidden",
                 }}>
                   <img src={v.img} alt={v.n} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",position:"absolute",inset:0}}/>
-                  <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,"+v.color+"D0 0%,"+v.color+"60 30%,transparent 60%)",zIndex:1}}/>
+                  <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(10,10,11,0.75) 0%,rgba(10,10,11,0.4) 30%,transparent 60%)",zIndex:1}}/>
                   <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.35) 100%)",zIndex:1}}/>
                   <div style={{position:"absolute",bottom:0,left:0,padding:"0 28px 24px",zIndex:2}}>
                     <div style={{...sf(26,700),color:"#fff",marginBottom:4,letterSpacing:-0.5}}>{v.n}</div>
@@ -633,7 +875,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
           {/* Right peek */}
           <div className="venue-peek" style={{width:200,height:240,borderRadius:18,overflow:"hidden",flexShrink:0,opacity:0.4,transform:"scale(0.92)",position:"relative"}}>
             <img src={rightCard.img} alt={rightCard.n} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(270deg,"+rightCard.color+"C0 0%,transparent 60%)"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(270deg,rgba(10,10,11,0.7) 0%,transparent 60%)"}}/>
             <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.4) 100%)"}}/>
             <div style={{position:"absolute",bottom:16,right:16,...sf(15,700),color:"#fff",textAlign:"right"}}>{rightCard.n}</div>
           </div>
@@ -643,10 +885,9 @@ input::placeholder{color:#52525B}input:focus{outline:none}
       </section>
 
       {/* ═══ FINAL CTA ═══ */}
-      <section ref={ctaRef} aria-label="Download" style={{padding:"120px 0 140px",position:"relative"}}><div style={divider}/>
+      <section ref={ctaRef} aria-label="Download" className="cta-section" style={{padding:"120px 0 140px",position:"relative"}}><div style={divider}/>
         <div style={{textAlign:"center",maxWidth:600,margin:"0 auto",padding:"0 40px"}}>
-          <div style={{opacity:ctaVis?1:0,transition:"all 0.9s ease 0.1s",marginBottom:28}}><DrawMark size={40} color={C.s1} active={ctaVis} delay={0.3} id="mg2"/></div>
-          <h2 className="sec-head" style={{...sf(52,600),letterSpacing:-2,lineHeight:1.06,marginBottom:20,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.2s"}}>Your city.<br/>Your way.</h2>
+          <h2 className="sec-head cta-heading" style={{...sf(52,600),letterSpacing:-2,lineHeight:1.06,marginBottom:20,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.2s"}}>Your city.<br/>Your way.</h2>
           <p style={{...sf(17,400),color:C.s5,lineHeight:1.7,maxWidth:420,margin:"0 auto 40px",opacity:ctaVis?1:0,transition:"all 0.8s ease 0.4s"}}>Download Alfred and discover why the best experiences aren't found — they're arranged.</p>
 
           {/* App Store button */}
@@ -665,8 +906,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginBottom:8}}>
               {[1,2,3,4,5].map(function(s){return <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>})}
             </div>
-            <div style={{...sf(14,600),color:C.s3,marginBottom:4}}>4.9 out of 5</div>
-            <div style={{...sf(12,400),color:C.s6}}>148 ratings on the App Store</div>
+            <div style={{...sf(14,600),color:C.s3}}>4.9 out of 5</div>
           </div>
         </div>
       </section>
