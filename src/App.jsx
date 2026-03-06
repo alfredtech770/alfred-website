@@ -597,6 +597,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .stats-grid{grid-template-columns:repeat(2,1fr)!important}
   .tiers-row{flex-direction:column!important;max-width:420px!important;margin-left:auto!important;margin-right:auto!important;padding:0 28px!important}
   .noir-bar{padding:28px 24px 24px!important}
+  .noir-wrap{padding:0 28px!important;max-width:420px!important;margin-left:auto!important;margin-right:auto!important}
   .noir-perks{grid-template-columns:1fr 1fr!important}
   .venue-center{width:380px!important;height:250px!important}
   .venue-peek{width:140px!important;height:190px!important}
@@ -610,13 +611,13 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ═══════ MOBILE ≤ 640px ═══════ */
 @media(max-width:640px){
-  .hero-title{font-size:36px!important;letter-spacing:1px!important}
+  .hero-title{font-size:14vw!important;letter-spacing:0.5px!important}
   .hero-nav{display:none!important}
   .hero-corner{display:none!important}
   .hero-scroll-l,.hero-scroll-r{display:none!important}
   .hero-tagline{font-size:13px!important;max-width:280px!important;margin-top:24px!important}
   .hero-label{font-size:9px!important;letter-spacing:3px!important}
-  .hero-cta{margin-top:28px!important}
+  .hero-cta{margin-top:36px!important}
   .sec-head{font-size:28px!important;letter-spacing:-1px!important}
   .sec-sub{font-size:28px!important;letter-spacing:-1px!important}
   .exp-grid{grid-template-columns:1fr 1fr!important;padding:0 16px!important;gap:10px!important;max-width:100%!important}
@@ -631,7 +632,8 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .stat-num{font-size:36px!important}
   .trust-row{flex-direction:column!important;gap:16px!important}
   .tiers-row{padding:0 20px!important;max-width:400px!important;flex-direction:column!important}
-  .noir-bar{margin:24px 20px 0!important;padding:24px 20px 20px!important}
+  .noir-bar{padding:24px 20px 20px!important}
+  .noir-wrap{padding:0 20px!important;max-width:400px!important;margin-left:auto!important;margin-right:auto!important}
   .noir-perks{grid-template-columns:1fr!important}
   .noir-bottom{flex-direction:column!important;gap:16px!important;align-items:flex-start!important}
   .noir-invite{display:none!important}
@@ -654,7 +656,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
 /* ═══════ SMALL PHONE ≤ 390px ═══════ */
 @media(max-width:390px){
-  .hero-title{font-size:32px!important;letter-spacing:0px!important}
+  .hero-title{font-size:14vw!important;letter-spacing:0px!important}
   .hero-tagline{font-size:12px!important;max-width:240px!important}
   .sec-head{font-size:24px!important}
   .sec-sub{font-size:24px!important}
@@ -667,7 +669,8 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .stat-num{font-size:32px!important}
   .footer-alfred{font-size:42px!important;letter-spacing:-1px!important}
   .tiers-row{max-width:100%!important}
-  .noir-bar{margin:24px 12px 0!important;padding:20px 16px 16px!important}
+  .noir-bar{padding:20px 16px 16px!important}
+  .noir-wrap{padding:0 12px!important;max-width:100%!important}
   .noir-header{flex-direction:column!important;gap:10px!important}
   .cta-heading{font-size:30px!important}
 }`}</style>
@@ -690,7 +693,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             </div>
             <CityCarousel loaded={loaded}/>
             <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
-            <div className="hero-cta" style={{marginTop:40,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
+            <div className="hero-cta" style={{marginTop:48,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
               <div style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 24px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)"}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
                 <svg width="18" height="22" viewBox="0 0 24 30" fill={hoverCta?C.bg:C.s1} style={{transition:"fill 0.4s"}}><path d={appSvg}/></svg>
                 <div style={{display:"flex",flexDirection:"column",gap:1}}>
@@ -776,7 +779,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
 
         {/* Alfred Noir — matching app card style */}
-        <div style={{maxWidth:940,margin:"32px auto 0",padding:"0 40px",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.7s"}}>
+        <div className="noir-wrap" style={{maxWidth:1020,margin:"32px auto 0",padding:"0 40px",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.7s"}}>
           <div className="noir-bar" style={{borderRadius:24,padding:"36px 36px 32px",background:"linear-gradient(180deg,#0E0E11,#080809)",border:"1px solid rgba(244,244,245,0.06)",position:"relative",overflow:"hidden",cursor:"pointer",transition:"border-color 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.06)"}}>
             {/* Shimmer overlay */}
             <div style={{position:"absolute",inset:0,pointerEvents:"none",background:"linear-gradient(105deg, transparent 20%, rgba(244,244,245,0.02) 40%, rgba(244,244,245,0.01) 60%, transparent 80%)",backgroundSize:"250% 100%"}}/>
