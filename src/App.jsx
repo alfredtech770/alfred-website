@@ -364,6 +364,7 @@ export default function App(){
       <Routes>
         <Route path="/" element={<HomePage/>}/>
         <Route path="/business" element={<AlfredPartners/>}/>
+        <Route path="/catalog" element={<AlfredCatalog/>}/>
       </Routes>
     </BrowserRouter>
   );
@@ -433,12 +434,11 @@ function AlfredSite(){
   var stepsProgress=Math.max(0,Math.min((scrollY-stepsTop+wh*0.6)/(wh*0.8),1));
 
   var exps=[
-    {title:"Services",count:"Full concierge service",tag:"New",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Hotel%20ringbell%20AI%20generation.jpeg"},
     {title:"Dining",count:"200+ restaurants",tag:"Most Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg"},
     {title:"Nightlife",count:"23 exclusive venues",tag:"Members Only",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg"},
     {title:"Wellness",count:"120+ wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
-    {title:"Exotic Cars",count:"Supercars & classics",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
-    {title:"Private Transportation",count:"Jets, yachts & chauffeurs",tag:"Ultra Premium",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg"},
+    {title:"Exotic Cars",count:"45+ vehicles",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
+    {title:"Jets",count:"Global fleet access",tag:"Ultra Premium",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg"},
   ];
 
   var centerCard=venues[centerIdx];
@@ -696,7 +696,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:-80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.8s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:32,left:40,zIndex:10,animation:loaded?"slideFromLeft 1s cubic-bezier(0.16,1,0.3,1) 0.3s both":"none"}}><DrawMark size={22} color={C.s1} active={loaded} delay={0.5} id="mg1"/></div>
-        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Experience","Membership","Business","Contact"].map(function(item){var href=item==="Business"?"/business":"#"+item.toLowerCase();return <a key={item} href={href} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
+        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Experience","Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":"#"+item.toLowerCase();return <a key={item} href={href} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
           <div style={{textAlign:"center",transform:"translateY("+(heroY+my)+"px) translateX("+mx+"px) scale("+heroScale+")",opacity:heroOp,filter:"blur("+heroBlur+"px)",willChange:"transform,opacity,filter",transition:"transform 0.5s cubic-bezier(0.16,1,0.3,1)"}}>
             <p className="hero-label" style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
@@ -956,7 +956,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* Explore */}
             <div>
               <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
-              {["How it Works","Experiences","Membership","Business","Download"].map(function(l){var href=l==="Business"?"/business":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
+              {["How it Works","Experiences","Membership","Catalog","Business","Download"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
             </div>
 
             {/* Follow us */}
@@ -1531,6 +1531,361 @@ textarea{resize:vertical;min-height:100px}
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
           <a href="/catalog" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
           <a href="mailto:partners@alfred.app" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>partners@alfred.app</a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   CATALOG PAGE
+   ═══════════════════════════════════════ */
+
+function CDrawMark(p){
+  var sw = Math.max(p.size * 0.06, 1.5);
+  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none"><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>);
+}
+
+/* ═══ CATEGORY DATA ═══ */
+var CATEGORIES = [
+  {
+    id: "dining",
+    title: "Dining",
+    subtitle: "The world's best tables",
+    count: "200+ restaurants",
+    tag: "Most Popular",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg",
+    items: [
+      {name:"Carbone",loc:"Miami",price:"$$$$"},
+      {name:"Le Cinq",loc:"Paris",price:"$$$$"},
+      {name:"Zuma",loc:"Mykonos",price:"$$$$"},
+      {name:"Nobu",loc:"Miami",price:"$$$$"},
+      {name:"Girafe",loc:"Paris",price:"$$$"},
+      {name:"Komodo",loc:"Miami",price:"$$$"},
+      {name:"L'Ambroisie",loc:"Paris",price:"$$$$"},
+      {name:"Gekko",loc:"Miami",price:"$$$"},
+      {name:"Septime",loc:"Paris",price:"$$$$"},
+      {name:"Swan",loc:"Miami",price:"$$$"},
+      {name:"Le Clarence",loc:"Paris",price:"$$$$"},
+      {name:"Papi Steak",loc:"Miami",price:"$$$$"},
+    ],
+    active: true,
+  },
+  {
+    id: "nightlife",
+    title: "Nightlife",
+    subtitle: "Tables, guestlists & VIP",
+    count: "23 exclusive venues",
+    tag: "Members Only",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",
+    items: [
+      {name:"LIV",loc:"Miami",price:"Table min varies"},
+      {name:"CoCo Club",loc:"Paris",price:"Members only"},
+      {name:"E11even",loc:"Miami",price:"Table min varies"},
+      {name:"Raspoutine",loc:"Paris",price:"Members only"},
+      {name:"Story",loc:"Miami",price:"Table min varies"},
+      {name:"L'Arc",loc:"Paris",price:"Table min varies"},
+      {name:"Club Space",loc:"Miami",price:"Guestlist"},
+      {name:"Castel",loc:"Paris",price:"Members only"},
+    ],
+    active: true,
+  },
+  {
+    id: "wellness",
+    title: "Wellness",
+    subtitle: "Spas, trainers & retreats",
+    count: "120+ partners",
+    tag: "Popular",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg",
+    items: [
+      {name:"The Setai Spa",loc:"Miami",price:"$$$"},
+      {name:"Dior Spa",loc:"Paris",price:"$$$$"},
+      {name:"Bamford Spa",loc:"Miami",price:"$$$"},
+      {name:"Le Spa Ritz",loc:"Paris",price:"$$$$"},
+      {name:"The Standard Spa",loc:"Miami",price:"$$$"},
+      {name:"Guerlain Spa",loc:"Paris",price:"$$$$"},
+      {name:"Lapis Spa",loc:"Miami",price:"$$$"},
+      {name:"Spa Le Bristol",loc:"Paris",price:"$$$$"},
+    ],
+    active: true,
+  },
+  {
+    id: "exotic-cars",
+    title: "Exotic Cars",
+    subtitle: "Supercars, classics & chauffeurs",
+    count: "45+ vehicles",
+    tag: "On Demand",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg",
+    items: [
+      {name:"Bugatti Chiron",loc:"Miami",price:"From $8,500/day"},
+      {name:"Lamborghini Revuelto",loc:"Miami",price:"From $3,500/day"},
+      {name:"Ferrari SF90",loc:"Miami",price:"From $3,200/day"},
+      {name:"Rolls-Royce Cullinan",loc:"Miami",price:"From $2,800/day"},
+      {name:"McLaren 750S",loc:"Miami",price:"From $2,500/day"},
+      {name:"Porsche 911 GT3 RS",loc:"Miami",price:"From $1,800/day"},
+      {name:"Aston Martin DBX707",loc:"Miami",price:"From $1,600/day"},
+      {name:"Mercedes-AMG GT",loc:"Miami",price:"From $1,200/day"},
+      {name:"Bentley Continental GT",loc:"Miami",price:"From $1,500/day"},
+    ],
+    active: true,
+  },
+  {
+    id: "jets",
+    title: "Jets",
+    subtitle: "Charter, fractional & empty legs",
+    count: "Global fleet access",
+    tag: "Ultra Premium",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg",
+    items: [
+      {name:"NetJets",loc:"Global",price:"From $5,000/hr"},
+      {name:"XO Aviation",loc:"Global",price:"From $4,500/hr"},
+      {name:"Blade Helicopters",loc:"NYC · Miami",price:"From $195/seat"},
+      {name:"VistaJet",loc:"Global",price:"Membership"},
+      {name:"Flexjet",loc:"Global",price:"Fractional"},
+      {name:"Wheels Up",loc:"US · Europe",price:"Membership"},
+    ],
+    active: true,
+  },
+  {
+    id: "services",
+    title: "Services",
+    subtitle: "Full concierge, on demand",
+    count: "Coming soon",
+    tag: "Coming Soon",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Hotel%20ringbell%20AI%20generation.jpeg",
+    items: [],
+    active: false,
+  },
+  {
+    id: "accommodations",
+    title: "Accommodations",
+    subtitle: "Hotels, villas & residences",
+    count: "Coming soon",
+    tag: "Coming Soon",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg",
+    items: [],
+    active: false,
+  },
+  {
+    id: "yachts",
+    title: "Yachts",
+    subtitle: "Day charters & superyachts",
+    count: "Coming soon",
+    tag: "Coming Soon",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg",
+    items: [],
+    active: false,
+  },
+  {
+    id: "flights",
+    title: "Flights",
+    subtitle: "First class & business deals",
+    count: "Coming soon",
+    tag: "Coming Soon",
+    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(84).jpeg",
+    items: [],
+    active: false,
+  },
+];
+
+/* ═══ MAIN CATALOG ═══ */
+function AlfredCatalog() {
+  var [selected, setSelected] = useState(null);
+  var [loaded, setLoaded] = useState(false);
+  var [scrollY, setScrollY] = useState(0);
+
+  useEffect(function(){ setTimeout(function(){ setLoaded(true); }, 100); }, []);
+  useEffect(function(){
+    var h = function(){ setScrollY(window.scrollY); };
+    window.addEventListener("scroll", h, {passive:true});
+    return function(){ window.removeEventListener("scroll", h); };
+  }, []);
+
+  var navOp = Math.min(scrollY / 300, 1);
+  var activeCat = selected ? CATEGORIES.find(function(c){ return c.id === selected; }) : null;
+
+  return (
+    <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
+      <style>{`
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:#2C2C31;color:#F4F4F5}
+a{color:inherit;text-decoration:none}
+body::-webkit-scrollbar{width:0}
+@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1100px;margin:0 auto;padding:0 40px}
+.cat-card{aspect-ratio:3/4}
+@media(max-width:1024px){
+  .cat-grid{grid-template-columns:repeat(3,1fr);padding:0 28px;gap:14px}
+}
+@media(max-width:768px){
+  .cat-grid{grid-template-columns:repeat(2,1fr);padding:0 20px;gap:12px}
+  .cat-title{font-size:16px!important}
+  .cat-sub{font-size:10px!important}
+  .cat-count{font-size:9px!important}
+  .page-title{font-size:36px!important;letter-spacing:-1px!important}
+  .page-sub{font-size:13px!important}
+  .detail-grid{grid-template-columns:1fr!important;padding:0 20px!important}
+  .detail-hero{height:280px!important}
+  .detail-title{font-size:32px!important}
+  .modal-item{padding:16px 20px!important}
+}
+@media(max-width:390px){
+  .cat-grid{grid-template-columns:repeat(2,1fr);padding:0 16px;gap:10px}
+  .cat-title{font-size:14px!important}
+  .page-title{font-size:28px!important}
+  .detail-title{font-size:26px!important}
+}
+      `}</style>
+
+      {/* Grain */}
+      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
+
+      {/* ═══ NAV ═══ */}
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur("+Math.min(navOp*30,30)+"px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")",transition:"all 0.3s"}}>
+        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}>
+          <CDrawMark size={22} color={C.s1}/>
+        </a>
+        <div style={{display:"flex",alignItems:"center",gap:28}}>
+          <a href="/" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
+          <div style={{...sf(11,400),color:C.s1,letterSpacing:0.3}}>Catalog</div>
+          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,...sf(11,500),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1}}>Download App</a>
+        </div>
+      </nav>
+
+      {/* ═══ DETAIL VIEW ═══ */}
+      {activeCat && (
+        <div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",animation:"fadeIn 0.3s ease"}} onClick={function(){ setSelected(null); }}>
+          <div style={{width:"90%",maxWidth:720,maxHeight:"85vh",background:C.bg,borderRadius:28,border:"1px solid "+C.bd,overflow:"hidden",animation:"modalIn 0.4s cubic-bezier(0.16,1,0.3,1)"}} onClick={function(e){ e.stopPropagation(); }}>
+
+            {/* Hero image */}
+            <div className="detail-hero" style={{height:320,position:"relative",overflow:"hidden"}}>
+              <img src={activeCat.img} alt={activeCat.title} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0) 30%,rgba(10,10,11,0.95) 100%)"}}/>
+              {/* Close */}
+              <div style={{position:"absolute",top:20,right:20,width:36,height:36,borderRadius:"50%",background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"background 0.3s"}} onClick={function(){ setSelected(null); }} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </div>
+              {/* Tag */}
+              <div style={{position:"absolute",top:20,left:20,...sf(9,600),letterSpacing:0.5,textTransform:"uppercase",color:C.s1,padding:"5px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>{activeCat.tag}</div>
+              {/* Title overlay */}
+              <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 32px 28px"}}>
+                <div className="detail-title" style={{...sf(40,700),letterSpacing:-1,marginBottom:6}}>{activeCat.title}</div>
+                <div style={{...sf(14,400),color:C.s4}}>{activeCat.subtitle}</div>
+              </div>
+            </div>
+
+            {/* Items list */}
+            <div style={{padding:"8px 0",maxHeight:"calc(85vh - 320px)",overflowY:"auto"}}>
+              <div style={{padding:"12px 32px 8px",...sf(10,500),color:C.s6,letterSpacing:2,textTransform:"uppercase"}}>{activeCat.count}</div>
+              {activeCat.items.map(function(item, i){
+                return (
+                  <div key={i} className="modal-item" style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 32px",borderBottom:i<activeCat.items.length-1?"1px solid rgba(44,44,49,0.5)":"none",transition:"background 0.2s",cursor:"default"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.02)"}} onMouseLeave={function(e){e.currentTarget.style.background="transparent"}}>
+                    <div>
+                      <div style={{...sf(15,600),color:C.s1,marginBottom:3}}>{item.name}</div>
+                      <div style={{...sf(12,400),color:C.s5}}>{item.loc}</div>
+                    </div>
+                    <div style={{...sf(12,400),color:C.s6,flexShrink:0,marginLeft:16}}>{item.price}</div>
+                  </div>
+                );
+              })}
+              {/* CTA */}
+              <div style={{padding:"24px 32px 28px",textAlign:"center"}}>
+                <a href="/" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 28px",borderRadius:14,background:C.s1,color:C.bg,...sf(13,600),letterSpacing:0.3,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+                  Book through the app
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.bg} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ HERO ═══ */}
+      <section style={{paddingTop:140,paddingBottom:80,textAlign:"center",position:"relative"}}>
+        <div style={{opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1) 0.2s"}}>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20}}>The Alfred Collection</p>
+          <h1 className="page-title" style={{...sf(52,700),letterSpacing:-2,lineHeight:1.06,marginBottom:16}}>Our Catalog</h1>
+          <p className="page-sub" style={{...sf(16,400),color:C.s5,lineHeight:1.7,maxWidth:440,margin:"0 auto"}}>Every experience, service, and luxury we offer — curated across the world's finest cities.</p>
+        </div>
+
+        {/* Divider */}
+        <div style={{maxWidth:1100,margin:"60px auto 0",padding:"0 40px"}}>
+          <div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>
+        </div>
+      </section>
+
+      {/* ═══ CATEGORY GRID ═══ */}
+      <section style={{paddingBottom:120}}>
+        <div className="cat-grid">
+          {CATEGORIES.map(function(cat, i){
+            var isComingSoon = !cat.active;
+            return (
+              <div key={cat.id} className="cat-card" style={{
+                borderRadius:20,overflow:"hidden",position:"relative",cursor:isComingSoon?"default":"pointer",
+                border:"1px solid "+C.bd,
+                opacity:loaded?1:0,
+                transform:loaded?"translateY(0)":"translateY(24px)",
+                transition:"all 0.7s cubic-bezier(0.16,1,0.3,1) "+(0.3+i*0.06)+"s",
+                filter:isComingSoon?"brightness(0.5)":"none",
+              }} onClick={function(){ if(cat.active) setSelected(cat.id); }}
+                onMouseEnter={function(e){ if(cat.active){ e.currentTarget.style.transform="translateY(-6px) scale(1.02)"; e.currentTarget.style.boxShadow="0 24px 60px rgba(0,0,0,0.5)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"; }}}
+                onMouseLeave={function(e){ e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.borderColor=C.bd; }}
+              >
+                {/* Image */}
+                <img src={cat.img} alt={cat.title} loading="lazy" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.8s cubic-bezier(0.16,1,0.3,1)"}}/>
+                {/* Gradient */}
+                <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0) 30%,rgba(10,10,11,0.5) 60%,rgba(10,10,11,0.92) 100%)"}}/>
+
+                {/* Tag */}
+                <div style={{position:"absolute",top:14,left:14,...sf(8,600),letterSpacing:0.5,textTransform:"uppercase",color:isComingSoon?C.s5:C.s1,padding:"4px 8px",borderRadius:7,background:"rgba(0,0,0,0.35)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>{cat.tag}</div>
+
+                {/* Bottom text */}
+                <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 16px 18px"}}>
+                  <div className="cat-title" style={{...sf(20,700),color:"#fff",marginBottom:4,letterSpacing:-0.3}}>{cat.title}</div>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",height:24}}>
+                    <span className="cat-sub" style={{...sf(11,400),color:"rgba(255,255,255,0.45)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{cat.subtitle}</span>
+                  </div>
+                  <div className="cat-count" style={{...sf(10,500),color:isComingSoon?"rgba(255,255,255,0.3)":C.s4,marginTop:6,letterSpacing:0.5}}>{cat.count}</div>
+                </div>
+
+                {/* Coming soon overlay */}
+                {isComingSoon && (
+                  <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <div style={{...sf(12,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",padding:"8px 18px",borderRadius:10,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)"}}>Coming Soon</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ═══ BOTTOM CTA ═══ */}
+      <section style={{padding:"80px 40px 120px",textAlign:"center",borderTop:"1px solid "+C.bd}}>
+        <div style={{maxWidth:480,margin:"0 auto"}}>
+          <CDrawMark size={32} color={C.s5}/>
+          <h2 style={{...sf(32,600),letterSpacing:-1,marginTop:24,marginBottom:14}}>Ready to experience it all?</h2>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Download Alfred and get access to every venue, every service, every experience — through one beautiful app.</p>
+          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,...sf(14,500),color:C.s1,transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg;e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1;e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+            <svg width="18" height="22" viewBox="0 0 24 30" fill="currentColor"><path d="M19.44 26.28c-1.22 1.76-2.56 3.52-4.6 3.56-2.02.04-2.66-1.18-4.96-1.18-2.32 0-3.02 1.14-4.92 1.22C3 29.96 1.52 28 .28 26.24-2.22 22.68-4.1 16.18-1.56 11.8c1.26-2.16 3.5-3.54 5.94-3.58 1.94-.04 3.78 1.32 4.96 1.32 1.18 0 3.4-1.64 5.74-1.4.98.04 3.72.4 5.48 2.98-.14.08-3.28 1.92-3.24 5.7.04 4.54 3.98 6.04 4.02 6.06-.04.1-.62 2.16-2.06 4.28L19.44 26.28zM15.1 5.56c1.04-1.26 1.74-3 1.56-4.76-1.5.06-3.32 1-4.4 2.26-.96 1.12-1.8 2.9-1.58 4.62 1.68.12 3.38-.86 4.42-2.12z"/></svg>
+            Download on the App Store
+          </a>
+        </div>
+      </section>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer style={{borderTop:"1px solid "+C.bd,padding:"40px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <CDrawMark size={16} color={C.s7}/>
+          <span style={{...sf(10,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span>
+        </div>
+        <div style={{display:"flex",gap:24}}>
+          <a href="/" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
+          <a href="/business" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Business</a>
         </div>
       </footer>
     </div>
