@@ -1676,16 +1676,6 @@ var CATEGORIES = [
     items: [],
     active: false,
   },
-  {
-    id: "flights",
-    title: "Flights",
-    subtitle: "First class & business deals",
-    count: "Coming soon",
-    tag: "Coming Soon",
-    img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(84).jpeg",
-    items: [],
-    active: false,
-  },
 ];
 
 /* ═══ MAIN CATALOG ═══ */
