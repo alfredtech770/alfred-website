@@ -175,19 +175,15 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="d-hero" style={{height:420,position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px)"}}><img src="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg" alt="Dining" style={{width:"100%",height:"120%",objectFit:"cover"}}/></div>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.5) 0%,transparent 30%,rgba(10,10,11,0.6) 60%,#0A0A0B 100%)"}}/>
-        <div style={{position:"absolute",bottom:60,left:0,right:0,textAlign:"center",zIndex:5,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
-          <h1 className="d-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Dining</h1>
-          <p style={{...sf(16,400),color:C.s5}}>The world's best tables — reserved for you.</p>
-        </div>
-      </section>
+      {/* Header */}
+      <div style={{paddingTop:100,paddingBottom:40,textAlign:"center",opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
+        <h1 className="d-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Dining</h1>
+        <p style={{...sf(16,400),color:C.s5}}>The world's best tables — reserved for you.</p>
+      </div>
 
       {/* Search Bar */}
-      <div style={{maxWidth:1060,margin:"-28px auto 0",padding:"0 40px",position:"relative",zIndex:10}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"0 40px",position:"relative",zIndex:10}}>
         <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"24px 28px"}}>
           <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",marginTop:-24,marginLeft:-28,marginRight:-28,marginBottom:20}}/>
           <div className="search-bar">
