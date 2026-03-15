@@ -2024,18 +2024,12 @@ function ExoticCarsPage(){
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="ec-hero" style={{height:420,position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px)"}}>
-          <img src="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg" alt="Exotic Cars" style={{width:"100%",height:"120%",objectFit:"cover"}}/>
-        </div>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.5) 0%,transparent 30%,rgba(10,10,11,0.6) 60%,#0A0A0B 100%)"}}/>
-        <div style={{position:"absolute",bottom:60,left:0,right:0,textAlign:"center",zIndex:5,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
-          <h1 className="ec-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Exotic Cars</h1>
-          <p style={{...sf(16,400),color:C.s5}}>Supercars, classics & chauffeurs — delivered to your door.</p>
-        </div>
-      </section>
+      {/* Header */}
+      <div style={{paddingTop:100,paddingBottom:40,textAlign:"center",opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
+        <h1 className="ec-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Exotic Cars</h1>
+        <p style={{...sf(16,400),color:C.s5}}>Supercars, classics & chauffeurs — delivered to your door.</p>
+      </div>
 
       {/* Filters + Count */}
       <div style={{maxWidth:1060,margin:"0 auto",padding:"40px 40px 0"}}>
