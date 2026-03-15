@@ -777,61 +777,90 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div className="trust-row" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:40,marginTop:72,opacity:statsVis?1:0,transition:"all 0.8s ease 0.8s"}}>{["End-to-end encrypted","Invite-only beta","No ads, ever"].map(function(t,i){return <div key={i} style={{display:"flex",alignItems:"center",gap:8}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke={C.gn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg><span style={{...sf(12,400),color:C.s5}}>{t}</span></div>})}</div>
       </section>
 
-      {/* ═══ MEMBERSHIP — SINGLE PLAN ═══ */}
+      {/* ═══ MEMBERSHIP — THREE TIERS ═══ */}
       <section ref={tiersRef} aria-label="Membership" id="membership" style={{padding:"140px 0 160px",position:"relative"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:60}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:tiersVis?1:0,transition:"all 0.8s ease"}}>Membership</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:16,opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Unlock <em style={{fontWeight:700}}>Alfred</em></h2><p style={{...sf(16,400),color:C.s5,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Your personal key to the world's most coveted experiences</p></div>
+        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:60}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:tiersVis?1:0,transition:"all 0.8s ease"}}>Membership</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:16,opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Choose your<br/>level of access.</h2><p style={{...sf(16,400),color:C.s5,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Three tiers. One concierge. Every door open.</p></div>
 
-        <div style={{maxWidth:480,margin:"0 auto",padding:"0 40px",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.4s"}}>
-          {/* Features */}
-          <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"36px 32px",marginBottom:20}}>
-            <div style={{...sf(10,500),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:28}}>Everything you get</div>
-            {[
-              {icon:"🍽",title:"Priority Reservations",desc:"Skip the waitlist at the world's most exclusive restaurants"},
-              {icon:"🥂",title:"VIP Nightlife Access",desc:"Guaranteed entry & premium tables at top clubs and bars"},
-              {icon:"🏙",title:"Curated City Guides",desc:"Handpicked venues in Paris, Miami, London & beyond"},
-              {icon:"👤",title:"24/7 Personal Concierge",desc:"Real humans, not chatbots — available whenever you need"},
-              {icon:"⭐",title:"Members-Only Experiences",desc:"Chef's tables, private tastings & events you won't find anywhere"},
-              {icon:"✈️",title:"Travel Perks",desc:"Priority bookings on jets, cars & wellness worldwide"},
-            ].map(function(f,i){return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,padding:"16px 0",borderTop:i>0?"1px solid "+C.bd:"none"}}>
-              <div style={{width:40,height:40,borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:18}}>{f.icon}</div>
-              <div style={{flex:1}}>
-                <div style={{...sf(15,600),color:C.s1,marginBottom:3}}>{f.title}</div>
-                <div style={{...sf(13),color:C.s5,lineHeight:1.5}}>{f.desc}</div>
-              </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round" style={{marginTop:4,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
-            </div>})}
-          </div>
+        <div className="tiers-row" style={{display:"flex",gap:16,maxWidth:1060,margin:"0 auto",padding:"0 40px",alignItems:"stretch",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.4s"}}>
 
-          {/* Plan selector */}
-          <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
-            <div onClick={function(){setAnnual(true)}} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderRadius:20,background:annual?"rgba(244,244,245,0.04)":"transparent",border:annual?"1.5px solid rgba(244,244,245,0.15)":"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s",position:"relative"}}>
-              {annual&&<div style={{position:"absolute",top:-1,right:20,padding:"4px 12px",borderRadius:"0 0 10px 10px",background:C.gn,...sf(10,600),color:"#fff"}}>SAVE 40%</div>}
-              <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <div style={{width:22,height:22,borderRadius:"50%",border:annual?"2px solid "+C.s1:"2px solid "+C.s7,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {annual&&<div style={{width:10,height:10,borderRadius:"50%",background:C.s1}}/>}
-                </div>
-                <div><div style={{...sf(16,600),color:C.s1}}>Annual</div><div style={{...sf(12),color:C.s6}}>Billed yearly · Best value</div></div>
-              </div>
-              <div style={{textAlign:"right"}}><span style={{...sf(28,700),color:C.s1}}>$5.99</span><span style={{...sf(13),color:C.s6}}>/month</span></div>
+          {/* ── ALFRED ── */}
+          <div style={{flex:1,borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"36px 28px",display:"flex",flexDirection:"column",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+            <div style={{...sf(10,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:12}}>Entry</div>
+            <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred</div>
+            <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
+              <span style={{...sf(36,700),color:C.s1}}>$9.99</span>
+              <span style={{...sf(14),color:C.s6}}>/month</span>
             </div>
-            <div onClick={function(){setAnnual(false)}} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderRadius:20,background:!annual?"rgba(244,244,245,0.04)":"transparent",border:!annual?"1.5px solid rgba(244,244,245,0.15)":"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s"}}>
-              <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <div style={{width:22,height:22,borderRadius:"50%",border:!annual?"2px solid "+C.s1:"2px solid "+C.s7,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {!annual&&<div style={{width:10,height:10,borderRadius:"50%",background:C.s1}}/>}
-                </div>
-                <div><div style={{...sf(16,600),color:C.s1}}>Monthly</div><div style={{...sf(12),color:C.s6}}>Cancel anytime</div></div>
+            <div style={{height:0.5,background:C.bd,marginBottom:20}}/>
+            {["Full access to the Alfred app","AI concierge chat agent","Restaurant discovery & recommendations","Bookings via Resy, OpenTable & SevenRooms","Global venue catalog","Event discovery"].map(function(f,i){
+              return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:14}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
+                <span style={{...sf(13),color:C.s4,lineHeight:1.5}}>{f}</span>
               </div>
-              <div style={{textAlign:"right"}}><span style={{...sf(28,700),color:C.s1}}>$9.99</span><span style={{...sf(13),color:C.s6}}>/month</span></div>
+            })}
+            <div style={{flex:1}}/>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,border:"1px solid "+C.bd,cursor:"pointer",...sf(14,600),color:C.s1,marginTop:24,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.background="transparent";e.currentTarget.style.borderColor=C.bd}}>
+              Get Alfred
             </div>
           </div>
 
-          {/* CTA */}
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"18px 0",borderRadius:16,background:C.s1,cursor:"pointer",...sf(16,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",marginBottom:16}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-            Get Alfred — {annual?"$5.99":"$9.99"}/mo
+          {/* ── ALFRED BLACK ── */}
+          <div style={{flex:1,borderRadius:24,background:C.el,border:"1.5px solid rgba(244,244,245,0.15)",padding:"36px 28px",display:"flex",flexDirection:"column",position:"relative",transform:"translateY(-8px)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
+            <div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",padding:"5px 16px",borderRadius:"0 0 12px 12px",background:C.s1,...sf(10,700),color:C.bg,letterSpacing:1}}>MOST POPULAR</div>
+            <div style={{...sf(10,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",marginBottom:12,marginTop:8}}>Recommended</div>
+            <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred Black</div>
+            <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
+              <span style={{...sf(36,700),color:C.s1}}>$99</span>
+              <span style={{...sf(14),color:C.s6}}>/month</span>
+            </div>
+            <div style={{height:0.5,background:C.bd,marginBottom:16}}/>
+            <div style={{...sf(12,500),color:C.s3,marginBottom:16}}>Everything in Alfred, plus:</div>
+            {["Skip the line — outside & check-in desk","Strategic table placement","Reduced minimum spend on alcohol & food","Waived advance payment requirement","VIP flag in venue system — upgrade eligibility","Most experienced waiter & bottle girl","Waived valet","Custom bottle parade & shoutouts","Music request selection","VIP host at your table all night","Guest companions on request","Exclusive event access","Concierge consultancy & advice"].map(function(f,i){
+              return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:12}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
+                <span style={{...sf(13),color:C.s3,lineHeight:1.5}}>{f}</span>
+              </div>
+            })}
+            <div style={{flex:1}}/>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,marginTop:24,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+              Get Alfred Black
+            </div>
           </div>
-          <p style={{textAlign:"center",...sf(13),color:C.s5}}>3-day free trial · Cancel anytime</p>
-          <p style={{textAlign:"center",marginTop:24,...sf(11),color:C.s7,lineHeight:1.6}}>Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period.</p>
+
+          {/* ── ALFRED NOIR ── */}
+          <div style={{flex:1,borderRadius:24,padding:"36px 28px",display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",background:"linear-gradient(180deg,#0E0E11,#080809)",border:"1px solid rgba(244,244,245,0.06)",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.06)"}}>
+            <div style={{position:"absolute",inset:0,pointerEvents:"none",background:"linear-gradient(105deg, transparent 20%, rgba(244,244,245,0.02) 40%, rgba(244,244,245,0.01) 60%, transparent 80%)",backgroundSize:"250% 100%"}}/>
+            <div style={{position:"relative",zIndex:1,display:"flex",flexDirection:"column",flex:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                <span style={{...sf(10,600),color:C.s5,letterSpacing:2,textTransform:"uppercase"}}>Invite Only</span>
+                <div style={{padding:"2px 8px",borderRadius:5,background:"rgba(244,244,245,0.05)",border:"0.5px solid rgba(244,244,245,0.08)"}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.78 7.78 5.5 5.5 0 017.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                </div>
+              </div>
+              <div style={{...sf(24,700),color:C.s2,marginBottom:4}}>Alfred Noir</div>
+              <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
+                <span style={{...sf(36,700),color:C.s2}}>$499</span>
+                <span style={{...sf(14),color:C.s6}}>/month</span>
+              </div>
+              <div style={{height:0.5,background:"rgba(244,244,245,0.06)",marginBottom:16}}/>
+              <div style={{...sf(12,500),color:C.s4,marginBottom:16}}>Everything in Black, plus:</div>
+              {["Dedicated personal agent — one human, always your contact","24/7 WhatsApp access to your agent","Worldwide VIP access","Airport → venue coordination","Last-minute impossible reservations","Full travel itinerary building","Private event & experience curation","Quarterly branded gifting"].map(function(f,i){
+                return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:12}}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
+                  <span style={{...sf(13),color:C.s4,lineHeight:1.5}}>{f}</span>
+                </div>
+              })}
+              <div style={{flex:1}}/>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",cursor:"pointer",...sf(14,600),color:C.s2,marginTop:24,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
+                Apply for Noir
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s2} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+              </div>
+            </div>
+            <div style={{position:"absolute",bottom:14,right:18,opacity:0.03,pointerEvents:"none"}}><span style={{...sf(8,700),letterSpacing:4,textTransform:"uppercase",color:C.s2}}>ALFRED</span></div>
+          </div>
         </div>
+
+        <p style={{textAlign:"center",marginTop:40,...sf(13,400),color:C.s6,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.9s"}}>All plans include end-to-end encryption and no ads. Cancel anytime.</p>
       </section>
 
       {/* ═══ VENUE CROSSFADE CAROUSEL ═══ */}
