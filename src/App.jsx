@@ -1,6 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+/* ═══ CATEGORY PAGE IMPORTS ═══ */
+/* Place each file in src/pages/ and uncomment these imports: */
+import DiningPage from "./pages/DiningPage";
+import DiningDetailPage from "./pages/DiningDetailPage";
+import NightlifePage from "./pages/NightlifePage";
+import NightlifeDetailPage from "./pages/NightlifeDetailPage";
+import BarDetailPage from "./pages/BarDetailPage";
+import WellnessPage from "./pages/WellnessPage";
+import WellnessDetailPage from "./pages/WellnessDetailPage";
+import JetsPage from "./pages/JetsPage";
+import JetDetailPage from "./pages/JetDetailPage";
+
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
 };
@@ -365,6 +377,15 @@ export default function App(){
         <Route path="/" element={<HomePage/>}/>
         <Route path="/business" element={<AlfredPartners/>}/>
         <Route path="/catalog" element={<AlfredCatalog/>}/>
+        <Route path="/catalog/exotic-cars" element={<ExoticCarsPage/>}/>
+        <Route path="/catalog/dining" element={<DiningPage/>}/>
+        <Route path="/catalog/dining/:slug" element={<DiningDetailPage/>}/>
+        <Route path="/catalog/nightlife" element={<NightlifePage/>}/>
+        <Route path="/catalog/nightlife/:slug" element={<NightlifeDetailPage/>}/>
+        <Route path="/catalog/wellness" element={<WellnessPage/>}/>
+        <Route path="/catalog/wellness/:slug" element={<WellnessDetailPage/>}/>
+        <Route path="/catalog/jets" element={<JetsPage/>}/>
+        <Route path="/catalog/jets/:slug" element={<JetDetailPage/>}/>
       </Routes>
     </BrowserRouter>
   );
@@ -696,7 +717,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:-80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.8s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:32,left:40,zIndex:10,animation:loaded?"slideFromLeft 1s cubic-bezier(0.16,1,0.3,1) 0.3s both":"none"}}><DrawMark size={22} color={C.s1} active={loaded} delay={0.5} id="mg1"/></div>
-        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Experience","Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":"#"+item.toLowerCase();return <a key={item} href={href} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
+        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":"#"+item.toLowerCase();return <a key={item} href={href} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
           <div style={{textAlign:"center",transform:"translateY("+(heroY+my)+"px) translateX("+mx+"px) scale("+heroScale+")",opacity:heroOp,filter:"blur("+heroBlur+"px)",willChange:"transform,opacity,filter",transition:"transform 0.5s cubic-bezier(0.16,1,0.3,1)"}}>
             <p className="hero-label" style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
@@ -731,30 +752,6 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
       </section>
 
-      {/* ═══ EXPERIENCES — 2×3 GRID ═══ */}
-      <section ref={showRef} aria-label="Experiences" style={{padding:"140px 0 140px",position:"relative"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:600,margin:"0 auto",marginBottom:64}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:showVis?1:0,transition:"all 0.8s ease"}}>The App</p>
-          <h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>One app. Every<br/>experience.</h2>
-        </div>
-
-        <div className="exp-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,maxWidth:960,margin:"0 auto",padding:"0 40px",opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.3s"}}>
-          {exps.map(function(e,i){
-            return <GridCard key={e.title} title={e.title} count={e.count} tag={e.tag} img={e.img} delay={0.1*i} onClick={function(){setModalCat(e.title)}}/>;
-          })}
-        </div>
-
-        <div style={{display:"flex",justifyContent:"center",marginTop:56}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 24px",borderRadius:14,background:hoverApp?C.s1:C.el,border:"1px solid "+(hoverApp?C.s1:C.bd),cursor:"pointer",transform:hoverApp?"translateY(-2px)":"translateY(0)",transition:"all 0.4s ease",opacity:showVis?1:0}} onMouseEnter={function(){setHoverApp(true)}} onMouseLeave={function(){setHoverApp(false)}}>
-            <svg width="20" height="24" viewBox="0 0 24 30" fill={hoverApp?C.bg:C.s1}><path d={appSvg}/></svg>
-            <div style={{display:"flex",flexDirection:"column",gap:1}}>
-              <span style={{...sf(9,400),color:hoverApp?C.bg+"90":C.s6,lineHeight:1}}>Download on the</span>
-              <span style={{...sf(16,600),color:hoverApp?C.bg:C.s1,lineHeight:1.1,letterSpacing:-0.3}}>App Store</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ═══ SOCIAL PROOF ═══ */}
       <section ref={statsRef} aria-label="Statistics" style={{padding:"140px 0 160px",position:"relative"}}><div style={divider}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",marginBottom:80}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:statsVis?1:0,transition:"all 0.8s ease"}}>By the numbers</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Built to exceed<br/>every expectation.</h2></div>
@@ -780,84 +777,61 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div className="trust-row" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:40,marginTop:72,opacity:statsVis?1:0,transition:"all 0.8s ease 0.8s"}}>{["End-to-end encrypted","Invite-only beta","No ads, ever"].map(function(t,i){return <div key={i} style={{display:"flex",alignItems:"center",gap:8}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke={C.gn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg><span style={{...sf(12,400),color:C.s5}}>{t}</span></div>})}</div>
       </section>
 
-      {/* ═══ MEMBERSHIP — METALLIC ═══ */}
+      {/* ═══ MEMBERSHIP — SINGLE PLAN ═══ */}
       <section ref={tiersRef} aria-label="Membership" id="membership" style={{padding:"140px 0 160px",position:"relative"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:20}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:tiersVis?1:0,transition:"all 0.8s ease"}}>Membership</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:20,opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Choose your<br/>level of access.</h2></div>
-        <div style={{display:"flex",justifyContent:"center",marginBottom:52,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.3s"}}><div style={{display:"flex",alignItems:"center",gap:12,padding:"4px",borderRadius:14,background:C.el,border:"1px solid "+C.bd}}><div onClick={function(){setAnnual(false)}} style={{...sf(13,!annual?600:400),color:!annual?C.s1:C.s5,padding:"9px 20px",borderRadius:10,background:!annual?"rgba(244,244,245,0.06)":"transparent",cursor:"pointer",transition:"all 0.3s"}}>Monthly</div><div onClick={function(){setAnnual(true)}} style={{...sf(13,annual?600:400),color:annual?C.s1:C.s5,padding:"9px 20px",borderRadius:10,background:annual?"rgba(244,244,245,0.06)":"transparent",cursor:"pointer",transition:"all 0.3s",display:"flex",alignItems:"center",gap:8}}>Annual<span style={{...sf(10,600),color:C.gn,padding:"2px 7px",borderRadius:5,background:"rgba(52,199,89,0.12)"}}>-20%</span></div></div></div>
+        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:60}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:tiersVis?1:0,transition:"all 0.8s ease"}}>Membership</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:16,opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Unlock <em style={{fontWeight:700}}>Alfred</em></h2><p style={{...sf(16,400),color:C.s5,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Your personal key to the world's most coveted experiences</p></div>
 
-        <div className="tiers-row" style={{display:"flex",gap:16,maxWidth:1020,margin:"0 auto",padding:"0 40px",alignItems:"stretch"}}>
-          <MetalTier name="Explorer" price="Free" annualPrice="Free" period="" desc="Browse venues and see what Alfred can do." features={["Browse all venues & menus","Smart venue search","Save favorites","3 bookings per month"]} cta="Get Started Free" popular={false} metalColor={SILVER} metalGrad={SILVER_G} vis={tiersVis} delay={0.3} annual={annual}/>
-          <MetalTier name="Gold" price="$49" annualPrice="$39" period="/month" desc="Unlimited access with priority support and personal concierge." features={["Unlimited bookings","Priority reservations","Personal human concierge","Member-only venues","10% off curated packages","WhatsApp support"]} cta="Start 7-day free trial" popular={true} metalColor={GOLD} metalGrad={GOLD_G} vis={tiersVis} delay={0.4} annual={annual}/>
-          <MetalTier name="Platinum" price="$199" annualPrice="$159" period="/month" desc="Dedicated human concierge and full VIP treatment." features={["Everything in Gold","Dedicated human concierge","VIP event access","Same-day guaranteed bookings","Bespoke experience curation","Private chef & yacht access"]} cta="Join Platinum" popular={false} metalColor={PLAT} metalGrad={PLAT_G} vis={tiersVis} delay={0.5} annual={annual}/>
-        </div>
-
-        {/* Alfred Noir — matching app card style */}
-        <div className="noir-wrap" style={{maxWidth:1020,margin:"32px auto 0",padding:"0 40px",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.7s"}}>
-          <div className="noir-bar" style={{borderRadius:24,padding:"36px 36px 32px",background:"linear-gradient(180deg,#0E0E11,#080809)",border:"1px solid rgba(244,244,245,0.06)",position:"relative",overflow:"hidden",cursor:"pointer",transition:"border-color 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.06)"}}>
-            {/* Shimmer overlay */}
-            <div style={{position:"absolute",inset:0,pointerEvents:"none",background:"linear-gradient(105deg, transparent 20%, rgba(244,244,245,0.02) 40%, rgba(244,244,245,0.01) 60%, transparent 80%)",backgroundSize:"250% 100%"}}/>
-
-            {/* Header row */}
-            <div className="noir-header" style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:24,position:"relative"}}>
-              <div style={{display:"flex",alignItems:"center",gap:12,minWidth:0}}>
-                {/* Key icon in box */}
-                <div style={{width:32,height:32,borderRadius:9,background:"rgba(244,244,245,0.05)",border:"0.5px solid rgba(244,244,245,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s2} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.78 7.78 5.5 5.5 0 017.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                </div>
-                <div style={{minWidth:0}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-                    <span style={{...sf(22,700),color:C.s2}}>Alfred Noir</span>
-                    <div style={{padding:"2px 7px",borderRadius:5,background:"rgba(244,244,245,0.05)",border:"0.5px solid rgba(244,244,245,0.08)"}}>
-                      <span style={{...sf(8,700),color:C.s5,letterSpacing:0.8,textTransform:"uppercase"}}>Invite Only</span>
-                    </div>
-                  </div>
-                  <div style={{...sf(12,400),color:C.s6,marginTop:3}}>The black card</div>
-                </div>
+        <div style={{maxWidth:480,margin:"0 auto",padding:"0 40px",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.4s"}}>
+          {/* Features */}
+          <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"36px 32px",marginBottom:20}}>
+            <div style={{...sf(10,500),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:28}}>Everything you get</div>
+            {[
+              {icon:"🍽",title:"Priority Reservations",desc:"Skip the waitlist at the world's most exclusive restaurants"},
+              {icon:"🥂",title:"VIP Nightlife Access",desc:"Guaranteed entry & premium tables at top clubs and bars"},
+              {icon:"🏙",title:"Curated City Guides",desc:"Handpicked venues in Paris, Miami, London & beyond"},
+              {icon:"👤",title:"24/7 Personal Concierge",desc:"Real humans, not chatbots — available whenever you need"},
+              {icon:"⭐",title:"Members-Only Experiences",desc:"Chef's tables, private tastings & events you won't find anywhere"},
+              {icon:"✈️",title:"Travel Perks",desc:"Priority bookings on jets, cars & wellness worldwide"},
+            ].map(function(f,i){return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:16,padding:"16px 0",borderTop:i>0?"1px solid "+C.bd:"none"}}>
+              <div style={{width:40,height:40,borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:18}}>{f.icon}</div>
+              <div style={{flex:1}}>
+                <div style={{...sf(15,600),color:C.s1,marginBottom:3}}>{f.title}</div>
+                <div style={{...sf(13),color:C.s5,lineHeight:1.5}}>{f.desc}</div>
               </div>
-              <div className="noir-invite" style={{...sf(12,500),color:C.s5,flexShrink:0}}>By invitation</div>
-            </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round" style={{marginTop:4,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
+            </div>})}
+          </div>
 
-            {/* Divider */}
-            <div style={{height:0.5,background:"rgba(244,244,245,0.06)",marginBottom:24}}/>
-
-            {/* Perks grid */}
-            <div className="noir-perks" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"18px 28px",marginBottom:28}}>
-              {[
-                {icon:<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,title:"Dedicated Team",desc:"Your own concierge, 24/7"},
-                {icon:<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>,title:"Private Aviation",desc:"Jets, helicopters, transfers"},
-                {icon:<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 1l1 9a6 6 0 006 6 6 6 0 006-6l1-9"/><path d="M8 22h8M12 15v7"/></svg>,title:"Impossible Tables",desc:"Fully-booked restaurants"},
-                {icon:<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17h2m10 0h2M3 9l2-5h14l2 5M3 9v8a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18"/></svg>,title:"Yacht & Supercars",desc:"Villas, yachts, island retreats"},
-                {icon:<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,title:"Sold-Out Events",desc:"Front row, backstage, VIP"},
-                {icon:<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/></svg>,title:"No Limits",desc:"If it exists, we make it happen"},
-              ].map(function(perk,i){
-                return <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
-                  <div style={{width:28,height:28,borderRadius:8,background:"rgba(244,244,245,0.04)",border:"0.5px solid rgba(244,244,245,0.07)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                    {perk.icon}
-                  </div>
-                  <div>
-                    <div style={{...sf(13,600),color:C.s2,marginBottom:2}}>{perk.title}</div>
-                    <div style={{...sf(11,400),color:C.s6,lineHeight:1.4}}>{perk.desc}</div>
-                  </div>
-                </div>;
-              })}
-            </div>
-
-            {/* Bottom CTA */}
-            <div className="noir-bottom" style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{...sf(12,400),color:C.s7}}>Membership by invitation or application</div>
-              <div style={{display:"flex",alignItems:"center",gap:8,...sf(13,600),color:C.s1,padding:"11px 24px",borderRadius:12,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
-                Apply for Noir
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+          {/* Plan selector */}
+          <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
+            <div onClick={function(){setAnnual(true)}} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderRadius:20,background:annual?"rgba(244,244,245,0.04)":"transparent",border:annual?"1.5px solid rgba(244,244,245,0.15)":"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s",position:"relative"}}>
+              {annual&&<div style={{position:"absolute",top:-1,right:20,padding:"4px 12px",borderRadius:"0 0 10px 10px",background:C.gn,...sf(10,600),color:"#fff"}}>SAVE 40%</div>}
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:annual?"2px solid "+C.s1:"2px solid "+C.s7,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {annual&&<div style={{width:10,height:10,borderRadius:"50%",background:C.s1}}/>}
+                </div>
+                <div><div style={{...sf(16,600),color:C.s1}}>Annual</div><div style={{...sf(12),color:C.s6}}>Billed yearly · Best value</div></div>
               </div>
+              <div style={{textAlign:"right"}}><span style={{...sf(28,700),color:C.s1}}>$5.99</span><span style={{...sf(13),color:C.s6}}>/month</span></div>
             </div>
-
-            {/* ALFRED watermark */}
-            <div style={{position:"absolute",bottom:14,right:18,opacity:0.03,pointerEvents:"none"}}>
-              <span style={{...sf(8,700),letterSpacing:4,textTransform:"uppercase",color:C.s2}}>ALFRED</span>
+            <div onClick={function(){setAnnual(false)}} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderRadius:20,background:!annual?"rgba(244,244,245,0.04)":"transparent",border:!annual?"1.5px solid rgba(244,244,245,0.15)":"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:!annual?"2px solid "+C.s1:"2px solid "+C.s7,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {!annual&&<div style={{width:10,height:10,borderRadius:"50%",background:C.s1}}/>}
+                </div>
+                <div><div style={{...sf(16,600),color:C.s1}}>Monthly</div><div style={{...sf(12),color:C.s6}}>Cancel anytime</div></div>
+              </div>
+              <div style={{textAlign:"right"}}><span style={{...sf(28,700),color:C.s1}}>$9.99</span><span style={{...sf(13),color:C.s6}}>/month</span></div>
             </div>
           </div>
+
+          {/* CTA */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"18px 0",borderRadius:16,background:C.s1,cursor:"pointer",...sf(16,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",marginBottom:16}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+            Get Alfred — {annual?"$5.99":"$9.99"}/mo
+          </div>
+          <p style={{textAlign:"center",...sf(13),color:C.s5}}>3-day free trial · Cancel anytime</p>
+          <p style={{textAlign:"center",marginTop:24,...sf(11),color:C.s7,lineHeight:1.6}}>Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period.</p>
         </div>
-        <p style={{textAlign:"center",marginTop:40,...sf(13,400),color:C.s6,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.9s"}}>All plans include end-to-end encryption and no ads. Cancel anytime.</p>
       </section>
 
       {/* ═══ VENUE CROSSFADE CAROUSEL ═══ */}
@@ -956,7 +930,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* Explore */}
             <div>
               <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
-              {["How it Works","Experiences","Membership","Catalog","Business","Download"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
+              {["How it Works","Membership","Catalog","Business","Download"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
             </div>
 
             {/* Follow us */}
@@ -1821,7 +1795,7 @@ body::-webkit-scrollbar{width:0}
                 transform:loaded?"translateY(0)":"translateY(24px)",
                 transition:"all 0.7s cubic-bezier(0.16,1,0.3,1) "+(0.3+i*0.06)+"s",
                 filter:isComingSoon?"brightness(0.5)":"none",
-              }} onClick={function(){ if(cat.active) setSelected(cat.id); }}
+              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
                 onMouseEnter={function(e){ if(cat.active){ e.currentTarget.style.transform="translateY(-6px) scale(1.02)"; e.currentTarget.style.boxShadow="0 24px 60px rgba(0,0,0,0.5)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"; }}}
                 onMouseLeave={function(e){ e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.borderColor=C.bd; }}
               >
@@ -1876,6 +1850,211 @@ body::-webkit-scrollbar{width:0}
         <div style={{display:"flex",gap:24}}>
           <a href="/" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
           <a href="/business" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Business</a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   EXOTIC CARS PAGE
+   ═══════════════════════════════════════ */
+
+var ECARS=[
+  {name:"Bugatti Chiron",brand:"Bugatti",price:8500,hp:1500,accel:"2.4s",top:"420",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(78).jpeg",loc:"Miami",available:true,category:"Hypercar"},
+  {name:"Lamborghini Revuelto",brand:"Lamborghini",price:3500,hp:1015,accel:"2.5s",top:"350",img:"https://images.unsplash.com/photo-1621135802920-133df287f89c?w=600&h=400&fit=crop&q=80",loc:"Miami",available:true,category:"Supercar"},
+  {name:"Ferrari SF90 Stradale",brand:"Ferrari",price:3200,hp:986,accel:"2.5s",top:"340",img:"https://images.unsplash.com/photo-1592198084033-aade902d1aae?w=600&h=400&fit=crop&q=80",loc:"Miami",available:true,category:"Supercar"},
+  {name:"Rolls-Royce Cullinan",brand:"Rolls-Royce",price:2800,hp:563,accel:"5.2s",top:"250",img:"https://images.unsplash.com/photo-1631295868223-63265b40d9e4?w=600&h=400&fit=crop&q=80",loc:"Miami",available:true,category:"Luxury SUV"},
+  {name:"McLaren 750S",brand:"McLaren",price:2500,hp:750,accel:"2.8s",top:"332",img:"https://images.unsplash.com/photo-1621993202323-eb4e3ba02862?w=600&h=400&fit=crop&q=80",loc:"Miami",available:true,category:"Supercar"},
+  {name:"Porsche 911 GT3 RS",brand:"Porsche",price:1800,hp:518,accel:"3.2s",top:"296",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg",loc:"Paris · Miami",available:true,category:"Sports"},
+  {name:"Aston Martin DBX707",brand:"Aston Martin",price:1600,hp:707,accel:"3.3s",top:"310",img:"https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&h=400&fit=crop&q=80",loc:"Miami",available:true,category:"Luxury SUV"},
+  {name:"Mercedes-AMG GT",brand:"Mercedes",price:1200,hp:577,accel:"3.1s",top:"315",img:"https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=600&h=400&fit=crop&q=80",loc:"Miami",available:false,category:"Grand Tourer"},
+  {name:"Bentley Continental GT",brand:"Bentley",price:1500,hp:659,accel:"3.5s",top:"335",img:"https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&h=400&fit=crop&q=80",loc:"Miami",available:true,category:"Grand Tourer"},
+];
+
+function ECMark(p){
+  var sw=Math.max(p.size*0.06,1.5);
+  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>);
+}
+
+function ECuseVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
+
+function CarCard(p){
+  var [hover,setHover]=useState(false);
+  var car=p.car;
+  return(
+    <div style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:p.vis?1:0,animation:p.vis?"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both":"none"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+      {/* Image */}
+      <div style={{height:220,position:"relative",overflow:"hidden"}}>
+        <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}}/>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(10,10,11,0.8) 100%)"}}/>
+        {/* Category tag */}
+        <div style={{position:"absolute",top:16,left:16}}>
+          <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{car.category}</span>
+        </div>
+        {/* Availability */}
+        <div style={{position:"absolute",top:16,right:16}}>
+          <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)"}}>
+            <div style={{width:5,height:5,borderRadius:"50%",background:car.available?C.gn:"#FF453A"}}/>
+            <span style={{...sf(9,500),color:car.available?C.gn:"#FF453A"}}>{car.available?"Available":"Reserved"}</span>
+          </div>
+        </div>
+        {/* Brand accent at bottom */}
+        <div style={{position:"absolute",bottom:14,left:16,display:"flex",alignItems:"center",gap:6}}>
+          <div style={{width:16,height:2,borderRadius:1,background:"rgba(255,255,255,0.4)"}}/>
+          <span style={{...sf(9,500),letterSpacing:2,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{car.brand}</span>
+        </div>
+      </div>
+      {/* Info */}
+      <div style={{padding:"20px 22px 24px"}}>
+        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:14}}>
+          <div>
+            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4}}>{car.name}</h3>
+            <div style={{display:"flex",alignItems:"center",gap:5}}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span style={{...sf(12),color:C.s5}}>{car.loc}</span>
+            </div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{...sf(22,700),color:C.s1}}>€{car.price.toLocaleString()}</div>
+            <div style={{...sf(11),color:C.s6}}>/day</div>
+          </div>
+        </div>
+        {/* Specs row */}
+        <div style={{display:"flex",gap:6}}>
+          {[{v:car.hp+"hp",icon:"⚡"},{v:car.accel,icon:"⏱"},{v:car.top+"km/h",icon:"🏁"}].map(function(s,si){
+            return(
+              <div key={si} style={{flex:1,padding:"10px 0",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,textAlign:"center"}}>
+                <div style={{fontSize:12,marginBottom:3}}>{s.icon}</div>
+                <div style={{...sf(12,600),color:C.s1}}>{s.v}</div>
+              </div>
+            );
+          })}
+        </div>
+        {/* CTA */}
+        <div style={{marginTop:14,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:hover?C.s1:"transparent",border:"1px solid "+(hover?C.s1:C.bd),...sf(13,600),color:hover?C.bg:C.s4,transition:"all 0.4s"}}>
+          {car.available?"Book This Car":"Join Waitlist"}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExoticCarsPage(){
+  var [loaded,setLoaded]=useState(false);
+  var [scrollY,setScrollY]=useState(0);
+  var [filter,setFilter]=useState("All");
+
+  var gridRef=useRef(null); var gridVis=ECuseVis(gridRef);
+  var ctaRef=useRef(null); var ctaVis=ECuseVis(ctaRef);
+
+  useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
+  useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
+
+  useEffect(function(){
+    document.title="Exotic Cars — Rent Supercars & Luxury Vehicles | Alfred Concierge";
+    var setMeta=function(n,c,p){var s=p?'meta[property="'+n+'"]':'meta[name="'+n+'"]';var el=document.querySelector(s);if(!el){el=document.createElement("meta");if(p)el.setAttribute("property",n);else el.setAttribute("name",n);document.head.appendChild(el)}el.setAttribute("content",c)};
+    setMeta("description","Rent supercars, luxury SUVs, and grand tourers in Miami and Paris. Bugatti, Lamborghini, Ferrari, Rolls-Royce, Porsche and more. Delivered to your door through Alfred.");
+    setMeta("og:title","Exotic Cars — Rent through Alfred",true);
+    setMeta("og:image","https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg",true);
+  },[]);
+
+  var navOp=Math.min(scrollY/250,1);
+  var heroY=scrollY*0.25;
+  var cats=["All","Hypercar","Supercar","Sports","Grand Tourer","Luxury SUV"];
+  var filtered=filter==="All"?ECARS:ECARS.filter(function(c){return c.category===filter});
+  var ecDivider={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
+
+  return(
+    <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
+      <style>{`
+*{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
+@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.ec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto;padding:0 40px}
+.ec-filters{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:1024px){.ec-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .ec-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}
+  .ec-hero{height:340px!important}
+  .ec-title{font-size:36px!important}
+}
+@media(max-width:390px){.ec-hero{height:280px!important}.ec-title{font-size:28px!important}}
+      `}</style>
+
+      {/* Grain */}
+      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
+
+      {/* Nav */}
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
+        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><ECMark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
+        <div style={{display:"flex",alignItems:"center",gap:20}}>
+          <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
+          <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>Exotic Cars</div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="ec-hero" style={{height:420,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px)"}}>
+          <img src="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg" alt="Exotic Cars" style={{width:"100%",height:"120%",objectFit:"cover"}}/>
+        </div>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.5) 0%,transparent 30%,rgba(10,10,11,0.6) 60%,#0A0A0B 100%)"}}/>
+        <div style={{position:"absolute",bottom:60,left:0,right:0,textAlign:"center",zIndex:5,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
+          <h1 className="ec-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Exotic Cars</h1>
+          <p style={{...sf(16,400),color:C.s5}}>Supercars, classics & chauffeurs — delivered to your door.</p>
+        </div>
+      </section>
+
+      {/* Filters + Count */}
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"40px 40px 0"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16,marginBottom:32}}>
+          <div className="ec-filters">
+            {cats.map(function(cat){
+              var active=filter===cat;
+              return <div key={cat} onClick={function(){setFilter(cat)}} style={{padding:"10px 20px",borderRadius:12,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",...sf(13,active?600:400),color:active?C.s1:C.s5,transition:"all 0.3s"}} onMouseEnter={function(e){if(!active)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!active)e.currentTarget.style.borderColor=C.bd}}>
+                {cat}
+              </div>
+            })}
+          </div>
+          <span style={{...sf(12),color:C.s6}}>{filtered.length} vehicle{filtered.length!==1?"s":""}</span>
+        </div>
+      </div>
+
+      {/* Car Grid */}
+      <div ref={gridRef} className="ec-grid" style={{paddingBottom:80}}>
+        {filtered.map(function(car,i){
+          return <CarCard key={car.name} car={car} i={i} vis={gridVis}/>;
+        })}
+      </div>
+
+      {/* CTA */}
+      <section ref={ctaRef} style={{padding:"100px 0 120px",position:"relative"}}><div style={ecDivider}/>
+        <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Concierge</p>
+          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:16,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Can't find<br/>your dream car?</h2>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred what you're looking for. We source any car, anywhere — from Paganis to vintage Porsches.</p>
+          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}}>
+            <a href="https://wa.me/33612345678" target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+              Ask Alfred
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+            </a>
+            <a href="/catalog" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+              Back to Catalog
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}><ECMark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
+        <div style={{display:"flex",gap:20}}>
+          <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
+          <a href="/catalog" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
+          <a href="/business" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Business</a>
         </div>
       </footer>
     </div>
