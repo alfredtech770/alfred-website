@@ -31,7 +31,7 @@ function FilterDrop(p){
   var hasActive=p.value!==p.options[0];
   return(
     <div ref={ref} style={{position:"relative",flexShrink:0}}>
-      <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderRadius:10,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+      <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
         {p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
@@ -197,8 +197,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Guests</label>
-              <div style={{display:"flex",alignItems:"center",gap:0,marginTop:0}}>
-                {["2","4","6","8+"].map(function(g){var active=guests===g;return <div key={g} onClick={function(){setGuests(g)}} style={{padding:"11px 14px",borderRadius:0,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+C.bd,marginLeft:-1,cursor:"pointer",...sf(13,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{g}</div>})}
+              <div style={{display:"flex",alignItems:"center",gap:0,marginTop:0,borderRadius:12,overflow:"hidden",border:"1px solid "+C.bd}}>
+                {["2","4","6","8+"].map(function(g,gi){var active=guests===g;return <div key={g} onClick={function(){setGuests(g)}} style={{padding:"11px 14px",background:active?"rgba(244,244,245,0.06)":"transparent",borderLeft:gi>0?"1px solid "+C.bd:"none",cursor:"pointer",...sf(13,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{g}</div>})}
               </div>
             </div>
             <div style={{display:"flex",alignItems:"flex-end"}}>
