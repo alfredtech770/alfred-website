@@ -405,8 +405,6 @@ function AlfredSite(){
   var [ctaVis,setCtaVis]=useState(false);
   var [hoverApp,setHoverApp]=useState(false);
   var [hoverFinal,setHoverFinal]=useState(false);
-  var [centerIdx,setCenterIdx]=useState(0);
-  var [prevIdx,setPrevIdx]=useState(-1);
   var [annual,setAnnual]=useState(false);
   var [modalCat,setModalCat]=useState(null);
 
@@ -460,7 +458,7 @@ function AlfredSite(){
     {title:"Wellness",count:"120+ wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
     {title:"Exotic Cars",count:"45+ vehicles",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
     {title:"Jets",count:"Global fleet access",tag:"Ultra Premium",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg"},
-    {title:"F1 Experience",count:"VIP · Global",tag:"Exclusive",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg"},
+    {title:"Yachts",count:"Charter & day trips",tag:"Exclusive",img:"https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&h=800&fit=crop&q=80"},
   ];
 
   var centerCard=venues[centerIdx];
@@ -604,10 +602,8 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 .noir-perks{grid-template-columns:1fr 1fr 1fr!important}
 .noir-bottom{flex-direction:row!important}
 
-/* ── Venue carousel ── */
-.venue-wrap{flex-direction:row!important;gap:24px!important;padding:0 40px!important}
-.venue-peek{display:block!important}
-.venue-center{width:440px!important;height:280px!important}
+/* ── Venue scroll ── */
+.venue-scroll::-webkit-scrollbar{display:none}
 
 /* ── Steps ── */
 .step-wrap{padding:0 40px!important}
@@ -634,13 +630,10 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .noir-bar{padding:28px 24px 24px!important}
   .noir-wrap{padding:0 28px!important;max-width:420px!important;margin-left:auto!important;margin-right:auto!important}
   .noir-perks{grid-template-columns:1fr 1fr!important}
-  .venue-center{width:380px!important;height:250px!important}
-  .venue-peek{width:140px!important;height:190px!important}
   .footer-grid{grid-template-columns:1fr 1fr!important;gap:40px 32px!important}
   .footer-alfred{font-size:180px!important;letter-spacing:-8px!important}
   .step-wrap{padding:0 28px!important}
   .step-line{left:51px!important}
-  .venue-wrap{padding:0 28px!important}
   .test-card{padding:36px 28px!important}
 }
 
@@ -673,9 +666,6 @@ input::placeholder{color:#52525B}input:focus{outline:none}
   .noir-bottom{flex-direction:column!important;gap:16px!important;align-items:flex-start!important}
   .noir-invite{display:none!important}
   .noir-header{flex-direction:column!important;gap:12px!important}
-  .venue-wrap{flex-direction:column!important;align-items:center!important;padding:0 20px!important}
-  .venue-peek{display:none!important}
-  .venue-center{width:100%!important;max-width:380px!important;height:240px!important;border-radius:18px!important}
   .footer-grid{grid-template-columns:1fr!important;gap:36px!important;padding:48px 20px 40px!important}
   .footer-alfred{font-size:56px!important;letter-spacing:-2px!important}
   .step-wrap{padding:0 20px!important}
@@ -806,10 +796,10 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
         <div className="tiers-row" style={{display:"flex",gap:16,maxWidth:1060,margin:"0 auto",padding:"0 40px",alignItems:"stretch",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.4s"}}>
 
-          {/* ── ALFRED ── */}
+          {/* ── ALFRED GOLD ── */}
           <div style={{flex:1,borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"36px 28px",display:"flex",flexDirection:"column",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
             <div style={{...sf(10,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:12}}>Entry</div>
-            <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred</div>
+            <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred Gold</div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
               <span style={{...sf(36,700),color:C.s1}}>$9.99</span>
               <span style={{...sf(14),color:C.s6}}>/month</span>
@@ -823,22 +813,22 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             })}
             <div style={{flex:1}}/>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,border:"1px solid "+C.bd,cursor:"pointer",...sf(14,600),color:C.s1,marginTop:24,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.background="transparent";e.currentTarget.style.borderColor=C.bd}}>
-              Get Alfred
+              Get Alfred Gold
             </div>
           </div>
 
-          {/* ── ALFRED BLACK ── */}
+          {/* ── ALFRED PLATINUM ── */}
           <div style={{flex:1,borderRadius:24,background:C.el,border:"1.5px solid rgba(244,244,245,0.15)",padding:"36px 28px",display:"flex",flexDirection:"column",position:"relative",transform:"translateY(-8px)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
             <div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",padding:"5px 16px",borderRadius:"0 0 12px 12px",background:C.s1,...sf(10,700),color:C.bg,letterSpacing:1}}>MOST POPULAR</div>
             <div style={{...sf(10,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",marginBottom:12,marginTop:8}}>Recommended</div>
-            <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred Black</div>
+            <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred Platinum</div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
               <span style={{...sf(36,700),color:C.s1}}>$99</span>
               <span style={{...sf(14),color:C.s6}}>/month</span>
             </div>
             <div style={{height:0.5,background:C.bd,marginBottom:16}}/>
-            <div style={{...sf(12,500),color:C.s3,marginBottom:16}}>Everything in Alfred, plus:</div>
-            {["Skip the line — outside & check-in desk","Strategic table placement","Reduced minimum spend on alcohol & food","Waived advance payment requirement","VIP flag in venue system — upgrade eligibility","Most experienced waiter & bottle girl","Waived valet","Custom bottle parade & shoutouts","Music request selection","VIP host at your table all night","Guest companions on request","Exclusive event access","Concierge consultancy & advice"].map(function(f,i){
+            <div style={{...sf(12,500),color:C.s3,marginBottom:16}}>Everything in Gold, plus:</div>
+            {["Skip the line — outside & check-in desk","Strategic table placement","Reduced minimum spend on alcohol & food","Waived advance payment requirement","VIP flag in venue system — upgrade eligibility","Most experienced waiter & bottle girl","Waived valet","Waived 15-min grace period","Custom bottle parade & shoutouts","Music request selection","VIP host at your table all night","Guest companions on request","Exclusive event access","Concierge consultancy & advice"].map(function(f,i){
               return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:12}}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
                 <span style={{...sf(13),color:C.s3,lineHeight:1.5}}>{f}</span>
@@ -846,11 +836,11 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             })}
             <div style={{flex:1}}/>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,marginTop:24,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-              Get Alfred Black
+              Get Alfred Platinum
             </div>
           </div>
 
-          {/* ── ALFRED NOIR ── */}
+          {/* ── ALFRED CENTURION ── */}
           <div style={{flex:1,borderRadius:24,padding:"36px 28px",display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",background:"linear-gradient(180deg,#0E0E11,#080809)",border:"1px solid rgba(244,244,245,0.06)",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.06)"}}>
             <div style={{position:"absolute",inset:0,pointerEvents:"none",background:"linear-gradient(105deg, transparent 20%, rgba(244,244,245,0.02) 40%, rgba(244,244,245,0.01) 60%, transparent 80%)",backgroundSize:"250% 100%"}}/>
             <div style={{position:"relative",zIndex:1,display:"flex",flexDirection:"column",flex:1}}>
@@ -860,13 +850,9 @@ input::placeholder{color:#52525B}input:focus{outline:none}
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="1.5" strokeLinecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.78 7.78 5.5 5.5 0 017.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                 </div>
               </div>
-              <div style={{...sf(24,700),color:C.s2,marginBottom:4}}>Alfred Noir</div>
-              <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
-                <span style={{...sf(36,700),color:C.s2}}>$499</span>
-                <span style={{...sf(14),color:C.s6}}>/month</span>
-              </div>
+              <div style={{...sf(24,700),color:C.s2,marginBottom:20}}>Alfred Centurion</div>
               <div style={{height:0.5,background:"rgba(244,244,245,0.06)",marginBottom:16}}/>
-              <div style={{...sf(12,500),color:C.s4,marginBottom:16}}>Everything in Black, plus:</div>
+              <div style={{...sf(12,500),color:C.s4,marginBottom:16}}>Everything in Platinum, plus:</div>
               {["Dedicated personal agent — one human, always your contact","24/7 WhatsApp access to your agent","Worldwide VIP access","Airport → venue coordination","Last-minute impossible reservations","Full travel itinerary building","Private event & experience curation","Quarterly branded gifting"].map(function(f,i){
                 return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:12}}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
@@ -875,7 +861,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
               })}
               <div style={{flex:1}}/>
               <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",cursor:"pointer",...sf(14,600),color:C.s2,marginTop:24,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
-                Apply for Noir
+                Apply for Centurion
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s2} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
               </div>
             </div>
@@ -886,59 +872,31 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <p style={{textAlign:"center",marginTop:40,...sf(13,400),color:C.s6,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.9s"}}>All plans include end-to-end encryption and no ads. Cancel anytime.</p>
       </section>
 
-      {/* ═══ VENUE CROSSFADE CAROUSEL ═══ */}
+      {/* ═══ VENUE HORIZONTAL SCROLL ═══ */}
       <section ref={dirRef} aria-label="Venues" style={{padding:"140px 0 140px",position:"relative",overflow:"hidden"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:20}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:dirVis?1:0,transition:"all 0.8s ease"}}>Our Venues</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:12,opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Hand-picked.<br/>Verified. Yours.</h2><p style={{...sf(14,400),color:C.s5,opacity:dirVis?1:0,transition:"all 0.8s ease 0.3s"}}>{venues.length} exclusive venues worldwide</p></div>
+        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:48}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:dirVis?1:0,transition:"all 0.8s ease"}}>Our Venues</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:12,opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Hand-picked.<br/>Verified. Yours.</h2><p style={{...sf(14,400),color:C.s5,opacity:dirVis?1:0,transition:"all 0.8s ease 0.3s"}}>{venues.length} exclusive venues worldwide</p></div>
 
-        <div className="venue-wrap" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:24,margin:"48px auto",maxWidth:900,padding:"0 40px",opacity:dirVis?1:0,transition:"all 1s ease 0.4s"}}>
-          {/* Left peek */}
-          <div className="venue-peek" style={{width:200,height:240,borderRadius:18,overflow:"hidden",flexShrink:0,opacity:0.4,transform:"scale(0.92)",position:"relative"}}>
-            <img src={leftCard.img} alt={leftCard.n} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(10,10,11,0.7) 0%,transparent 60%)"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.4) 100%)"}}/>
-            <div style={{position:"absolute",bottom:16,left:16,...sf(15,700),color:"#fff"}}>{leftCard.n}</div>
-          </div>
-
-          {/* Center crossfade */}
-          <div className="venue-center" style={{width:440,height:280,borderRadius:22,overflow:"hidden",flexShrink:0,position:"relative",boxShadow:"0 24px 70px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06)",perspective:800}}>
-            {venues.map(function(v,i){
-              var isActive = i === centerIdx;
-              var wasPrev = i === prevIdx;
-              return (
-                <div key={v.n} style={{
-                  position:"absolute",inset:0,
-                  opacity:isActive?1:0,
-                  transform:isActive?"rotateY(0deg) scale(1)":wasPrev?"rotateY(-12deg) scale(0.95)":"rotateY(12deg) scale(0.95)",
-                  transition:"opacity 1s ease, transform 1s cubic-bezier(0.4,0,0.2,1)",
-                  zIndex:isActive?2:wasPrev?1:0,
-                  backfaceVisibility:"hidden",
-                }}>
-                  <img src={v.img} alt={v.n} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",position:"absolute",inset:0}}/>
-                  <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(10,10,11,0.75) 0%,rgba(10,10,11,0.4) 30%,transparent 60%)",zIndex:1}}/>
-                  <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.35) 100%)",zIndex:1}}/>
-                  <div style={{position:"absolute",bottom:0,left:0,padding:"0 28px 24px",zIndex:2}}>
-                    <div style={{...sf(26,700),color:"#fff",marginBottom:4,letterSpacing:-0.5}}>{v.n}</div>
-                    <div style={{...sf(14,400),color:"rgba(255,255,255,0.6)"}}>{v.sub}</div>
-                  </div>
-                  <div style={{position:"absolute",top:18,right:18,zIndex:2,display:"flex",alignItems:"center",gap:5,padding:"5px 11px",borderRadius:10,background:"rgba(0,0,0,0.25)",backdropFilter:"blur(16px)",border:"0.5px solid rgba(255,255,255,0.1)"}}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                    <span style={{...sf(12,600),color:"rgba(255,255,255,0.9)"}}>{v.tag}</span>
-                  </div>
+        <div className="venue-scroll" style={{display:"flex",gap:20,overflowX:"auto",scrollSnapType:"x mandatory",scrollBehavior:"smooth",padding:"0 40px 20px",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",msOverflowStyle:"none",opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.4s"}}>
+          {venues.map(function(v,i){return(
+            <div key={v.n} style={{width:340,flexShrink:0,borderRadius:22,overflow:"hidden",position:"relative",scrollSnapAlign:"start",cursor:"pointer",border:"1px solid "+C.bd,transition:"border-color 0.3s,transform 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor="rgba(255,255,255,0.1)";e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+              <div style={{height:220,position:"relative",overflow:"hidden"}}>
+                <img src={v.img} alt={v.n} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(10,10,11,0.8) 100%)"}}/>
+                <div style={{position:"absolute",top:14,right:14,display:"flex",alignItems:"center",gap:5,padding:"5px 11px",borderRadius:10,background:"rgba(0,0,0,0.3)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="rgba(255,255,255,0.85)"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                  <span style={{...sf(11,600),color:"rgba(255,255,255,0.9)"}}>{v.tag}</span>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Right peek */}
-          <div className="venue-peek" style={{width:200,height:240,borderRadius:18,overflow:"hidden",flexShrink:0,opacity:0.4,transform:"scale(0.92)",position:"relative"}}>
-            <img src={rightCard.img} alt={rightCard.n} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(270deg,rgba(10,10,11,0.7) 0%,transparent 60%)"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.4) 100%)"}}/>
-            <div style={{position:"absolute",bottom:16,right:16,...sf(15,700),color:"#fff",textAlign:"right"}}>{rightCard.n}</div>
-          </div>
+              </div>
+              <div style={{padding:"18px 20px 20px",background:C.el}}>
+                <div style={{...sf(20,700),color:C.s1,marginBottom:4,letterSpacing:-0.3}}>{v.n}</div>
+                <div style={{...sf(13),color:C.s5}}>{v.sub}</div>
+              </div>
+            </div>
+          )})}
         </div>
-
-        <div style={{display:"flex",justifyContent:"center",gap:6,marginTop:20,opacity:dirVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>{venues.map(function(v,i){return <div key={i} style={{width:i===centerIdx?24:6,height:6,borderRadius:3,background:i===centerIdx?C.s1:C.s7,transition:"all 0.8s ease"}}/>})}</div>
+        <div style={{display:"flex",justifyContent:"center",gap:8,marginTop:8,opacity:dirVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>
+          <span style={{...sf(12),color:C.s6}}>← Scroll to explore →</span>
+        </div>
       </section>
 
       {/* ═══ FINAL CTA ═══ */}
