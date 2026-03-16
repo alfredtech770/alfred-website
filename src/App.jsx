@@ -460,6 +460,7 @@ function AlfredSite(){
     {title:"Wellness",count:"120+ wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
     {title:"Exotic Cars",count:"45+ vehicles",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
     {title:"Jets",count:"Global fleet access",tag:"Ultra Premium",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg"},
+    {title:"F1 Experience",count:"VIP · Global",tag:"Exclusive",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg"},
   ];
 
   var centerCard=venues[centerIdx];
@@ -749,6 +750,28 @@ input::placeholder{color:#52525B}input:focus{outline:none}
           <Step num="1" title="Tell Alfred" icon="💬" desc="Type what you want in plain language. A table for tonight, a yacht this weekend, a private chef for Saturday — anything." detail="Alfred checks it · responds in seconds" vis={stepsVis} delay={0.3}/>
           <Step num="2" title="We handle it" icon="⚡" desc="Your request goes straight to a real human concierge who finds the best options, makes the calls, and confirms everything — no bots, no waiting." detail="100% human · always available" vis={stepsVis} delay={0.55}/>
           <Step num="3" title="Show up" icon="✦" desc="Get your confirmation, show up, enjoy. No calls, no back-and-forth, no hassle. That's it." detail="One tap · done" vis={stepsVis} delay={0.8}/>
+        </div>
+      </section>
+
+      {/* ═══ CATEGORIES — 2×3 GRID ═══ */}
+      <section ref={showRef} aria-label="Categories" style={{padding:"140px 0 140px",position:"relative"}}><div style={divider}/>
+        <div style={{textAlign:"center",maxWidth:600,margin:"0 auto",marginBottom:64}}>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:showVis?1:0,transition:"all 0.8s ease"}}>The App</p>
+          <h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>One app. Every<br/>experience.</h2>
+        </div>
+
+        <div className="exp-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,maxWidth:960,margin:"0 auto",padding:"0 40px",opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.3s"}}>
+          {exps.map(function(e,i){
+            var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets"};
+            return <GridCard key={e.title} title={e.title} count={e.count} tag={e.tag} img={e.img} delay={0.1*i} onClick={function(){if(routes[e.title]){window.location.href=routes[e.title]}else{setModalCat(e.title)}}}/>;
+          })}
+        </div>
+
+        <div style={{display:"flex",justifyContent:"center",marginTop:56}}>
+          <a href="/catalog" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 28px",borderRadius:14,background:C.el,border:"1px solid "+C.bd,cursor:"pointer",...sf(13,600),color:C.s1,transition:"all 0.3s",textDecoration:"none",opacity:showVis?1:0}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.transform="translateY(-2px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+            View Full Catalog
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+          </a>
         </div>
       </section>
 
