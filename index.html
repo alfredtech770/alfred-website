@@ -3,30 +3,130 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Alfred Concierge — Luxury Concierge App for Miami & Paris</title>
-  <meta name="description" content="Alfred is the luxury concierge app for Miami and Paris. Book Michelin-starred restaurants, VIP nightlife, wellness spas, private chefs, luxury cars, yachts and jets. Real human concierge, 24/7."/>
-  <meta name="keywords" content="luxury concierge app, Miami concierge, Paris concierge, restaurant reservations, best restaurants Miami, best restaurants Paris, VIP nightlife, private chef, yacht charter, Alfred app"/>
-  <meta name="robots" content="index, follow, max-image-preview:large"/>
+  <title>Alfred — Luxury Concierge App | Restaurants, Nightlife, Jets & More</title>
+  <meta name="description" content="Alfred is the luxury concierge app for Miami, Paris, Dubai & beyond. Book Michelin-starred restaurants, VIP nightlife, private jets, exotic cars, wellness spas & impossible reservations. Real human concierge, 24/7."/>
+  <meta name="keywords" content="luxury concierge app, Miami concierge, Paris concierge, Dubai concierge, restaurant reservations, best restaurants Miami, best restaurants Paris, VIP nightlife Miami, private jet charter, exotic car rental Miami, yacht charter, wellness spa booking, Alfred concierge, Alfred app, personal concierge service, luxury lifestyle app, Resy reservations, OpenTable VIP"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1"/>
   <meta name="theme-color" content="#0A0A0B"/>
   <meta name="author" content="Alfred Concierge"/>
+  <meta name="application-name" content="Alfred"/>
   <link rel="canonical" href="https://alfredconcierge.app"/>
+
+  <!-- Open Graph -->
   <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Alfred — Luxury Concierge App for Miami & Paris"/>
-  <meta property="og:description" content="Book the best restaurants, nightlife, wellness, private chefs, luxury cars, yachts and jets. Real human concierge available 24/7."/>
+  <meta property="og:title" content="Alfred — Luxury Concierge App | Restaurants, Nightlife, Jets & More"/>
+  <meta property="og:description" content="Book the best restaurants, VIP nightlife, private jets, exotic cars, wellness & impossible reservations. Real human concierge, 24/7."/>
   <meta property="og:url" content="https://alfredconcierge.app"/>
   <meta property="og:site_name" content="Alfred Concierge"/>
   <meta property="og:image" content="https://alfredconcierge.app/og-image.jpg"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
+  <meta property="og:image:alt" content="Alfred — Luxury Concierge App"/>
+  <meta property="og:locale" content="en_US"/>
+
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="Alfred — Luxury Concierge App"/>
-  <meta name="twitter:description" content="Restaurants, nightlife, wellness, private chefs, luxury cars, yachts & jets. One app."/>
+  <meta name="twitter:description" content="Restaurants, nightlife, wellness, private jets, exotic cars & yachts. One app. One concierge."/>
   <meta name="twitter:image" content="https://alfredconcierge.app/og-image.jpg"/>
   <meta name="twitter:site" content="@alfredconcierge"/>
+
+  <!-- App Store -->
   <meta name="apple-itunes-app" content="app-id=YOURAPPID"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Alfred"/>
+
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fbdgbnnkgyljehtccgaq.supabase.co"/>
+  <link rel="preconnect" href="https://images.unsplash.com"/>
+  <link rel="dns-prefetch" href="https://fbdgbnnkgyljehtccgaq.supabase.co"/>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MobileApplication",
+    "name": "Alfred",
+    "alternateName": "Alfred Concierge",
+    "description": "Luxury concierge app for restaurants, nightlife, private jets, exotic cars, wellness and lifestyle management. Available in Miami, Paris, Dubai and beyond.",
+    "url": "https://alfredconcierge.app",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "iOS",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Alfred Gold",
+        "price": "9.99",
+        "priceCurrency": "USD",
+        "description": "Full app access, AI concierge, restaurant bookings, venue catalog"
+      },
+      {
+        "@type": "Offer",
+        "name": "Alfred Platinum",
+        "price": "99",
+        "priceCurrency": "USD",
+        "description": "Skip the line, VIP treatment, strategic table placement, dedicated concierge"
+      },
+      {
+        "@type": "Offer",
+        "name": "Alfred Centurion",
+        "description": "Invite only. Dedicated personal agent, 24/7 WhatsApp, worldwide VIP, impossible reservations"
+      }
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "2400",
+      "bestRating": "5"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Alfred Concierge",
+      "url": "https://alfredconcierge.app"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Alfred Concierge",
+    "url": "https://alfredconcierge.app",
+    "logo": "https://alfredconcierge.app/favicon.svg",
+    "description": "Luxury concierge service connecting members with the world's best restaurants, nightlife, private aviation, exotic cars and wellness experiences.",
+    "areaServed": ["Miami", "Paris", "Dubai", "London", "New York"],
+    "serviceType": ["Concierge Service", "Restaurant Reservations", "Private Jet Charter", "Luxury Car Rental", "VIP Nightlife Access", "Wellness Booking"]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Alfred Concierge",
+    "url": "https://alfredconcierge.app",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://alfredconcierge.app/catalog?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </head>
 <body style="margin:0;background:#0A0A0B">
+  <noscript>
+    <div style="background:#0A0A0B;color:#F4F4F5;padding:40px;text-align:center;font-family:system-ui">
+      <h1>Alfred Concierge</h1>
+      <p>Luxury concierge app for restaurants, nightlife, private jets, exotic cars & wellness.</p>
+      <p>Please enable JavaScript to use Alfred.</p>
+    </div>
+  </noscript>
   <div id="root"></div>
   <script type="module" src="./src/main.jsx"></script>
 </body>
