@@ -458,7 +458,7 @@ function AlfredSite(){
     {title:"Wellness",count:"120+ wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
     {title:"Exotic Cars",count:"45+ vehicles",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
     {title:"Jets",count:"Global fleet access",tag:"Ultra Premium",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg"},
-    {title:"Yachts",count:"Charter & day trips",tag:"Exclusive",img:"https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&h=800&fit=crop&q=80"},
+    {title:"Yachts",count:"Charter & day trips",tag:"Exclusive",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg"},
   ];
 
 
