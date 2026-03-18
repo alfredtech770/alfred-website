@@ -12,6 +12,7 @@ import WellnessPage from "./pages/WellnessPage";
 import WellnessDetailPage from "./pages/WellnessDetailPage";
 import JetsPage from "./pages/JetsPage";
 import JetDetailPage from "./pages/JetDetailPage";
+import ExoticCarsPage from "./pages/ExoticCarsPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -1948,116 +1949,5 @@ function CarCard(p){
   );
 }
 
-function ExoticCarsPage(){
-  var [loaded,setLoaded]=useState(false);
-  var [scrollY,setScrollY]=useState(0);
-  var [filter,setFilter]=useState("All");
+/* ExoticCarsPage is now imported from ./pages/ExoticCarsPage.jsx */
 
-  var gridRef=useRef(null); var gridVis=ECuseVis(gridRef);
-  var ctaRef=useRef(null); var ctaVis=ECuseVis(ctaRef);
-
-  useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
-  useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
-
-  useEffect(function(){
-    document.title="Exotic Cars — Rent Supercars & Luxury Vehicles | Alfred Concierge";
-    var setMeta=function(n,c,p){var s=p?'meta[property="'+n+'"]':'meta[name="'+n+'"]';var el=document.querySelector(s);if(!el){el=document.createElement("meta");if(p)el.setAttribute("property",n);else el.setAttribute("name",n);document.head.appendChild(el)}el.setAttribute("content",c)};
-    setMeta("description","Rent supercars, luxury SUVs, and grand tourers in Miami and Paris. Bugatti, Lamborghini, Ferrari, Rolls-Royce, Porsche and more. Delivered to your door through Alfred.");
-    setMeta("og:title","Exotic Cars — Rent through Alfred",true);
-    setMeta("og:image","https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg",true);
-  },[]);
-
-  var navOp=Math.min(scrollY/250,1);
-  var heroY=scrollY*0.25;
-  var cats=["All","Hypercar","Supercar","Sports","Grand Tourer","Luxury SUV"];
-  var filtered=filter==="All"?ECARS:ECARS.filter(function(c){return c.category===filter});
-  var ecDivider={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
-
-  return(
-    <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      <style>{`
-*{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
-@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.ec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto;padding:0 40px}
-.ec-filters{display:flex;gap:8px;flex-wrap:wrap}
-@media(max-width:1024px){.ec-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:768px){
-  .ec-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}
-  .ec-hero{height:340px!important}
-  .ec-title{font-size:36px!important}
-}
-@media(max-width:390px){.ec-hero{height:280px!important}.ec-title{font-size:28px!important}}
-      `}</style>
-
-      {/* Grain */}
-      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
-
-      {/* Nav */}
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
-        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><ECMark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
-        <div style={{display:"flex",alignItems:"center",gap:20}}>
-          <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
-          <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>Exotic Cars</div>
-        </div>
-      </nav>
-
-      {/* Header */}
-      <div style={{paddingTop:100,paddingBottom:40,textAlign:"center",opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
-        <h1 className="ec-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Exotic Cars</h1>
-        <p style={{...sf(16,400),color:C.s5}}>Supercars, classics & chauffeurs — delivered to your door.</p>
-      </div>
-
-      {/* Filters + Count */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"40px 40px 0"}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16,marginBottom:32}}>
-          <div className="ec-filters">
-            {cats.map(function(cat){
-              var active=filter===cat;
-              return <div key={cat} onClick={function(){setFilter(cat)}} style={{padding:"10px 20px",borderRadius:12,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",...sf(13,active?600:400),color:active?C.s1:C.s5,transition:"all 0.3s"}} onMouseEnter={function(e){if(!active)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!active)e.currentTarget.style.borderColor=C.bd}}>
-                {cat}
-              </div>
-            })}
-          </div>
-          <span style={{...sf(12),color:C.s6}}>{filtered.length} vehicle{filtered.length!==1?"s":""}</span>
-        </div>
-      </div>
-
-      {/* Car Grid */}
-      <div ref={gridRef} className="ec-grid" style={{paddingBottom:80}}>
-        {filtered.map(function(car,i){
-          return <CarCard key={car.name} car={car} i={i} vis={gridVis}/>;
-        })}
-      </div>
-
-      {/* CTA */}
-      <section ref={ctaRef} style={{padding:"100px 0 120px",position:"relative"}}><div style={ecDivider}/>
-        <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Concierge</p>
-          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:16,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Can't find<br/>your dream car?</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred what you're looking for. We source any car, anywhere — from Paganis to vintage Porsches.</p>
-          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}}>
-            <a href="https://wa.me/33612345678" target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-              Ask Alfred
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
-            </a>
-            <a href="/catalog" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
-              Back to Catalog
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}><ECMark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
-        <div style={{display:"flex",gap:20}}>
-          <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
-          <a href="/catalog" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
-          <a href="/business" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Business</a>
-        </div>
-      </footer>
-    </div>
-  );
-}
