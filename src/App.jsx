@@ -439,7 +439,7 @@ function AlfredSite(){
     {n:"Bugatti Chiron",sub:"Exotic Car · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(78).jpeg",tag:"5.0"},
   ];
 
-  useEffect(function(){if(!dirVis)return;var t=setInterval(function(){setCenterIdx(function(prev){setPrevIdx(prev);return(prev+1)%venues.length})},3000);return function(){clearInterval(t)}},[dirVis]);
+
 
   var scrollProg=Math.min(scrollY/600,1);
   var heroOp=Math.max(1-scrollProg*1.5,0);
@@ -461,10 +461,7 @@ function AlfredSite(){
     {title:"Yachts",count:"Charter & day trips",tag:"Exclusive",img:"https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=600&h=800&fit=crop&q=80"},
   ];
 
-  var centerCard=venues[centerIdx];
-  function getIdx(off){var i=centerIdx+off;while(i<0)i+=venues.length;return i%venues.length;}
-  var leftCard=venues[getIdx(-1)];
-  var rightCard=venues[getIdx(1)];
+
 
   var SILVER="#A0AEC0",SILVER_G="linear-gradient(135deg,#718096,#A0AEC0,#CBD5E0,#A0AEC0)";
   var GOLD="#D4A853",GOLD_G="linear-gradient(135deg,#92713A,#D4A853,#F0D78C,#D4A853)";
