@@ -155,7 +155,7 @@ function CarCard(p){
   var waLink="https://wa.me/message/DAO44K3XCXK3F1";
   return(
     <a href={waLink} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",color:"inherit",display:"flex"}}>
-    <div style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:p.vis?1:0,animation:p.vis?"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both":"none",display:"flex",flexDirection:"column",width:"100%"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+    <div style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column",width:"100%"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
       <div style={{height:220,position:"relative",overflow:"hidden",flexShrink:0}}>
         <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(10,10,11,0.8) 100%)"}}/>
