@@ -151,11 +151,12 @@ function FilterDrop(p){
 
 function CarCard(p){
   var [hover,setHover]=useState(false);
+  var [btnHover,setBtnHover]=useState(false);
   var car=p.car;
   var waLink="https://wa.me/message/DAO44K3XCXK3F1";
-  function goWA(){window.open(waLink,"_blank")}
+  function goWA(e){e.stopPropagation();window.open(waLink,"_blank")}
   return(
-    <div onClick={goWA} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+    <div style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
       <div style={{height:220,position:"relative",overflow:"hidden",flexShrink:0}}>
         <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}} loading="lazy"/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(10,10,11,0.8) 100%)"}}/>
@@ -175,20 +176,18 @@ function CarCard(p){
         </div>
       </div>
       <div style={{padding:"20px 22px 24px",display:"flex",flexDirection:"column",flex:1}}>
-        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:6}}>
-          <div style={{flex:1,minWidth:0}}>
-            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4}}>{car.name}</h3>
-            <div style={{display:"flex",alignItems:"center",gap:5}}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span style={{...sf(12),color:C.s5}}>{car.locs.join(" · ")}</span>
-            </div>
-          </div>
-          <div style={{textAlign:"right",flexShrink:0,marginLeft:8}}>
-            <div style={{...sf(22,700),color:C.s1}}>${car.price.toLocaleString()}</div>
-            <div style={{...sf(11),color:C.s6}}>/day</div>
+        <div style={{height:56,marginBottom:6}}>
+          <h3 style={{...sf(17,600),color:C.s1,marginBottom:4,lineHeight:1.25,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{car.name}</h3>
+          <div style={{display:"flex",alignItems:"center",gap:5}}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style={{...sf(12),color:C.s5}}>{car.locs.join(" · ")}</span>
           </div>
         </div>
-        <div style={{display:"flex",gap:6,marginTop:12}}>
+        <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:12}}>
+          <div style={{...sf(24,700),color:C.s1}}>${car.price.toLocaleString()}</div>
+          <div style={{...sf(12),color:C.s6}}>/day</div>
+        </div>
+        <div style={{display:"flex",gap:6}}>
           {[{v:car.hp+"hp",icon:"⚡"},{v:car.accel,icon:"⏱"},{v:car.seats+" seats",icon:"💺"}].map(function(s,si){
             return(
               <div key={si} style={{flex:1,padding:"10px 0",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,textAlign:"center"}}>
@@ -199,7 +198,7 @@ function CarCard(p){
           })}
         </div>
         <div style={{marginTop:"auto",paddingTop:14}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:hover?C.s1:"transparent",border:"1px solid "+(hover?C.s1:C.bd),...sf(13,600),color:hover?C.bg:C.s4,transition:"all 0.4s"}}>
+          <div onClick={goWA} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:btnHover?C.s1:"transparent",border:"1px solid "+(btnHover?C.s1:C.bd),cursor:"pointer",...sf(13,600),color:btnHover?C.bg:C.s4,transition:"all 0.4s"}} onMouseEnter={function(){setBtnHover(true)}} onMouseLeave={function(){setBtnHover(false)}}>
             {car.available?"Book This Car":"Join Waitlist"}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
           </div>
