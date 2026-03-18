@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -9,17 +10,6 @@ function Mark(p){
 }
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var CAR={
-  name:"Chiron Sport",brand:"Bugatti",body:"Coupe",pricePerDay:8500,
-  imgs:["https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(78).jpeg","https://images.unsplash.com/photo-1566024287286-457247b70310?w=900&q=80","https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&q=80","https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=900&q=80"],
-  hp:1500,torque:"1600 Nm",engine:"8.0L Quad-Turbo W16",transmission:"7-Speed DSG",drive:"AWD",
-  topSpeed:"420 km/h",acceleration:"2.4s",weight:"1995 kg",seats:2,
-  rating:5.0,reviews:12,available:true,color:"Atlantic Blue",location:"Miami",
-  features:["300 km per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance","Carbon ceramic brakes","Launch control","Sport+ mode","Telemetry system"],
-  deposit:25000,
-  alfredNote:"This is not just a rental — it's an event. We recommend Ocean Drive at sunset or a private track day at Homestead. Our team will brief you on launch control before handover.",
-  alfredTip:"Book midweek for availability. Weekend slots fill 2-3 weeks out.",
-};
 
 var TIERS=[{label:"1-2 days",min:1,max:2,disc:0},{label:"3-6 days",min:3,max:6,disc:5},{label:"7-13 days",min:7,max:13,disc:10},{label:"14-29 days",min:14,max:29,disc:15},{label:"30+ days",min:30,max:999,disc:20}];
 function getTier(d){return TIERS.find(function(t){return d>=t.min&&d<=t.max})||TIERS[0]}
@@ -32,6 +22,41 @@ var REVIEWS=[
 ];
 
 export default function CarDetailPage(){
+  var params = useParams();
+  var storedCar = null;
+  try { storedCar = JSON.parse(sessionStorage.getItem("alfred_car_" + params.slug)); } catch(e) {}
+  if (!storedCar) {
+    return (<div style={{width:"100%",minHeight:"100vh",background:"#0A0A0B",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20}}>
+      <h2 style={{color:"#F4F4F5",fontFamily:"system-ui",fontSize:24}}>Car not found</h2>
+      <a href="/catalog/exotic-cars" style={{color:"#A1A1AA",fontFamily:"system-ui",fontSize:14}}>← Back to catalog</a>
+    </div>);
+  }
+  var CAR = {
+    name: storedCar.name,
+    brand: storedCar.brand,
+    body: storedCar.body || "Coupe",
+    pricePerDay: storedCar.price,
+    imgs: storedCar.imgs || [storedCar.img],
+    hp: storedCar.hp,
+    torque: "",
+    engine: storedCar.engine || "",
+    transmission: storedCar.trans || "Auto",
+    drive: storedCar.drive || "AWD",
+    topSpeed: storedCar.top + " km/h",
+    acceleration: storedCar.accel,
+    weight: "",
+    seats: storedCar.seats || 2,
+    rating: 5.0,
+    reviews: Math.floor(Math.random() * 20) + 5,
+    available: storedCar.available !== false,
+    color: "",
+    location: (storedCar.locs || []).join(" · "),
+    features: ["Unlimited km per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"],
+    deposit: storedCar.deposit || 1000,
+    alfredNote: "Contact Alfred for the best experience with this " + storedCar.brand + " " + storedCar.name + ". We handle delivery, insurance, and everything in between.",
+    alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
+  };
+
   var [idx,setIdx]=useState(0);
   var [liked,setLiked]=useState(false);
   var [loaded,setLoaded]=useState(false);
@@ -137,7 +162,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
                 <span style={{...sf(12),color:C.s5}}>{CAR.color}</span>
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                <span style={{...sf(34,700),color:C.s1}}>€{CAR.pricePerDay.toLocaleString()}</span>
+                <span style={{...sf(34,700),color:C.s1}}>${CAR.pricePerDay.toLocaleString()}</span>
                 <span style={{...sf(14),color:C.s6}}>/day</span>
               </div>
             </div>
@@ -181,7 +206,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
               </div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,marginTop:14,opacity:inclVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>
                 <div><div style={{...sf(14,500),color:C.s1,marginBottom:3}}>Security deposit</div><div style={{...sf(11),color:C.s6}}>Pre-authorised · fully refundable</div></div>
-                <div style={{...sf(24,700),color:C.s1}}>€{CAR.deposit.toLocaleString()}</div>
+                <div style={{...sf(24,700),color:C.s1}}>${CAR.deposit.toLocaleString()}</div>
               </div>
             </div>
 
@@ -190,7 +215,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
               {secDiv}
               <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:priceVis?1:0,transition:"all 0.8s ease"}}>Pricing</p>
               <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"18px 20px",opacity:priceVis?1:0,transform:priceVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-                {TIERS.map(function(t,i){var active=tier.label===t.label;var dr=dayRate(CAR.pricePerDay,t.min);return(<div key={i}>{i>0&&<div style={{height:0.5,background:C.bd}}/>}<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 4px"}}><div style={{display:"flex",alignItems:"center",gap:8}}>{active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.s1}}/>}<span style={{...sf(13,active?500:400),color:active?C.s1:C.s6}}>{t.label}</span></div><div style={{display:"flex",alignItems:"center",gap:8}}>{t.disc>0&&<span style={{...sf(10,500),color:C.gn,padding:"2px 6px",borderRadius:6,background:C.gn+"14"}}>-{t.disc}%</span>}<span style={{...sf(15,active?600:400),color:active?C.s1:C.s6}}>€{dr.toLocaleString()}</span><span style={{...sf(10),color:C.s7}}>/day</span></div></div></div>)})}
+                {TIERS.map(function(t,i){var active=tier.label===t.label;var dr=dayRate(CAR.pricePerDay,t.min);return(<div key={i}>{i>0&&<div style={{height:0.5,background:C.bd}}/>}<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 4px"}}><div style={{display:"flex",alignItems:"center",gap:8}}>{active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.s1}}/>}<span style={{...sf(13,active?500:400),color:active?C.s1:C.s6}}>{t.label}</span></div><div style={{display:"flex",alignItems:"center",gap:8}}>{t.disc>0&&<span style={{...sf(10,500),color:C.gn,padding:"2px 6px",borderRadius:6,background:C.gn+"14"}}>-{t.disc}%</span>}<span style={{...sf(15,active?600:400),color:active?C.s1:C.s6}}>${dr.toLocaleString()}</span><span style={{...sf(10),color:C.s7}}>/day</span></div></div></div>)})}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:14,padding:"20px 22px",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,cursor:"pointer",marginTop:14,opacity:priceVis?1:0,transition:"opacity 0.8s ease 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
                 <span style={{...sf(20),color:C.s4}}>✦</span>
@@ -226,10 +251,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
               <div style={{padding:"24px 22px"}}>
                 {/* Total */}
                 <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:4}}>
-                  <span style={{...sf(26,700),color:C.s1}}>€{total.toLocaleString()}</span>
-                  {tier.disc>0&&<span style={{...sf(12),color:C.s7,textDecoration:"line-through"}}>€{(CAR.pricePerDay*days).toLocaleString()}</span>}
+                  <span style={{...sf(26,700),color:C.s1}}>${total.toLocaleString()}</span>
+                  {tier.disc>0&&<span style={{...sf(12),color:C.s7,textDecoration:"line-through"}}>${(CAR.pricePerDay*days).toLocaleString()}</span>}
                 </div>
-                <div style={{...sf(11),color:C.s6,marginBottom:20}}>{days} day{days!==1?"s":""} × €{rate.toLocaleString()}{tier.disc>0?<span style={{color:C.gn}}> (-{tier.disc}%)</span>:""}</div>
+                <div style={{...sf(11),color:C.s6,marginBottom:20}}>{days} day{days!==1?"s":""} × ${rate.toLocaleString()}{tier.disc>0?<span style={{color:C.gn}}> (-{tier.disc}%)</span>:""}</div>
 
                 {/* Dates */}
                 <div style={{display:"flex",gap:8,marginBottom:16}}>
@@ -271,10 +296,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             </div>
 
             {/* WhatsApp quick */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+            <a href="https://wa.me/message/DAO44K3XCXK3F1" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
               Ask about this car
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -286,7 +311,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Reserve</p>
           <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Ready to drive<br/>the {CAR.name}?</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred your dates and we'll deliver it to your door. Keys in hand, no paperwork.</p>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — €{total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
+          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
           <p style={{...sf(12),color:C.s6,marginTop:20,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>Free delivery · Full insurance · 24/7 concierge</p>
         </div>
       </section>

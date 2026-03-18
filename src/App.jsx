@@ -13,6 +13,7 @@ import WellnessDetailPage from "./pages/WellnessDetailPage";
 import JetsPage from "./pages/JetsPage";
 import JetDetailPage from "./pages/JetDetailPage";
 import ExoticCarsPage from "./pages/ExoticCarsPage";
+import CarDetailPage from "./pages/CarDetailPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -379,6 +380,7 @@ export default function App(){
         <Route path="/business" element={<AlfredPartners/>}/>
         <Route path="/catalog" element={<AlfredCatalog/>}/>
         <Route path="/catalog/exotic-cars" element={<ExoticCarsPage/>}/>
+        <Route path="/catalog/exotic-cars/:slug" element={<CarDetailPage/>}/>
         <Route path="/catalog/dining" element={<DiningPage/>}/>
         <Route path="/catalog/dining/:slug" element={<DiningDetailPage/>}/>
         <Route path="/catalog/nightlife" element={<NightlifePage/>}/>

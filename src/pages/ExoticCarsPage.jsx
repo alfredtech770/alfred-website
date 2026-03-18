@@ -149,16 +149,20 @@ function FilterDrop(p){
   );
 }
 
+function slugify(n){return n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}
+
 function CarCard(p){
   var [hover,setHover]=useState(false);
   var [btnHover,setBtnHover]=useState(false);
   var car=p.car;
   var waLink="https://wa.me/message/DAO44K3XCXK3F1";
+  var carSlug=slugify(car.name);
+  function goDetail(){sessionStorage.setItem("alfred_car_"+carSlug,JSON.stringify(car));window.location.href="/catalog/exotic-cars/"+carSlug}
   function goWA(e){e.stopPropagation();window.open(waLink,"_blank")}
   return(
-    <div style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+    <div onClick={goDetail} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
       <div style={{height:220,position:"relative",overflow:"hidden",flexShrink:0}}>
-        <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}} loading="lazy"/>
+        <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:"brightness(1.25)"}} loading="lazy"/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(10,10,11,0.8) 100%)"}}/>
         <div style={{position:"absolute",top:16,left:16,display:"flex",gap:6}}>
           <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{car.body}</span>
