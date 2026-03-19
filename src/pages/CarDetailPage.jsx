@@ -124,7 +124,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       {/* Hero */}
       <section className="cd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",objectPosition:"center",background:"#0A0A0B",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.25)"}}/>})}
+          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",objectPosition:"center",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.25)"}}/>})}
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
         <div style={{position:"absolute",bottom:48,left:40,display:"flex",alignItems:"center",gap:8,zIndex:5}}><div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/><span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{CAR.brand}</span></div>
