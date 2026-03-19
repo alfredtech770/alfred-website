@@ -129,9 +129,13 @@ function FilterDrop(p){
   var ref=useRef(null);
   useEffect(function(){
     if(!open) return;
-    function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
-    document.addEventListener("click",h,true);
-    return function(){document.removeEventListener("click",h,true)}
+    var timer=setTimeout(function(){
+      function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
+      document.addEventListener("pointerdown",h);
+      document.addEventListener("touchstart",h,{passive:true});
+      ref.current._cleanup=function(){document.removeEventListener("pointerdown",h);document.removeEventListener("touchstart",h)}
+    },10);
+    return function(){clearTimeout(timer);if(ref.current&&ref.current._cleanup){ref.current._cleanup();ref.current._cleanup=null}}
   },[open]);
   var hasActive=p.value!==p.options[0];
   return(
