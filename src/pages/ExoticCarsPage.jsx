@@ -279,7 +279,7 @@ export default function ExoticCarsPage(){
 
   var brands=["Brand"].concat(ECARS.map(function(c){return c.brand}).filter(function(v,i,a){return a.indexOf(v)===i}).sort());
 
-  var inputS={padding:"12px 16px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",transition:"border-color 0.3s",width:"100%"};
+  var inputS={padding:"12px 16px",borderRadius:12,background:"transparent",border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",transition:"border-color 0.3s",width:"100%",colorScheme:"dark"};
 
   /* Filter icons */
   var iconBody=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>;

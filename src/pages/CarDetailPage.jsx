@@ -152,10 +152,12 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
         <div onClick={function(){setIdx(function(c){return(c+1)%CAR.imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </div>
-        {/* Image counter */}
-        <div style={{position:"absolute",top:16,right:16,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)"}}>{idx+1} / {CAR.imgs.length}</div>
+        {/* Image counter — top right below nav */}
+        <div style={{position:"absolute",top:64,right:16,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)"}}>{idx+1} / {CAR.imgs.length}</div>
+        {/* Brand label — bottom left */}
         <div style={{position:"absolute",bottom:48,left:"clamp(16px,4vw,40px)",display:"flex",alignItems:"center",gap:8,zIndex:5}}><div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/><span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{CAR.brand}</span></div>
-        <div style={{position:"absolute",top:16,left:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
+        {/* Tags — top left below nav */}
+        <div style={{position:"absolute",top:64,left:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
           <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{CAR.body}</span>
           <span style={{...sf(9,500),color:C.s5,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}>{CAR.drive}</span>
           {CAR.available&&<span style={{display:"flex",alignItems:"center",gap:4,...sf(9,500),color:C.gn,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>Available</span>}
