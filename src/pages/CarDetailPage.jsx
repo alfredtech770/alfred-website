@@ -92,6 +92,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 .two-col{display:flex;gap:48px;align-items:flex-start}
 .left-col{flex:1;min-width:0}
 .right-col{width:360px;flex-shrink:0;position:sticky;top:80px}
+.mobile-booking{display:none}
 .spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .rev-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:4px}
@@ -99,16 +100,17 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 input[type="date"]{-webkit-appearance:none;appearance:none}
 @media(max-width:900px){
   .two-col{flex-direction:column!important}
-  .right-col{width:100%!important;position:relative!important;top:auto!important}
+  .right-col{display:none!important}
+  .mobile-booking{display:block!important}
 }
 @media(max-width:768px){
-  .page-wrap{padding:0 20px!important}
-  .cd-hero{height:380px!important}
-  .cd-name{font-size:28px!important}
-  .spec-grid{grid-template-columns:repeat(3,1fr)!important}
-  .detail-grid{grid-template-columns:repeat(2,1fr)!important}
+  .page-wrap{padding:0 16px!important}
+  .cd-hero{height:55vw!important;min-height:260px!important;max-height:380px!important}
+  .cd-name{font-size:26px!important}
+  .spec-grid{grid-template-columns:repeat(3,1fr)!important;gap:8px!important}
+  .detail-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
 }
-@media(max-width:390px){.cd-hero{height:320px!important}.cd-name{font-size:24px!important}}
+@media(max-width:390px){.cd-hero{min-height:240px!important}.cd-name{font-size:22px!important}}
       `}</style>
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
@@ -172,18 +174,48 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
               </div>
             </div>
 
+            {/* Mobile Booking Card — shown only on small screens */}
+            <div className="mobile-booking" style={{marginBottom:32}}>
+              <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}>
+                <div style={{padding:"20px 18px"}}>
+                  <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:4}}>
+                    <span style={{...sf(24,700),color:C.s1}}>${total.toLocaleString()}</span>
+                    {tier.disc>0&&<span style={{...sf(12),color:C.s7,textDecoration:"line-through"}}>${(CAR.pricePerDay*days).toLocaleString()}</span>}
+                  </div>
+                  <div style={{...sf(11),color:C.s6,marginBottom:16}}>{days} day{days!==1?"s":""} × ${rate.toLocaleString()}{tier.disc>0?<span style={{color:C.gn}}> (-{tier.disc}%)</span>:""}</div>
+                  <div style={{display:"flex",gap:8,marginBottom:14}}>
+                    <div style={{flex:1}}>
+                      <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Pickup</div>
+                      <input type="date" value={pickup} onChange={function(e){setPickup(e.target.value)}} style={inputS}/>
+                    </div>
+                    <div style={{flex:1}}>
+                      <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Return</div>
+                      <input type="date" value={returnD} onChange={function(e){setReturnD(e.target.value)}} style={inputS}/>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:4,marginBottom:16}}>
+                    {[1,3,7,14,30].map(function(d){var active=days===d;return <div key={d} onClick={function(){setDays(d)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{d}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>{d===1?"day":"days"}</div></div>})}
+                  </div>
+                  <a href="https://wa.me/message/DAO44K3XCXK3F1" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}}>Book Now</a>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:12}}>
+                    {["Free delivery","Full insurance","24/7 support"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Performance */}
             <div ref={specsRef} style={{paddingTop:32,marginBottom:40}}>
               {secDiv}
               <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:specsVis?1:0,transition:"all 0.8s ease"}}>Performance</p>
               <div className="spec-grid" style={{marginBottom:14,opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
                 {[{emoji:"⚡",value:""+CAR.hp,unit:"hp",label:"Power"},{emoji:"⏱",value:CAR.acceleration,unit:"",label:"0-100 km/h"},{emoji:"🏁",value:CAR.topSpeed.replace(" km/h",""),unit:"km/h",label:"Top speed"}].map(function(s,i){
-                  return(<div key={i} style={{padding:"24px 16px",borderRadius:20,background:C.el,border:"1px solid "+C.bd,textAlign:"center",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}><div style={{fontSize:22,marginBottom:10}}>{s.emoji}</div><div style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:3}}><span style={{...sf(28,700),color:C.s1}}>{s.value}</span>{s.unit&&<span style={{...sf(13),color:C.s4}}>{s.unit}</span>}</div><div style={{...sf(10,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",marginTop:6}}>{s.label}</div></div>);
+                  return(<div key={i} style={{padding:"18px 10px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,textAlign:"center",transition:"border-color 0.3s",overflow:"hidden"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}><div style={{fontSize:18,marginBottom:8}}>{s.emoji}</div><div style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:2}}><span style={{...sf(24,700),color:C.s1}}>{s.value}</span>{s.unit&&<span style={{...sf(11),color:C.s4}}>{s.unit}</span>}</div><div style={{...sf(9,500),color:C.s5,letterSpacing:0.5,textTransform:"uppercase",marginTop:5}}>{s.label}</div></div>);
                 })}
               </div>
               <div className="detail-grid" style={{opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.2s"}}>
                 {[{l:"Engine",v:CAR.engine},{l:"Transmission",v:CAR.transmission},{l:"Drivetrain",v:CAR.drive},{l:"Seats",v:""+CAR.seats},{l:"Body",v:CAR.body},{l:"Location",v:CAR.location}].filter(function(d){return d.v}).map(function(d,i){
-                  return(<div key={i} style={{padding:"14px 16px",borderRadius:14,background:C.el,border:"1px solid "+C.bd}}><div style={{...sf(10,500),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:5}}>{d.l}</div><div style={{...sf(14,500),color:C.s1}}>{d.v}</div></div>);
+                  return(<div key={i} style={{padding:"12px 14px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}><div style={{...sf(9,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",marginBottom:4}}>{d.l}</div><div style={{...sf(13,500),color:C.s1,wordBreak:"break-word"}}>{d.v}</div></div>);
                 })}
               </div>
             </div>
