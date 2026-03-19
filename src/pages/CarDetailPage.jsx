@@ -53,7 +53,7 @@ export default function CarDetailPage(){
     location: (storedCar.locs || []).join(" · "),
     features: ["Unlimited km per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"],
     deposit: storedCar.deposit || 1000,
-    alfredNote: "Contact Alfred for the best experience with this " + storedCar.brand + " " + storedCar.name + ". We handle delivery, insurance, and everything in between.",
+    alfredNote: "Contact Alfred for the best experience with the " + storedCar.name + ". We handle delivery, insurance, and everything in between.",
     alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
   };
 
@@ -79,7 +79,7 @@ export default function CarDetailPage(){
   useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%CAR.imgs.length})},5000);return function(){clearInterval(t)}},[]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
-  var inputS={padding:"12px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%",colorScheme:"dark"};
+  var inputS={padding:"14px 16px",borderRadius:14,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,500),outline:"none",width:"100%",colorScheme:"dark",WebkitAppearance:"none",appearance:"none"};
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)",margin:"0 0 0"}}/>;
 
   return(
@@ -88,26 +88,27 @@ export default function CarDetailPage(){
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
-.page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
-.two-col{display:flex;gap:40px;align-items:flex-start}
+.page-wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+.two-col{display:flex;gap:48px;align-items:flex-start}
 .left-col{flex:1;min-width:0}
-.right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
-.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.rev-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.right-col{width:360px;flex-shrink:0;position:sticky;top:80px}
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rev-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:4px}
 .rev-row::-webkit-scrollbar{display:none}
+input[type="date"]{-webkit-appearance:none;appearance:none}
 @media(max-width:900px){
   .two-col{flex-direction:column!important}
   .right-col{width:100%!important;position:relative!important;top:auto!important}
 }
 @media(max-width:768px){
   .page-wrap{padding:0 20px!important}
-  .cd-hero{height:350px!important}
+  .cd-hero{height:380px!important}
   .cd-name{font-size:28px!important}
   .spec-grid{grid-template-columns:repeat(3,1fr)!important}
   .detail-grid{grid-template-columns:repeat(2,1fr)!important}
 }
-@media(max-width:390px){.cd-hero{height:300px!important}.cd-name{font-size:24px!important}.spec-grid{grid-template-columns:repeat(3,1fr)!important}}
+@media(max-width:390px){.cd-hero{height:320px!important}.cd-name{font-size:24px!important}}
       `}</style>
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
@@ -122,11 +123,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       </nav>
 
       {/* Hero */}
-      <section className="cd-hero" style={{height:600,position:"relative",overflow:"hidden"}}>
+      <section className="cd-hero" style={{height:"70vh",maxHeight:700,minHeight:450,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 35%",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.25)"}}/>})}
+          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.2)"}}/>})}
         </div>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.3) 0%,transparent 30%,rgba(10,10,11,0.4) 65%,#0A0A0B 100%)"}}/>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.25) 0%,transparent 25%,transparent 55%,rgba(10,10,11,0.5) 80%,#0A0A0B 100%)"}}/>
         {/* Left/Right Arrows */}
         <div onClick={function(){setIdx(function(c){return c===0?CAR.imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -163,8 +164,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
                 <div style={{display:"flex",alignItems:"center",gap:5}}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span style={{...sf(12),color:C.s5}}>{CAR.location}</span></div>
                 <div style={{width:1,height:12,background:C.bd}}/>
                 <div style={{display:"flex",alignItems:"center",gap:4}}><svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span style={{...sf(13,600),color:C.s1}}>{CAR.rating}</span><span style={{...sf(11),color:C.s6}}>({CAR.reviews})</span></div>
-                <div style={{width:1,height:12,background:C.bd}}/>
-                <span style={{...sf(12),color:C.s5}}>{CAR.color}</span>
+                {CAR.color&&<><div style={{width:1,height:12,background:C.bd}}/><span style={{...sf(12),color:C.s5}}>{CAR.color}</span></>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                 <span style={{...sf(34,700),color:C.s1}}>${CAR.pricePerDay.toLocaleString()}</span>
@@ -237,7 +237,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
                 <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{CAR.reviews} reviews</span>
               </div>
               <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-                {REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(<div key={i} style={{width:280,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+                {REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(<div key={i} style={{width:320,minWidth:280,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
                   <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                     <div style={{width:32,height:32,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(14,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
                     <div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{...sf(12,600),color:C.s1}}>{r.name}</span><span style={{...sf(8,600),letterSpacing:0.8,color:isTop?C.s3:C.s5,padding:"2px 7px",borderRadius:6,background:isTop?"rgba(244,244,245,0.06)":C.srf,border:"0.5px solid "+(isTop?"rgba(244,244,245,0.1)":C.bd),textTransform:"uppercase"}}>{r.tier}</span></div>
