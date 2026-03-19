@@ -128,11 +128,11 @@ function FilterDrop(p){
   var [open,setOpen]=useState(false);
   var ref=useRef(null);
   useEffect(function(){
+    if(!open) return;
     function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
-    document.addEventListener("mousedown",h);
-    document.addEventListener("touchstart",h,{passive:true});
-    return function(){document.removeEventListener("mousedown",h);document.removeEventListener("touchstart",h)}
-  },[]);
+    document.addEventListener("click",h,true);
+    return function(){document.removeEventListener("click",h,true)}
+  },[open]);
   var hasActive=p.value!==p.options[0];
   return(
     <div ref={ref} style={{position:"relative",WebkitTapHighlightColor:"transparent"}}>
