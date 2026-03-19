@@ -145,7 +145,7 @@ function FilterDrop(p){
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      {open&&<div style={{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",zIndex:60,minWidth:180,boxShadow:"0 16px 48px rgba(0,0,0,0.6)",WebkitOverflowScrolling:"touch"}}>
+      {open&&<div style={{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:C.el,border:"1px solid "+C.bd,overflowY:"auto",overflowX:"hidden",zIndex:9999,minWidth:180,maxHeight:320,boxShadow:"0 16px 48px rgba(0,0,0,0.6)",WebkitOverflowScrolling:"touch"}}>
         {p.options.map(function(opt){
           var active=p.value===opt;
           return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
@@ -311,8 +311,7 @@ input[type="date"]::-webkit-date-and-time-value{text-align:left}
 input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .ec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,40px);align-items:stretch}
 .search-bar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px}
-.filter-row{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
-.filter-row::-webkit-scrollbar{display:none}
+.filter-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:1;min-width:0}
 @media(max-width:1200px){.ec-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
   .ec-grid{grid-template-columns:1fr;padding:0 16px!important;max-width:100%}
