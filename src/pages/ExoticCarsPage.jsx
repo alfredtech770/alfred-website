@@ -198,7 +198,6 @@ function CarCard(p){
             <span style={{...sf(12),color:C.s5}}>{car.locs.join(" · ")}</span>
           </div>
         </div>
-        <p style={{...sf(11,400),color:C.s5,lineHeight:1.5,marginBottom:10,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",minHeight:33}}>{carDesc(car)}</p>
         <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:12}}>
           <div style={{...sf(24,700),color:C.s1}}>${car.price.toLocaleString()}</div>
           <div style={{...sf(12),color:C.s6}}>/day</div>
