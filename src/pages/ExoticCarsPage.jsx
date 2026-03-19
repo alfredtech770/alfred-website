@@ -131,7 +131,7 @@ function FilterDrop(p){
   var hasActive=p.value!==p.options[0];
   return(
     <div ref={ref} style={{position:"relative"}}>
-      <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+      <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap",boxSizing:"border-box"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
         {p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
@@ -279,7 +279,7 @@ export default function ExoticCarsPage(){
 
   var brands=["Brand"].concat(ECARS.map(function(c){return c.brand}).filter(function(v,i,a){return a.indexOf(v)===i}).sort());
 
-  var inputS={padding:"12px 16px",borderRadius:12,background:"transparent",border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",transition:"border-color 0.3s",width:"100%",colorScheme:"dark"};
+  var inputS={padding:"0 16px",borderRadius:12,background:"transparent",border:"1px solid "+C.bd,color:C.s1,...sf(11,400),outline:"none",transition:"border-color 0.3s",width:"100%",colorScheme:"dark",height:40,boxSizing:"border-box"};
 
   /* Filter icons */
   var iconBody=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>;
@@ -352,7 +352,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Duration</label>
               <div style={{...inputS,display:"flex",alignItems:"center",justifyContent:"center",gap:8,background:C.gn+"0A",border:"1px solid "+C.gn+"20"}}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span style={{...sf(14,600),color:C.gn}}>{days} day{days!==1?"s":""}</span>
+                <span style={{...sf(11,600),color:C.gn}}>{days} day{days!==1?"s":""}</span>
               </div>
             </div>
           </div>
