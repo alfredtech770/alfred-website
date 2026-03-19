@@ -65,6 +65,9 @@ export default function CarDetailPage(){
   var [pickup,setPickup]=useState("2026-03-20");
   var [returnD,setReturnD]=useState("2026-03-23");
   var [lightbox,setLightbox]=useState(false);
+  function pickDays(d){setDays(d);var p=new Date(pickup);p.setDate(p.getDate()+d);setReturnD(p.toISOString().split("T")[0])}
+  function pickPickup(v){setPickup(v);var p=new Date(v);p.setDate(p.getDate()+days);setReturnD(p.toISOString().split("T")[0])}
+  function pickReturn(v){setReturnD(v);var d=Math.max(1,Math.round((new Date(v)-new Date(pickup))/86400000));setDays(d)}
 
   var specsRef=useRef(null);var specsVis=useVis(specsRef);
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
@@ -204,15 +207,15 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
                   <div style={{display:"flex",gap:8,marginBottom:14}}>
                     <div style={{flex:1}}>
                       <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Pickup</div>
-                      <input type="date" value={pickup} onChange={function(e){setPickup(e.target.value)}} style={inputS}/>
+                      <input type="date" value={pickup} onChange={function(e){pickPickup(e.target.value)}} style={inputS}/>
                     </div>
                     <div style={{flex:1}}>
                       <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Return</div>
-                      <input type="date" value={returnD} onChange={function(e){setReturnD(e.target.value)}} style={inputS}/>
+                      <input type="date" value={returnD} onChange={function(e){pickReturn(e.target.value)}} style={inputS}/>
                     </div>
                   </div>
                   <div style={{display:"flex",gap:4,marginBottom:16}}>
-                    {[1,3,7,14,30].map(function(d){var active=days===d;return <div key={d} onClick={function(){setDays(d)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{d}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>{d===1?"day":"days"}</div></div>})}
+                    {[1,3,7,14,30].map(function(d){var active=days===d;return <div key={d} onClick={function(){pickDays(d)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{d}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>{d===1?"day":"days"}</div></div>})}
                   </div>
                   <a href="https://wa.me/message/DAO44K3XCXK3F1" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}}>Book Now</a>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:12}}>
@@ -315,18 +318,18 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
                 <div style={{display:"flex",gap:8,marginBottom:16}}>
                   <div style={{flex:1}}>
                     <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Pickup</div>
-                    <input type="date" value={pickup} onChange={function(e){setPickup(e.target.value)}} style={inputS}/>
+                    <input type="date" value={pickup} onChange={function(e){pickPickup(e.target.value)}} style={inputS}/>
                   </div>
                   <div style={{display:"flex",alignItems:"flex-end",paddingBottom:12}}><div style={{width:10,height:1,background:"rgba(244,244,245,0.08)"}}/></div>
                   <div style={{flex:1}}>
                     <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Return</div>
-                    <input type="date" value={returnD} onChange={function(e){setReturnD(e.target.value)}} style={inputS}/>
+                    <input type="date" value={returnD} onChange={function(e){pickReturn(e.target.value)}} style={inputS}/>
                   </div>
                 </div>
 
                 {/* Duration pills */}
                 <div style={{display:"flex",gap:4,marginBottom:18}}>
-                  {[1,3,7,14,30].map(function(d){var active=days===d;return <div key={d} onClick={function(){setDays(d)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",transition:"all 0.2s"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{d}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>{d===1?"day":"days"}</div></div>})}
+                  {[1,3,7,14,30].map(function(d){var active=days===d;return <div key={d} onClick={function(){pickDays(d)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",transition:"all 0.2s"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{d}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>{d===1?"day":"days"}</div></div>})}
                 </div>
 
                 {/* Book */}
