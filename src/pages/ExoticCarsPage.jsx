@@ -279,7 +279,7 @@ export default function ExoticCarsPage(){
 
   var brands=["Brand"].concat(ECARS.map(function(c){return c.brand}).filter(function(v,i,a){return a.indexOf(v)===i}).sort());
 
-  var inputS={padding:"0 16px",borderRadius:12,background:"transparent",border:"1px solid "+C.bd,color:C.s1,...sf(11,400),outline:"none",transition:"border-color 0.3s",width:"100%",colorScheme:"dark",height:40,boxSizing:"border-box"};
+  var inputS={padding:"0 16px",borderRadius:12,background:"transparent",border:"1px solid "+C.bd,color:C.s1,...sf(11,400),outline:"none",transition:"border-color 0.3s",width:"100%",colorScheme:"dark",height:40,boxSizing:"border-box",WebkitAppearance:"none",MozAppearance:"none",appearance:"none",minHeight:40,maxHeight:40,lineHeight:"40px"};
 
   /* Filter icons */
   var iconBody=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>;
@@ -296,7 +296,10 @@ export default function ExoticCarsPage(){
 html,body{overflow-x:hidden;max-width:100vw}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+input[type="date"]{-webkit-appearance:none;appearance:none;min-height:40px!important;max-height:40px!important;height:40px!important;font-size:11px!important;line-height:40px!important;padding:0 16px!important;box-sizing:border-box!important}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
+input[type="date"]::-webkit-date-and-time-value{text-align:left}
+input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .ec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,40px);align-items:stretch}
 .search-bar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px}
 .filter-row{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
@@ -333,7 +336,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 
       {/* ═══ SEARCH BAR ═══ */}
       <div style={{maxWidth:1280,margin:"0 auto",padding:"0 clamp(16px,4vw,40px)",position:"relative",zIndex:10}}>
-        <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"24px 28px"}}>
+        <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"clamp(16px,3vw,24px) clamp(14px,3vw,28px)"}}>
           <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",marginTop:-24,marginLeft:-28,marginRight:-28,marginBottom:20}}/>
           <div className="search-bar">
             <div>
