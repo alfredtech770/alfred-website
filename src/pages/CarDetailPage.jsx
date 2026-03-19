@@ -105,7 +105,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
   .right-col{display:none!important}
   .mobile-booking{display:block!important}
   .page-wrap{padding:0 16px!important}
-  .cd-hero{height:55vw!important;min-height:260px!important;max-height:380px!important}
+  .cd-hero{height:37vh!important;min-height:220px!important;max-height:340px!important}
   .cd-name{font-size:26px!important}
   .spec-grid{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
   .detail-grid{grid-template-columns:repeat(2,1fr)!important;gap:6px!important}
@@ -153,11 +153,12 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </div>
         {/* Image counter */}
-        <div style={{position:"absolute",top:70,right:24,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(8px)"}}>{idx+1} / {CAR.imgs.length}</div>
+        <div style={{position:"absolute",top:16,right:16,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)"}}>{idx+1} / {CAR.imgs.length}</div>
         <div style={{position:"absolute",bottom:48,left:"clamp(16px,4vw,40px)",display:"flex",alignItems:"center",gap:8,zIndex:5}}><div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/><span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{CAR.brand}</span></div>
-        <div style={{position:"absolute",top:70,left:24,display:"flex",gap:6,zIndex:10}}>
-          <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{CAR.body}</span>
-          <span style={{...sf(9,500),color:C.s5,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)"}}>{CAR.drive}</span>
+        <div style={{position:"absolute",top:16,left:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
+          <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{CAR.body}</span>
+          <span style={{...sf(9,500),color:C.s5,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}>{CAR.drive}</span>
+          {CAR.available&&<span style={{display:"flex",alignItems:"center",gap:4,...sf(9,500),color:C.gn,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>Available</span>}
         </div>
         <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
           {CAR.imgs.map(function(_,i){return <div key={i} onClick={function(){setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
