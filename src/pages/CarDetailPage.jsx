@@ -79,7 +79,7 @@ export default function CarDetailPage(){
   useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%CAR.imgs.length})},5000);return function(){clearInterval(t)}},[]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
-  var inputS={padding:"12px 16px",borderRadius:12,background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"};
+  var inputS={padding:"12px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%",colorScheme:"dark"};
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)",margin:"0 0 0"}}/>;
 
   return(
@@ -93,7 +93,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 .left-col{flex:1;min-width:0}
 .right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
 .spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .rev-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .rev-row::-webkit-scrollbar{display:none}
 @media(max-width:900px){
@@ -124,7 +124,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       {/* Hero */}
       <section className="cd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease"}}/>})}
+          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",objectPosition:"center",background:"#0A0A0B",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.25)"}}/>})}
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
         <div style={{position:"absolute",bottom:48,left:40,display:"flex",alignItems:"center",gap:8,zIndex:5}}><div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/><span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{CAR.brand}</span></div>
@@ -177,7 +177,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
                 })}
               </div>
               <div className="detail-grid" style={{opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.2s"}}>
-                {[{l:"Engine",v:CAR.engine},{l:"Transmission",v:CAR.transmission},{l:"Torque",v:CAR.torque},{l:"Weight",v:CAR.weight},{l:"Drivetrain",v:CAR.drive},{l:"Seats",v:""+CAR.seats},{l:"Body",v:CAR.body},{l:"Color",v:CAR.color}].map(function(d,i){
+                {[{l:"Engine",v:CAR.engine},{l:"Transmission",v:CAR.transmission},{l:"Drivetrain",v:CAR.drive},{l:"Seats",v:""+CAR.seats},{l:"Body",v:CAR.body},{l:"Location",v:CAR.location}].filter(function(d){return d.v}).map(function(d,i){
                   return(<div key={i} style={{padding:"14px 16px",borderRadius:14,background:C.el,border:"1px solid "+C.bd}}><div style={{...sf(10,500),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:5}}>{d.l}</div><div style={{...sf(14,500),color:C.s1}}>{d.v}</div></div>);
                 })}
               </div>
@@ -275,9 +275,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
                 </div>
 
                 {/* Book */}
-                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+                <a href="https://wa.me/message/DAO44K3XCXK3F1" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
                   Book Now
-                </div>
+                </a>
 
                 {/* Sub-info */}
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:14}}>

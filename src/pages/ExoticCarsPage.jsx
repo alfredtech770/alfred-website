@@ -151,6 +151,17 @@ function FilterDrop(p){
 
 function slugify(n){return n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}
 
+function carDesc(car){
+  var e=car.engine||"";var h=car.hp||"";var t=car.category||"";
+  if(t==="Hypercar") return h+"hp "+e+" hypercar. The pinnacle of automotive engineering, delivered to your door.";
+  if(t==="Supercar") return h+"hp "+e+(car.body==="Convertible"?" open-top supercar":" supercar")+". Pure adrenaline, concierge-delivered.";
+  if(t==="Grand Tourer") return e+" grand tourer. Effortless power and luxury for the open road.";
+  if(t==="Luxury SUV") return e+" luxury SUV. Commanding presence with "+car.seats+" seats and all-wheel drive.";
+  if(t==="Luxury Sedan") return e+" luxury sedan. Ultimate refinement and comfort.";
+  if(t==="Sports") return h+"hp "+e+". Precision sports driving, Alfred-delivered.";
+  return h+"hp "+(e||car.body)+". Available through Alfred Concierge.";
+}
+
 function CarCard(p){
   var [hover,setHover]=useState(false);
   var [btnHover,setBtnHover]=useState(false);
@@ -161,9 +172,9 @@ function CarCard(p){
   function goWA(e){e.stopPropagation();window.open(waLink,"_blank")}
   return(
     <div onClick={goDetail} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
-      <div style={{height:220,position:"relative",overflow:"hidden",flexShrink:0}}>
-        <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:"brightness(1.25)"}} loading="lazy"/>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(10,10,11,0.8) 100%)"}}/>
+      <div style={{height:260,position:"relative",overflow:"hidden",flexShrink:0}}>
+        <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"contain",objectPosition:"center",background:"#111",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:"brightness(1.25)"}} loading="lazy"/>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(10,10,11,0.7) 100%)"}}/>
         <div style={{position:"absolute",top:16,left:16,display:"flex",gap:6}}>
           <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{car.body}</span>
           <span style={{...sf(9,500),color:C.s5,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)"}}>{car.drive}</span>
@@ -180,13 +191,14 @@ function CarCard(p){
         </div>
       </div>
       <div style={{padding:"20px 22px 24px",display:"flex",flexDirection:"column",flex:1}}>
-        <div style={{height:56,marginBottom:6}}>
-          <h3 style={{...sf(17,600),color:C.s1,marginBottom:4,lineHeight:1.25,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{car.name}</h3>
+        <div style={{height:56,marginBottom:4}}>
+          <h3 style={{...sf(18,600),color:C.s1,marginBottom:4,lineHeight:1.25,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{car.name}</h3>
           <div style={{display:"flex",alignItems:"center",gap:5}}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             <span style={{...sf(12),color:C.s5}}>{car.locs.join(" · ")}</span>
           </div>
         </div>
+        <p style={{...sf(11,400),color:C.s5,lineHeight:1.5,marginBottom:10,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",minHeight:33}}>{carDesc(car)}</p>
         <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:12}}>
           <div style={{...sf(24,700),color:C.s1}}>${car.price.toLocaleString()}</div>
           <div style={{...sf(12),color:C.s6}}>/day</div>
@@ -285,13 +297,13 @@ export default function ExoticCarsPage(){
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
-.ec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto;padding:0 40px;align-items:stretch}
+.ec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1280px;margin:0 auto;padding:0 40px;align-items:stretch}
 .search-bar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px}
 .filter-row{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
 .filter-row::-webkit-scrollbar{display:none}
-@media(max-width:1024px){.ec-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1200px){.ec-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
-  .ec-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}
+  .ec-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:520px}
   .ec-hero{height:340px!important}
   .ec-title{font-size:36px!important}
   .search-bar{grid-template-columns:1fr 1fr!important}
@@ -317,7 +329,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       </div>
 
       {/* ═══ SEARCH BAR ═══ */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"0 40px",position:"relative",zIndex:10}}>
+      <div style={{maxWidth:1280,margin:"0 auto",padding:"0 40px",position:"relative",zIndex:10}}>
         <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"24px 28px"}}>
           <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",marginTop:-24,marginLeft:-28,marginRight:-28,marginBottom:20}}/>
           <div className="search-bar">
@@ -344,7 +356,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       </div>
 
       {/* ═══ FILTERS ═══ */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
+      <div style={{maxWidth:1280,margin:"0 auto",padding:"28px 40px 0"}}>
         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
           <div className="filter-row">
             <FilterDrop value={bodyType} options={["Type","Coupe","Convertible","SUV","Sedan","Hatchback","Van"]} onChange={setBodyType} icon={iconBody}/>
