@@ -83,12 +83,12 @@ export default function CarDetailPage(){
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)",margin:"0 0 0"}}/>;
 
   return(
-    <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
+    <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
-.page-wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+.page-wrap{max-width:1200px;margin:0 auto;padding:0 40px;overflow:hidden}
 .two-col{display:flex;gap:48px;align-items:flex-start}
 .left-col{flex:1;min-width:0}
 .right-col{width:360px;flex-shrink:0;position:sticky;top:80px}
@@ -205,15 +205,15 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             </div>
 
             {/* Performance */}
-            <div ref={specsRef} style={{paddingTop:32,marginBottom:40}}>
+            <div ref={specsRef} style={{paddingTop:20,marginBottom:24}}>
               {secDiv}
-              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:specsVis?1:0,transition:"all 0.8s ease"}}>Performance</p>
-              <div className="spec-grid" style={{marginBottom:14,opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,marginTop:20,opacity:1,transition:"all 0.8s ease"}}>Performance</p>
+              <div className="spec-grid" style={{marginBottom:14,opacity:1,transition:"all 0.9s ease 0.1s"}}>
                 {[{emoji:"⚡",value:""+CAR.hp,unit:"hp",label:"Power"},{emoji:"⏱",value:CAR.acceleration,unit:"",label:"0-100 km/h"},{emoji:"🏁",value:CAR.topSpeed.replace(" km/h",""),unit:"km/h",label:"Top speed"}].map(function(s,i){
                   return(<div key={i} style={{padding:"18px 10px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,textAlign:"center",transition:"border-color 0.3s",overflow:"hidden"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}><div style={{fontSize:18,marginBottom:8}}>{s.emoji}</div><div style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:2}}><span style={{...sf(24,700),color:C.s1}}>{s.value}</span>{s.unit&&<span style={{...sf(11),color:C.s4}}>{s.unit}</span>}</div><div style={{...sf(9,500),color:C.s5,letterSpacing:0.5,textTransform:"uppercase",marginTop:5}}>{s.label}</div></div>);
                 })}
               </div>
-              <div className="detail-grid" style={{opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.2s"}}>
+              <div className="detail-grid" style={{opacity:1,transition:"all 0.9s ease 0.2s"}}>
                 {[{l:"Engine",v:CAR.engine},{l:"Transmission",v:CAR.transmission},{l:"Drivetrain",v:CAR.drive},{l:"Seats",v:""+CAR.seats},{l:"Body",v:CAR.body},{l:"Location",v:CAR.location}].filter(function(d){return d.v}).map(function(d,i){
                   return(<div key={i} style={{padding:"12px 14px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}><div style={{...sf(9,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",marginBottom:4}}>{d.l}</div><div style={{...sf(13,500),color:C.s1,wordBreak:"break-word"}}>{d.v}</div></div>);
                 })}
@@ -221,10 +221,10 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             </div>
 
             {/* Alfred's Note */}
-            <div ref={noteRef} style={{paddingTop:32,marginBottom:40}}>
+            <div ref={noteRef} style={{paddingTop:20,marginBottom:24}}>
               {secDiv}
-              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:noteVis?1:0,transition:"all 0.8s ease"}}>Alfred's Note</p>
-              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"36px 32px",position:"relative",overflow:"hidden",opacity:noteVis?1:0,transform:noteVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s"}}>
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:20,opacity:1,transition:"all 0.8s ease"}}>Alfred's Note</p>
+              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"36px 32px",position:"relative",overflow:"hidden",opacity:1,transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
                 <div style={{position:"absolute",bottom:20,right:24,opacity:0.025}}><Mark size={100} color={C.s1}/></div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}><Mark size={18} color={C.s5}/><span style={{...sf(11,500),color:C.s5,letterSpacing:1}}>From your concierge</span><div style={{marginLeft:"auto",width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px rgba(52,199,89,0.4)"}}/></div>
@@ -235,26 +235,26 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             </div>
 
             {/* What's Included */}
-            <div ref={inclRef} style={{paddingTop:32,marginBottom:40}}>
+            <div ref={inclRef} style={{paddingTop:20,marginBottom:24}}>
               {secDiv}
-              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:inclVis?1:0,transition:"all 0.8s ease"}}>What's Included</p>
-              <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"18px 20px",opacity:inclVis?1:0,transform:inclVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,marginTop:20,opacity:1,transition:"all 0.8s ease"}}>What's Included</p>
+              <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"18px 20px",opacity:1,transition:"all 0.9s ease 0.15s"}}>
                 {CAR.features.map(function(item,i){var isPrimary=i<4;return(<div key={i}>{i>0&&<div style={{height:0.5,background:C.bd}}/>}<div style={{display:"flex",alignItems:"center",gap:12,padding:"13px 4px"}}><div style={{width:24,height:24,borderRadius:8,background:C.srf,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><span style={{...sf(13,isPrimary?500:400),color:isPrimary?C.s1:C.s4}}>{item}</span></div></div>)})}
               </div>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,marginTop:14,opacity:inclVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"20px 24px",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,marginTop:14,opacity:1,transition:"opacity 0.8s ease 0.3s"}}>
                 <div><div style={{...sf(14,500),color:C.s1,marginBottom:3}}>Security deposit</div><div style={{...sf(11),color:C.s6}}>Pre-authorised · fully refundable</div></div>
                 <div style={{...sf(24,700),color:C.s1}}>${CAR.deposit.toLocaleString()}</div>
               </div>
             </div>
 
             {/* Pricing */}
-            <div ref={priceRef} style={{paddingTop:32,marginBottom:40}}>
+            <div ref={priceRef} style={{paddingTop:20,marginBottom:24}}>
               {secDiv}
-              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:priceVis?1:0,transition:"all 0.8s ease"}}>Pricing</p>
-              <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"18px 20px",opacity:priceVis?1:0,transform:priceVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,marginTop:20,opacity:1,transition:"all 0.8s ease"}}>Pricing</p>
+              <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"18px 20px",opacity:1,transition:"all 0.9s ease 0.15s"}}>
                 {TIERS.map(function(t,i){var active=tier.label===t.label;var dr=dayRate(CAR.pricePerDay,t.min);return(<div key={i}>{i>0&&<div style={{height:0.5,background:C.bd}}/>}<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 4px"}}><div style={{display:"flex",alignItems:"center",gap:8}}>{active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.s1}}/>}<span style={{...sf(13,active?500:400),color:active?C.s1:C.s6}}>{t.label}</span></div><div style={{display:"flex",alignItems:"center",gap:8}}>{t.disc>0&&<span style={{...sf(10,500),color:C.gn,padding:"2px 6px",borderRadius:6,background:C.gn+"14"}}>-{t.disc}%</span>}<span style={{...sf(15,active?600:400),color:active?C.s1:C.s6}}>${dr.toLocaleString()}</span><span style={{...sf(10),color:C.s7}}>/day</span></div></div></div>)})}
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:14,padding:"20px 22px",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,cursor:"pointer",marginTop:14,opacity:priceVis?1:0,transition:"opacity 0.8s ease 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+              <div style={{display:"flex",alignItems:"center",gap:14,padding:"20px 22px",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,cursor:"pointer",marginTop:14,opacity:1,transition:"opacity 0.8s ease 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
                 <span style={{...sf(20),color:C.s4}}>✦</span>
                 <div style={{flex:1}}><div style={{...sf(14,500),color:C.s1,marginBottom:3}}>Questions about this car?</div><div style={{...sf(12),color:C.s6}}>Chat with your Alfred concierge</div></div>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s7} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
@@ -262,13 +262,13 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             </div>
 
             {/* Reviews */}
-            <div ref={revRef} style={{paddingTop:32,marginBottom:40}}>
+            <div ref={revRef} style={{paddingTop:20,marginBottom:24}}>
               {secDiv}
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
-                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:revVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
-                <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{CAR.reviews} reviews</span>
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:1,transition:"all 0.8s ease"}}>From Members</p>
+                <span style={{...sf(12),color:C.s6,opacity:1}}>{CAR.reviews} reviews</span>
               </div>
-              <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+              <div className="rev-row" style={{opacity:1,transition:"all 0.9s ease 0.15s"}}>
                 {REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(<div key={i} style={{width:320,minWidth:280,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
                   <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                     <div style={{width:32,height:32,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(14,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
@@ -345,11 +345,11 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Reserve</p>
-          <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Ready to drive<br/>the {CAR.name}?</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred your dates and we'll deliver it to your door. Keys in hand, no paperwork.</p>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
-          <p style={{...sf(12),color:C.s6,marginTop:20,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>Free delivery · Full insurance · 24/7 concierge</p>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:1,transition:"all 0.8s ease"}}>Reserve</p>
+          <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:1,transition:"all 0.9s ease 0.15s"}}>Ready to drive<br/>the {CAR.name}?</h2>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36,opacity:1,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred your dates and we'll deliver it to your door. Keys in hand, no paperwork.</p>
+          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:1,transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
+          <p style={{...sf(12),color:C.s6,marginTop:20,opacity:1,transition:"opacity 0.8s ease 0.6s"}}>Free delivery · Full insurance · 24/7 concierge</p>
         </div>
       </section>
 
