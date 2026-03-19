@@ -64,6 +64,7 @@ export default function CarDetailPage(){
   var [days,setDays]=useState(3);
   var [pickup,setPickup]=useState("2026-03-20");
   var [returnD,setReturnD]=useState("2026-03-23");
+  var [lightbox,setLightbox]=useState(false);
 
   var specsRef=useRef(null);var specsVis=useVis(specsRef);
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
@@ -86,11 +87,12 @@ export default function CarDetailPage(){
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
+html,body{overflow-x:hidden;max-width:100vw}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
-.page-wrap{max-width:1200px;margin:0 auto;padding:0 40px;overflow:hidden}
+.page-wrap{max-width:1200px;margin:0 auto;padding:0 40px}
 .two-col{display:flex;gap:48px;align-items:flex-start}
-.left-col{flex:1;min-width:0}
+.left-col{flex:1;min-width:0;max-width:100%}
 .right-col{width:360px;flex-shrink:0;position:sticky;top:80px}
 .mobile-booking{display:none}
 .spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
@@ -99,18 +101,16 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 .rev-row::-webkit-scrollbar{display:none}
 input[type="date"]{-webkit-appearance:none;appearance:none}
 @media(max-width:900px){
-  .two-col{flex-direction:column!important}
+  .two-col{flex-direction:column!important;gap:0!important}
   .right-col{display:none!important}
   .mobile-booking{display:block!important}
-}
-@media(max-width:768px){
   .page-wrap{padding:0 16px!important}
   .cd-hero{height:55vw!important;min-height:260px!important;max-height:380px!important}
   .cd-name{font-size:26px!important}
-  .spec-grid{grid-template-columns:repeat(3,1fr)!important;gap:8px!important}
-  .detail-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  .spec-grid{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+  .detail-grid{grid-template-columns:repeat(2,1fr)!important;gap:6px!important}
+  .rev-row{gap:10px!important}
 }
-@media(max-width:390px){.cd-hero{min-height:240px!important}.cd-name{font-size:22px!important}}
       `}</style>
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
@@ -124,10 +124,25 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
         </div>
       </nav>
 
+      {/* Fullscreen Lightbox */}
+      {lightbox&&<div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={function(){setLightbox(false)}}>
+        <img src={CAR.imgs[idx]} alt="" style={{maxWidth:"92vw",maxHeight:"88vh",objectFit:"contain",borderRadius:8}}/>
+        <div onClick={function(e){e.stopPropagation();setLightbox(false)}} style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:201}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </div>
+        <div onClick={function(e){e.stopPropagation();setIdx(function(c){return c===0?CAR.imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <div onClick={function(e){e.stopPropagation();setIdx(function(c){return(c+1)%CAR.imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",...sf(13,500),color:"rgba(255,255,255,0.7)"}}>{idx+1} / {CAR.imgs.length}</div>
+      </div>}
+
       {/* Hero */}
       <section className="cd-hero" style={{height:"70vh",maxHeight:700,minHeight:450,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.2)"}}/>})}
+          {CAR.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.2)",cursor:"pointer"}}/>})}
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.25) 0%,transparent 25%,transparent 55%,rgba(10,10,11,0.5) 80%,#0A0A0B 100%)"}}/>
         {/* Left/Right Arrows */}
@@ -224,7 +239,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             <div ref={noteRef} style={{paddingTop:20,marginBottom:24}}>
               {secDiv}
               <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:20,opacity:1,transition:"all 0.8s ease"}}>Alfred's Note</p>
-              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"36px 32px",position:"relative",overflow:"hidden",opacity:1,transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s"}}>
+              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"28px 20px",position:"relative",overflow:"hidden",wordBreak:"break-word",opacity:1,transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
                 <div style={{position:"absolute",bottom:20,right:24,opacity:0.025}}><Mark size={100} color={C.s1}/></div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}><Mark size={18} color={C.s5}/><span style={{...sf(11,500),color:C.s5,letterSpacing:1}}>From your concierge</span><div style={{marginLeft:"auto",width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px rgba(52,199,89,0.4)"}}/></div>
