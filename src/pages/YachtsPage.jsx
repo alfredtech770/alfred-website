@@ -1,0 +1,353 @@
+import { useState, useEffect, useRef } from "react";
+import { supabase } from "../lib/supabase";
+
+var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
+var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
+
+function Mark(p){
+  var sw=Math.max(p.size*0.06,1.5);
+  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>);
+}
+
+function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.05});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
+
+function FilterDrop(p){
+  var [open,setOpen]=useState(false);
+  var ref=useRef(null);
+  useEffect(function(){function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)};document.addEventListener("mousedown",h);return function(){document.removeEventListener("mousedown",h)}},[]);
+  var hasActive=p.value!==p.options[0];
+  return(
+    <div ref={ref} style={{position:"relative",flexShrink:0}}>
+      <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+        {p.icon}
+        <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      {open&&<div style={{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",zIndex:60,minWidth:180,boxShadow:"0 16px 48px rgba(0,0,0,0.6)"}}>
+        {p.options.map(function(opt){
+          var active=p.value===opt;
+          return <div key={opt} onClick={function(){p.onChange(opt);setOpen(false)}} style={{padding:"11px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,transition:"background 0.15s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+            {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
+            {opt}
+          </div>;
+        })}
+      </div>}
+    </div>
+  );
+}
+
+function YachtCard(p){
+  var [hover,setHover]=useState(false);
+  var y=p.yacht;
+  var price=y.price_4hr||y.price_weekday_4hr||null;
+  var hasImg=!!y.hero_image_url;
+  return(
+    <div onClick={function(){window.location.href="/catalog/yachts/"+y.id}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:p.vis?1:0,animation:p.vis?"fadeIn 0.6s ease "+(0.05+p.i*0.06)+"s both":"none"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+      <div style={{height:220,position:"relative",overflow:"hidden",background:hasImg?"transparent":"linear-gradient(135deg,#0f1923,#1a2535)"}}>
+        {hasImg
+          ? <img src={y.hero_image_url} alt={y.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}}/>
+          : <div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:10}}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeLinecap="round"><path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/><path d="M4 18l1.7-10.2a1 1 0 01.9-.8h10.8a1 1 0 01.9.8L20 18"/><path d="M12 4v4"/></svg>
+            </div>
+        }
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 30%,rgba(10,10,11,0.85) 100%)"}}/>
+        <div style={{position:"absolute",top:16,left:16,display:"flex",gap:6,flexWrap:"wrap"}}>
+          {y.size_ft&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.45)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{y.size_ft} ft</span>}
+          {y.brand&&<span style={{...sf(9,500),color:C.s5,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.45)",backdropFilter:"blur(12px)"}}>{y.brand}</span>}
+        </div>
+        <div style={{position:"absolute",top:16,right:16}}>
+          <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.45)",backdropFilter:"blur(12px)"}}>
+            <div style={{width:5,height:5,borderRadius:"50%",background:y.available!==false?C.gn:"#FF453A"}}/>
+            <span style={{...sf(9,500),color:y.available!==false?C.gn:"#FF453A"}}>{y.available!==false?"Available":"On Request"}</span>
+          </div>
+        </div>
+        <div style={{position:"absolute",bottom:14,left:16,display:"flex",alignItems:"center",gap:6}}>
+          <div style={{width:16,height:2,borderRadius:1,background:"rgba(255,255,255,0.35)"}}/>
+          <span style={{...sf(9,500),letterSpacing:2,color:"rgba(255,255,255,0.35)",textTransform:"uppercase"}}>{y.city||y.location||"Charter"}</span>
+        </div>
+      </div>
+
+      <div style={{padding:"20px 22px 24px"}}>
+        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:6}}>
+          <div style={{flex:1,minWidth:0}}>
+            <h3 style={{...sf(19,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{y.name}</h3>
+            <div style={{display:"flex",alignItems:"center",gap:5}}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span style={{...sf(12),color:C.s5}}>{y.city||y.location||"—"}</span>
+            </div>
+          </div>
+          <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
+            {price
+              ? <><div style={{...sf(21,700),color:C.s1}}>${price.toLocaleString()}</div><div style={{...sf(10),color:C.s6}}>from / 4hr</div></>
+              : <div style={{...sf(13,500),color:C.s5}}>On demand</div>
+            }
+          </div>
+        </div>
+
+        {/* Stat pills */}
+        <div style={{display:"flex",gap:6,marginTop:12}}>
+          {[
+            {v:y.size_ft?y.size_ft+" ft":"—",icon:"📏"},
+            {v:y.max_passengers?y.max_passengers+" pax":"—",icon:"👥"},
+            {v:y.tags&&y.tags.length>0?y.tags[0]:"Charter",icon:"⚓"}
+          ].map(function(s,si){
+            return(
+              <div key={si} style={{flex:1,padding:"9px 0",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,textAlign:"center"}}>
+                <div style={{fontSize:11,marginBottom:3}}>{s.icon}</div>
+                <div style={{...sf(11,600),color:C.s1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",padding:"0 4px"}}>{s.v}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Tags row */}
+        {y.tags&&y.tags.length>0&&
+          <div style={{display:"flex",gap:5,marginTop:12,flexWrap:"wrap"}}>
+            {y.tags.slice(0,3).map(function(t){
+              return <span key={t} style={{...sf(9,500),color:C.s5,padding:"3px 8px",borderRadius:6,background:C.srf,border:"0.5px solid "+C.bd}}>{t}</span>;
+            })}
+            {y.tags.length>3&&<span style={{...sf(9,400),color:C.s7,padding:"3px 8px"}}>+{y.tags.length-3}</span>}
+          </div>
+        }
+
+        <div style={{marginTop:14,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:hover?C.s1:"transparent",border:"1px solid "+(hover?C.s1:C.bd),...sf(13,600),color:hover?C.bg:C.s4,transition:"all 0.4s"}}>
+          View Details
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SkeletonCard(){
+  return(
+    <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}>
+      <div style={{height:220,background:"linear-gradient(90deg,#18181B 25%,#1F1F23 50%,#18181B 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite"}}/>
+      <div style={{padding:"20px 22px 24px"}}>
+        <div style={{height:20,borderRadius:6,background:"linear-gradient(90deg,#18181B 25%,#1F1F23 50%,#18181B 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite",marginBottom:10}}/>
+        <div style={{height:14,width:"60%",borderRadius:6,background:"linear-gradient(90deg,#18181B 25%,#1F1F23 50%,#18181B 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite",marginBottom:16}}/>
+        <div style={{display:"flex",gap:6}}>
+          {[0,1,2].map(function(i){return <div key={i} style={{flex:1,height:52,borderRadius:12,background:"linear-gradient(90deg,#18181B 25%,#1F1F23 50%,#18181B 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite"}}/>})}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function YachtsPage(){
+  var [loaded,setLoaded]=useState(false);
+  var [scrollY,setScrollY]=useState(0);
+  var [yachts,setYachts]=useState([]);
+  var [fetching,setFetching]=useState(true);
+  var [error,setError]=useState(null);
+
+  /* Filters */
+  var [brand,setBrand]=useState("Brand");
+  var [sizeRange,setSizeRange]=useState("Size");
+  var [priceRange,setPriceRange]=useState("Price");
+  var [location,setLocation]=useState("Location");
+  var [sort,setSort]=useState("Featured");
+
+  var gridRef=useRef(null); var gridVis=useVis(gridRef);
+  var heroRef=useRef(null);
+
+  useEffect(function(){
+    setTimeout(function(){setLoaded(true)},200);
+  },[]);
+
+  useEffect(function(){
+    var h=function(){setScrollY(window.scrollY)};
+    window.addEventListener("scroll",h,{passive:true});
+    return function(){window.removeEventListener("scroll",h)};
+  },[]);
+
+  /* Fetch yachts */
+  useEffect(function(){
+    async function fetch(){
+      try{
+        var {data,error:err}=await supabase
+          .from("yachts")
+          .select("id,name,brand,size_ft,max_passengers,location,city,price_4hr,price_6hr,price_8hr,price_weekday_4hr,price_weekday_6hr,price_weekday_8hr,hero_image_url,tags,available,is_featured,is_active")
+          .eq("is_active",true)
+          .order("is_featured",{ascending:false})
+          .order("name",{ascending:true});
+        if(err) throw err;
+        setYachts(data||[]);
+      }catch(e){
+        console.error("Yachts fetch error:",e);
+        setError("Could not load yachts. Please try again.");
+      }finally{
+        setFetching(false);
+      }
+    }
+    fetch();
+  },[]);
+
+  var navOp=Math.min(scrollY/250,1);
+  var heroY=scrollY*0.2;
+
+  /* Dynamic filter options from data */
+  var brands=["Brand"].concat([...new Set(yachts.map(function(y){return y.brand}).filter(Boolean))].sort());
+  var locations=["Location"].concat([...new Set(yachts.map(function(y){return y.city||y.location}).filter(Boolean))].sort());
+
+  /* Filter logic */
+  var filtered=yachts.filter(function(y){
+    if(brand!=="Brand"&&y.brand!==brand) return false;
+    if(location!=="Location"&&(y.city||y.location)!==location) return false;
+    if(sizeRange==="Under 40 ft"&&(y.size_ft===null||y.size_ft>=40)) return false;
+    if(sizeRange==="40–60 ft"&&(y.size_ft===null||y.size_ft<40||y.size_ft>60)) return false;
+    if(sizeRange==="60–80 ft"&&(y.size_ft===null||y.size_ft<60||y.size_ft>80)) return false;
+    if(sizeRange==="80 ft+"&&(y.size_ft===null||y.size_ft<80)) return false;
+    var p4=y.price_4hr||y.price_weekday_4hr||null;
+    if(priceRange==="Under $1,000"&&(p4===null||p4>=1000)) return false;
+    if(priceRange==="$1,000–$3,000"&&(p4===null||p4<1000||p4>3000)) return false;
+    if(priceRange==="$3,000–$6,000"&&(p4===null||p4<3000||p4>6000)) return false;
+    if(priceRange==="$6,000+"&&(p4===null||p4<6000)) return false;
+    return true;
+  });
+
+  if(sort==="Price: Low") filtered=filtered.slice().sort(function(a,b){return (a.price_4hr||a.price_weekday_4hr||99999)-(b.price_4hr||b.price_weekday_4hr||99999)});
+  else if(sort==="Price: High") filtered=filtered.slice().sort(function(a,b){return (b.price_4hr||b.price_weekday_4hr||0)-(a.price_4hr||a.price_weekday_4hr||0)});
+  else if(sort==="Largest") filtered=filtered.slice().sort(function(a,b){return (b.size_ft||0)-(a.size_ft||0)});
+  else if(sort==="Most Passengers") filtered=filtered.slice().sort(function(a,b){return (b.max_passengers||0)-(a.max_passengers||0)});
+
+  var activeFilters=[brand!=="Brand"?brand:null,sizeRange!=="Size"?sizeRange:null,priceRange!=="Price"?priceRange:null,location!=="Location"?location:null].filter(Boolean);
+  var clearAll=function(){setBrand("Brand");setSizeRange("Size");setPriceRange("Price");setLocation("Location")};
+
+  /* Icons */
+  var iconBrand=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+  var iconSize=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M21 3L3 21M9 3H3v6M15 21h6v-6"/></svg>;
+  var iconPrice=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>;
+  var iconLoc=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>;
+
+  return(
+    <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
+      <style>{`
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:${C.s7};color:${C.s1}}
+a{color:inherit;text-decoration:none}
+body::-webkit-scrollbar{width:0}
+@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.yc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto;padding:0 40px}
+.filter-row{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
+.filter-row::-webkit-scrollbar{display:none}
+.yc-hero{height:460px}
+@media(max-width:1024px){.yc-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .yc-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}
+  .yc-hero{height:320px!important}
+  .yc-title{font-size:34px!important}
+}
+@media(max-width:390px){.yc-hero{height:260px!important}.yc-title{font-size:26px!important}}
+      `}</style>
+
+      {/* Film grain */}
+      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.08,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
+
+      {/* Nav */}
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
+        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
+        <div style={{display:"flex",alignItems:"center",gap:24}}>
+          <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>← Catalog</a>
+          <a href="/catalog/exotic-cars" style={{...sf(11,400),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Cars</a>
+          <a href="/catalog/jets" style={{...sf(11,400),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Jets</a>
+          <span style={{...sf(11,600),color:C.s1,borderBottom:"1px solid "+C.s1,paddingBottom:1}}>Yachts</span>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section ref={heroRef} className="yc-hero" style={{position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px)"}}>
+          <img src="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg" alt="Yachts" style={{width:"100%",height:"120%",objectFit:"cover"}}/>
+        </div>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.35) 0%,transparent 35%,rgba(10,10,11,0.6) 65%,#0A0A0B 100%)"}}/>
+
+        <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 40px 56px"}}>
+          <div style={{maxWidth:1060,margin:"0 auto"}}>
+            <div style={{marginBottom:12,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s"}}>
+              <span style={{...sf(9,600),letterSpacing:3,color:C.s4,textTransform:"uppercase"}}>Alfred · Charter Fleet</span>
+            </div>
+            <h1 className="yc-title" style={{...sf(56,700),letterSpacing:-2,lineHeight:1,marginBottom:14,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.35s"}}>Yachts</h1>
+            <p style={{...sf(16,400),color:C.s4,maxWidth:440,lineHeight:1.6,opacity:loaded?1:0,transition:"opacity 0.8s ease 0.5s"}}>{fetching?"Loading fleet...":filtered.length+" yacht"+(filtered.length!==1?"s":"")+" available for charter"}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Filter bar */}
+      <div style={{position:"sticky",top:64,zIndex:50,borderBottom:"1px solid "+C.bd,background:"rgba(10,10,11,0.9)",backdropFilter:"blur(20px) saturate(1.5)"}}>
+        <div style={{maxWidth:1060,margin:"0 auto",padding:"16px 40px",display:"flex",gap:12,alignItems:"center"}}>
+          <div className="filter-row">
+            <FilterDrop icon={iconBrand} value={brand} options={brands} onChange={setBrand}/>
+            <FilterDrop icon={iconSize} value={sizeRange} options={["Size","Under 40 ft","40–60 ft","60–80 ft","80 ft+"]} onChange={setSizeRange}/>
+            <FilterDrop icon={iconPrice} value={priceRange} options={["Price","Under $1,000","$1,000–$3,000","$3,000–$6,000","$6,000+"]} onChange={setPriceRange}/>
+            <FilterDrop icon={iconLoc} value={location} options={locations} onChange={setLocation}/>
+          </div>
+
+          <div style={{display:"flex",gap:8,alignItems:"center",flexShrink:0,marginLeft:"auto"}}>
+            {activeFilters.length>0&&
+              <div onClick={clearAll} style={{...sf(11,500),color:C.s5,cursor:"pointer",padding:"8px 12px",borderRadius:10,border:"1px solid "+C.bd,transition:"all 0.2s",whiteSpace:"nowrap"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s5}}>
+                Clear {activeFilters.length>0?"("+activeFilters.length+")":""}
+              </div>
+            }
+            <FilterDrop
+              icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg>}
+              value={sort}
+              options={["Featured","Price: Low","Price: High","Largest","Most Passengers"]}
+              onChange={setSort}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid */}
+      <section ref={gridRef} style={{padding:"48px 0 120px"}}>
+        {error&&
+          <div style={{textAlign:"center",padding:"80px 40px"}}>
+            <div style={{...sf(15),color:C.s5,marginBottom:16}}>{error}</div>
+            <div onClick={function(){window.location.reload()}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,...sf(13,500),color:C.s1,cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>Retry</div>
+          </div>
+        }
+
+        {!error&&fetching&&
+          <div className="yc-grid">
+            {[0,1,2,3,4,5].map(function(i){return <SkeletonCard key={i}/>})}
+          </div>
+        }
+
+        {!error&&!fetching&&filtered.length===0&&
+          <div style={{textAlign:"center",padding:"80px 40px"}}>
+            <div style={{...sf(24,600),color:C.s7,marginBottom:12}}>No yachts found</div>
+            <div style={{...sf(15),color:C.s6,marginBottom:24}}>Try adjusting your filters</div>
+            <div onClick={clearAll} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,...sf(13,500),color:C.s1,cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>Clear filters</div>
+          </div>
+        }
+
+        {!error&&!fetching&&filtered.length>0&&
+          <div className="yc-grid">
+            {filtered.map(function(y,i){
+              return <YachtCard key={y.id} yacht={y} i={i} vis={gridVis}/>;
+            })}
+          </div>
+        }
+      </section>
+
+      {/* Divider */}
+      <div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)",margin:"0 40px"}}/>
+
+      {/* Footer */}
+      <footer style={{padding:"40px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <Mark size={14} color={C.s7}/>
+          <span style={{...sf(10,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span>
+        </div>
+        <div style={{display:"flex",gap:24}}>
+          <a href="/" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
+          <a href="/catalog" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
+          <a href="/catalog/exotic-cars" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Cars</a>
+        </div>
+      </footer>
+    </div>
+  );
+}

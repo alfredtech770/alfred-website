@@ -14,6 +14,8 @@ import JetsPage from "./pages/JetsPage";
 import JetDetailPage from "./pages/JetDetailPage";
 import ExoticCarsPage from "./pages/ExoticCarsPage";
 import CarDetailPage from "./pages/CarDetailPage";
+import YachtsPage from "./pages/YachtsPage";
+import YachtDetailPage from "./pages/YachtDetailPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -389,6 +391,8 @@ export default function App(){
         <Route path="/catalog/wellness/:slug" element={<WellnessDetailPage/>}/>
         <Route path="/catalog/jets" element={<JetsPage/>}/>
         <Route path="/catalog/jets/:slug" element={<JetDetailPage/>}/>
+        <Route path="/catalog/yachts" element={<YachtsPage/>}/>
+        <Route path="/catalog/yachts/:id" element={<YachtDetailPage/>}/>
       </Routes>
     </BrowserRouter>
   );
@@ -752,7 +756,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
         <div className="exp-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,maxWidth:960,margin:"0 auto",padding:"0 40px",opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.3s"}}>
           {exps.map(function(e,i){
-            var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets"};
+            var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets","Yachts":"/catalog/yachts"};
             return <GridCard key={e.title} title={e.title} count={e.count} tag={e.tag} img={e.img} delay={0.1*i} onClick={function(){if(routes[e.title]){window.location.href=routes[e.title]}else{setModalCat(e.title)}}}/>;
           })}
         </div>
@@ -1654,11 +1658,15 @@ var CATEGORIES = [
     id: "yachts",
     title: "Yachts",
     subtitle: "Day charters & superyachts",
-    count: "Coming soon",
-    tag: "Coming Soon",
+    count: "108 yachts",
+    tag: "Charter",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg",
-    items: [],
-    active: false,
+    items: [
+      {name:"Day Charters",loc:"Miami",price:"From $800/4hr"},
+      {name:"Luxury Yachts",loc:"Miami · Fort Lauderdale",price:"From $3,000/4hr"},
+      {name:"Superyachts",loc:"Miami",price:"On request"},
+    ],
+    active: true,
   },
 ];
 
@@ -1805,7 +1813,7 @@ body::-webkit-scrollbar{width:0}
                 transform:loaded?"translateY(0)":"translateY(24px)",
                 transition:"all 0.7s cubic-bezier(0.16,1,0.3,1) "+(0.3+i*0.06)+"s",
                 filter:isComingSoon?"brightness(0.5)":"none",
-              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
+              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets","yachts":"/catalog/yachts"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
                 onMouseEnter={function(e){ if(cat.active){ e.currentTarget.style.transform="translateY(-6px) scale(1.02)"; e.currentTarget.style.boxShadow="0 24px 60px rgba(0,0,0,0.5)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"; }}}
                 onMouseLeave={function(e){ e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.borderColor=C.bd; }}
               >
