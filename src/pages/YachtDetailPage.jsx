@@ -1,0 +1,578 @@
+import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+
+var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
+var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
+
+function Mark(p){
+  var sw=Math.max(p.size*0.06,1.5);
+  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>);
+}
+
+function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.06});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
+
+function CheckIcon({color}){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke={color||C.gn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+function XIcon(){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke={C.red} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+
+var YACHT_REVIEWS=[
+  {name:"Sebastian M.",tier:"Noir",rating:5,text:"Alfred handled everything — from the captain briefing to the champagne on deck. The sunset off Miami Beach was unforgettable. Will charter again.",date:"1 week ago"},
+  {name:"Natalia V.",tier:"Black",rating:5,text:"Our anniversary trip exceeded every expectation. The crew was exceptional, the boat immaculate. Alfred's concierge service made it seamless.",date:"2 weeks ago"},
+  {name:"James R.",tier:"Member",rating:5,text:"Third time chartering through Alfred. Never a single issue. The route they suggested around the bay was perfect for our group.",date:"1 month ago"},
+];
+
+function PriceRow({label, weekend, weekday}){
+  var hasData = weekend!==null || weekday!==null;
+  return(
+    <div style={{display:"flex",alignItems:"center",padding:"16px 0",borderBottom:"1px solid "+C.bd}}>
+      <div style={{width:80,...sf(12,600),color:C.s4,letterSpacing:0.5}}>{label}</div>
+      <div style={{flex:1,display:"flex",gap:16}}>
+        <div style={{flex:1,textAlign:"center"}}>
+          {weekend!==null
+            ? <span style={{...sf(18,700),color:C.s1}}>${weekend.toLocaleString()}</span>
+            : <span style={{...sf(13,400),color:C.s6}}>On demand</span>
+          }
+        </div>
+        {weekday!==undefined&&
+          <div style={{flex:1,textAlign:"center"}}>
+            {weekday!==null
+              ? <span style={{...sf(18,700),color:C.s1}}>${weekday.toLocaleString()}</span>
+              : <span style={{...sf(13,400),color:C.s6}}>On demand</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  );
+}
+
+export default function YachtDetailPage(){
+  var {id}=useParams();
+  var [yacht,setYacht]=useState(null);
+  var [fetching,setFetching]=useState(true);
+  var [error,setError]=useState(null);
+  var [loaded,setLoaded]=useState(false);
+  var [scrollY,setScrollY]=useState(0);
+  var [imgIdx,setImgIdx]=useState(0);
+  var [liked,setLiked]=useState(false);
+
+  var infoRef=useRef(null); var infoVis=useVis(infoRef);
+  var priceRef=useRef(null); var priceVis=useVis(priceRef);
+  var inclRef=useRef(null); var inclVis=useVis(inclRef);
+  var notRef=useRef(null); var notVis=useVis(notRef);
+  var tagsRef=useRef(null); var tagsVis=useVis(tagsRef);
+  var ynoteRef=useRef(null); var ynoteVis=useVis(ynoteRef);
+  var yrevRef=useRef(null); var yrevVis=useVis(yrevRef);
+  var ctaRef=useRef(null); var ctaVis=useVis(ctaRef);
+
+  useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
+  useEffect(function(){
+    var h=function(){setScrollY(window.scrollY)};
+    window.addEventListener("scroll",h,{passive:true});
+    return function(){window.removeEventListener("scroll",h)};
+  },[]);
+
+  useEffect(function(){
+    if(!id) return;
+    async function fetch(){
+      try{
+        var {data,error:err}=await supabase
+          .from("yachts")
+          .select("*")
+          .eq("id",id)
+          .single();
+        if(err) throw err;
+        setYacht(data);
+      }catch(e){
+        console.error("Yacht fetch error:",e);
+        setError("Could not load this yacht.");
+      }finally{
+        setFetching(false);
+      }
+    }
+    fetch();
+  },[id]);
+
+  /* Auto-advance hero images */
+  useEffect(function(){
+    if(!yacht) return;
+    var imgs=getImages(yacht);
+    if(imgs.length<=1) return;
+    var t=setInterval(function(){setImgIdx(function(c){return(c+1)%imgs.length})},5000);
+    return function(){clearInterval(t)};
+  },[yacht]);
+
+  function getImages(y){
+    var imgs=[];
+    if(y.hero_image_url) imgs.push(y.hero_image_url);
+    if(y.photos_order&&Array.isArray(y.photos_order)){
+      y.photos_order.forEach(function(u){if(u&&u!==y.hero_image_url)imgs.push(u)});
+    }
+    return imgs;
+  }
+
+  function buildWhatsApp(y){
+    var msg=encodeURIComponent("Hi, I'd like to inquire about chartering the "+y.name+(y.size_ft?" ("+y.size_ft+" ft)":"")+". Please share availability and pricing.");
+    return "https://wa.me/13057001234?text="+msg;
+  }
+
+  var navOp=Math.min(scrollY/250,1);
+  var heroY=scrollY*0.2;
+  var heroScale=1+scrollY*0.0002;
+  var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
+
+  /* Loading state */
+  if(fetching){
+    return(
+      <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <style>{"*{margin:0;padding:0;box-sizing:border-box}body::-webkit-scrollbar{width:0}"}</style>
+        <div style={{textAlign:"center"}}>
+          <Mark size={32} color={C.s7}/>
+          <div style={{...sf(13),color:C.s6,marginTop:20,letterSpacing:2}}>LOADING</div>
+        </div>
+      </div>
+    );
+  }
+
+  /* Error state */
+  if(error||!yacht){
+    return(
+      <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <style>{"*{margin:0;padding:0;box-sizing:border-box}body::-webkit-scrollbar{width:0}"}</style>
+        <div style={{textAlign:"center",padding:"0 40px"}}>
+          <div style={{...sf(20,600),color:C.s5,marginBottom:12}}>{error||"Yacht not found"}</div>
+          <a href="/catalog/yachts" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,...sf(13,500),color:C.s1}}>← Back to Yachts</a>
+        </div>
+      </div>
+    );
+  }
+
+  var imgs=getImages(yacht);
+  var hasWeekday=yacht.price_weekday_4hr!==null&&yacht.price_weekday_4hr!==undefined;
+
+  return(
+    <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
+      <style>{`
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:${C.s7};color:${C.s1}}
+a{color:inherit;text-decoration:none}
+body::-webkit-scrollbar{width:0}
+@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
+.two-col{display:flex;gap:40px;align-items:flex-start}
+.left-col{flex:1;min-width:0}
+.right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.incl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:900px){
+  .two-col{flex-direction:column!important}
+  .right-col{width:100%!important;position:relative!important;top:auto!important}
+}
+@media(max-width:768px){
+  .page-wrap{padding:0 24px!important}
+  .yd-hero{height:360px!important}
+  .yd-name{font-size:28px!important}
+  .spec-grid{grid-template-columns:repeat(2,1fr)!important}
+  .incl-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:390px){.yd-hero{height:300px!important}.yd-name{font-size:24px!important}}
+      `}</style>
+
+      {/* Film grain */}
+      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.08,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
+
+      {/* Nav */}
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
+        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
+        <div style={{display:"flex",alignItems:"center",gap:16}}>
+          <a href="/catalog/yachts" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>← All Yachts</a>
+          <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>{yacht.name}</div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="yd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
+          {imgs.length>0
+            ? imgs.map(function(img,i){return <img key={i} src={img} alt={yacht.name} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===imgIdx?1:0,transition:"opacity 0.8s ease"}}/>;})
+            : <div style={{width:"100%",height:"120%",background:"linear-gradient(135deg,#0f1923 0%,#1a2535 50%,#0d1a2a 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" strokeLinecap="round"><path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/><path d="M4 18l1.7-10.2a1 1 0 01.9-.8h10.8a1 1 0 01.9.8L20 18"/><path d="M12 4v4"/></svg>
+              </div>
+          }
+        </div>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
+
+        {/* Brand bar */}
+        <div style={{position:"absolute",bottom:48,left:40,display:"flex",alignItems:"center",gap:8,zIndex:5}}>
+          <div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/>
+          <span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{yacht.brand||"Yacht"}</span>
+        </div>
+
+        {/* Action buttons */}
+        <div style={{position:"absolute",top:56,right:40,display:"flex",gap:8,zIndex:10}}>
+          <div onClick={function(){setLiked(!liked)}} style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill={liked?C.red:"none"} stroke={liked?C.red:"rgba(255,255,255,0.5)"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+        </div>
+
+        {/* Size / availability badge */}
+        <div style={{position:"absolute",top:56,left:40,display:"flex",gap:6,zIndex:10}}>
+          {yacht.size_ft&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{yacht.size_ft} ft</span>}
+          <span style={{display:"flex",alignItems:"center",gap:5,...sf(9,600),color:yacht.available!==false?C.gn:"#FF453A",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)"}}>
+            <div style={{width:5,height:5,borderRadius:"50%",background:yacht.available!==false?C.gn:"#FF453A"}}/>
+            {yacht.available!==false?"Available":"On Request"}
+          </span>
+        </div>
+
+        {/* Image dots */}
+        {imgs.length>1&&
+          <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
+            {imgs.map(function(_,i){return <div key={i} onClick={function(){setImgIdx(i)}} style={{width:i===imgIdx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===imgIdx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
+          </div>
+        }
+      </section>
+
+      {/* Two-column layout */}
+      <div className="page-wrap" style={{marginTop:-40,position:"relative",zIndex:10,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1)"}}>
+        <div className="two-col">
+
+          {/* ═══ LEFT COLUMN ═══ */}
+          <div className="left-col">
+
+            {/* Title block */}
+            <div style={{marginBottom:40}}>
+              <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
+                {yacht.is_featured&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.gold+"D9",padding:"4px 10px",borderRadius:8,background:C.gold+"0F",border:"0.5px solid "+C.gold+"1A"}}>★ FEATURED</span>}
+              </div>
+              <h1 className="yd-name" style={{...sf(40,700),letterSpacing:-1.5,marginBottom:8}}>{yacht.name}</h1>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16,flexWrap:"wrap"}}>
+                {yacht.brand&&<span style={{...sf(13,500),color:C.s3}}>{yacht.brand}</span>}
+                {yacht.brand&&<div style={{width:1,height:12,background:C.bd}}/>}
+                <div style={{display:"flex",alignItems:"center",gap:5}}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span style={{...sf(13),color:C.s5}}>{yacht.city||yacht.location||"Charter"}</span>
+                </div>
+                {yacht.max_passengers&&<>
+                  <div style={{width:1,height:12,background:C.bd}}/>
+                  <span style={{...sf(13),color:C.s5}}>{yacht.max_passengers} passengers max</span>
+                </>}
+              </div>
+              {/* Starting price */}
+              {(yacht.price_4hr||yacht.price_weekday_4hr)&&
+                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                  <span style={{...sf(34,700),color:C.s1}}>${(yacht.price_4hr||yacht.price_weekday_4hr).toLocaleString()}</span>
+                  <span style={{...sf(14),color:C.s6}}>starting price / 4hr</span>
+                </div>
+              }
+            </div>
+
+            {/* Description */}
+            {yacht.description&&
+              <div style={{marginBottom:40}}>
+                {secDiv}
+                <p style={{...sf(15,400),color:C.s4,lineHeight:1.8,marginTop:32}}>{yacht.description}</p>
+              </div>
+            }
+
+            {/* Specs */}
+            <div ref={infoRef} style={{paddingTop:32,marginBottom:40}}>
+              {secDiv}
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:infoVis?1:0,transition:"all 0.8s ease"}}>Specifications</p>
+              <div className="spec-grid" style={{marginBottom:14,opacity:infoVis?1:0,transform:infoVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
+                {[
+                  {emoji:"📏",value:yacht.size_ft?yacht.size_ft+" ft":"—",label:"Length"},
+                  {emoji:"👥",value:yacht.max_passengers||"—",label:"Max Guests"},
+                  {emoji:"⚓",value:yacht.brand||"Charter",label:"Brand"},
+                ].map(function(s,i){
+                  return(
+                    <div key={i} style={{padding:"18px 12px",borderRadius:16,background:C.srf,border:"0.5px solid "+C.bd,textAlign:"center"}}>
+                      <div style={{fontSize:18,marginBottom:8}}>{s.emoji}</div>
+                      <div style={{...sf(20,700),color:C.s1,marginBottom:4}}>{s.value}</div>
+                      <div style={{...sf(10,500),color:C.s7,letterSpacing:1,textTransform:"uppercase"}}>{s.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Extra details */}
+              <div className="detail-grid" style={{opacity:infoVis?1:0,transform:infoVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.2s"}}>
+                {[
+                  {label:"Location",value:yacht.city||yacht.location||"—"},
+                  {label:"Max Passengers",value:yacht.max_passengers?yacht.max_passengers+" people":"—"},
+                  ...(yacht.security_deposit?[{label:"Security Deposit",value:"$"+Number(yacht.security_deposit).toLocaleString()}]:[]),
+                  ...(yacht.includes?[{label:"Includes",value:yacht.includes}]:[]),
+                ].map(function(d,i){
+                  return(
+                    <div key={i} style={{padding:"16px 18px",borderRadius:14,background:C.srf,border:"0.5px solid "+C.bd}}>
+                      <div style={{...sf(10,500),color:C.s7,letterSpacing:1,textTransform:"uppercase",marginBottom:6}}>{d.label}</div>
+                      <div style={{...sf(14,500),color:C.s2}}>{d.value}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Pricing table */}
+            <div ref={priceRef} style={{paddingTop:32,marginBottom:40}}>
+              {secDiv}
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:8,marginTop:32,opacity:priceVis?1:0,transition:"all 0.8s ease"}}>Pricing</p>
+
+              {hasWeekday&&
+                <div style={{display:"flex",gap:16,marginBottom:16,marginTop:16,opacity:priceVis?1:0,transition:"opacity 0.8s ease 0.1s"}}>
+                  <div style={{flex:1,textAlign:"center",...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase"}}>Weekend</div>
+                  <div style={{flex:1,textAlign:"center",...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase"}}>Weekday</div>
+                </div>
+              }
+
+              <div style={{opacity:priceVis?1:0,transform:priceVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s",borderRadius:16,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",padding:"0 20px"}}>
+                {[
+                  {label:"4 hr",weekend:yacht.price_4hr,weekday:hasWeekday?yacht.price_weekday_4hr:undefined},
+                  {label:"6 hr",weekend:yacht.price_6hr,weekday:hasWeekday?yacht.price_weekday_6hr:undefined},
+                  {label:"8 hr",weekend:yacht.price_8hr,weekday:hasWeekday?yacht.price_weekday_8hr:undefined},
+                  ...(yacht.price_12hr!==null&&yacht.price_12hr!==undefined?[{label:"12 hr",weekend:yacht.price_12hr,weekday:undefined}]:[]),
+                  ...(yacht.price_24hr!==null&&yacht.price_24hr!==undefined?[{label:"24 hr",weekend:yacht.price_24hr,weekday:undefined}]:[]),
+                ].map(function(row,i){
+                  return <PriceRow key={i} label={row.label} weekend={row.weekend!==undefined?row.weekend:null} weekday={row.weekday}/>;
+                })}
+              </div>
+
+              {yacht.security_deposit&&
+                <div style={{marginTop:12,padding:"12px 16px",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,...sf(12,400),color:C.s5,opacity:priceVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>
+                  Security deposit: <span style={{...sf(12,600),color:C.s3}}>${Number(yacht.security_deposit).toLocaleString()}</span>
+                </div>
+              }
+            </div>
+
+            {/* What's Included */}
+            {yacht.whats_included&&yacht.whats_included.length>0&&
+              <div ref={inclRef} style={{paddingTop:32,marginBottom:40}}>
+                {secDiv}
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:inclVis?1:0,transition:"all 0.8s ease"}}>What's Included</p>
+                <div className="incl-grid" style={{opacity:inclVis?1:0,transform:inclVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
+                  {yacht.whats_included.map(function(item,i){
+                    return(
+                      <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"14px 16px",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd}}>
+                        <div style={{width:22,height:22,borderRadius:"50%",background:C.gn+"12",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+                          <CheckIcon/>
+                        </div>
+                        <span style={{...sf(13,400),color:C.s3,lineHeight:1.5}}>{item}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            }
+
+            {/* Not Included */}
+            {yacht.not_included&&yacht.not_included.length>0&&
+              <div ref={notRef} style={{paddingTop:32,marginBottom:40}}>
+                {secDiv}
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:notVis?1:0,transition:"all 0.8s ease"}}>Not Included</p>
+                <div className="incl-grid" style={{opacity:notVis?1:0,transform:notVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
+                  {yacht.not_included.map(function(item,i){
+                    return(
+                      <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"14px 16px",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd}}>
+                        <div style={{width:22,height:22,borderRadius:"50%",background:C.red+"12",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+                          <XIcon/>
+                        </div>
+                        <span style={{...sf(13,400),color:C.s4,lineHeight:1.5}}>{item}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            }
+
+            {/* Tags / Features */}
+            {yacht.tags&&yacht.tags.length>0&&
+              <div ref={tagsRef} style={{paddingTop:32,marginBottom:40}}>
+                {secDiv}
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:tagsVis?1:0,transition:"all 0.8s ease"}}>Features & Amenities</p>
+                <div style={{display:"flex",flexWrap:"wrap",gap:8,opacity:tagsVis?1:0,transform:tagsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
+                  {yacht.tags.map(function(tag,i){
+                    return(
+                      <span key={i} style={{...sf(12,500),color:C.s3,padding:"8px 14px",borderRadius:10,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>
+                    );
+                  })}
+                </div>
+              </div>
+            }
+
+            {/* Payment Methods */}
+            {yacht.payment_methods&&yacht.payment_methods.length>0&&
+              <div style={{paddingTop:32,marginBottom:40}}>
+                {secDiv}
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Payment Methods</p>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {yacht.payment_methods.map(function(m,i){
+                    return <span key={i} style={{...sf(12,500),color:C.s4,padding:"7px 14px",borderRadius:8,border:"0.5px solid "+C.bd,background:C.srf}}>{m}</span>;
+                  })}
+                </div>
+              </div>
+            }
+
+            {/* Notes */}
+            {yacht.notes&&
+              <div style={{paddingTop:32,marginBottom:40}}>
+                {secDiv}
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Notes</p>
+                <div style={{padding:"20px 22px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,borderLeft:"3px solid "+C.s7}}>
+                  <p style={{...sf(14,400),color:C.s4,lineHeight:1.7}}>{yacht.notes}</p>
+                </div>
+              </div>
+            }
+
+            {/* Alfred's Note */}
+            <div ref={ynoteRef} style={{paddingTop:24,marginBottom:32}}>
+              {secDiv}
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:24,opacity:ynoteVis?1:0,transition:"all 0.8s ease"}}>Alfred's Note</p>
+              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"clamp(20px,4vw,36px) clamp(16px,3vw,32px)",position:"relative",overflow:"hidden",opacity:ynoteVis?1:0,transform:ynoteVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s"}}>
+                <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
+                <div style={{position:"absolute",bottom:20,right:24,opacity:0.025}}><Mark size={100} color={C.s1}/></div>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}><Mark size={18} color={C.s5}/><span style={{...sf(11,500),color:C.s5,letterSpacing:1}}>From your concierge</span><div style={{marginLeft:"auto",width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px rgba(52,199,89,0.4)"}}/></div>
+                <p style={{...sf(15,400),color:C.s3,lineHeight:1.8,fontStyle:"italic",marginBottom:22,position:"relative",zIndex:1}}>"{yacht.name} is one of our most requested vessels in {yacht.city||yacht.location||"the area"}. Confirm your departure time 24 hours ahead — the captain will handle everything from there. Ask for the sunset route."</p>
+                <div style={{height:0.5,background:C.bd,marginBottom:18}}/>
+                <div style={{display:"flex",gap:8,alignItems:"flex-start"}}><span style={{...sf(13),color:C.s6,marginTop:1}}>✨</span><span style={{...sf(13),color:C.s5,lineHeight:1.6}}>Book at least 48 hours in advance for guaranteed availability and preferred routing.</span></div>
+              </div>
+            </div>
+
+            {/* Reviews */}
+            <div ref={yrevRef} style={{paddingTop:24,marginBottom:32}}>
+              {secDiv}
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:24,marginBottom:16}}>
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:yrevVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
+                <div style={{display:"flex",alignItems:"center",gap:6,opacity:yrevVis?1:0,transition:"opacity 0.8s ease 0.1s"}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style={{...sf(13,600),color:C.s1}}>4.8</span>
+                  <span style={{...sf(11),color:C.s6}}>· {YACHT_REVIEWS.length} reviews</span>
+                </div>
+              </div>
+              <div style={{display:"flex",gap:14,overflowX:"auto",scrollbarWidth:"none",msOverflowStyle:"none",paddingBottom:4,opacity:yrevVis?1:0,transform:yrevVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+                {YACHT_REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(
+                  <div key={i} style={{width:300,minWidth:260,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+                      <div style={{width:32,height:32,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(14,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
+                      <div>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}><span style={{...sf(12,600),color:C.s1}}>{r.name}</span><span style={{...sf(8,600),letterSpacing:0.8,color:isTop?C.s3:C.s5,padding:"2px 7px",borderRadius:6,background:isTop?"rgba(244,244,245,0.06)":C.srf,border:"0.5px solid "+(isTop?"rgba(244,244,245,0.1)":C.bd),textTransform:"uppercase"}}>{r.tier}</span></div>
+                        <div style={{display:"flex",alignItems:"center",gap:2,marginTop:3}}>{Array.from({length:r.rating}).map(function(_,si){return <svg key={si} width="8" height="8" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>})}<span style={{...sf(9),color:C.s6,marginLeft:4}}>{r.date}</span></div>
+                      </div>
+                    </div>
+                    <p style={{...sf(12),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{r.text}"</p>
+                  </div>
+                )})}
+              </div>
+            </div>
+
+          </div>
+
+          {/* ═══ RIGHT COLUMN — Booking card ═══ */}
+          <div className="right-col">
+            <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"28px",position:"sticky",top:88}}>
+              {/* Header */}
+              <div style={{marginBottom:24}}>
+                <div style={{...sf(10,600),color:C.s7,letterSpacing:3,textTransform:"uppercase",marginBottom:12}}>Book This Yacht</div>
+                {(yacht.price_4hr||yacht.price_weekday_4hr)
+                  ? <div style={{display:"flex",alignItems:"baseline",gap:5}}>
+                      <span style={{...sf(30,700),color:C.s1}}>${(yacht.price_4hr||yacht.price_weekday_4hr).toLocaleString()}</span>
+                      <span style={{...sf(13),color:C.s6}}>/ 4hr</span>
+                    </div>
+                  : <div style={{...sf(18,600),color:C.s4}}>Price on request</div>
+                }
+              </div>
+
+              {/* Quick stats */}
+              <div style={{display:"flex",gap:8,marginBottom:24}}>
+                {yacht.size_ft&&
+                  <div style={{flex:1,padding:"12px 8px",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,textAlign:"center"}}>
+                    <div style={{...sf(18,700),color:C.s1}}>{yacht.size_ft}</div>
+                    <div style={{...sf(9,500),color:C.s7,letterSpacing:1,textTransform:"uppercase",marginTop:3}}>Feet</div>
+                  </div>
+                }
+                {yacht.max_passengers&&
+                  <div style={{flex:1,padding:"12px 8px",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd,textAlign:"center"}}>
+                    <div style={{...sf(18,700),color:C.s1}}>{yacht.max_passengers}</div>
+                    <div style={{...sf(9,500),color:C.s7,letterSpacing:1,textTransform:"uppercase",marginTop:3}}>Guests</div>
+                  </div>
+                }
+              </div>
+
+              <div style={{height:1,background:C.bd,marginBottom:24}}/>
+
+              {/* Pricing summary */}
+              <div style={{marginBottom:24}}>
+                {[
+                  {label:"4 hours",price:yacht.price_4hr||yacht.price_weekday_4hr},
+                  {label:"6 hours",price:yacht.price_6hr||yacht.price_weekday_6hr},
+                  {label:"8 hours",price:yacht.price_8hr||yacht.price_weekday_8hr},
+                ].map(function(row,i){
+                  return(
+                    <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid rgba(44,44,49,0.5)"}}>
+                      <span style={{...sf(13,400),color:C.s5}}>{row.label}</span>
+                      {row.price
+                        ? <span style={{...sf(14,600),color:C.s2}}>${row.price.toLocaleString()}</span>
+                        : <span style={{...sf(12,400),color:C.s6}}>On demand</span>
+                      }
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* CTA */}
+              <a href={buildWhatsApp(yacht)} target="_blank" rel="noopener noreferrer"
+                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"16px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,textDecoration:"none",transition:"all 0.3s",marginBottom:10}}
+                onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.12)"}}
+                onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+                Book Now
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+              </a>
+
+              {/* WhatsApp */}
+              <a href={buildWhatsApp(yacht)} target="_blank" rel="noopener noreferrer"
+                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,cursor:"pointer",...sf(12,500),color:C.s4,textDecoration:"none",transition:"all 0.3s"}}
+                onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}}
+                onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                Ask via WhatsApp
+              </a>
+
+              {/* Trust note */}
+              <div style={{marginTop:18,...sf(11,400),color:C.s6,textAlign:"center",lineHeight:1.6}}>
+                Captain included · All safety equipment<br/>Instant confirmation via Alfred
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Bottom CTA */}
+      <section ref={ctaRef} style={{padding:"100px 0 80px",position:"relative"}}>
+        <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
+        <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Reserve</p>
+          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Ready to charter<br/>the {yacht.name}?</h2>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Contact Alfred and we'll handle everything — from scheduling to crew briefing. Available {yacht.city||yacht.location||"for charter"}.</p>
+          <a href={buildWhatsApp(yacht)} target="_blank" rel="noopener noreferrer"
+            style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s",textDecoration:"none"}}
+            onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}}
+            onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+            Book Now via WhatsApp
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+          </a>
+          <p style={{...sf(12),color:C.s6,marginTop:20,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>Captain included · Safety equipment · 24/7 concierge</p>
+        </div>
+      </section>
+
+      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}><Mark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
+        <div style={{display:"flex",gap:20}}>
+          <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
+          <a href="/catalog/yachts" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>All Yachts</a>
+          <a href="/catalog" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
+        </div>
+      </footer>
+    </div>
+  );
+}
