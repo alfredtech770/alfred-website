@@ -655,7 +655,7 @@ struct VenueMapCard: View {
     @State private var liked = false
 
     private let cardWidth: CGFloat = 300
-    private let cardHeight: CGFloat = 205
+    private let cardHeight: CGFloat = 280
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -934,7 +934,7 @@ private struct VenueCardPager: View {
             )
             .animation(.spring(response: 0.35, dampingFraction: 0.82), value: dragOffset)
         }
-        .frame(height: 205 + 12)  // cardHeight + padding
+        .frame(height: 280 + 12)  // cardHeight + padding
         .onChange(of: selectedVenue) { _, newVal in
             // When venue is selected externally (e.g. pin tap), scroll to it
             if let newVal, let idx = venues.firstIndex(where: { $0.id == newVal.id }) {
@@ -1480,7 +1480,7 @@ struct MapSearchView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.trailing, 16)
-                    .padding(.bottom, vm.filteredVenues.isEmpty ? (geo.safeAreaInsets.bottom + 30) : (geo.safeAreaInsets.bottom + 255))
+                    .padding(.bottom, vm.filteredVenues.isEmpty ? (geo.safeAreaInsets.bottom + 30) : (geo.safeAreaInsets.bottom + 344))
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .zIndex(15)
                 }
@@ -1502,7 +1502,7 @@ struct MapSearchView: View {
                             vm.selectVenue(venue)
                         }
                     )
-                    .padding(.bottom, geo.safeAreaInsets.bottom + 28)
+                    .padding(.bottom, geo.safeAreaInsets.bottom + 46)
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .zIndex(10)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
