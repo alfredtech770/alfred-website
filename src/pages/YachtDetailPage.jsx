@@ -15,6 +15,12 @@ function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.cu
 function CheckIcon({color}){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke={color||C.gn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
 function XIcon(){return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke={C.red} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
 
+var YACHT_REVIEWS=[
+  {name:"Sebastian M.",tier:"Noir",rating:5,text:"Alfred handled everything — from the captain briefing to the champagne on deck. The sunset off Miami Beach was unforgettable. Will charter again.",date:"1 week ago"},
+  {name:"Natalia V.",tier:"Black",rating:5,text:"Our anniversary trip exceeded every expectation. The crew was exceptional, the boat immaculate. Alfred's concierge service made it seamless.",date:"2 weeks ago"},
+  {name:"James R.",tier:"Member",rating:5,text:"Third time chartering through Alfred. Never a single issue. The route they suggested around the bay was perfect for our group.",date:"1 month ago"},
+];
+
 function PriceRow({label, weekend, weekday}){
   var hasData = weekend!==null || weekday!==null;
   return(
@@ -55,6 +61,8 @@ export default function YachtDetailPage(){
   var inclRef=useRef(null); var inclVis=useVis(inclRef);
   var notRef=useRef(null); var notVis=useVis(notRef);
   var tagsRef=useRef(null); var tagsVis=useVis(tagsRef);
+  var ynoteRef=useRef(null); var ynoteVis=useVis(ynoteRef);
+  var yrevRef=useRef(null); var yrevVis=useVis(yrevRef);
   var ctaRef=useRef(null); var ctaVis=useVis(ctaRef);
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
@@ -415,6 +423,47 @@ body::-webkit-scrollbar{width:0}
                 </div>
               </div>
             }
+
+            {/* Alfred's Note */}
+            <div ref={ynoteRef} style={{paddingTop:24,marginBottom:32}}>
+              {secDiv}
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:24,opacity:ynoteVis?1:0,transition:"all 0.8s ease"}}>Alfred's Note</p>
+              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"clamp(20px,4vw,36px) clamp(16px,3vw,32px)",position:"relative",overflow:"hidden",opacity:ynoteVis?1:0,transform:ynoteVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s"}}>
+                <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
+                <div style={{position:"absolute",bottom:20,right:24,opacity:0.025}}><Mark size={100} color={C.s1}/></div>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}><Mark size={18} color={C.s5}/><span style={{...sf(11,500),color:C.s5,letterSpacing:1}}>From your concierge</span><div style={{marginLeft:"auto",width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px rgba(52,199,89,0.4)"}}/></div>
+                <p style={{...sf(15,400),color:C.s3,lineHeight:1.8,fontStyle:"italic",marginBottom:22,position:"relative",zIndex:1}}>"{yacht.name} is one of our most requested vessels in {yacht.city||yacht.location||"the area"}. Confirm your departure time 24 hours ahead — the captain will handle everything from there. Ask for the sunset route."</p>
+                <div style={{height:0.5,background:C.bd,marginBottom:18}}/>
+                <div style={{display:"flex",gap:8,alignItems:"flex-start"}}><span style={{...sf(13),color:C.s6,marginTop:1}}>✨</span><span style={{...sf(13),color:C.s5,lineHeight:1.6}}>Book at least 48 hours in advance for guaranteed availability and preferred routing.</span></div>
+              </div>
+            </div>
+
+            {/* Reviews */}
+            <div ref={yrevRef} style={{paddingTop:24,marginBottom:32}}>
+              {secDiv}
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:24,marginBottom:16}}>
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:yrevVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
+                <div style={{display:"flex",alignItems:"center",gap:6,opacity:yrevVis?1:0,transition:"opacity 0.8s ease 0.1s"}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style={{...sf(13,600),color:C.s1}}>4.8</span>
+                  <span style={{...sf(11),color:C.s6}}>· {YACHT_REVIEWS.length} reviews</span>
+                </div>
+              </div>
+              <div style={{display:"flex",gap:14,overflowX:"auto",scrollbarWidth:"none",msOverflowStyle:"none",paddingBottom:4,opacity:yrevVis?1:0,transform:yrevVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+                {YACHT_REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(
+                  <div key={i} style={{width:300,minWidth:260,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+                      <div style={{width:32,height:32,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(14,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
+                      <div>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}><span style={{...sf(12,600),color:C.s1}}>{r.name}</span><span style={{...sf(8,600),letterSpacing:0.8,color:isTop?C.s3:C.s5,padding:"2px 7px",borderRadius:6,background:isTop?"rgba(244,244,245,0.06)":C.srf,border:"0.5px solid "+(isTop?"rgba(244,244,245,0.1)":C.bd),textTransform:"uppercase"}}>{r.tier}</span></div>
+                        <div style={{display:"flex",alignItems:"center",gap:2,marginTop:3}}>{Array.from({length:r.rating}).map(function(_,si){return <svg key={si} width="8" height="8" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>})}<span style={{...sf(9),color:C.s6,marginLeft:4}}>{r.date}</span></div>
+                      </div>
+                    </div>
+                    <p style={{...sf(12),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{r.text}"</p>
+                  </div>
+                )})}
+              </div>
+            </div>
 
           </div>
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "../lib/supabase";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -6,20 +7,6 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var RESTAURANTS=[
-  {name:"Le Cinq",cuisine:"French",price:"€€€€",loc:"Paris",vibe:"Formal",meal:"Dinner",rating:4.9,reviews:47,michelin:3,img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop&q=80",tagline:"French haute cuisine meets quiet grandeur",slug:"le-cinq",available:true,avg:"€280"},
-  {name:"Carbone",cuisine:"Italian",price:"€€€€",loc:"Miami",vibe:"Scene",meal:"Dinner",rating:4.8,reviews:89,michelin:0,img:"https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop&q=80",tagline:"Classic Italian-American. Major Flair.",slug:"carbone",available:true,avg:"€180"},
-  {name:"Zuma",cuisine:"Japanese",price:"€€€€",loc:"Miami",vibe:"Scene",meal:"Both",rating:4.8,reviews:62,michelin:0,img:"https://images.unsplash.com/photo-1579027989536-b7b1f875659b?w=600&h=400&fit=crop&q=80",tagline:"Contemporary Japanese izakaya dining",slug:"zuma",available:true,avg:"€160"},
-  {name:"L'Ambroisie",cuisine:"French",price:"€€€€",loc:"Paris",vibe:"Formal",meal:"Both",rating:4.9,reviews:34,michelin:3,img:"https://images.unsplash.com/photo-1550966871-3ed3cdb51f3a?w=600&h=400&fit=crop&q=80",tagline:"Place des Vosges. Three stars since 1988.",slug:"lambroisie",available:true,avg:"€350"},
-  {name:"Komodo",cuisine:"Asian Fusion",price:"€€€",loc:"Miami",vibe:"Scene",meal:"Dinner",rating:4.6,reviews:71,michelin:0,img:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop&q=80",tagline:"Southeast Asian meets Downtown Miami",slug:"komodo",available:true,avg:"€120"},
-  {name:"Girafe",cuisine:"French",price:"€€€€",loc:"Paris",vibe:"Romantic",meal:"Dinner",rating:4.7,reviews:55,michelin:0,img:"https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=600&h=400&fit=crop&q=80",tagline:"Eiffel Tower views. Seafood-forward.",slug:"girafe",available:true,avg:"€200"},
-  {name:"Gekko",cuisine:"Japanese",price:"€€€€",loc:"Miami",vibe:"Scene",meal:"Dinner",rating:4.7,reviews:43,michelin:0,img:"https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&h=400&fit=crop&q=80",tagline:"Japanese steakhouse by Bad Bunny",slug:"gekko",available:false,avg:"€200"},
-  {name:"Le Clarence",cuisine:"French",price:"€€€€",loc:"Paris",vibe:"Formal",meal:"Dinner",rating:4.9,reviews:28,michelin:2,img:"https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=600&h=400&fit=crop&q=80",tagline:"Hôtel particulier. Christophe Pelé.",slug:"le-clarence",available:true,avg:"€320"},
-  {name:"Nobu",cuisine:"Japanese",price:"€€€€",loc:"Miami",vibe:"Scene",meal:"Both",rating:4.7,reviews:58,michelin:0,img:"https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600&h=400&fit=crop&q=80",tagline:"The original Japanese-Peruvian fusion",slug:"nobu",available:true,avg:"€170"},
-  {name:"Septime",cuisine:"French",price:"€€€",loc:"Paris",vibe:"Casual",meal:"Both",rating:4.8,reviews:41,michelin:1,img:"https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop&q=80",tagline:"Natural wine. Neo-bistro. One star.",slug:"septime",available:true,avg:"€95"},
-  {name:"Swan",cuisine:"Mediterranean",price:"€€€",loc:"Miami",vibe:"Romantic",meal:"Both",rating:4.5,reviews:37,michelin:0,img:"https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=600&h=400&fit=crop&q=80",tagline:"Pharrell's Design District gem",slug:"swan",available:true,avg:"€110"},
-  {name:"Papi Steak",cuisine:"Steakhouse",price:"€€€€",loc:"Miami",vibe:"Scene",meal:"Dinner",rating:4.6,reviews:52,michelin:0,img:"https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&h=400&fit=crop&q=80",tagline:"David Grutman's high-energy steakhouse",slug:"papi-steak",available:true,avg:"€200"},
-];
 
 var CITIES=["All Cities","Miami","Paris"];
 var SORT_OPTIONS=["Featured","Rating","Price: Low","Price: High","Most Reviewed"];
@@ -47,7 +34,7 @@ function RestCard(p){
   var [hover,setHover]=useState(false);
   var r=p.r;
   return(
-    <div onClick={function(){if(r.available)window.location.href="/catalog/dining/"+r.slug}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:r.available?"pointer":"default",transform:hover&&r.available?"translateY(-6px)":"translateY(0)",boxShadow:hover&&r.available?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:p.vis?1:0,animation:p.vis?"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both":"none"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+    <div onClick={function(){if(r.available)window.location.href="/catalog/dining/"+r.slug}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:r.available?"pointer":"default",transform:hover&&r.available?"translateY(-6px)":"translateY(0)",boxShadow:hover&&r.available?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
       <div style={{height:200,position:"relative",overflow:"hidden"}}>
         <img src={r.img} alt={r.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:r.available?"none":"brightness(0.5)"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 30%,rgba(10,10,11,0.85) 100%)"}}/>
@@ -103,6 +90,8 @@ function RestCard(p){
 export default function DiningPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
+  var [restaurants,setRestaurants]=useState([]);
+  var [fetching,setFetching]=useState(true);
   var [city,setCity]=useState("All Cities");
   var [cuisine,setCuisine]=useState("Cuisine");
   var [price,setPrice]=useState("Price");
@@ -117,11 +106,34 @@ export default function DiningPage(){
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
+  useEffect(function(){
+    async function load(){
+      try{
+        var {data,error}=await supabase.from("restaurants").select("*").order("name");
+        if(error)throw error;
+        setRestaurants((data||[]).map(function(r){return{
+          name:r.name||"",cuisine:r.cuisine||"",
+          price:r.price_level||r.price||"€€€€",
+          loc:r.city||r.location||r.loc||"",
+          vibe:r.vibe||"",meal:r.meal_type||r.meal||"Both",
+          rating:r.rating||0,reviews:r.review_count||r.reviews||0,
+          michelin:r.michelin_stars||r.michelin||0,
+          img:r.hero_image_url||r.image_url||r.img||"",
+          tagline:r.tagline||"",
+          slug:r.slug||(r.id?String(r.id):""),
+          available:r.available!==false,
+          avg:r.avg_spend||r.avg||"",
+        }}));
+      }catch(e){console.error("Restaurants fetch:",e);}
+      finally{setFetching(false);}
+    }
+    load();
+  },[]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
-  var filtered=RESTAURANTS.filter(function(r){
+  var filtered=restaurants.filter(function(r){
     if(city!=="All Cities"&&r.loc!==city)return false;
     if(cuisine!=="Cuisine"&&r.cuisine!==cuisine)return false;
     if(price!=="Price"&&r.price!==price)return false;
@@ -221,7 +233,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
             <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>
-          <span style={{...sf(12),color:C.s6,flexShrink:0,marginLeft:8}}>{filtered.length} restaurant{filtered.length!==1?"s":""}</span>
+          <span style={{...sf(12),color:C.s6,flexShrink:0,marginLeft:8}}>{fetching?"Loading...":filtered.length+" restaurant"+(filtered.length!==1?"s":"")}</span>
         </div>
         {activeFilters.length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:24}}>
           {activeFilters.map(function(f){return <span key={f} style={{...sf(11,500),color:C.s1,padding:"5px 12px",borderRadius:8,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.1)"}}>{f}</span>})}
@@ -231,7 +243,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 
       {/* Grid */}
       <div ref={gridRef} className="d-grid" style={{paddingBottom:80}}>
-        {filtered.length===0?(
+        {fetching?(
+          <div style={{gridColumn:"1 / -1",textAlign:"center",padding:"60px 20px",...sf(13),color:C.s6,letterSpacing:2}}>Loading restaurants...</div>
+        ):filtered.length===0?(
           <div style={{gridColumn:"1 / -1",textAlign:"center",padding:"60px 20px"}}>
             <div style={{fontSize:40,marginBottom:16}}>🍽</div>
             <h3 style={{...sf(20,600),color:C.s3,marginBottom:8}}>No restaurants match</h3>

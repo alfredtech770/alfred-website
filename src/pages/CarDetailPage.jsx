@@ -51,7 +51,7 @@ export default function CarDetailPage(){
     available: storedCar.available !== false,
     color: "",
     location: (storedCar.locs || []).join(" · "),
-    features: ["Unlimited km per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"],
+    features: [(storedCar.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"],
     deposit: storedCar.deposit || 1000,
     alfredNote: "Contact Alfred for the best experience with the " + storedCar.name + ". We handle delivery, insurance, and everything in between.",
     alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
@@ -180,7 +180,6 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             <div style={{marginBottom:40}}>
               <div style={{display:"flex",gap:6,marginBottom:14}}>
                 <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
-                {CAR.available&&<span style={{display:"flex",alignItems:"center",gap:5,...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>AVAILABLE</span>}
               </div>
               <h1 className="cd-name" style={{...sf(38,700),letterSpacing:-1.5,marginBottom:6}}>{CAR.name}</h1>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14,flexWrap:"wrap"}}>
