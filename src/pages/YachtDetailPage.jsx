@@ -294,14 +294,14 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       </div>
 
       {/* Two-column layout */}
-      <div className="page-wrap" style={{marginTop:-40,position:"relative",zIndex:10,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1)"}}>
+      <div className="page-wrap" style={{marginTop:-60,position:"relative",zIndex:10,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1)"}}>
         <div className="two-col">
 
           {/* ═══ LEFT COLUMN ═══ */}
           <div className="left-col">
 
             {/* Title block */}
-            <div style={{marginBottom:40}}>
+            <div style={{marginBottom:24}}>
               <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
                 <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
                 {yacht.is_featured&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.gold+"D9",padding:"4px 10px",borderRadius:8,background:C.gold+"0F",border:"0.5px solid "+C.gold+"1A"}}>★ FEATURED</span>}
@@ -330,16 +330,16 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
 
             {/* Description */}
             {yacht.description&&
-              <div style={{marginBottom:40}}>
+              <div style={{marginBottom:24}}>
                 {secDiv}
                 <p style={{...sf(15,400),color:C.s4,lineHeight:1.8,marginTop:32}}>{yacht.description}</p>
               </div>
             }
 
             {/* Specs */}
-            <div ref={infoRef} style={{paddingTop:32,marginBottom:40}}>
+            <div ref={infoRef} style={{paddingTop:16,marginBottom:20}}>
               {secDiv}
-              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:infoVis?1:0,transition:"all 0.8s ease"}}>Specifications</p>
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:16,opacity:infoVis?1:0,transition:"all 0.8s ease"}}>Specifications</p>
               <div className="spec-grid" style={{marginBottom:14,opacity:infoVis?1:0,transform:infoVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
                 {[
                   {emoji:"📏",value:yacht.size_ft?yacht.size_ft+" ft":"—",label:"Length"},
@@ -374,7 +374,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             </div>
 
             {/* Pricing table */}
-            <div ref={priceRef} style={{paddingTop:32,marginBottom:40}}>
+            <div ref={priceRef} style={{paddingTop:16,marginBottom:20}}>
               {secDiv}
               <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:8,marginTop:32,opacity:priceVis?1:0,transition:"all 0.8s ease"}}>Pricing</p>
 
@@ -406,9 +406,9 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
 
             {/* What's Included */}
             {yacht.whats_included&&yacht.whats_included.length>0&&
-              <div ref={inclRef} style={{paddingTop:32,marginBottom:40}}>
+              <div ref={inclRef} style={{paddingTop:16,marginBottom:20}}>
                 {secDiv}
-                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:inclVis?1:0,transition:"all 0.8s ease"}}>What's Included</p>
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:16,opacity:inclVis?1:0,transition:"all 0.8s ease"}}>What's Included</p>
                 <div className="incl-grid" style={{opacity:inclVis?1:0,transform:inclVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
                   {yacht.whats_included.map(function(item,i){
                     return(
@@ -426,9 +426,9 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
 
             {/* Not Included */}
             {yacht.not_included&&yacht.not_included.length>0&&
-              <div ref={notRef} style={{paddingTop:32,marginBottom:40}}>
+              <div ref={notRef} style={{paddingTop:16,marginBottom:20}}>
                 {secDiv}
-                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:notVis?1:0,transition:"all 0.8s ease"}}>Not Included</p>
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:16,opacity:notVis?1:0,transition:"all 0.8s ease"}}>Not Included</p>
                 <div className="incl-grid" style={{opacity:notVis?1:0,transform:notVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
                   {yacht.not_included.map(function(item,i){
                     return(
@@ -446,9 +446,9 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
 
             {/* Tags / Features */}
             {yacht.tags&&yacht.tags.length>0&&
-              <div ref={tagsRef} style={{paddingTop:32,marginBottom:40}}>
+              <div ref={tagsRef} style={{paddingTop:16,marginBottom:20}}>
                 {secDiv}
-                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:tagsVis?1:0,transition:"all 0.8s ease"}}>Features & Amenities</p>
+                <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:14,marginTop:16,opacity:tagsVis?1:0,transition:"all 0.8s ease"}}>Features & Amenities</p>
                 <div style={{display:"flex",flexWrap:"wrap",gap:8,opacity:tagsVis?1:0,transform:tagsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
                   {yacht.tags.map(function(tag,i){
                     return(
@@ -461,7 +461,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
 
             {/* Payment Methods */}
             {yacht.payment_methods&&yacht.payment_methods.length>0&&
-              <div style={{paddingTop:32,marginBottom:40}}>
+              <div style={{paddingTop:16,marginBottom:20}}>
                 {secDiv}
                 <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Payment Methods</p>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -474,7 +474,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
 
             {/* Notes */}
             {yacht.notes&&
-              <div style={{paddingTop:32,marginBottom:40}}>
+              <div style={{paddingTop:16,marginBottom:20}}>
                 {secDiv}
                 <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Notes</p>
                 <div style={{padding:"20px 22px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,borderLeft:"3px solid "+C.s7}}>
@@ -625,7 +625,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       </div>
 
       {/* Bottom CTA */}
-      <section ref={ctaRef} style={{padding:"100px 0 80px",position:"relative"}}>
+      <section ref={ctaRef} style={{padding:"60px 0 50px",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Reserve</p>
