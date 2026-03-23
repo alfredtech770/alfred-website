@@ -658,24 +658,26 @@ struct BookingsView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, 48)
             } else {
-                VStack(spacing: 14) {
-                    ForEach(filtered) { v in
-                        BVSavedCard(
-                            venue: v,
-                            onUnsave: {
-                                withAnimation {
-                                    saved.removeAll { $0.id == v.id }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 14) {
+                        ForEach(filtered) { v in
+                            BVSavedCard(
+                                venue: v,
+                                onUnsave: {
+                                    withAnimation {
+                                        saved.removeAll { $0.id == v.id }
+                                    }
+                                    showToast("\(v.name) removed", isCancel: true)
+                                },
+                                onTap: {
+                                    openWhatsApp(message: "Hi Alfred, I'd like to book \(v.name)")
+                                    showToast("Opening WhatsApp to book…")
                                 }
-                                showToast("\(v.name) removed", isCancel: true)
-                            },
-                            onTap: {
-                                openWhatsApp(message: "Hi Alfred, I'd like to book \(v.name)")
-                                showToast("Opening WhatsApp to book…")
-                            }
-                        )
+                            )
+                        }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
             }
         }
     }
@@ -1015,78 +1017,154 @@ private struct BVSavedCard: View {
     let venue: BVSavedVenue
     let onUnsave: () -> Void
     let onTap: () -> Void
+    @State private var pressed = false
+
+    private let cardWidth: CGFloat = 300
+    private let cardHeight: CGFloat = 205
 
     var body: some View {
-        Button(action: {
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            onTap()
-        }) {
-            VStack(alignment: .leading, spacing: 0) {
-                ZStack(alignment: .topTrailing) {
-                    AsyncImage(url: URL(string: venue.imgURL)) { phase in
-                        switch phase {
-                        case .success(let img): img.resizable().scaledToFill()
-                        case .failure: ZStack { A.srf; Text(String(venue.name.prefix(1))).font(.sf(32, weight: .light)).foregroundStyle(A.s7) }
-                        default: A.srf.opacity(0.3)
+        ZStack(alignment: .bottom) {
+            // A) Photo
+            AsyncImage(url: URL(string: venue.imgURL)) { phase in
+                switch phase {
+                case .success(let img):
+                    img.resizable().aspectRatio(contentMode: .fill)
+                case .failure:
+                    ZStack {
+                        A.el
+                        Text(String(venue.name.prefix(1)))
+                            .font(.sf(36, weight: .light))
+                            .foregroundStyle(A.s7)
+                    }
+                default:
+                    A.srf.opacity(0.3)
+                }
+            }
+            .frame(width: cardWidth, height: cardHeight)
+            .clipped()
+
+            // B) Gradient — matches AlfredLandscapeCard
+            LinearGradient(stops: [
+                .init(color: .clear,               location: 0.00),
+                .init(color: .clear,               location: 0.45),
+                .init(color: .black.opacity(0.30), location: 0.58),
+                .init(color: .black.opacity(0.75), location: 0.72),
+                .init(color: .black.opacity(0.92), location: 0.86),
+                .init(color: .black.opacity(0.97), location: 1.00),
+            ], startPoint: .top, endPoint: .bottom)
+
+            // C) Top: badge (left) + unsave heart (right)
+            VStack {
+                HStack {
+                    Text(venue.tag)
+                        .font(.outfit(12, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.88))
+                        .padding(.horizontal, 13)
+                        .padding(.vertical, 5)
+                        .background(Color.black.opacity(0.65))
+                        .clipShape(Capsule())
+                    Spacer()
+                    Button(action: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        onUnsave()
+                    }) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.black.opacity(0.45))
+                                .frame(width: 32, height: 32)
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(bkRed)
                         }
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(12)
+                Spacer()
+            }
+
+            // D) Bottom text — matches AlfredLandscapeCard layout
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .lastTextBaseline) {
+                    Text(venue.name)
+                        .font(.outfit(17, weight: .bold))
+                        .foregroundStyle(.white)
+                        .tracking(-0.3)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                    Spacer()
+                }
+                .padding(.bottom, 2)
+
+                Text(venue.type)
+                    .font(.outfit(11, weight: .light))
+                    .foregroundStyle(.white.opacity(0.46))
+                    .lineLimit(1)
+                    .padding(.bottom, 9)
+
+                Rectangle()
+                    .fill(Color.white.opacity(0.18))
+                    .frame(height: 0.5)
+                    .padding(.bottom, 9)
+
+                HStack(spacing: 0) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.white.opacity(0.50))
+                        Text(venue.rating)
+                            .font(.outfit(11, weight: .bold))
+                            .foregroundStyle(.white)
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: 160)
-                    .clipped()
 
-                    // Rating badge
-                    HStack(spacing: 3) {
-                        Text("★").font(.system(size: 10)).foregroundStyle(bkGold)
-                        Text(venue.rating).font(.sf(11, weight: .semibold)).foregroundStyle(A.s1)
+                    Rectangle()
+                        .fill(Color.white.opacity(0.20))
+                        .frame(width: 0.5, height: 13)
+
+                    HStack(spacing: 5) {
+                        Image(systemName: "tag")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.white.opacity(0.50))
+                        Text(venue.cat)
+                            .font(.outfit(11, weight: .bold))
+                            .foregroundStyle(.white)
                     }
-                    .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .padding(10)
+                    .frame(maxWidth: .infinity)
 
-                    // Unsave heart top-left
-                    VStack {
-                        HStack {
-                            Button(action: onUnsave) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.black.opacity(0.45))
-                                        .frame(width: 28, height: 28)
-                                    Image(systemName: "heart.fill")
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundStyle(bkRed)
-                                }
-                            }
-                            .buttonStyle(.plain)
-                            Spacer()
-                        }
-                        .padding(.leading, 10)
-                        .padding(.top, 10)
-                        Spacer()
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(venue.name).font(.sf(15, weight: .semibold)).foregroundStyle(A.s1).lineLimit(1)
-                    Text(venue.type).font(.sf(13)).foregroundStyle(A.s5).lineLimit(1)
                     if let viewers = venue.viewers {
-                        HStack(spacing: 4) {
-                            Circle().fill(bkGreen).frame(width: 5, height: 5)
-                            Text("\(viewers) viewing now")
-                                .font(.sf(12))
-                                .foregroundStyle(A.s5)
+                        Rectangle()
+                            .fill(Color.white.opacity(0.20))
+                            .frame(width: 0.5, height: 13)
+                        HStack(spacing: 5) {
+                            Circle()
+                                .fill(bkGreen)
+                                .frame(width: 5, height: 5)
+                            Text("\(viewers) now")
+                                .font(.outfit(11, weight: .bold))
+                                .foregroundStyle(.white)
                         }
-                        .padding(.top, 2)
+                        .frame(maxWidth: .infinity)
                     }
                 }
-                .padding(.horizontal, 16).padding(.vertical, 14)
             }
-            .frame(maxWidth: .infinity)
-            .background(A.el)
-            .clipShape(RoundedRectangle(cornerRadius: 18))
-            .overlay(RoundedRectangle(cornerRadius: 18).stroke(A.bd, lineWidth: 0.5))
+            .padding(.horizontal, 14)
+            .padding(.bottom, 13)
         }
-        .buttonStyle(AlfredPressStyle())
+        .frame(width: cardWidth, height: cardHeight)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .scaleEffect(pressed ? 0.95 : 1.0)
+        .brightness(pressed ? -0.03 : 0)
+        .animation(.spring(response: 0.45, dampingFraction: 0.78), value: pressed)
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in if !pressed { pressed = true } }
+                .onEnded { _ in
+                    pressed = false
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    onTap()
+                }
+        )
     }
 }
 
