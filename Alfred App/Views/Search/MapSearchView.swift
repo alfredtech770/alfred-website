@@ -241,9 +241,9 @@ class MapSearchViewModel: ObservableObject {
     @Published var cameraPosition: MapCameraPosition = .camera(
         MapCamera(
             centerCoordinate: CLLocationCoordinate2D(latitude: 25.7617, longitude: -80.1918),
-            distance: 12000,
+            distance: 1800,
             heading: 0,
-            pitch: 0
+            pitch: 60
         )
     )
 
@@ -550,15 +550,16 @@ class MapSearchViewModel: ObservableObject {
             cameraPosition = .camera(
                 MapCamera(
                     centerCoordinate: venue.coordinate,
-                    distance: 3000,
+                    distance: 1200,
                     heading: 0,
-                    pitch: 0
+                    pitch: 60
                 )
             )
         }
     }
 
     func fitCameraToVenues() {
+        // Only fit to venues if we have no user location to center on
         guard !filteredVenues.isEmpty else { return }
         let lats = filteredVenues.map(\.coordinate.latitude)
         let lngs = filteredVenues.map(\.coordinate.longitude)
@@ -571,15 +572,14 @@ class MapSearchViewModel: ObservableObject {
         let latDelta = maxLat - minLat
         let lngDelta = maxLng - minLng
         let maxDelta = max(latDelta, lngDelta)
-        // Convert delta to camera distance (rough: 1 degree ~ 111km)
-        let distance = max(3000, maxDelta * 111000 * 1.2)
+        let distance = max(2000, maxDelta * 111000 * 1.2)
         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
             cameraPosition = .camera(
                 MapCamera(
                     centerCoordinate: center,
                     distance: distance,
                     heading: 0,
-                    pitch: 0
+                    pitch: 60
                 )
             )
         }
@@ -590,9 +590,9 @@ class MapSearchViewModel: ObservableObject {
             cameraPosition = .camera(
                 MapCamera(
                     centerCoordinate: location.coordinate,
-                    distance: 4000,
+                    distance: 1800,
                     heading: 0,
-                    pitch: 0
+                    pitch: 60
                 )
             )
         }
@@ -878,7 +878,7 @@ private struct VenueCardPager: View {
     var onBook: (MapVenueModel) -> Void
     var onSelect: (MapVenueModel) -> Void
 
-    private let cardWidth: CGFloat = 300
+    private let cardWidth: CGFloat = 260
     private let cardSpacing: CGFloat = 12
 
     @State private var currentIndex: Int = 0
@@ -891,12 +891,23 @@ private struct VenueCardPager: View {
 
             HStack(spacing: cardSpacing) {
                 ForEach(Array(venues.enumerated()), id: \.element.id) { index, venue in
-                    VenueMapCard(
-                        venue: venue,
-                        isSelected: selectedVenue?.id == venue.id,
-                        onBook: { onBook(venue) }
+                    AlfredBigCard(
+                        imageURL: venue.heroImageURL ?? "",
+                        badge: venue.tag,
+                        name: venue.name,
+                        subtitle: [venue.cuisine ?? venue.category.capitalized, venue.distance]
+                            .compactMap { $0 }.joined(separator: " · "),
+                        price: venue.priceLevelDisplay,
+                        stats: [
+                            CardStat(icon: "star.fill",   label: "", value: venue.rating.map { String(format: "%.1f", $0) } ?? "—"),
+                            CardStat(icon: venue.isOpen ? "circle.fill" : "circle", label: "", value: venue.isOpen ? "Open" : "Closed"),
+                        ],
+                        cardWidth: cardWidth,
+                        cardHeight: 340,
+                        onTap: { onSelect(venue) }
                     )
-                    .onTapGesture { onSelect(venue) }
+                    .scaleEffect(selectedVenue?.id == venue.id ? 1.03 : 1.0)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedVenue?.id)
                 }
             }
             .padding(.horizontal, sideInset)
@@ -934,7 +945,7 @@ private struct VenueCardPager: View {
             )
             .animation(.spring(response: 0.35, dampingFraction: 0.82), value: dragOffset)
         }
-        .frame(height: 205 + 12)  // cardHeight + padding
+        .frame(height: 340 + 12)  // cardHeight + padding
         .onChange(of: selectedVenue) { _, newVal in
             // When venue is selected externally (e.g. pin tap), scroll to it
             if let newVal, let idx = venues.firstIndex(where: { $0.id == newVal.id }) {
@@ -1284,11 +1295,11 @@ struct MapSearchView: View {
                         }
                     }
                 }
-                .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: false))
+                .mapStyle(.standard(elevation: .realistic, emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: false))
                 .mapControls { }
                 .colorScheme(.dark)
                 .ignoresSafeArea()
-                .overlay(Color.alfredBG.opacity(0.25).ignoresSafeArea().allowsHitTesting(false))
+                .overlay(Color.alfredBG.opacity(0.15).ignoresSafeArea().allowsHitTesting(false))
 
                 // ── Layer 2: Top overlay ──
                 VStack(spacing: 8) {
@@ -1480,7 +1491,7 @@ struct MapSearchView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.trailing, 16)
-                    .padding(.bottom, vm.filteredVenues.isEmpty ? (geo.safeAreaInsets.bottom + 30) : (geo.safeAreaInsets.bottom + 253))
+                    .padding(.bottom, vm.filteredVenues.isEmpty ? (geo.safeAreaInsets.bottom + 30) : (geo.safeAreaInsets.bottom + 400))
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .zIndex(15)
                 }
@@ -1552,14 +1563,26 @@ struct MapSearchView: View {
             }
         }
         .onAppear {
-            vm.userLocation = locationManager.userLocation
+            // Center on user immediately if location is already available
+            if let loc = locationManager.userLocation {
+                vm.centerOnUser(loc)
+            } else {
+                locationManager.requestLocation()
+                locationManager.startUpdating()
+            }
             Task {
                 await vm.fetchVenues(city: city)
             }
         }
         .onChange(of: locationManager.userLocation) { _, newLoc in
+            guard let newLoc else { return }
+            // First time we get a location, snap to user; always re-sort
+            let isFirstLocation = vm.userLocation == nil
             vm.userLocation = newLoc
             vm.applyFilters()
+            if isFirstLocation {
+                vm.centerOnUser(newLoc)
+            }
         }
         .alert("Booking", isPresented: $showBooking) {
             Button("OK", role: .cancel) {}
