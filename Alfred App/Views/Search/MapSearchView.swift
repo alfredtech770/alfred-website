@@ -655,7 +655,7 @@ struct VenueMapCard: View {
     @State private var liked = false
 
     private let cardWidth: CGFloat = 300
-    private let cardHeight: CGFloat = 280
+    private let cardHeight: CGFloat = 205
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -934,7 +934,7 @@ private struct VenueCardPager: View {
             )
             .animation(.spring(response: 0.35, dampingFraction: 0.82), value: dragOffset)
         }
-        .frame(height: 280 + 12)  // cardHeight + padding
+        .frame(height: 205 + 12)  // cardHeight + padding
         .onChange(of: selectedVenue) { _, newVal in
             // When venue is selected externally (e.g. pin tap), scroll to it
             if let newVal, let idx = venues.firstIndex(where: { $0.id == newVal.id }) {
@@ -1302,9 +1302,9 @@ struct MapSearchView: View {
                             }
                         } label: {
                             Image(systemName: "house")
-                                .font(.system(size: 15, weight: .regular))
+                                .font(.system(size: 18, weight: .regular))
                                 .foregroundStyle(Color.silver300)
-                                .frame(width: 38, height: 38)
+                                .frame(width: 48, height: 48)
                                 .background(Color.alfredElevated.opacity(0.9))
                                 .clipShape(Circle())
                                 .overlay(
@@ -1316,11 +1316,11 @@ struct MapSearchView: View {
                         // Search bar
                         HStack(spacing: 10) {
                             Image(systemName: "magnifyingglass")
-                                .font(.system(size: 14, weight: .light))
+                                .font(.system(size: 15, weight: .light))
                                 .foregroundStyle(Color.silver500)
 
                             TextField("Search venues…", text: $vm.searchText)
-                                .font(.outfit(13, weight: .light))
+                                .font(.outfit(14, weight: .light))
                                 .foregroundStyle(Color.silver100)
                                 .tint(Color.silver300)
                                 .focused($searchFieldFocused)
@@ -1336,19 +1336,19 @@ struct MapSearchView: View {
                                     vm.updateSuggestions()
                                 } label: {
                                     Image(systemName: "xmark.circle.fill")
-                                        .font(.system(size: 14))
+                                        .font(.system(size: 15))
                                         .foregroundStyle(Color.silver600)
                                 }
                             }
                         }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 9)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 13)
                         .background(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
                                 .fill(Color.alfredElevated.opacity(0.9))
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
                                 .strokeBorder(isSearchFocused ? Color.silver600 : Color.alfredBorder, lineWidth: 0.5)
                         )
                     }
@@ -1480,7 +1480,7 @@ struct MapSearchView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.trailing, 16)
-                    .padding(.bottom, vm.filteredVenues.isEmpty ? (geo.safeAreaInsets.bottom + 30) : (geo.safeAreaInsets.bottom + 344))
+                    .padding(.bottom, vm.filteredVenues.isEmpty ? (geo.safeAreaInsets.bottom + 30) : (geo.safeAreaInsets.bottom + 253))
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .zIndex(15)
                 }
@@ -1502,7 +1502,7 @@ struct MapSearchView: View {
                             vm.selectVenue(venue)
                         }
                     )
-                    .padding(.bottom, geo.safeAreaInsets.bottom + 46)
+                    .padding(.bottom, geo.safeAreaInsets.bottom + 28)
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .zIndex(10)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
