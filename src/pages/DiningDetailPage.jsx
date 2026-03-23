@@ -190,14 +190,14 @@ export default function DiningDetailPage(){
         </div>
         <div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",...sf(13,500),color:"rgba(255,255,255,0.7)"}}>{idx+1} / {V.imgs.length}</div>
         <div style={{position:"absolute",bottom:56,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5}}>
-          {V.imgs.map(function(_,i){return <div key={i} onClick={function(e){e.stopPropagation();setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.25")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
+          {(V.imgs||[]).map(function(_,i){return <div key={i} onClick={function(e){e.stopPropagation();setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.25")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
         </div>
       </div>}
 
       {/* Hero */}
       <section className="dd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>})}
+          {(V.imgs||[]).map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>})}
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
         {/* Left/Right arrows */}
@@ -213,7 +213,7 @@ export default function DiningDetailPage(){
           <div onClick={function(){setLiked(!liked)}} style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}><svg width="13" height="13" viewBox="0 0 24 24" fill={liked?C.red:"none"} stroke={liked?C.red:"rgba(255,255,255,0.5)"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
         </div>
         <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
-          {V.imgs.map(function(_,i){return <div key={i} onClick={function(){setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
+          {(V.imgs||[]).map(function(_,i){return <div key={i} onClick={function(){setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
         </div>
       </section>
 
@@ -329,7 +329,7 @@ export default function DiningDetailPage(){
         {secDiv}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:factsVis?1:0,transition:"all 0.8s ease"}}>At a Glance</p>
         <div className="facts-g" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12,opacity:factsVis?1:0,transform:factsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {V.facts.map(function(f,i){return(<div key={i} style={{padding:"22px 22px",borderRadius:20,background:C.el,border:"1px solid "+C.bd,transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:16}}>{f.icon}</span><span style={{...sf(12),color:C.s5}}>{f.label}</span></div><span style={{...sf(15,600),color:C.s1}}>{f.value}</span></div>)})}
+          {(V.facts||[]).map(function(f,i){return(<div key={i} style={{padding:"22px 22px",borderRadius:20,background:C.el,border:"1px solid "+C.bd,transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:16}}>{f.icon}</span><span style={{...sf(12),color:C.s5}}>{f.label}</span></div><span style={{...sf(15,600),color:C.s1}}>{f.value}</span></div>)})}
         </div>
       </div>
 
@@ -341,7 +341,7 @@ export default function DiningDetailPage(){
           <span style={{...sf(12),color:C.s6,opacity:dishVis?1:0}}>Full menu →</span>
         </div>
         <div className="dish-row" style={{opacity:dishVis?1:0,transform:dishVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {V.dishes.map(function(d,i){var cc=courseCol(d.course);return(
+          {(V.dishes||[]).map(function(d,i){var cc=courseCol(d.course);return(
             <div key={i} style={{width:200,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",display:"flex",flexDirection:"column",transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
               <div style={{height:2,background:"linear-gradient(90deg,"+cc+"4D,"+cc+"1A)"}}/>
               <div style={{padding:"20px 18px",flex:1,display:"flex",flexDirection:"column"}}>
@@ -365,7 +365,7 @@ export default function DiningDetailPage(){
         {secDiv}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:atmoVis?1:0,transition:"all 0.8s ease"}}>The Atmosphere</p>
         <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"28px 30px",display:"flex",flexDirection:"column",gap:22,opacity:atmoVis?1:0,transform:atmoVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {V.atmosphere.map(function(m,i){return(
+          {(V.atmosphere||[]).map(function(m,i){return(
             <div key={i} style={{display:"flex",alignItems:"center",gap:14}}>
               <span style={{...sf(13,400),color:C.s1,width:76,flexShrink:0}}>{m.label}</span>
               <div style={{flex:1,height:3,borderRadius:2,background:"rgba(244,244,245,0.04)",overflow:"hidden"}}>
@@ -388,7 +388,7 @@ export default function DiningDetailPage(){
           </div>
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>
-          {V.bestFor.map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
+          {(V.bestFor||[]).map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
         </div>
       </div>
 
@@ -397,7 +397,7 @@ export default function DiningDetailPage(){
         {secDiv}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:hoursVis?1:0,transition:"all 0.8s ease"}}>Hours & Details</p>
         <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",opacity:hoursVis?1:0,transform:hoursVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {[{l:"Lunch",v:V.hours.lunch,c:C.gn},{l:"Dinner",v:V.hours.dinner,c:C.gn},{l:"Closed",v:V.hours.closed,c:C.red}].map(function(r,i){return(<div key={i}><div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 24px"}}><div style={{width:7,height:7,borderRadius:"50%",background:r.c,opacity:0.55,flexShrink:0}}/><span style={{...sf(13,500),color:C.s5,width:56}}>{r.l}</span><span style={{...sf(14),color:C.s1}}>{r.v}</span></div>{i<2&&<div style={{height:0.5,background:C.bd,marginLeft:24}}/>}</div>)})}
+          {[{l:"Lunch",v:(V.hours||{}).lunch||"—",c:C.gn},{l:"Dinner",v:(V.hours||{}).dinner||"—",c:C.gn},{l:"Closed",v:(V.hours||{}).closed||"—",c:C.red}].map(function(r,i){return(<div key={i}><div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 24px"}}><div style={{width:7,height:7,borderRadius:"50%",background:r.c,opacity:0.55,flexShrink:0}}/><span style={{...sf(13,500),color:C.s5,width:56}}>{r.l}</span><span style={{...sf(14),color:C.s1}}>{r.v}</span></div>{i<2&&<div style={{height:0.5,background:C.bd,marginLeft:24}}/>}</div>)})}
         </div>
       </div>
 
@@ -409,7 +409,7 @@ export default function DiningDetailPage(){
           <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{V.reviewCount} reviews</span>
         </div>
         <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {V.reviews.map(function(r,i){var isB=r.tier==="Black";return(
+          {(V.reviews||[]).map(function(r,i){var isB=r.tier==="Black";return(
             <div key={i} style={{width:300,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"24px 22px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
                 <div style={{width:36,height:36,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(15,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
