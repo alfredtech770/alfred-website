@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -6,7 +7,7 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var V={
+var LE_CINQ={
   name:"Le Cinq",tagline:"Where French haute cuisine meets quiet grandeur",
   cuisine:"French Contemporary",address:"31 Avenue George V, 75008 Paris",
   rating:4.9,reviewCount:47,priceLevel:"€€€€",avgSpend:"€280",
@@ -36,6 +37,7 @@ var V={
 var courseCol=function(c){return c==="Starter"?"#60A5FA":c==="Dessert"?"#F472B6":C.s3};
 
 export default function DiningDetailPage(){
+  var {slug}=useParams();
   var [idx,setIdx]=useState(0);
   var [lightbox,setLightbox]=useState(false);
   var [liked,setLiked]=useState(false);
@@ -55,7 +57,42 @@ export default function DiningDetailPage(){
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
-  useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},5000);return function(){clearInterval(t)}},[]);
+  var _sess=null;try{_sess=JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
+  var V=_sess?{
+    name:_sess.name,
+    tagline:_sess.tagline||("Fine dining · "+_sess.cuisine),
+    cuisine:_sess.cuisine,
+    address:_sess.loc,
+    rating:_sess.rating,
+    reviewCount:_sess.reviews,
+    priceLevel:_sess.price,
+    avgSpend:_sess.avg,
+    imgs:[_sess.img],
+    hours:{lunch:_sess.meal==="Dinner"?"Not served":"12:00 – 2:30 PM",dinner:"7:00 – 10:30 PM",closed:"Check availability"},
+    dressCode:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual",
+    michelin:_sess.michelin||0,
+    alfredNote:"Contact Alfred to arrange your table at "+_sess.name+". We handle the reservation, seating preference, and any special occasions.",
+    alfredTip:"Mention Alfred at arrival for preferred treatment and the best available table.",
+    chef:{name:"Executive Chef",title:"Head of Kitchen",note:_sess.loc+" · "+_sess.cuisine},
+    dishes:[],
+    wineNote:"Our sommelier will guide you through a thoughtful selection paired to your meal.",
+    atmosphere:[
+      {label:"Noise",value:_sess.vibe==="Scene"?72:_sess.vibe==="Casual"?55:30},
+      {label:"Intimacy",value:_sess.vibe==="Romantic"?92:_sess.vibe==="Formal"?75:55},
+      {label:"Formality",value:_sess.vibe==="Formal"?85:_sess.vibe==="Casual"?20:50},
+      {label:"Scene",value:_sess.vibe==="Scene"?88:40},
+    ],
+    bestFor:_sess.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_sess.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
+    reviews:[],
+    facts:[
+      {icon:"€",label:"Avg. spend",value:_sess.avg+" / person"},
+      {icon:"🕐",label:"Best time",value:_sess.meal==="Both"?"Lunch or dinner":_sess.meal+" service"},
+      {icon:"👔",label:"Dress code",value:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual"},
+      {icon:"👥",label:"Party size",value:"2 – 8 guests"},
+    ],
+  }:LE_CINQ;
+
+  useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},5000);return function(){clearInterval(t)}},[slug]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
