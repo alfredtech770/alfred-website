@@ -1176,5 +1176,5 @@ struct WellnessVenueDetailView: View {
 }
 
 #Preview {
-    WellnessView()
+    WellnessView(selectedCity: .constant("Miami"), isFilterVisible: .constant(false))
 }
