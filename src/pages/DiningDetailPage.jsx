@@ -145,34 +145,30 @@ export default function DiningDetailPage(){
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
-input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
-input[type="date"]{-webkit-appearance:none;appearance:none}
-html,body{overflow-x:hidden;max-width:100vw}
-.page-wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
-.two-col{display:flex;gap:48px;align-items:flex-start}
-.left-col{flex:1;min-width:0;max-width:100%}
-.right-col{width:360px;flex-shrink:0;position:sticky;top:80px}
-.mobile-booking{display:none}
+.page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
+.two-col{display:flex;gap:40px;align-items:flex-start}
+.left-col{flex:1;min-width:0}
+.right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
 .dish-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .dish-row::-webkit-scrollbar{display:none}
-.rev-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:4px}
+.rev-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .rev-row::-webkit-scrollbar{display:none}
-.facts-g{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media(max-width:900px){
-  .two-col{flex-direction:column!important;gap:0!important}
-  .right-col{display:none!important}
-  .mobile-booking{display:block!important}
-  .page-wrap{padding:0 16px!important}
-  .dd-hero{height:37vh!important;min-height:220px!important;max-height:340px!important}
-  .dd-name{font-size:26px!important}
+  .two-col{flex-direction:column!important}
+  .right-col{width:100%!important;position:relative!important;top:auto!important}
+}
+@media(max-width:768px){
+  .page-wrap{padding:0 24px!important}
+  .dd-hero{height:380px!important}
+  .dd-name{font-size:30px!important}
   .facts-g{grid-template-columns:1fr 1fr!important}
 }
-@media(max-width:390px){.dd-hero{height:34vh!important;min-height:200px!important}.dd-name{font-size:22px!important}}
+@media(max-width:390px){.dd-hero{height:320px!important}.dd-name{font-size:26px!important}.facts-g{grid-template-columns:1fr 1fr!important}}
       `}</style>
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
 
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"16px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
           <a href="/catalog/dining" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>← All Restaurants</a>
@@ -199,11 +195,11 @@ html,body{overflow-x:hidden;max-width:100vw}
       </div>}
 
       {/* Hero */}
-      <section className="dd-hero" style={{height:"70vh",maxHeight:700,minHeight:450,position:"relative",overflow:"hidden"}}>
+      <section className="dd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.1)",cursor:"pointer"}}/>})}
+          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>})}
         </div>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.25) 0%,transparent 25%,transparent 55%,rgba(10,10,11,0.5) 80%,#0A0A0B 100%)"}}/>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
         {/* Left/Right arrows */}
         <div onClick={function(){setIdx(function(c){return c===0?V.imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -211,44 +207,15 @@ html,body{overflow-x:hidden;max-width:100vw}
         <div onClick={function(){setIdx(function(c){return(c+1)%V.imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </div>
-        {/* Image counter — top right below nav */}
+        {/* Image counter */}
         <div style={{position:"absolute",top:64,right:16,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)"}}>{idx+1} / {V.imgs.length}</div>
-        {/* Tags — top left below nav */}
-        <div style={{position:"absolute",top:64,left:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
-          {V.michelin>0&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{"★".repeat(V.michelin)} MICHELIN</span>}
-          <span style={{...sf(9,600),letterSpacing:0.8,color:C.s4,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}>{V.cuisine||"Fine Dining"}</span>
-          <span style={{display:"flex",alignItems:"center",gap:4,...sf(9,500),color:C.gn,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>Available</span>
-        </div>
-        {/* Brand label — bottom left */}
-        <div style={{position:"absolute",bottom:48,left:"clamp(16px,4vw,40px)",display:"flex",alignItems:"center",gap:8,zIndex:5}}>
-          <div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/>
-          <span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{V.cuisine||"Restaurant"}</span>
+        <div style={{position:"absolute",top:56,right:56,display:"flex",gap:8,zIndex:10}}>
+          <div onClick={function(){setLiked(!liked)}} style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}><svg width="13" height="13" viewBox="0 0 24 24" fill={liked?C.red:"none"} stroke={liked?C.red:"rgba(255,255,255,0.5)"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
         </div>
         <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
           {V.imgs.map(function(_,i){return <div key={i} onClick={function(){setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
         </div>
       </section>
-
-      {/* Mobile booking card — shown only on mobile */}
-      <div className="mobile-booking" style={{padding:"16px 16px 0"}}>
-        <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px"}}>
-          <div style={{...sf(10,600),color:C.s7,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>Arrange a Table</div>
-          <div style={{display:"flex",alignItems:"baseline",gap:5,marginBottom:16}}>
-            <span style={{...sf(24,700),color:C.s1}}>{V.avgSpend||V.priceLevel}</span>
-            <span style={{...sf(13),color:C.s6}}>/ person</span>
-          </div>
-          <div style={{display:"flex",gap:8,marginBottom:14}}>
-            <div style={{flex:1}}>
-              <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Date</div>
-              <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={{padding:"12px 16px",borderRadius:12,background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(13),outline:"none",width:"100%",colorScheme:"dark"}}/>
-            </div>
-          </div>
-          <div style={{display:"flex",gap:4,marginBottom:14}}>
-            {["19:00","19:30","20:00","20:30","21:00"].map(function(t){var active=time===t;return <div key={t} onClick={function(){setTime(t)}} style={{flex:1,textAlign:"center",padding:"10px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",...sf(11,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{t}</div>})}
-          </div>
-          <a href="https://wa.me/message/DAO44K3XCXK3F1" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,textDecoration:"none",marginBottom:8}}>Reserve a Table</a>
-        </div>
-      </div>
 
       {/* Two-column */}
       <div className="page-wrap" style={{marginTop:-40,position:"relative",zIndex:10,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1)"}}>
@@ -367,7 +334,7 @@ html,body{overflow-x:hidden;max-width:100vw}
       </div>
 
       {/* Signature Dishes */}
-      {V.dishes&&V.dishes.length>0&&<div ref={dishRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+      <div ref={dishRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:dishVis?1:0,transition:"all 0.8s ease"}}>Signature Dishes</p>
@@ -391,10 +358,10 @@ html,body{overflow-x:hidden;max-width:100vw}
             </div>
           )})}
         </div>
-      </div>}
+      </div>
 
       {/* Atmosphere + Wine + Chef */}
-      {V.atmosphere&&V.atmosphere.length>0&&<div ref={atmoRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+      <div ref={atmoRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:atmoVis?1:0,transition:"all 0.8s ease"}}>The Atmosphere</p>
         <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"28px 30px",display:"flex",flexDirection:"column",gap:22,opacity:atmoVis?1:0,transform:atmoVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
@@ -413,26 +380,26 @@ html,body{overflow-x:hidden;max-width:100vw}
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:14}}>🍷</span><span style={{...sf(10,500),letterSpacing:1.5,color:"#A78BFA80",textTransform:"uppercase"}}>Wine Cellar</span></div>
             <p style={{...sf(13),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{V.wineNote}"</p>
           </div>
-          {V.chef&&<div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
+          <div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:14}}>🔥</span><span style={{...sf(10,500),letterSpacing:1.5,color:C.s6,textTransform:"uppercase"}}>The Kitchen</span></div>
             <div style={{...sf(16,600),color:C.s1,marginBottom:4}}>{V.chef.name}</div>
             <div style={{...sf(13),color:C.s5,marginBottom:2}}>{V.chef.title}</div>
             <div style={{...sf(12),color:C.s6}}>{V.chef.note}</div>
-          </div>}
+          </div>
         </div>
-        {V.bestFor&&V.bestFor.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>
           {V.bestFor.map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
-        </div>}
-      </div>}
+        </div>
+      </div>
 
       {/* Hours */}
-      {V.hours&&<div ref={hoursRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+      <div ref={hoursRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:hoursVis?1:0,transition:"all 0.8s ease"}}>Hours & Details</p>
         <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",opacity:hoursVis?1:0,transform:hoursVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {[{l:"Lunch",v:V.hours.lunch,c:C.gn},{l:"Dinner",v:V.hours.dinner,c:C.gn},{l:"Closed",v:V.hours.closed,c:C.red}].filter(function(r){return r.v}).map(function(r,i){return(<div key={i}><div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 24px"}}><div style={{width:7,height:7,borderRadius:"50%",background:r.c,opacity:0.55,flexShrink:0}}/><span style={{...sf(13,500),color:C.s5,width:56}}>{r.l}</span><span style={{...sf(14),color:C.s1}}>{r.v}</span></div><div style={{height:0.5,background:C.bd,marginLeft:24}}/></div>)})}
+          {[{l:"Lunch",v:V.hours.lunch,c:C.gn},{l:"Dinner",v:V.hours.dinner,c:C.gn},{l:"Closed",v:V.hours.closed,c:C.red}].map(function(r,i){return(<div key={i}><div style={{display:"flex",alignItems:"center",gap:12,padding:"16px 24px"}}><div style={{width:7,height:7,borderRadius:"50%",background:r.c,opacity:0.55,flexShrink:0}}/><span style={{...sf(13,500),color:C.s5,width:56}}>{r.l}</span><span style={{...sf(14),color:C.s1}}>{r.v}</span></div>{i<2&&<div style={{height:0.5,background:C.bd,marginLeft:24}}/>}</div>)})}
         </div>
-      </div>}
+      </div>
 
       {/* Reviews */}
       <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
@@ -466,7 +433,7 @@ html,body{overflow-x:hidden;max-width:100vw}
         </div>
       </section>
 
-      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}><Mark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
         <div style={{display:"flex",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
