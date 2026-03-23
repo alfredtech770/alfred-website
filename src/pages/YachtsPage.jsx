@@ -41,7 +41,7 @@ function YachtCard(p){
   var price=y.price_4hr||y.price_weekday_4hr||null;
   var hasImg=!!y.hero_image_url;
   return(
-    <div onClick={function(){window.location.href="/catalog/yachts/"+y.id}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:p.vis?1:0,animation:p.vis?"fadeIn 0.6s ease "+(0.05+p.i*0.06)+"s both":"none"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+    <div onClick={function(){window.location.href="/catalog/yachts/"+y.id}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.05+p.i*0.06)+"s both":"none"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
       <div style={{height:220,position:"relative",overflow:"hidden",background:hasImg?"transparent":"linear-gradient(135deg,#0f1923,#1a2535)"}}>
         {hasImg
           ? <img src={y.hero_image_url} alt={y.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}}/>
