@@ -200,7 +200,7 @@ body::-webkit-scrollbar{width:0}
       <section className="yd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
           {imgs.length>0
-            ? imgs.map(function(img,i){return <img key={i} src={img} alt={yacht.name} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===imgIdx?1:0,transition:"opacity 0.8s ease"}}/>;})
+            ? imgs.map(function(img,i){return <img key={i} src={img} alt={yacht.name} onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===imgIdx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>;})
             : <div style={{width:"100%",height:"120%",background:"linear-gradient(135deg,#0f1923 0%,#1a2535 50%,#0d1a2a 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" strokeLinecap="round"><path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/><path d="M4 18l1.7-10.2a1 1 0 01.9-.8h10.8a1 1 0 01.9.8L20 18"/><path d="M12 4v4"/></svg>
               </div>
@@ -231,7 +231,7 @@ body::-webkit-scrollbar{width:0}
         </div>
 
         {/* Left/Right Arrows */}
-        {imgs.length>1&&<>
+        {imgs.length>0&&<>
           <div onClick={function(){setImgIdx(function(c){return c===0?imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
           </div>
@@ -240,7 +240,7 @@ body::-webkit-scrollbar{width:0}
           </div>
         </>}
         {/* Image dots */}
-        {imgs.length>1&&
+        {imgs.length>0&&
           <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
             {imgs.map(function(_,i){return <div key={i} onClick={function(){setImgIdx(i)}} style={{width:i===imgIdx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===imgIdx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
           </div>

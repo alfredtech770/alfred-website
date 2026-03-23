@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -38,6 +39,9 @@ var courseCol=function(c){return c==="Starter"?"#60A5FA":c==="Dessert"?"#F472B6"
 
 export default function DiningDetailPage(){
   var {slug}=useParams();
+  var [restaurant,setRestaurant]=useState(null);
+  var [fetching,setFetching]=useState(true);
+  var [fetchError,setFetchError]=useState(null);
   var [idx,setIdx]=useState(0);
   var [lightbox,setLightbox]=useState(false);
   var [liked,setLiked]=useState(false);
@@ -57,42 +61,81 @@ export default function DiningDetailPage(){
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
+  useEffect(function(){
+    if(!slug)return;
+    async function fetchRestaurant(){
+      try{
+        var isUUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+        var data,err;
+        if(isUUID){
+          var r1=await supabase.from("restaurants").select("*").eq("id",slug).single();
+          data=r1.data;err=r1.error;
+          if(!data){var r2=await supabase.from("restaurants").select("*").eq("slug",slug).single();data=r2.data;err=r2.error;}
+        }else{
+          var r=await supabase.from("restaurants").select("*").eq("slug",slug).single();
+          data=r.data;err=r.error;
+        }
+        if(err&&!data)throw err;
+        setRestaurant(data);
+      }catch(e){
+        console.error("Restaurant fetch error:",e);
+        setFetchError("Could not load this restaurant.");
+      }finally{
+        setFetching(false);
+      }
+    }
+    fetchRestaurant();
+  },[slug]);
+
+  function getImgs(r){
+    var imgs=[];
+    if(r.hero_image_url)imgs.push(r.hero_image_url);
+    if(r.photos_order&&Array.isArray(r.photos_order)){r.photos_order.forEach(function(u){if(u&&u!==r.hero_image_url)imgs.push(u)})}
+    if(imgs.length===0&&r.img)imgs.push(r.img);
+    return imgs;
+  }
+
   var _sess=null;try{_sess=JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
-  var V=_sess?{
-    name:_sess.name,
-    tagline:_sess.tagline||("Fine dining · "+_sess.cuisine),
-    cuisine:_sess.cuisine,
-    address:_sess.loc,
-    rating:_sess.rating,
-    reviewCount:_sess.reviews,
-    priceLevel:_sess.price,
-    avgSpend:_sess.avg,
-    imgs:[_sess.img],
-    hours:{lunch:_sess.meal==="Dinner"?"Not served":"12:00 – 2:30 PM",dinner:"7:00 – 10:30 PM",closed:"Check availability"},
-    dressCode:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual",
-    michelin:_sess.michelin||0,
-    alfredNote:"Contact Alfred to arrange your table at "+_sess.name+". We handle the reservation, seating preference, and any special occasions.",
-    alfredTip:"Mention Alfred at arrival for preferred treatment and the best available table.",
-    chef:{name:"Executive Chef",title:"Head of Kitchen",note:_sess.loc+" · "+_sess.cuisine},
-    dishes:[],
-    wineNote:"Our sommelier will guide you through a thoughtful selection paired to your meal.",
-    atmosphere:[
-      {label:"Noise",value:_sess.vibe==="Scene"?72:_sess.vibe==="Casual"?55:30},
-      {label:"Intimacy",value:_sess.vibe==="Romantic"?92:_sess.vibe==="Formal"?75:55},
-      {label:"Formality",value:_sess.vibe==="Formal"?85:_sess.vibe==="Casual"?20:50},
-      {label:"Scene",value:_sess.vibe==="Scene"?88:40},
-    ],
-    bestFor:_sess.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_sess.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
-    reviews:[],
+
+  var V=restaurant?{
+    name:restaurant.name||"",
+    tagline:restaurant.tagline||restaurant.description||"",
+    cuisine:restaurant.cuisine||"",
+    address:restaurant.address||restaurant.loc||restaurant.location||"",
+    rating:restaurant.rating||0,
+    reviewCount:restaurant.review_count||restaurant.reviews||0,
+    priceLevel:restaurant.price||restaurant.price_level||"",
+    avgSpend:restaurant.avg||restaurant.avg_spend||"",
+    imgs:getImgs(restaurant),
+    michelin:restaurant.michelin||0,
+    dressCode:restaurant.dress_code||"Smart Casual",
+    alfredNote:restaurant.alfred_note||(restaurant.alfred_notes)||"Contact Alfred to arrange your table at "+(restaurant.name||"")+". We handle the reservation, seating preference, and any special occasions.",
+    alfredTip:restaurant.alfred_tip||"Mention Alfred at arrival for preferred treatment and the best available table.",
+    chef:restaurant.chef||null,
+    dishes:restaurant.dishes||null,
+    wineNote:restaurant.wine_note||"Our sommelier will guide you through a thoughtful selection paired to your meal.",
+    atmosphere:restaurant.atmosphere||null,
+    bestFor:Array.isArray(restaurant.best_for)?restaurant.best_for:[],
+    reviews:Array.isArray(restaurant.reviews_data)?restaurant.reviews_data:[],
+    hours:restaurant.hours||null,
     facts:[
-      {icon:"€",label:"Avg. spend",value:_sess.avg+" / person"},
-      {icon:"🕐",label:"Best time",value:_sess.meal==="Both"?"Lunch or dinner":_sess.meal+" service"},
-      {icon:"👔",label:"Dress code",value:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual"},
+      {icon:"€",label:"Avg. spend",value:restaurant.avg||restaurant.avg_spend||"On request"},
+      {icon:"🕐",label:"Best time",value:"8:00 PM weekdays"},
+      {icon:"👔",label:"Dress code",value:restaurant.dress_code||"Smart Casual"},
       {icon:"👥",label:"Party size",value:"2 – 8 guests"},
     ],
+  }:_sess?{
+    name:_sess.name,tagline:_sess.tagline||("Fine dining · "+_sess.cuisine),cuisine:_sess.cuisine,address:_sess.loc,rating:_sess.rating,reviewCount:_sess.reviews,priceLevel:_sess.price,avgSpend:_sess.avg,imgs:_sess.img?[_sess.img]:[],hours:null,dressCode:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual",michelin:_sess.michelin||0,alfredNote:"Contact Alfred to arrange your table at "+_sess.name+". We handle the reservation, seating preference, and any special occasions.",alfredTip:"Mention Alfred at arrival for preferred treatment and the best available table.",chef:null,dishes:null,wineNote:"",atmosphere:null,bestFor:[],reviews:[],facts:[{icon:"€",label:"Avg. spend",value:(_sess.avg||"")+" / person"},{icon:"👔",label:"Dress code",value:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual"},{icon:"👥",label:"Party size",value:"2 – 8 guests"},{icon:"🍽",label:"Service",value:_sess.meal}],
   }:LE_CINQ;
 
-  useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},5000);return function(){clearInterval(t)}},[slug]);
+  useEffect(function(){
+    if(!V||!V.imgs||V.imgs.length===0)return;
+    var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},5000);
+    return function(){clearInterval(t)};
+  },[restaurant,slug]);
+
+  if(fetching&&!_sess){return(<div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,display:"flex",alignItems:"center",justifyContent:"center"}}><style>{"*{margin:0;padding:0;box-sizing:border-box}body::-webkit-scrollbar{width:0}"}</style><div style={{textAlign:"center"}}><Mark size={32} color={C.s7}/><div style={{...sf(13),color:C.s6,marginTop:20,letterSpacing:2}}>LOADING</div></div></div>);}
+  if(fetchError&&!restaurant&&!_sess){return(<div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,display:"flex",alignItems:"center",justifyContent:"center"}}><style>{"*{margin:0;padding:0;box-sizing:border-box}body::-webkit-scrollbar{width:0}"}</style><div style={{textAlign:"center",padding:"0 40px"}}><div style={{...sf(20,600),color:C.s5,marginBottom:12}}>{fetchError}</div><a href="/catalog/dining" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,...sf(13,500),color:C.s1}}>← Back to Dining</a></div></div>);}
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
