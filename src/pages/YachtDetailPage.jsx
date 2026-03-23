@@ -55,6 +55,7 @@ export default function YachtDetailPage(){
   var [scrollY,setScrollY]=useState(0);
   var [imgIdx,setImgIdx]=useState(0);
   var [liked,setLiked]=useState(false);
+  var [lightbox,setLightbox]=useState(false);
 
   var infoRef=useRef(null); var infoVis=useVis(infoRef);
   var priceRef=useRef(null); var priceVis=useVis(priceRef);
@@ -160,16 +161,20 @@ export default function YachtDetailPage(){
 ::selection{background:${C.s7};color:${C.s1}}
 a{color:inherit;text-decoration:none}
 body::-webkit-scrollbar{width:0}
+html,body{overflow-x:hidden;max-width:100vw}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
-.two-col{display:flex;gap:40px;align-items:flex-start}
-.left-col{flex:1;min-width:0}
-.right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
+input[type="date"]{-webkit-appearance:none;appearance:none}
+.page-wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+.two-col{display:flex;gap:48px;align-items:flex-start}
+.left-col{flex:1;min-width:0;max-width:100%}
+.right-col{width:360px;flex-shrink:0;position:sticky;top:80px}
 .mobile-booking{display:none}
-.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .incl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rev-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:4px}
+.rev-row::-webkit-scrollbar{display:none}
 @media(max-width:900px){
   .two-col{flex-direction:column!important;gap:0!important}
   .right-col{display:none!important}
@@ -187,8 +192,23 @@ body::-webkit-scrollbar{width:0}
       {/* Film grain */}
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.08,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
 
+      {/* Fullscreen Lightbox */}
+      {lightbox&&<div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={function(){setLightbox(false)}}>
+        <img src={imgs[imgIdx]} alt="" style={{maxWidth:"92vw",maxHeight:"88vh",objectFit:"contain",borderRadius:8}}/>
+        <div onClick={function(e){e.stopPropagation();setLightbox(false)}} style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:201}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </div>
+        <div onClick={function(e){e.stopPropagation();setImgIdx(function(c){return c===0?imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <div onClick={function(e){e.stopPropagation();setImgIdx(function(c){return(c+1)%imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",...sf(13,500),color:"rgba(255,255,255,0.7)"}}>{imgIdx+1} / {imgs.length}</div>
+      </div>}
+
       {/* Nav */}
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"16px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
           <a href="/catalog/yachts" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>← All Yachts</a>
@@ -197,32 +217,28 @@ body::-webkit-scrollbar{width:0}
       </nav>
 
       {/* Hero */}
-      <section className="yd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
+      <section className="yd-hero" style={{height:"70vh",maxHeight:700,minHeight:450,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
           {imgs.length>0
-            ? imgs.map(function(img,i){return <img key={i} src={img} alt={yacht.name} onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===imgIdx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>;})
-            : <div style={{width:"100%",height:"120%",background:"linear-gradient(135deg,#0f1923 0%,#1a2535 50%,#0d1a2a 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            ? imgs.map(function(img,i){return <img key={i} src={img} alt={yacht.name} onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%",opacity:i===imgIdx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.1)",cursor:"pointer"}}/>;})
+            : <div style={{width:"100%",height:"100%",background:"linear-gradient(135deg,#0f1923 0%,#1a2535 50%,#0d1a2a 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                 <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" strokeLinecap="round"><path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/><path d="M4 18l1.7-10.2a1 1 0 01.9-.8h10.8a1 1 0 01.9.8L20 18"/><path d="M12 4v4"/></svg>
               </div>
           }
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
 
-        {/* Brand bar */}
-        <div style={{position:"absolute",bottom:48,left:40,display:"flex",alignItems:"center",gap:8,zIndex:5}}>
+        {/* Brand bar — bottom left */}
+        <div style={{position:"absolute",bottom:48,left:"clamp(16px,4vw,40px)",display:"flex",alignItems:"center",gap:8,zIndex:5}}>
           <div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/>
           <span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{yacht.brand||"Yacht"}</span>
         </div>
 
-        {/* Action buttons */}
-        <div style={{position:"absolute",top:56,right:40,display:"flex",gap:8,zIndex:10}}>
-          <div onClick={function(){setLiked(!liked)}} style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill={liked?C.red:"none"} stroke={liked?C.red:"rgba(255,255,255,0.5)"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-          </div>
-        </div>
+        {/* Image counter — top right below nav */}
+        {imgs.length>0&&<div style={{position:"absolute",top:64,right:16,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)"}}>{imgIdx+1} / {imgs.length}</div>}
 
-        {/* Size / availability badge */}
-        <div style={{position:"absolute",top:56,left:40,display:"flex",gap:6,zIndex:10}}>
+        {/* Tags — top left below nav */}
+        <div style={{position:"absolute",top:64,left:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
           {yacht.size_ft&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{yacht.size_ft} ft</span>}
           <span style={{display:"flex",alignItems:"center",gap:5,...sf(9,600),color:yacht.available!==false?C.gn:"#FF453A",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)"}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:yacht.available!==false?C.gn:"#FF453A"}}/>
@@ -512,7 +528,9 @@ body::-webkit-scrollbar{width:0}
 
           {/* ═══ RIGHT COLUMN — Booking card ═══ */}
           <div className="right-col">
-            <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"28px",position:"sticky",top:88}}>
+            <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}>
+              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
+              <div style={{padding:"24px 22px"}}>
               {/* Header */}
               <div style={{marginBottom:24}}>
                 <div style={{...sf(10,600),color:C.s7,letterSpacing:3,textTransform:"uppercase",marginBottom:12}}>Book This Yacht</div>
@@ -581,11 +599,27 @@ body::-webkit-scrollbar{width:0}
               </a>
 
               {/* Trust note */}
-              <div style={{marginTop:18,...sf(11,400),color:C.s6,textAlign:"center",lineHeight:1.6}}>
-                Captain included · All safety equipment<br/>Instant confirmation via Alfred
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:14}}>
+                {["Captain included","Safety equipment","24/7 Alfred"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
               </div>
             </div>
           </div>
+
+          {/* Availability note */}
+          <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderRadius:14,background:C.gn+"08",border:"0.5px solid "+C.gn+"1A",marginTop:12}}>
+            <div style={{width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px "+C.gn+"66",flexShrink:0}}/>
+            <div>
+              <div style={{...sf(12,600),color:C.s1}}>{yacht.available!==false?"Available now":"On Request"}</div>
+              <div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Book 48 hrs in advance</div>
+            </div>
+          </div>
+
+          {/* WhatsApp quick */}
+          <a href={buildWhatsApp(yacht)} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",textDecoration:"none",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+            Ask about this yacht
+          </a>
+        </div>
 
         </div>
       </div>
@@ -608,7 +642,7 @@ body::-webkit-scrollbar{width:0}
         </div>
       </section>
 
-      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
+      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}><Mark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
         <div style={{display:"flex",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>

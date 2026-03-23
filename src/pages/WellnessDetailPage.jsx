@@ -63,24 +63,35 @@ export default function WellnessDetailPage(){
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
+html,body{overflow-x:hidden;max-width:100vw}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
-.page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
-.two-col{display:flex;gap:40px;align-items:flex-start}
-.left-col{flex:1;min-width:0}
-.right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
+input[type="date"]{-webkit-appearance:none;appearance:none}
+.page-wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+.two-col{display:flex;gap:48px;align-items:flex-start}
+.left-col{flex:1;min-width:0;max-width:100%}
+.right-col{width:360px;flex-shrink:0;position:sticky;top:80px}
+.mobile-booking{display:none}
 .treat-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .treat-row::-webkit-scrollbar{display:none}
-.rev-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.rev-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:4px}
 .rev-row::-webkit-scrollbar{display:none}
-.facts-g{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
-@media(max-width:900px){.two-col{flex-direction:column!important}.right-col{width:100%!important;position:relative!important;top:auto!important}}
-@media(max-width:768px){.page-wrap{padding:0 24px!important}.wd-hero{height:380px!important}.wd-name{font-size:30px!important}.facts-g{grid-template-columns:1fr 1fr!important}}
-@media(max-width:390px){.wd-hero{height:320px!important}.wd-name{font-size:26px!important}}
+.facts-g{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:900px){
+  .two-col{flex-direction:column!important;gap:0!important}
+  .right-col{display:none!important}
+  .mobile-booking{display:block!important}
+  .page-wrap{padding:0 16px!important}
+  .wd-hero{height:37vh!important;min-height:220px!important;max-height:340px!important}
+  .wd-name{font-size:26px!important}
+  .facts-g{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:390px){.wd-hero{height:34vh!important;min-height:200px!important}.wd-name{font-size:22px!important}}
       `}</style>
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
 
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"16px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
           <a href="/catalog/wellness" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>← All Wellness</a>
@@ -107,11 +118,11 @@ export default function WellnessDetailPage(){
       </div>}
 
       {/* Hero */}
-      <section className="wd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
+      <section className="wd-hero" style={{height:"70vh",maxHeight:700,minHeight:450,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>})}
+          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%",opacity:i===idx?1:0,transition:"opacity 0.8s ease",filter:"brightness(1.1)",cursor:"pointer"}}/>})}
         </div>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.25) 0%,transparent 25%,transparent 55%,rgba(10,10,11,0.5) 80%,#0A0A0B 100%)"}}/>
         {/* Left/Right arrows */}
         <div onClick={function(){setIdx(function(c){return c===0?V.imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -119,18 +130,37 @@ export default function WellnessDetailPage(){
         <div onClick={function(){setIdx(function(c){return(c+1)%V.imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </div>
-        {/* Image counter */}
+        {/* Image counter — top right below nav */}
         <div style={{position:"absolute",top:64,right:16,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)"}}>{idx+1} / {V.imgs.length}</div>
-        <div style={{position:"absolute",top:56,right:56,display:"flex",gap:8,zIndex:10}}>
-          <div onClick={function(){setLiked(!liked)}} style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}><svg width="13" height="13" viewBox="0 0 24 24" fill={liked?C.red:"none"} stroke={liked?C.red:"rgba(255,255,255,0.5)"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
-        </div>
-        <div style={{position:"absolute",top:56,left:40,display:"flex",gap:6,zIndex:10}}>
+        {/* Tags — top left below nav */}
+        <div style={{position:"absolute",top:64,left:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
           <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{V.type}</span>
+          <span style={{display:"flex",alignItems:"center",gap:4,...sf(9,500),color:C.gn,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>Available</span>
+        </div>
+        {/* Brand label — bottom left */}
+        <div style={{position:"absolute",bottom:48,left:"clamp(16px,4vw,40px)",display:"flex",alignItems:"center",gap:8,zIndex:5}}>
+          <div style={{width:20,height:2.5,borderRadius:2,background:"rgba(255,255,255,0.5)"}}/>
+          <span style={{...sf(10,500),letterSpacing:3,color:"rgba(255,255,255,0.4)",textTransform:"uppercase"}}>{V.type}</span>
         </div>
         <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
           {V.imgs.map(function(_,i){return <div key={i} onClick={function(){setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
         </div>
       </section>
+
+      {/* Mobile booking card — shown only on mobile */}
+      <div className="mobile-booking" style={{padding:"16px 16px 0"}}>
+        <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px"}}>
+          <div style={{...sf(10,600),color:C.s7,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>Book a Session</div>
+          <div style={{display:"flex",alignItems:"baseline",gap:5,marginBottom:16}}>
+            <span style={{...sf(24,700),color:C.s1}}>{cur.price}</span>
+            <span style={{...sf(13),color:C.s6}}>· {cur.duration}</span>
+          </div>
+          <div style={{display:"flex",gap:4,marginBottom:14}}>
+            {["9 AM","10 AM","12 PM","2 PM","4 PM"].map(function(t){var active=time===t;return <div key={t} onClick={function(){setTime(t)}} style={{flex:1,textAlign:"center",padding:"10px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",...sf(10,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{t}</div>})}
+          </div>
+          <a href="https://wa.me/message/DAO44K3XCXK3F1" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,textDecoration:"none",marginBottom:8}}>Book Session</a>
+        </div>
+      </div>
 
       {/* Two-column: Title + Note | Booking */}
       <div className="page-wrap" style={{marginTop:-40,position:"relative",zIndex:10,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1)"}}>
@@ -156,6 +186,10 @@ export default function WellnessDetailPage(){
               <div style={{display:"flex",alignItems:"center",gap:7,marginTop:12}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 <span style={{...sf(12),color:C.s5}}>{V.address}</span>
+              </div>
+              <div style={{display:"flex",alignItems:"baseline",gap:6,marginTop:20}}>
+                <span style={{...sf(34,700),color:C.s1}}>{V.treatments[0].price}</span>
+                <span style={{...sf(14),color:C.s6}}>starting from</span>
               </div>
             </div>
             {/* Alfred's Note */}
@@ -340,7 +374,7 @@ export default function WellnessDetailPage(){
         </div>
       </section>
 
-      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <footer style={{borderTop:"1px solid "+C.bd,padding:"36px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}><Mark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
         <div style={{display:"flex",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
