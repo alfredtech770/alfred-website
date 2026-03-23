@@ -66,6 +66,20 @@ enum VenueMapCategory: String, CaseIterable {
     case jets         = "Jets"
     case experiences  = "Experiences"
 
+    var emoji: String {
+        switch self {
+        case .all:         return "🗺️"
+        case .restaurants: return "🍽️"
+        case .nightlife:   return "🍸"
+        case .wellness:    return "🧖"
+        case .stays:       return "🏨"
+        case .cars:        return "🏎️"
+        case .yachts:      return "⛵"
+        case .jets:        return "✈️"
+        case .experiences: return "✨"
+        }
+    }
+
     var matchingCategories: [String] {
         switch self {
         case .all:          return []
@@ -1339,10 +1353,10 @@ struct MapSearchView: View {
                         )
                     }
 
-                    // Category pills
+                    // Category pills — HomeView style (emoji + label)
                     if !isSearchFocused {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 6) {
+                            HStack(spacing: 10) {
                                 ForEach(VenueMapCategory.allCases, id: \.self) { cat in
                                     let isActive = vm.selectedCategory == cat
                                     Button {
@@ -1350,24 +1364,26 @@ struct MapSearchView: View {
                                         vm.selectedCategory = cat
                                         vm.applyFilters()
                                     } label: {
-                                        Text(cat.rawValue)
-                                            .font(.outfitLabel)
-                                            .fontWeight(isActive ? .medium : .regular)
-                                            .foregroundStyle(isActive ? Color.alfredBG : Color.silver500)
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 7)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                    .fill(isActive ? Color.silver100 : Color.alfredElevated.opacity(0.85))
-                                            )
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                    .strokeBorder(
-                                                        isActive ? Color.silver100 : Color.alfredBorder,
-                                                        lineWidth: 0.5
-                                                    )
-                                            )
+                                        HStack(spacing: 10) {
+                                            Text(cat.emoji)
+                                                .font(.system(size: 18))
+                                                .frame(width: 28, height: 28)
+                                            Text(cat.rawValue)
+                                                .font(.outfit(13, weight: isActive ? .medium : .regular))
+                                                .foregroundStyle(isActive ? Color.alfredBG : Color.silver400)
+                                        }
+                                        .padding(.horizontal, 14)
+                                        .padding(.vertical, 12)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                                .fill(isActive ? Color.silver100 : Color.alfredElevated)
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                                .strokeBorder(Color.alfredBorder, lineWidth: 0.5)
+                                        )
                                     }
+                                    .buttonStyle(AlfredPressStyle(scale: 0.93))
                                 }
                             }
                             .padding(.horizontal, 2)
