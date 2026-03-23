@@ -35,6 +35,7 @@ function RestCard(p){
   var r=p.r;
   return(
     <div onClick={function(){if(r.available)window.location.href="/catalog/dining/"+r.slug}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:r.available?"pointer":"default",transform:hover&&r.available?"translateY(-6px)":"translateY(0)",boxShadow:hover&&r.available?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+
       <div style={{height:200,position:"relative",overflow:"hidden"}}>
         <img src={r.img} alt={r.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:r.available?"none":"brightness(0.5)"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 30%,rgba(10,10,11,0.85) 100%)"}}/>
@@ -169,7 +170,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 .filter-row::-webkit-scrollbar{display:none}
 @media(max-width:1024px){.d-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
-  .d-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}
+  .d-grid{grid-template-columns:1fr;padding:0 16px!important;max-width:100%!important;margin:0 auto}
   .d-hero{height:340px!important}
   .d-title{font-size:36px!important}
   .search-bar{grid-template-columns:1fr 1fr!important}
