@@ -95,12 +95,15 @@ export default function YachtDetailPage(){
   },[yacht]);
 
   function getImages(y){
-    var imgs=[];
-    if(y.hero_image_url) imgs.push(y.hero_image_url);
-    if(y.photos_order&&Array.isArray(y.photos_order)){
-      y.photos_order.forEach(function(u){if(u&&u!==y.hero_image_url)imgs.push(u)});
+    var po=y.photos_order;
+    if(po){
+      if(typeof po==="string"){try{po=JSON.parse(po)}catch(e){po=null}}
+      if(Array.isArray(po)&&po.length>0){
+        var filtered=po.filter(Boolean);
+        if(filtered.length>0) return filtered;
+      }
     }
-    return imgs;
+    return y.hero_image_url?[y.hero_image_url]:[];
   }
 
   function buildWhatsApp(y){
@@ -155,21 +158,22 @@ body::-webkit-scrollbar{width:0}
 .two-col{display:flex;gap:40px;align-items:flex-start}
 .left-col{flex:1;min-width:0}
 .right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
+.mobile-booking{display:none}
 .spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .incl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:900px){
-  .two-col{flex-direction:column!important}
-  .right-col{width:100%!important;position:relative!important;top:auto!important}
-}
-@media(max-width:768px){
-  .page-wrap{padding:0 24px!important}
-  .yd-hero{height:360px!important}
-  .yd-name{font-size:28px!important}
-  .spec-grid{grid-template-columns:repeat(2,1fr)!important}
+  .two-col{flex-direction:column!important;gap:0!important}
+  .right-col{display:none!important}
+  .mobile-booking{display:block!important}
+  .page-wrap{padding:0 16px!important}
+  .yd-hero{height:37vh!important;min-height:220px!important;max-height:340px!important}
+  .yd-name{font-size:26px!important}
+  .spec-grid{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+  .detail-grid{grid-template-columns:repeat(2,1fr)!important;gap:6px!important}
   .incl-grid{grid-template-columns:1fr!important}
 }
-@media(max-width:390px){.yd-hero{height:300px!important}.yd-name{font-size:24px!important}}
+@media(max-width:390px){.yd-hero{height:34vh!important;min-height:200px!important}.yd-name{font-size:22px!important}}
       `}</style>
 
       {/* Film grain */}
@@ -218,6 +222,15 @@ body::-webkit-scrollbar{width:0}
           </span>
         </div>
 
+        {/* Left/Right Arrows */}
+        {imgs.length>1&&<>
+          <div onClick={function(){setImgIdx(function(c){return c===0?imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div onClick={function(){setImgIdx(function(c){return(c+1)%imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </>}
         {/* Image dots */}
         {imgs.length>1&&
           <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
@@ -225,6 +238,36 @@ body::-webkit-scrollbar{width:0}
           </div>
         }
       </section>
+
+      {/* Mobile booking card — shown only on mobile, placed between hero and content */}
+      <div className="mobile-booking" style={{padding:"16px 16px 0"}}>
+        <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px"}}>
+          <div style={{...sf(10,600),color:C.s7,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>Book This Yacht</div>
+          {(yacht.price_4hr||yacht.price_weekday_4hr)
+            ? <div style={{display:"flex",alignItems:"baseline",gap:5,marginBottom:16}}>
+                <span style={{...sf(28,700),color:C.s1}}>${(yacht.price_4hr||yacht.price_weekday_4hr).toLocaleString()}</span>
+                <span style={{...sf(13),color:C.s6}}>/ 4hr</span>
+              </div>
+            : <div style={{...sf(16,600),color:C.s4,marginBottom:16}}>Price on request</div>
+          }
+          <div style={{display:"flex",gap:8,marginBottom:16}}>
+            {[{label:"4 hours",price:yacht.price_4hr||yacht.price_weekday_4hr},{label:"6 hours",price:yacht.price_6hr||yacht.price_weekday_6hr},{label:"8 hours",price:yacht.price_8hr||yacht.price_weekday_8hr}].map(function(row,i){return(
+              <div key={i} style={{flex:1,padding:"10px 8px",borderRadius:10,background:C.srf,border:"0.5px solid "+C.bd,textAlign:"center"}}>
+                <div style={{...sf(14,700),color:C.s1,marginBottom:2}}>{row.price?"$"+row.price.toLocaleString():"—"}</div>
+                <div style={{...sf(9,500),color:C.s7,letterSpacing:0.5}}>{row.label}</div>
+              </div>
+            )})}
+          </div>
+          <a href={buildWhatsApp(yacht)} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,textDecoration:"none",marginBottom:8}}>
+            Book Now
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+          </a>
+          <a href={buildWhatsApp(yacht)} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"12px 0",borderRadius:14,border:"1px solid "+C.bd,...sf(12,500),color:C.s4,textDecoration:"none"}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+            Ask via WhatsApp
+          </a>
+        </div>
+      </div>
 
       {/* Two-column layout */}
       <div className="page-wrap" style={{marginTop:-40,position:"relative",zIndex:10,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1)"}}>
