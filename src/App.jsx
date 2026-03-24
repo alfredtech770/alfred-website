@@ -17,6 +17,8 @@ import CarDetailPage from "./pages/CarDetailPage";
 import YachtsPage from "./pages/YachtsPage";
 import YachtDetailPage from "./pages/YachtDetailPage";
 import FeaturedEvents from "./pages/FeaturedEvents";
+import EventsPage from "./pages/EventsPage";
+import EventDetailPage from "./pages/EventDetailPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -394,6 +396,8 @@ export default function App(){
         <Route path="/catalog/jets/:slug" element={<JetDetailPage/>}/>
         <Route path="/catalog/yachts" element={<YachtsPage/>}/>
         <Route path="/catalog/yachts/:id" element={<YachtDetailPage/>}/>
+        <Route path="/events" element={<EventsPage/>}/>
+        <Route path="/events/:slug" element={<EventDetailPage/>}/>
       </Routes>
     </BrowserRouter>
   );

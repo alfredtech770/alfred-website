@@ -1,30 +1,31 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
 
 var EVENTS=[
-  {name:"Monaco Grand Prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",
+  {name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",
    venue:"The Alfred Lounge · Nobu Terrace · Swimming Pool Chicane",
    desc:"Two private venues on the Swimming Pool chicane — the Alfred Lounge and the Nobu Terrace. Private chef, champagne service, Nobu catering, 25 guests per venue.",
    perks:["Alfred Lounge · pool-side chicane view","Nobu Terrace · signature catering","Private chef · continuous service","Black card welcome · no lanyards","Personal highlight reel"],
    img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg",color:"#E11D48",spots:12},
-  {name:"Miami Grand Prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",
+  {name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",
    venue:"Track-Side Luxury Suite · Turn 1",
    desc:"Track-side hospitality suite overlooking Turn 1 with direct paddock access. Celebrity after-race parties at LIV, Story, and E11even — all arranged.",
    perks:["Private luxury suite · Turn 1","Paddock Club access","After-race LIV takeover","Supercar parade entry","Personal concierge all weekend"],
    img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",color:"#F97316",spots:8},
-  {name:"Ibiza Opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",
+  {name:"Ibiza Opening",slug:"ibiza-opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",
    venue:"Hï Ibiza · Ushuaïa · Pacha · Amnesia",
    desc:"Season opening week across all four superclubs. Front-row Ushuaïa access, VIP tables, private villa with chef, and artist meet & greets.",
    perks:["Hï Ibiza VIP table · 4 nights","Ushuaïa front-row access","Private villa with chef","Artist meet & greets","Yacht day party · full crew"],
    img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/image.jpg",color:"#8B5CF6",spots:15},
-  {name:"Roland Garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",
+  {name:"Roland Garros",slug:"roland-garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",
    venue:"Philippe Chatrier · Private Box",
    desc:"Courtside hospitality at the French Open. Private box seats in Philippe Chatrier, champagne terraces, Michelin dining experience, and chauffeur transfers.",
    perks:["Philippe Chatrier box seats","Champagne terrace access","Michelin dining experience","Player lounge entry","Chauffeur from hotel"],
    img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/AlfedHotelCrillionParis.jpeg",color:"#D97706",spots:6},
-  {name:"Royal Ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",
+  {name:"Royal Ascot",slug:"royal-ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",
    venue:"Royal Enclosure · Private Box for 12",
    desc:"The Royal Enclosure experience. Private box, Michelin chefs, helicopter from central London, and Savile Row styling consultation included.",
    perks:["Royal Enclosure badges","Private box for 12 guests","Michelin chef on-site","Helicopter from London","Savile Row styling session"],
@@ -35,6 +36,7 @@ function spotsColor(s){return s<=6?"#FF453A":s<=10?"#FFD60A":"#34C759"}
 function spotsShadow(s){return s<=6?"rgba(255,69,58,0.5)":s<=10?"rgba(255,214,10,0.4)":"rgba(52,199,89,0.4)"}
 
 export default function FeaturedEvents(){
+  var nav=useNavigate();
   var [idx,setIdx]=useState(0);
   var [entered,setEntered]=useState(false);
   var sectionRef=useRef(null);
@@ -177,7 +179,7 @@ export default function FeaturedEvents(){
 
         {/* CTA */}
         <div style={{padding:"16px 24px 4px",display:"flex",justifyContent:"center"}}>
-          <button onClick={function(){}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",borderRadius:14,background:C.s1,border:"none",cursor:"pointer",...sf(13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+          <button onClick={function(){nav("/events/"+cur.slug)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",borderRadius:14,background:C.s1,border:"none",cursor:"pointer",...sf(13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             Request Access <span style={{fontSize:18,fontWeight:300}}>+</span>
           </button>
         </div>
