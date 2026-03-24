@@ -828,7 +828,8 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
             <div className="hero-cta" style={{marginTop:48,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
               <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 28px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",...sf(14,600),color:hoverCta?C.bg:C.s1}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
-                Join the Waitlist
+                <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                Download on the App Store
               </div>
             </div>
           </div>
@@ -1010,12 +1011,13 @@ input::placeholder{color:#52525B}input:focus{outline:none}
       <section ref={ctaRef} aria-label="Download" className="cta-section" style={{padding:"120px 0 140px",position:"relative"}}><div style={divider}/>
         <div style={{textAlign:"center",maxWidth:600,margin:"0 auto",padding:"0 40px"}}>
           <h2 className="sec-head cta-heading" style={{...sf(52,600),letterSpacing:-2,lineHeight:1.06,marginBottom:20,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.2s"}}>Your city.<br/>Your way.</h2>
-          <p style={{...sf(17,400),color:C.s5,lineHeight:1.7,maxWidth:420,margin:"0 auto 40px",opacity:ctaVis?1:0,transition:"all 0.8s ease 0.4s"}}>Join the waitlist and discover why the best experiences aren't found — they're arranged.</p>
+          <p style={{...sf(17,400),color:C.s5,lineHeight:1.7,maxWidth:420,margin:"0 auto 40px",opacity:ctaVis?1:0,transition:"all 0.8s ease 0.4s"}}>Discover why the best experiences aren't found — they're arranged.</p>
 
-          {/* Waitlist button */}
+          {/* App Store button */}
           <div style={{opacity:ctaVis?1:0,transition:"all 0.8s ease 0.55s",marginBottom:32}}>
             <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 36px",borderRadius:16,background:hoverFinal?C.s1:C.el,border:"1px solid "+(hoverFinal?C.s1:C.bd),cursor:"pointer",transform:hoverFinal?"translateY(-3px)":"translateY(0)",boxShadow:hoverFinal?"0 12px 40px rgba(244,244,245,0.1)":"none",transition:"all 0.4s ease",...sf(16,600),color:hoverFinal?C.bg:C.s1}} onMouseEnter={function(){setHoverFinal(true)}} onMouseLeave={function(){setHoverFinal(false)}}>
-              Get Early Access
+              <svg width="18" height="18" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+              Download on the App Store
             </div>
           </div>
         </div>
@@ -1059,9 +1061,10 @@ input::placeholder{color:#52525B}input:focus{outline:none}
                 <div style={{...sf(12,600),color:"#0E0E11",background:C.s1,padding:"10px 18px",borderRadius:10,cursor:"pointer",whiteSpace:"nowrap",transition:"opacity 0.2s"}} onMouseEnter={function(e){e.target.style.opacity="0.85"}} onMouseLeave={function(e){e.target.style.opacity="1"}}>Subscribe</div>
               </div>
 
-              {/* Waitlist */}
+              {/* App Store */}
               <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s",...sf(13,600),color:C.s1}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
-                Join Waitlist
+                <svg width="14" height="14" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                Download on the App Store
               </div>
             </div>
           </div>
@@ -1115,9 +1118,10 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             })}
             {/* CTA at bottom of modal */}
             <div style={{marginTop:24,textAlign:"center"}}>
-              <div style={{...sf(13,400),color:C.s5,marginBottom:16}}>Join the waitlist to book any venue</div>
+              <div style={{...sf(13,400),color:C.s5,marginBottom:16}}>Download Alfred to book any venue</div>
               <div onClick={function(){setModalCat(null);setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg}}>
-                Get Early Access
+                <svg width="14" height="14" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+                Download on the App Store
               </div>
             </div>
           </div>
@@ -1823,7 +1827,7 @@ body::-webkit-scrollbar{width:0}
         <div style={{display:"flex",alignItems:"center",gap:28}}>
           <a href="/" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
           <div style={{...sf(11,400),color:C.s1,letterSpacing:0.3}}>Catalog</div>
-          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,...sf(11,500),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1}}>Join Waitlist</a>
+          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,...sf(11,500),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1}}>Download App</a>
         </div>
       </nav>
 
@@ -1940,9 +1944,10 @@ body::-webkit-scrollbar{width:0}
         <div style={{maxWidth:480,margin:"0 auto"}}>
           <CDrawMark size={32} color={C.s5}/>
           <h2 style={{...sf(32,600),letterSpacing:-1,marginTop:24,marginBottom:14}}>Ready to experience it all?</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Join the waitlist and get access to every venue, every service, every experience — through one concierge.</p>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Download Alfred and get access to every venue, every service, every experience — through one concierge.</p>
           <a href="/" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,...sf(14,500),color:C.s1,transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg;e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1;e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-            Get Early Access
+            <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+            Download on the App Store
           </a>
         </div>
       </section>
