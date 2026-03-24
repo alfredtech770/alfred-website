@@ -180,8 +180,7 @@ export default function DiningPage(){
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
 .d-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto;padding:0 40px}
 .search-bar{display:grid;grid-template-columns:1fr 1fr auto auto;gap:12px}
-.filter-row{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
-.filter-row::-webkit-scrollbar{display:none}
+.filter-row{display:flex;gap:6px;align-items:center;overflow:visible;flex:1;min-width:0;flex-wrap:wrap}
 @media(max-width:1024px){.d-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
   .d-grid{grid-template-columns:1fr;padding:0 16px!important;max-width:100%!important;margin:0 auto}
@@ -239,8 +238,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       </div>
 
       {/* Filters */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:40}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:40}}>
           <div className="filter-row">
             <FilterDrop value={cuisine} options={cuisines} onChange={setCuisine} emoji="🍽" emojiMap={{Cuisine:"🍽",French:"🇫🇷","French Fine Dining":"🇫🇷","French Bistro":"🇫🇷","French Brasserie":"🇫🇷","French Contemporary":"🇫🇷","French Classic":"🇫🇷","French Cafe":"🇫🇷","French Café":"🇫🇷","French Gastronomic":"🇫🇷","French Mediterranean":"🇫🇷","French Seafood":"🇫🇷","French Steakhouse":"🇫🇷",Italian:"🇮🇹","Italian Fine Dining":"🇮🇹","Italian Casual":"🇮🇹","Italian Pasta":"🇮🇹","Italian Pizza":"🇮🇹","Italian-Roman":"🇮🇹","Italian-Sicilian":"🇮🇹","Italian-Mediterranean":"🇮🇹",Japanese:"🇯🇵","Japanese Omakase":"🇯🇵","Japanese Sushi":"🇯🇵","Japanese Kaiseki":"🇯🇵","Japanese Ramen":"🇯🇵","Japanese Modern":"🇯🇵","Japanese Robata":"🇯🇵",Mediterranean:"🌊",Steakhouse:"🥩","Korean Steakhouse":"🇰🇷",Greek:"🇬🇷","Greek Mediterranean":"🇬🇷",Lebanese:"🇱🇧",Mexican:"🇲🇽",Spanish:"🇪🇸",Seafood:"🦞",American:"🇺🇸","New American":"🇺🇸",Cafe:"☕","Specialty Coffee":"☕",Bakery:"🥐","Patisserie":"🧁"}}/>
             <FilterDrop value={price} options={prices} onChange={setPrice} emoji="💰" emojiMap={{Price:"💰","$":"💲","$$":"💵","$$$":"💎","$$$$":"👑"}}/>
