@@ -25,6 +25,21 @@ export default function YachtDetailPage(){
   var {id}=useParams();
   var [yacht,setYacht]=useState(null);
   var [loading,setLoading]=useState(true);
+  var [idx,setIdx]=useState(0);
+  var [liked,setLiked]=useState(false);
+  var [loaded,setLoaded]=useState(false);
+  var [scrollY,setScrollY]=useState(0);
+  var [hours,setHours]=useState(4);
+  var [pickup,setPickup]=useState("2026-03-20");
+  var [returnD,setReturnD]=useState("2026-03-20");
+  var [lightbox,setLightbox]=useState(false);
+
+  var specsRef=useRef(null);var specsVis=useVis(specsRef);
+  var noteRef=useRef(null);var noteVis=useVis(noteRef);
+  var inclRef=useRef(null);var inclVis=useVis(inclRef);
+  var priceRef=useRef(null);var priceVis=useVis(priceRef);
+  var revRef=useRef(null);var revVis=useVis(revRef);
+  var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   useEffect(function(){
     supabase.from("yachts").select("*").eq("id",id).single().then(function(res){
@@ -32,6 +47,13 @@ export default function YachtDetailPage(){
       setLoading(false);
     });
   },[id]);
+  useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
+  useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
+  useEffect(function(){if(!yacht) return;var imgs=[];if(yacht.hero_image_url) imgs.push(yacht.hero_image_url);if(yacht.photos_order&&Array.isArray(yacht.photos_order)) yacht.photos_order.forEach(function(u){if(u&&u!==yacht.hero_image_url)imgs.push(u)});if(imgs.length<=1) return;var t=setInterval(function(){setIdx(function(c){return(c+1)%imgs.length})},5000);return function(){clearInterval(t)}},[yacht]);
+
+  function pickHours(h){setHours(h)}
+  function pickPickup(v){setPickup(v);setReturnD(v)}
+  function pickReturn(v){setReturnD(v)}
 
   if(loading){
     return(<div style={{width:"100%",minHeight:"100vh",background:"#0A0A0B",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20}}>
@@ -85,30 +107,7 @@ export default function YachtDetailPage(){
     alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
   };
 
-  var [idx,setIdx]=useState(0);
-  var [liked,setLiked]=useState(false);
-  var [loaded,setLoaded]=useState(false);
-  var [scrollY,setScrollY]=useState(0);
-  var [hours,setHours]=useState(4);
-  var [pickup,setPickup]=useState("2026-03-20");
-  var [returnD,setReturnD]=useState("2026-03-20");
-  var [lightbox,setLightbox]=useState(false);
-  function pickHours(h){setHours(h)}
-  function pickPickup(v){setPickup(v);setReturnD(v)}
-  function pickReturn(v){setReturnD(v)}
-
-  var specsRef=useRef(null);var specsVis=useVis(specsRef);
-  var noteRef=useRef(null);var noteVis=useVis(noteRef);
-  var inclRef=useRef(null);var inclVis=useVis(inclRef);
-  var priceRef=useRef(null);var priceVis=useVis(priceRef);
-  var revRef=useRef(null);var revVis=useVis(revRef);
-  var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
-
   var tier=getTier(hours);var total=yacht[tier.field]||yacht.price_4hr||0;
-
-  useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
-  useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
-  useEffect(function(){if(YACHT.imgs.length<=1) return;var t=setInterval(function(){setIdx(function(c){return(c+1)%YACHT.imgs.length})},5000);return function(){clearInterval(t)}},[]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var inputS={padding:"14px 16px",borderRadius:14,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,500),outline:"none",width:"100%",colorScheme:"dark",WebkitAppearance:"none",appearance:"none"};
