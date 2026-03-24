@@ -142,11 +142,16 @@ export default function EventDetailPage(){
 
         {/* Nav */}
         <div style={{position:"absolute",top:0,left:0,right:0,padding:"20px 40px",display:"flex",alignItems:"center",justifyContent:"space-between",zIndex:10,opacity:loaded?1:0,animation:loaded?"evtFadeIn 0.6s ease 0.2s both":"none"}}>
-          <div onClick={function(){nav("/events")}} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",padding:"8px 16px",borderRadius:10,background:"rgba(0,0,0,0.3)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            <span style={{...sf(12,500),color:C.s3}}>All Events</span>
+          <div style={{display:"flex",alignItems:"center",gap:16}}>
+            <div onClick={function(){nav("/")}} style={{cursor:"pointer"}}><Mark size={24}/></div>
+            <div onClick={function(){nav("/events")}} style={{display:"flex",alignItems:"center",gap:6,cursor:"pointer",padding:"8px 14px",borderRadius:10,background:"rgba(0,0,0,0.3)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              <span style={{...sf(11,500),color:C.s3}}>All Events</span>
+            </div>
           </div>
-          <div onClick={function(){nav("/")}} style={{cursor:"pointer",opacity:0.7}}><Mark size={28}/></div>
+          <div onClick={function(){}} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 22px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,700),color:C.bg,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+            Request Access
+          </div>
         </div>
 
         {/* Hero content */}
@@ -170,107 +175,130 @@ export default function EventDetailPage(){
         </div>
       </div>
 
-      {/* CONTENT */}
-      <div style={{maxWidth:900,margin:"0 auto",padding:"0 40px"}}>
+      {/* CONTENT — Two column layout */}
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"0 40px"}}>
+        <style>{`.evt-cols{display:flex;gap:40;align-items:flex-start}.evt-left{flex:1;min-width:0}.evt-right{width:320px;flex-shrink:0;position:sticky;top:80px}@media(max-width:900px){.evt-cols{flex-direction:column}.evt-right{width:100%;position:static}}`}</style>
+        <div className="evt-cols">
 
-        {/* Description */}
-        <div style={{padding:"48px 0 40px"}}>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.8}}>{V.desc}</p>
-        </div>
+          {/* LEFT COLUMN — Main content */}
+          <div className="evt-left">
 
-        <div style={divider}/>
-
-        {/* Gallery */}
-        <div style={{padding:"40px 0"}}>
-          <div style={{display:"flex",gap:12,overflow:"hidden",borderRadius:18}}>
-            {V.imgs.map(function(img,i){
-              return <div key={i} onClick={function(){setImgIdx(i)}} style={{flex:imgIdx===i?"3":"1",height:280,borderRadius:14,overflow:"hidden",cursor:"pointer",transition:"all 0.7s cubic-bezier(0.16,1,0.3,1)",position:"relative"}}>
-                <img src={img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.7s ease",transform:imgIdx===i?"scale(1)":"scale(1.1)"}}/>
-                {imgIdx!==i&&<div style={{position:"absolute",inset:0,background:"rgba(10,10,11,0.4)",transition:"all 0.5s"}}/>}
+            {/* What You Get — straight to the point */}
+            <div style={{padding:"40px 0 36px"}}>
+              <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>What You Get</p>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                {V.includes.map(function(item,i){
+                  return <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:12,background:C.el,border:"1px solid "+C.bd}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    <span style={{...sf(13,500),color:C.s2}}>{item}</span>
+                  </div>
+                })}
               </div>
-            })}
-          </div>
-        </div>
-
-        <div style={divider}/>
-
-        {/* Alfred's Note */}
-        <div ref={noteRef} style={{padding:"48px 0",opacity:noteVis?1:0,transform:noteVis?"translateY(0)":"translateY(24px)",transition:"all 0.8s ease"}}>
-          <div style={{display:"flex",gap:16,alignItems:"flex-start"}}>
-            <div style={{width:40,height:40,borderRadius:12,background:C.el,border:"1px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Mark size={20}/></div>
-            <div>
-              <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Alfred's Note</p>
-              <p style={{...sf(15,400),color:C.s3,lineHeight:1.8,fontStyle:"italic"}}>{V.alfredNote}</p>
-              {V.alfredTip&&<div style={{marginTop:16,padding:"12px 16px",borderRadius:12,background:C.el,border:"1px solid "+C.bd}}>
-                <p style={{...sf(12,500),color:C.gold}}>💡 Tip: <span style={{color:C.s3,fontWeight:400}}>{V.alfredTip}</span></p>
-              </div>}
             </div>
-          </div>
-        </div>
 
-        <div style={divider}/>
+            <div style={divider}/>
 
-        {/* What's Included */}
-        <div ref={inclRef} style={{padding:"48px 0",opacity:inclVis?1:0,transform:inclVis?"translateY(0)":"translateY(24px)",transition:"all 0.8s ease"}}>
-          <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:24}}>What's Included</p>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {V.includes.map(function(item,i){
-              return <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,transition:"all 0.3s "+i*0.05+"s",opacity:inclVis?1:0,transform:inclVis?"translateY(0)":"translateY(12px)"}}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-                <span style={{...sf(13,500),color:C.s2}}>{item}</span>
+            {/* About */}
+            <div style={{padding:"36px 0"}}>
+              <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:16}}>About This Event</p>
+              <p style={{...sf(15,400),color:C.s3,lineHeight:1.8}}>{V.desc}</p>
+            </div>
+
+            <div style={divider}/>
+
+            {/* Gallery */}
+            <div style={{padding:"36px 0"}}>
+              <div style={{display:"flex",gap:12,overflow:"hidden",borderRadius:18}}>
+                {V.imgs.map(function(img,i){
+                  return <div key={i} onClick={function(){setImgIdx(i)}} style={{flex:imgIdx===i?"3":"1",height:240,borderRadius:14,overflow:"hidden",cursor:"pointer",transition:"all 0.7s cubic-bezier(0.16,1,0.3,1)",position:"relative"}}>
+                    <img src={img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.7s ease",transform:imgIdx===i?"scale(1)":"scale(1.1)"}}/>
+                    {imgIdx!==i&&<div style={{position:"absolute",inset:0,background:"rgba(10,10,11,0.4)",transition:"all 0.5s"}}/>}
+                  </div>
+                })}
               </div>
-            })}
-          </div>
-        </div>
+            </div>
 
-        <div style={divider}/>
+            <div style={divider}/>
 
-        {/* Perks */}
-        <div style={{padding:"40px 0"}}>
-          <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Perks & Highlights</p>
-          <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-            {V.perks.map(function(pk,i){
-              return <span key={i} style={{padding:"8px 16px",borderRadius:10,background:"rgba(244,244,245,0.04)",border:"0.5px solid rgba(244,244,245,0.08)",...sf(12,500),color:C.s3}}>{pk}</span>
-            })}
-          </div>
-        </div>
-
-        <div style={divider}/>
-
-        {/* Schedule */}
-        <div ref={schedRef} style={{padding:"48px 0",opacity:schedVis?1:0,transform:schedVis?"translateY(0)":"translateY(24px)",transition:"all 0.8s ease"}}>
-          <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:28}}>Schedule</p>
-          <div style={{display:"flex",flexDirection:"column",gap:20}}>
-            {V.schedule.map(function(day,di){
-              return <div key={di} style={{padding:"20px 24px",borderRadius:16,background:C.el,border:"1px solid "+C.bd}}>
-                <p style={{...sf(14,700),color:C.s1,marginBottom:14}}>{day.day}</p>
-                <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                  {day.items.map(function(item,ii){
-                    return <div key={ii} style={{display:"flex",alignItems:"center",gap:10}}>
-                      <div style={{width:6,height:6,borderRadius:"50%",background:V.color,boxShadow:"0 0 8px "+V.color+"40",flexShrink:0}}/>
-                      <span style={{...sf(13,400),color:C.s3}}>{item}</span>
+            {/* Schedule */}
+            <div ref={schedRef} style={{padding:"36px 0",opacity:schedVis?1:0,transform:schedVis?"translateY(0)":"translateY(24px)",transition:"all 0.8s ease"}}>
+              <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Schedule</p>
+              <div style={{display:"flex",flexDirection:"column",gap:16}}>
+                {V.schedule.map(function(day,di){
+                  return <div key={di} style={{padding:"18px 20px",borderRadius:16,background:C.el,border:"1px solid "+C.bd}}>
+                    <p style={{...sf(13,700),color:C.s1,marginBottom:12}}>{day.day}</p>
+                    <div style={{display:"flex",flexDirection:"column",gap:7}}>
+                      {day.items.map(function(item,ii){
+                        return <div key={ii} style={{display:"flex",alignItems:"center",gap:10}}>
+                          <div style={{width:5,height:5,borderRadius:"50%",background:V.color,boxShadow:"0 0 6px "+V.color+"40",flexShrink:0}}/>
+                          <span style={{...sf(13,400),color:C.s3}}>{item}</span>
+                        </div>
+                      })}
                     </div>
-                  })}
+                  </div>
+                })}
+              </div>
+            </div>
+
+            <div style={divider}/>
+
+            {/* Alfred's Note */}
+            <div ref={noteRef} style={{padding:"36px 0 60px",opacity:noteVis?1:0,transform:noteVis?"translateY(0)":"translateY(24px)",transition:"all 0.8s ease"}}>
+              <div style={{display:"flex",gap:14,alignItems:"flex-start"}}>
+                <div style={{width:36,height:36,borderRadius:10,background:C.el,border:"1px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Mark size={18}/></div>
+                <div>
+                  <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Alfred's Note</p>
+                  <p style={{...sf(14,400),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>{V.alfredNote}</p>
+                  {V.alfredTip&&<div style={{marginTop:12,padding:"10px 14px",borderRadius:10,background:C.el,border:"1px solid "+C.bd}}>
+                    <p style={{...sf(12,500),color:C.gold}}>Tip: <span style={{color:C.s3,fontWeight:400}}>{V.alfredTip}</span></p>
+                  </div>}
                 </div>
               </div>
-            })}
+            </div>
           </div>
-        </div>
 
-        <div style={divider}/>
+          {/* RIGHT COLUMN — Sticky booking card */}
+          <div className="evt-right">
+            <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",marginTop:40}}>
+              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
+              <div style={{padding:"24px 22px"}}>
+                <div style={{...sf(18,700),color:C.s1,marginBottom:6}}>Request Access</div>
+                <p style={{...sf(12,400),color:C.s5,marginBottom:20}}>{V.venue}</p>
 
-        {/* Pricing CTA */}
-        <div ref={pricRef} style={{padding:"60px 0 80px",textAlign:"center",opacity:pricVis?1:0,transform:pricVis?"translateY(0)":"translateY(24px)",transition:"all 0.8s ease"}}>
-          <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:12}}>Pricing</p>
-          <p style={{...sf(36,700),letterSpacing:-1,marginBottom:8}}>{V.pricing}</p>
-          <p style={{...sf(13,400),color:C.s5,marginBottom:32,maxWidth:400,margin:"0 auto 32px"}}>{V.pricingNote}</p>
-          <button onClick={function(){}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 40px",borderRadius:14,background:C.s1,border:"none",cursor:"pointer",...sf(14,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-            Request Access <span style={{fontSize:18,fontWeight:300}}>+</span>
-          </button>
-          <div style={{marginTop:20,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-            <div style={{width:7,height:7,borderRadius:"50%",background:spotsColor(V.spots),boxShadow:"0 0 8px "+spotsShadow(V.spots)}}/>
-            <span style={{...sf(12,600),color:spotsColor(V.spots)}}>{V.spots} spots left</span>
+                {/* Pricing */}
+                <div style={{padding:"16px 0",borderTop:"1px solid "+C.bd,borderBottom:"1px solid "+C.bd,marginBottom:16}}>
+                  <p style={{...sf(24,700),color:C.s1}}>{V.pricing}</p>
+                  <p style={{...sf(11,400),color:C.s5,marginTop:4}}>{V.pricingNote}</p>
+                </div>
+
+                {/* Key details */}
+                <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    <span style={{...sf(13,500),color:C.s3}}>{V.date}</span>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span style={{...sf(13,500),color:C.s3}}>{V.location}</span>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{width:7,height:7,borderRadius:"50%",background:spotsColor(V.spots),boxShadow:"0 0 6px "+spotsShadow(V.spots),marginLeft:3,marginRight:1}}/>
+                    <span style={{...sf(13,600),color:spotsColor(V.spots)}}>{V.spots} spots left</span>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div onClick={function(){}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+                  Request Access
+                </div>
+
+                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:14}}>
+                  {["No fees","Personal concierge","Limited spots"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+                </div>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 
