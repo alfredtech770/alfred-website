@@ -78,8 +78,6 @@ export default function FeaturedEvents(){
 
   function goTo(n){if(n>=0&&n<EVENTS.length)setIdx(n)}
   var cur=EVENTS[idx];
-  var prevI=(idx-1+EVENTS.length)%EVENTS.length;
-  var nextI=(idx+1)%EVENTS.length;
 
   return(
     <section ref={sectionRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px 0",overflow:"hidden"}}>
@@ -90,32 +88,6 @@ export default function FeaturedEvents(){
 
       {/* Clean background */}
       <div style={{position:"absolute",inset:0,background:C.bg,zIndex:0}}/>
-
-      {/* Left peek */}
-      <div className="evt-peek" onClick={function(){goTo(idx-1)}} style={{position:"absolute",top:0,bottom:0,width:"14%",left:0,zIndex:3,overflow:"hidden",cursor:idx>0?"pointer":"default"}}>
-        {idx>0&&<div style={{position:"absolute",inset:0,opacity:1,transition:"opacity 0.8s ease"}}>
-          <img src={EVENTS[prevI].img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.55)"}}/>
-          <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(10,10,11,0.2),rgba(10,10,11,0.7))"}}/>
-          <div style={{position:"absolute",bottom:48,left:32,...sf(18,700),color:C.s2}}>{EVENTS[prevI].name}</div>
-        </div>}
-      </div>
-
-      {/* Right peek */}
-      <div className="evt-peek" onClick={function(){goTo(idx+1)}} style={{position:"absolute",top:0,bottom:0,width:"14%",right:0,zIndex:3,overflow:"hidden",cursor:idx<EVENTS.length-1?"pointer":"default"}}>
-        {idx<EVENTS.length-1&&<div style={{position:"absolute",inset:0,opacity:1,transition:"opacity 0.8s ease"}}>
-          <img src={EVENTS[nextI].img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.55)"}}/>
-          <div style={{position:"absolute",inset:0,background:"linear-gradient(270deg,rgba(10,10,11,0.2),rgba(10,10,11,0.7))"}}/>
-          <div style={{position:"absolute",bottom:48,right:32,...sf(18,700),color:C.s2,textAlign:"right"}}>{EVENTS[nextI].name}</div>
-        </div>}
-      </div>
-
-      {/* Nav arrows */}
-      {idx>0&&<div className="evt-arr" onClick={function(){goTo(idx-1)}} style={{position:"absolute",top:"50%",transform:"translateY(-50%)",left:"15.5%",width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,0.4)",backdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:8,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)";e.currentTarget.style.borderColor="rgba(255,255,255,0.08)"}}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      </div>}
-      {idx<EVENTS.length-1&&<div className="evt-arr" onClick={function(){goTo(idx+1)}} style={{position:"absolute",top:"50%",transform:"translateY(-50%)",right:"15.5%",width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,0.4)",backdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:8,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)";e.currentTarget.style.borderColor="rgba(255,255,255,0.08)"}}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
-      </div>}
 
       {/* CENTER CARD */}
       <div style={{width:780,maxWidth:"68vw",borderRadius:28,overflow:"hidden",background:"rgba(24,24,27,0.85)",backdropFilter:"blur(40px) saturate(1.3)",border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 60px 160px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03)",position:"relative",zIndex:5,opacity:entered?1:0,transform:entered?"translateY(0) scale(1)":"translateY(40px) scale(0.97)",transition:"all 1s cubic-bezier(0.16,1,0.3,1) 0.3s"}}>
