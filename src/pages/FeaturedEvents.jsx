@@ -8,12 +8,12 @@ var WA_NUM="447449562204";
 function openWA(msg){window.open("https://wa.me/"+WA_NUM+"?text="+encodeURIComponent(msg),"_blank")}
 
 var EVENTS=[
-  {name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",
-   venue:"The Alfred Lounge · Nobu Terrace · Swimming Pool Chicane",
-   desc:"Two private venues on the Swimming Pool chicane — the Alfred Lounge and the Nobu Terrace. Private chef, champagne service, Nobu catering, 25 guests per venue.",
-   perks:["Alfred Lounge · pool-side chicane view","Nobu Terrace · signature catering","Private chef · continuous service","Black card welcome · no lanyards","Personal highlight reel"],
+  {name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 5 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",
+   venue:"The Alfred Lounge · Swimming Pool Chicane",
+   desc:"Private hospitality on the Swimming Pool chicane. Caviar & champagne service, private chef, premium catering, and after-party VIP access.",
+   perks:["Alfred Lounge · pool-side chicane view","Caviar & champagne service","Private chef · premium catering","After-party VIP access","Helicopter transfer from Nice"],
    img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Monaco%20grand%20prix.jpeg",color:"#E11D48",spots:12,
-   waMsg:"Hi Alfred, I'm interested in the Monaco Grand Prix experience (June 4–7, 2026). I'd like to learn more about availability and access."},
+   waMsg:"Hi Alfred, I'm interested in the Monaco Grand Prix experience (June 5–7, 2026). I'd like to learn more about availability and access."},
   {name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",
    venue:"Track-Side Luxury Suite · Turn 1",
    desc:"Track-side hospitality suite overlooking Turn 1 with direct paddock access. Celebrity after-race parties at LIV, Story, and E11even — all arranged.",

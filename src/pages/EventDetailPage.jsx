@@ -15,21 +15,20 @@ function openWA(msg){window.open("https://wa.me/"+WA_NUM+"?text="+encodeURICompo
 
 var EVENTS={
   "monaco-grand-prix":{
-    name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",color:"#E11D48",spots:12,
+    name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 5 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",color:"#E11D48",spots:12,
     hero:SB+"Monaco%20grand%20prix.jpeg",
     imgs:[SB+"Monaco%20grand%20prix.jpeg",SB+"Keinmusik.jpeg",SB+"AlfedHotelCrillionParis.jpeg"],
-    tagline:"Two private venues on the most famous corner in motorsport",
-    desc:"Experience the Monaco Grand Prix from the Swimming Pool chicane — the most iconic corner in Formula 1. Alfred secures two private venues: the Alfred Lounge and the Nobu Terrace. Both overlook the chicane with unobstructed views of the action. Private chef, continuous champagne service, Nobu catering, and capacity for 25 guests per venue. No lanyards, no crowds, no compromises.",
-    venue:"The Alfred Lounge · Nobu Terrace · Swimming Pool Chicane",
-    perks:["Alfred Lounge · pool-side chicane view","Nobu Terrace · signature catering","Private chef · continuous service","Black card welcome · no lanyards","Personal highlight reel","Helicopter transfer from Nice","Private yacht after-party option"],
+    tagline:"Private hospitality on the most famous corner in motorsport",
+    desc:"Experience the Monaco Grand Prix from the Swimming Pool chicane — the most iconic corner in Formula 1. Alfred secures a private venue overlooking the chicane with unobstructed views of the action. Caviar and champagne service all weekend, private chef, premium catering, and after-party VIP access. No lanyards, no crowds, no compromises.",
+    venue:"The Alfred Lounge · Swimming Pool Chicane",
+    perks:["Alfred Lounge · pool-side chicane view","Caviar & champagne service","Private chef · premium catering","After-party VIP access","Black card welcome · no lanyards","Helicopter transfer from Nice","Personal highlight reel"],
     schedule:[
-      {day:"Thursday, June 4",items:["Arrival & hotel check-in","Welcome dinner at the Alfred Lounge","Track walk preview (optional)"]},
-      {day:"Friday, June 5",items:["Free Practice 1 & 2 from Nobu Terrace","Lunch by private chef","Evening: Monte Carlo Casino night"]},
+      {day:"Friday, June 5",items:["Free Practice 1 & 2 from the Alfred Lounge","Lunch by private chef","Evening: Monte Carlo Casino night"]},
       {day:"Saturday, June 6",items:["Free Practice 3 & Qualifying","Alfred Lounge hospitality all day","Evening: Amber Lounge after-party"]},
-      {day:"Sunday, June 7",items:["Race Day — both venues open","Champagne service from lights out","Post-race celebration & helicopter transfer"]},
+      {day:"Sunday, June 7",items:["Race Day — full hospitality","Champagne & caviar from lights out","Post-race celebration & helicopter transfer"]},
     ],
-    includes:["Private hospitality venue","Nobu catering all weekend","Open bar — champagne, spirits, wine","Personal concierge on-site","Airport/hotel transfers","After-party access","Professional photography"],
-    alfredNote:"This is one of our most exclusive packages. The Swimming Pool chicane is where races are won and lost — you'll feel the cars shake the ground beneath you. We limit this to 50 guests total across both venues to keep it intimate. Request early — Monaco sells out faster than any other event on our calendar.",
+    includes:["Private hospitality venue","Caviar & champagne all weekend","Premium catering · private chef","Personal concierge on-site","Airport/hotel transfers","After-party VIP access","Professional photography"],
+    alfredNote:"This is one of our most exclusive packages. The Swimming Pool chicane is where races are won and lost — you'll feel the cars shake the ground beneath you. We keep it intimate to make sure the experience stays right. Request early — Monaco sells out faster than any other event on our calendar.",
     alfredTip:"Fly into Nice and take our helicopter transfer. The 7-minute flight over the coastline is worth it alone.",
     waMsg:"Hi Alfred, I'm interested in the Monaco Grand Prix experience (June 4–7, 2026). I'd like to learn more about availability and access.",
   },
@@ -216,7 +215,7 @@ export default function EventDetailPage(){
         {/* About */}
         <div style={{padding:"44px 0"}}>
           <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:16}}>About This Event</p>
-          <p style={{...sf(15,400),color:C.s3,lineHeight:1.8,maxWidth:800}}>{V.desc}</p>
+          <p style={{...sf(15,400),color:C.s3,lineHeight:1.8}}>{V.desc}</p>
         </div>
 
         <div style={divider}/>
@@ -260,7 +259,7 @@ export default function EventDetailPage(){
 
         {/* Alfred's Note */}
         <div ref={noteRef} style={{padding:"44px 0 60px",opacity:noteVis?1:0,transform:noteVis?"translateY(0)":"translateY(24px)",transition:"all 0.8s ease"}}>
-          <div style={{display:"flex",gap:14,alignItems:"flex-start",maxWidth:800}}>
+          <div style={{display:"flex",gap:14,alignItems:"flex-start"}}>
             <div style={{width:36,height:36,borderRadius:10,background:C.el,border:"1px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Mark size={18}/></div>
             <div>
               <p style={{...sf(11,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>Alfred's Note</p>
