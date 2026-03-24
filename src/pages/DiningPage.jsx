@@ -18,14 +18,19 @@ function FilterDrop(p){
   useEffect(function(){function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)};document.addEventListener("mousedown",h);return function(){document.removeEventListener("mousedown",h)}},[]);
   var hasActive=p.value!==p.options[0];
   return(
-    <div ref={ref} style={{position:"relative",flexShrink:0}}>
+    <div ref={ref} style={{position:"relative",flexShrink:0,zIndex:open?70:1}}>
       <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
-        {p.icon}
+        {p.emoji&&<span style={{fontSize:13}}>{p.emoji}</span>}
+        {!p.emoji&&p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2,transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      {open&&<div style={{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",zIndex:60,minWidth:160,boxShadow:"0 16px 48px rgba(0,0,0,0.6)"}}>
-        {p.options.map(function(opt){var active=p.value===opt;return <div key={opt} onClick={function(){p.onChange(opt);setOpen(false)}} style={{padding:"11px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,transition:"background 0.15s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>{active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}{opt}</div>})}
+      {open&&<div style={{position:"absolute",top:"calc(100% + 8px)",left:0,borderRadius:16,background:C.el,border:"1px solid "+C.bd,zIndex:70,minWidth:220,maxHeight:340,overflowY:"auto",boxShadow:"0 24px 64px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04)",padding:"6px",scrollbarWidth:"thin",scrollbarColor:C.s7+" transparent"}}>
+        {p.options.map(function(opt,i){var active=p.value===opt;var isFirst=i===0;var em=p.emojiMap&&p.emojiMap[opt];return <div key={opt} onClick={function(){p.onChange(opt);setOpen(false)}} style={{padding:"10px 14px",cursor:"pointer",background:active?"rgba(244,244,245,0.06)":"transparent",borderRadius:10,display:"flex",alignItems:"center",gap:10,marginBottom:1,...sf(13,active?600:400),color:active?C.s1:isFirst?C.s5:C.s3,transition:"background 0.15s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.08)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.06)":"transparent"}}>
+          {em&&<span style={{fontSize:15,width:20,textAlign:"center"}}>{em}</span>}
+          <span style={{flex:1}}>{opt}</span>
+          {active&&!isFirst&&<div style={{width:6,height:6,borderRadius:"50%",background:C.gn,flexShrink:0}}/>}
+        </div>})}
       </div>}
     </div>
   );
@@ -189,11 +194,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
 
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:"transparent",borderBottom:"none"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div style={{display:"flex",alignItems:"center",gap:20}}>
           <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
-          <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>Dining</div>
+          <div style={{...sf(12,500),color:C.s1}}>Dining</div>
         </div>
       </nav>
 
@@ -237,11 +242,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
           <div className="filter-row">
-            <FilterDrop value={cuisine} options={cuisines} onChange={setCuisine} icon={iconCuisine}/>
-            <FilterDrop value={price} options={prices} onChange={setPrice} icon={iconPrice}/>
-            <FilterDrop value={vibe} options={vibes} onChange={setVibe} icon={iconVibe}/>
+            <FilterDrop value={cuisine} options={cuisines} onChange={setCuisine} emoji="🍽" emojiMap={{Cuisine:"🍽",French:"🇫🇷","French Fine Dining":"🇫🇷","French Bistro":"🇫🇷","French Brasserie":"🇫🇷","French Contemporary":"🇫🇷","French Classic":"🇫🇷","French Cafe":"🇫🇷","French Café":"🇫🇷","French Gastronomic":"🇫🇷","French Mediterranean":"🇫🇷","French Seafood":"🇫🇷","French Steakhouse":"🇫🇷",Italian:"🇮🇹","Italian Fine Dining":"🇮🇹","Italian Casual":"🇮🇹","Italian Pasta":"🇮🇹","Italian Pizza":"🇮🇹","Italian-Roman":"🇮🇹","Italian-Sicilian":"🇮🇹","Italian-Mediterranean":"🇮🇹",Japanese:"🇯🇵","Japanese Omakase":"🇯🇵","Japanese Sushi":"🇯🇵","Japanese Kaiseki":"🇯🇵","Japanese Ramen":"🇯🇵","Japanese Modern":"🇯🇵","Japanese Robata":"🇯🇵",Mediterranean:"🌊",Steakhouse:"🥩","Korean Steakhouse":"🇰🇷",Greek:"🇬🇷","Greek Mediterranean":"🇬🇷",Lebanese:"🇱🇧",Mexican:"🇲🇽",Spanish:"🇪🇸",Seafood:"🦞",American:"🇺🇸","New American":"🇺🇸",Cafe:"☕","Specialty Coffee":"☕",Bakery:"🥐","Patisserie":"🧁"}}/>
+            <FilterDrop value={price} options={prices} onChange={setPrice} emoji="💰" emojiMap={{Price:"💰","$":"💲","$$":"💵","$$$":"💎","$$$$":"👑"}}/>
+            <FilterDrop value={vibe} options={vibes} onChange={setVibe} emoji="✨" emojiMap={{Vibe:"✨",Romantic:"🕯",Luxury:"👑",Trendy:"🔥",Lively:"🎉",Chill:"😎",Loud:"🔊",Party:"🎊"}}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
-            <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
+            <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} emoji="⚡" emojiMap={{Featured:"⚡",Rating:"⭐","Price: Low":"📉","Price: High":"📈","Most Reviewed":"💬"}}/>
           </div>
           <span style={{...sf(12),color:C.s6,flexShrink:0,marginLeft:8}}>{fetching?"Loading...":filtered.length+" restaurant"+(filtered.length!==1?"s":"")}</span>
         </div>
