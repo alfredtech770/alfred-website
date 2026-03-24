@@ -51,6 +51,7 @@ export default function JetDetailPage(){
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var specsRef=useRef(null);var specsVis=useVis(specsRef);
+  var cabinRef=useRef(null);var cabinVis=useVis(cabinRef);
   var inclRef=useRef(null);var inclVis=useVis(inclRef);
   var routesRef=useRef(null);var routesVis=useVis(routesRef);
   var revRef=useRef(null);var revVis=useVis(revRef);
@@ -211,6 +212,109 @@ export default function JetDetailPage(){
         </div>
         <div className="spec-grid" style={{opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.2s"}}>
           {J.specs.map(function(s,i){return(<div key={i} style={{padding:"14px 16px",borderRadius:14,background:C.el,border:"1px solid "+C.bd}}><div style={{...sf(10,500),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:5}}>{s.l}</div><div style={{...sf(14,500),color:C.s1}}>{s.v}</div></div>)})}
+        </div>
+      </div>
+
+      {/* Cabin Configuration */}
+      <div ref={cabinRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+        {secDiv}
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:24,marginTop:32,opacity:cabinVis?1:0,transition:"all 0.8s ease"}}>Cabin Configuration</p>
+        <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"32px 24px",opacity:cabinVis?1:0,transform:cabinVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s",overflow:"hidden"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span style={{...sf(14,600),color:C.s1}}>Bombardier Global 7500 — Four-Zone Cabin</span>
+          </div>
+          <div style={{width:"100%",overflowX:"auto",WebkitOverflowScrolling:"touch",paddingBottom:8}}>
+            <svg viewBox="0 0 960 180" style={{width:"100%",minWidth:680,height:"auto",display:"block"}}>
+              {/* Fuselage outline */}
+              <path d="M60 30 Q0 90 60 150 L900 150 Q960 90 900 30 Z" fill="#1F1F23" stroke="#2C2C31" strokeWidth="1.5"/>
+              {/* Nose cone */}
+              <path d="M60 30 Q20 90 60 150" fill="none" stroke="#3F3F46" strokeWidth="1"/>
+              {/* Cockpit area */}
+              <rect x="65" y="50" width="70" height="80" rx="6" fill="#18181B" stroke="#2C2C31" strokeWidth="1"/>
+              <circle cx="85" cy="78" r="6" fill="none" stroke="#52525B" strokeWidth="1"/>
+              <circle cx="85" cy="102" r="6" fill="none" stroke="#52525B" strokeWidth="1"/>
+              <rect x="100" y="70" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+              <rect x="100" y="94" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+              <text x="100" y="145" style={{fontSize:9,fill:"#71717A",fontFamily:"-apple-system,sans-serif",fontWeight:500}}>Cockpit</text>
+              {/* Divider line after cockpit */}
+              <line x1="145" y1="38" x2="145" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
+
+              {/* Zone 1: Forward Club (4 seats face-to-face) */}
+              <rect x="160" y="46" width="160" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
+              {/* Left pair */}
+              <rect x="175" y="56" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
+              <rect x="175" y="96" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
+              {/* Table */}
+              <rect x="210" y="64" width="30" height="52" rx="4" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>
+              {/* Right pair */}
+              <rect x="250" y="56" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
+              <rect x="250" y="96" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
+              {/* Second club group */}
+              <rect x="290" y="56" width="20" height="28" rx="4" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+              <rect x="290" y="96" width="20" height="28" rx="4" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+              <text x="210" y="153" style={{fontSize:9,fill:"#34C759",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Forward Club</text>
+              {/* Divider */}
+              <line x1="328" y1="38" x2="328" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
+
+              {/* Zone 2: Conference / Dining */}
+              <rect x="340" y="46" width="170" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
+              {/* Conference table */}
+              <rect x="375" y="60" width="100" height="60" rx="6" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>
+              {/* Seats around table */}
+              <rect x="355" y="65" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
+              <rect x="355" y="93" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
+              <rect x="480" y="65" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
+              <rect x="480" y="93" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
+              <rect x="400" y="48" width="22" height="14" rx="3" fill="none" stroke="#FFD60A" strokeWidth="0.8"/>
+              <rect x="435" y="48" width="22" height="14" rx="3" fill="none" stroke="#FFD60A" strokeWidth="0.8"/>
+              <text x="425" y="153" style={{fontSize:9,fill:"#FFD60A",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Conference & Dining</text>
+              {/* Divider */}
+              <line x1="518" y1="38" x2="518" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
+
+              {/* Zone 3: Entertainment Suite */}
+              <rect x="530" y="46" width="160" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
+              {/* Sofa / credenza left */}
+              <rect x="545" y="54" width="50" height="24" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
+              <rect x="545" y="102" width="50" height="24" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
+              {/* TV screen */}
+              <rect x="615" y="64" width="4" height="52" rx="2" fill="#52525B"/>
+              {/* Seats facing screen */}
+              <rect x="635" y="56" width="40" height="26" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
+              <rect x="635" y="98" width="40" height="26" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
+              <text x="610" y="153" style={{fontSize:9,fill:"#A1A1AA",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Entertainment Suite</text>
+              {/* Divider */}
+              <line x1="698" y1="38" x2="698" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
+
+              {/* Zone 4: Master Stateroom + Lavatory */}
+              <rect x="710" y="46" width="170" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
+              {/* Bed */}
+              <rect x="725" y="56" width="80" height="68" rx="6" fill="none" stroke="#E4E4E7" strokeWidth="1.2"/>
+              <line x1="725" y1="90" x2="805" y2="90" stroke="#3F3F46" strokeWidth="0.5"/>
+              {/* Pillow indicators */}
+              <rect x="735" y="62" width="24" height="14" rx="4" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>
+              <rect x="765" y="62" width="24" height="14" rx="4" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>
+              {/* Lavatory partition */}
+              <line x1="818" y1="50" x2="818" y2="130" stroke="#3F3F46" strokeWidth="0.8"/>
+              {/* Shower/lav */}
+              <rect x="828" y="56" width="40" height="30" rx="5" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+              <circle cx="848" cy="71" r="5" fill="none" stroke="#52525B" strokeWidth="0.6"/>
+              <rect x="828" y="96" width="40" height="28" rx="5" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+              <text x="790" y="153" style={{fontSize:9,fill:"#E4E4E7",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Master Stateroom</text>
+
+              {/* Windows along top and bottom */}
+              {[100,130,170,200,230,260,290,320,350,380,410,440,470,500,530,560,590,620,650,680,710,740,770,800,830,860].map(function(wx,wi){return(<g key={wi}><ellipse cx={wx} cy="34" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/><ellipse cx={wx} cy="146" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/></g>)})}
+            </svg>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10,marginTop:20}}>
+            {[{color:C.gn,label:"Forward Club",desc:"4 club seats, work tables"},{color:C.gold,label:"Conference & Dining",desc:"6-seat dining, full service"},{color:C.s4,label:"Entertainment Suite",desc:"Sofa, 40\" 4K display"},{color:C.s2,label:"Master Stateroom",desc:"Lie-flat bed, full shower"}].map(function(z,i){
+              return(<div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",borderRadius:10,background:"rgba(244,244,245,0.02)"}}>
+                <div style={{width:8,height:8,borderRadius:"50%",background:z.color,flexShrink:0,marginTop:4}}/>
+                <div><div style={{...sf(12,600),color:C.s1}}>{z.label}</div><div style={{...sf(11),color:C.s5,marginTop:2}}>{z.desc}</div></div>
+              </div>);
+            })}
+          </div>
+          <div style={{...sf(11),color:C.s6,marginTop:16}}>Cabin: {J.cabin} · Standard configuration shown — custom layouts available on request.</div>
         </div>
       </div>
 
