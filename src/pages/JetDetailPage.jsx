@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
@@ -6,6 +7,170 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 
 function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
+
+/* ═══ CABIN LAYOUT DATA PER JET ═══ */
+var CABIN_LAYOUTS={
+  "global-7500":{title:"Bombardier Global 7500 — Four-Zone Cabin",zones:[
+    {name:"Forward Club",color:"#34C759",x:160,w:160,type:"club4"},
+    {name:"Conference & Dining",color:"#FFD60A",x:340,w:170,type:"conference"},
+    {name:"Entertainment Suite",color:"#A1A1AA",x:530,w:160,type:"entertainment"},
+    {name:"Master Stateroom",color:"#E4E4E7",x:710,w:170,type:"stateroom"}
+  ]},
+  "global-6000":{title:"Bombardier Global 6000 — Three-Zone Cabin",zones:[
+    {name:"Forward Club",color:"#34C759",x:160,w:200,type:"club4"},
+    {name:"Mid Lounge",color:"#FFD60A",x:380,w:200,type:"lounge"},
+    {name:"Private Suite",color:"#E4E4E7",x:600,w:280,type:"stateroom"}
+  ]},
+  "global-5000":{title:"Bombardier Global 5000 — Three-Zone Cabin",zones:[
+    {name:"Forward Club",color:"#34C759",x:160,w:200,type:"club4"},
+    {name:"Lounge",color:"#A1A1AA",x:380,w:200,type:"lounge"},
+    {name:"Rest Area",color:"#E4E4E7",x:600,w:280,type:"rest"}
+  ]},
+  "challenger-850":{title:"Bombardier Challenger 850 — Three-Zone Cabin",zones:[
+    {name:"Club Seating",color:"#34C759",x:160,w:220,type:"club4"},
+    {name:"Lounge & Divan",color:"#FFD60A",x:400,w:200,type:"lounge"},
+    {name:"Bedroom",color:"#E4E4E7",x:620,w:260,type:"stateroom"}
+  ]},
+  "challenger-605":{title:"Bombardier Challenger 605 — Two-Zone Cabin",zones:[
+    {name:"Club Seating",color:"#34C759",x:160,w:340,type:"club6"},
+    {name:"Divan & Galley",color:"#A1A1AA",x:520,w:360,type:"divan"}
+  ]},
+  "challenger-350":{title:"Bombardier Challenger 350 — Two-Zone Cabin",zones:[
+    {name:"Club Seating",color:"#34C759",x:160,w:380,type:"club6"},
+    {name:"Refreshment Center",color:"#A1A1AA",x:560,w:320,type:"galley"}
+  ]},
+  "falcon-7x":{title:"Dassault Falcon 7X — Three-Zone Cabin",zones:[
+    {name:"Forward Club",color:"#34C759",x:160,w:200,type:"club4"},
+    {name:"Dining",color:"#FFD60A",x:380,w:200,type:"conference"},
+    {name:"Lounge & Rest",color:"#E4E4E7",x:600,w:280,type:"rest"}
+  ]},
+  "g450":{title:"Gulfstream G450 — Three-Zone Cabin",zones:[
+    {name:"Forward Club",color:"#34C759",x:160,w:220,type:"club4"},
+    {name:"Conference",color:"#FFD60A",x:400,w:200,type:"conference"},
+    {name:"Rest Area",color:"#E4E4E7",x:620,w:260,type:"rest"}
+  ]},
+  "citation-xls":{title:"Cessna Citation XLS+ — Single Cabin",zones:[
+    {name:"Club Seating",color:"#34C759",x:160,w:720,type:"club8"}
+  ]},
+  "lineage-1000e":{title:"Embraer Lineage 1000E — Five-Zone Cabin",zones:[
+    {name:"Lounge",color:"#34C759",x:160,w:130,type:"club4"},
+    {name:"Conference",color:"#FFD60A",x:300,w:130,type:"conference"},
+    {name:"Entertainment",color:"#A1A1AA",x:440,w:120,type:"entertainment"},
+    {name:"Dining",color:"#FF9F0A",x:570,w:120,type:"lounge"},
+    {name:"Master Suite",color:"#E4E4E7",x:700,w:180,type:"stateroom"}
+  ]}
+};
+
+function drawZoneSeats(z){
+  var cx=z.x,w=z.w,col=z.color;
+  var els=[];
+  /* zone background */
+  els.push(<rect key="bg" x={cx} y={46} width={w} height={88} rx={8} fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>);
+  if(z.type==="club4"){
+    var mx=cx+w/2;
+    els.push(<rect key="s1" x={mx-50} y={56} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s2" x={mx-50} y={96} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="tb" x={mx-15} y={64} width={30} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+    els.push(<rect key="s3" x={mx+24} y={56} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s4" x={mx+24} y={96} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+  }else if(z.type==="club6"){
+    var sp=w/3;
+    for(var i=0;i<3;i++){var bx=cx+sp*i+sp/2-15;
+      els.push(<rect key={"t"+i} x={bx} y={64} width={30} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+      els.push(<rect key={"a"+i} x={bx-20} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"b"+i} x={bx-20} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"c"+i} x={bx+34} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"d"+i} x={bx+34} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+    }
+  }else if(z.type==="club8"){
+    var sp2=w/4;
+    for(var j=0;j<4;j++){var bx2=cx+sp2*j+sp2/2-15;
+      els.push(<rect key={"t"+j} x={bx2} y={64} width={30} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+      els.push(<rect key={"a"+j} x={bx2-20} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"b"+j} x={bx2-20} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"c"+j} x={bx2+34} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"d"+j} x={bx2+34} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+    }
+  }else if(z.type==="conference"){
+    var mx2=cx+w/2;
+    els.push(<rect key="tbl" x={mx2-50} y={60} width={100} height={60} rx={6} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+    els.push(<rect key="s1" x={mx2-65} y={65} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s2" x={mx2-65} y={93} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s3" x={mx2+49} y={65} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s4" x={mx2+49} y={93} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s5" x={mx2-30} y={48} width={22} height={14} rx={3} fill="none" stroke={col} strokeWidth="0.8"/>);
+    els.push(<rect key="s6" x={mx2+8} y={48} width={22} height={14} rx={3} fill="none" stroke={col} strokeWidth="0.8"/>);
+  }else if(z.type==="entertainment"){
+    els.push(<rect key="d1" x={cx+15} y={54} width={50} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="d2" x={cx+15} y={102} width={50} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="tv" x={cx+w/2+5} y={64} width={4} height={52} rx={2} fill="#52525B"/>);
+    els.push(<rect key="s1" x={cx+w/2+25} y={56} width={40} height={26} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="s2" x={cx+w/2+25} y={98} width={40} height={26} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+  }else if(z.type==="stateroom"){
+    var bw=Math.min(80,w*0.4);
+    els.push(<rect key="bed" x={cx+15} y={56} width={bw} height={68} rx={6} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<line key="bl" x1={cx+15} y1={90} x2={cx+15+bw} y2={90} stroke="#3F3F46" strokeWidth="0.5"/>);
+    els.push(<rect key="p1" x={cx+25} y={62} width={24} height={14} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>);
+    if(bw>60)els.push(<rect key="p2" x={cx+55} y={62} width={24} height={14} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>);
+    var lx=cx+15+bw+18;
+    els.push(<line key="part" x1={lx-8} y1={50} x2={lx-8} y2={130} stroke="#3F3F46" strokeWidth="0.8"/>);
+    els.push(<rect key="lav" x={lx} y={56} width={Math.min(40,w-bw-50)} height={30} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    els.push(<circle key="sh" cx={lx+Math.min(20,w-bw-50)/2+5} cy={71} r={5} fill="none" stroke="#52525B" strokeWidth="0.6"/>);
+    els.push(<rect key="wc" x={lx} y={96} width={Math.min(40,w-bw-50)} height={28} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+  }else if(z.type==="lounge"){
+    els.push(<rect key="sf1" x={cx+15} y={54} width={w*0.4} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="sf2" x={cx+15} y={102} width={w*0.4} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="tb" x={cx+w*0.5} y={66} width={w*0.3} height={48} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+  }else if(z.type==="rest"){
+    els.push(<rect key="dv1" x={cx+15} y={54} width={w*0.5} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="dv2" x={cx+15} y={98} width={w*0.5} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="cab" x={cx+w*0.7} y={56} width={w*0.2} height={68} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+  }else if(z.type==="divan"){
+    els.push(<rect key="dv" x={cx+15} y={54} width={w*0.4} height={72} rx={6} fill="none" stroke={col} strokeWidth="1"/>);
+    var gx=cx+w*0.55;
+    els.push(<rect key="gl" x={gx} y={54} width={w*0.35} height={34} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    els.push(<rect key="g2" x={gx} y={96} width={w*0.35} height={28} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+  }else if(z.type==="galley"){
+    els.push(<rect key="g1" x={cx+15} y={54} width={w*0.35} height={34} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="g2" x={cx+15} y={96} width={w*0.35} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="lv" x={cx+w*0.55} y={56} width={w*0.35} height={68} rx={6} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    els.push(<circle key="sk" cx={cx+w*0.55+w*0.175} cy={90} r={10} fill="none" stroke="#52525B" strokeWidth="0.6"/>);
+  }
+  /* zone label */
+  els.push(<text key="lbl" x={cx+w/2} y={153} style={{fontSize:9,fill:col,fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">{z.name}</text>);
+  return els;
+}
+
+function CabinSVG(p){
+  var layout=p.layout;if(!layout)return null;
+  var zones=layout.zones;
+  var lastZ=zones[zones.length-1];
+  var totalW=lastZ.x+lastZ.w+20;
+  var svgW=Math.max(totalW,500);
+  return(
+    <svg viewBox={"0 0 "+svgW+" 180"} style={{width:"100%",minWidth:Math.min(680,svgW),height:"auto",display:"block"}}>
+      <path d={"M60 30 Q0 90 60 150 L"+(svgW-60)+" 150 Q"+svgW+" 90 "+(svgW-60)+" 30 Z"} fill="#1F1F23" stroke="#2C2C31" strokeWidth="1.5"/>
+      <path d="M60 30 Q20 90 60 150" fill="none" stroke="#3F3F46" strokeWidth="1"/>
+      {/* Cockpit */}
+      <rect x="65" y="50" width="70" height="80" rx="6" fill="#18181B" stroke="#2C2C31" strokeWidth="1"/>
+      <circle cx="85" cy="78" r="6" fill="none" stroke="#52525B" strokeWidth="1"/>
+      <circle cx="85" cy="102" r="6" fill="none" stroke="#52525B" strokeWidth="1"/>
+      <rect x="100" y="70" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+      <rect x="100" y="94" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
+      <text x="100" y="145" style={{fontSize:9,fill:"#71717A",fontFamily:"-apple-system,sans-serif",fontWeight:500}}>Cockpit</text>
+      <line x1="145" y1="38" x2="145" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
+      {/* Zones */}
+      {zones.map(function(z,i){
+        var items=drawZoneSeats(z);
+        var divX=z.x+z.w+5;
+        if(i<zones.length-1)items.push(<line key={"div"+i} x1={divX} y1={38} x2={divX} y2={142} stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>);
+        return <g key={i}>{items}</g>;
+      })}
+      {/* Windows */}
+      {Array.from({length:Math.floor((svgW-200)/30)},function(_,i){return 100+i*30}).map(function(wx,wi){return(<g key={wi}><ellipse cx={wx} cy="34" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/><ellipse cx={wx} cy="146" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/></g>)})}
+    </svg>
+  );
+}
 
 var J={
   name:"Bombardier Global 7500",tagline:"VistaJet's flagship. Four living spaces. Permanent stateroom.",
@@ -40,6 +205,7 @@ var J={
 };
 
 export default function JetDetailPage(){
+  var {slug}=useParams();
   var [idx,setIdx]=useState(0);
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
@@ -48,6 +214,7 @@ export default function JetDetailPage(){
   var [date,setDate]=useState("2026-03-25");
   var [pax,setPax]=useState("6");
   var [tripType,setTripType]=useState("One Way");
+  var cabinLayout=CABIN_LAYOUTS[slug]||CABIN_LAYOUTS["global-7500"];
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var specsRef=useRef(null);var specsVis=useVis(specsRef);
@@ -222,95 +389,16 @@ export default function JetDetailPage(){
         <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"32px 24px",opacity:cabinVis?1:0,transform:cabinVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s",overflow:"hidden"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            <span style={{...sf(14,600),color:C.s1}}>Bombardier Global 7500 — Four-Zone Cabin</span>
+            <span style={{...sf(14,600),color:C.s1}}>{cabinLayout.title}</span>
           </div>
           <div style={{width:"100%",overflowX:"auto",WebkitOverflowScrolling:"touch",paddingBottom:8}}>
-            <svg viewBox="0 0 960 180" style={{width:"100%",minWidth:680,height:"auto",display:"block"}}>
-              {/* Fuselage outline */}
-              <path d="M60 30 Q0 90 60 150 L900 150 Q960 90 900 30 Z" fill="#1F1F23" stroke="#2C2C31" strokeWidth="1.5"/>
-              {/* Nose cone */}
-              <path d="M60 30 Q20 90 60 150" fill="none" stroke="#3F3F46" strokeWidth="1"/>
-              {/* Cockpit area */}
-              <rect x="65" y="50" width="70" height="80" rx="6" fill="#18181B" stroke="#2C2C31" strokeWidth="1"/>
-              <circle cx="85" cy="78" r="6" fill="none" stroke="#52525B" strokeWidth="1"/>
-              <circle cx="85" cy="102" r="6" fill="none" stroke="#52525B" strokeWidth="1"/>
-              <rect x="100" y="70" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
-              <rect x="100" y="94" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
-              <text x="100" y="145" style={{fontSize:9,fill:"#71717A",fontFamily:"-apple-system,sans-serif",fontWeight:500}}>Cockpit</text>
-              {/* Divider line after cockpit */}
-              <line x1="145" y1="38" x2="145" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
-
-              {/* Zone 1: Forward Club (4 seats face-to-face) */}
-              <rect x="160" y="46" width="160" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
-              {/* Left pair */}
-              <rect x="175" y="56" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
-              <rect x="175" y="96" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
-              {/* Table */}
-              <rect x="210" y="64" width="30" height="52" rx="4" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>
-              {/* Right pair */}
-              <rect x="250" y="56" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
-              <rect x="250" y="96" width="26" height="28" rx="5" fill="none" stroke="#34C759" strokeWidth="1.2"/>
-              {/* Second club group */}
-              <rect x="290" y="56" width="20" height="28" rx="4" fill="none" stroke="#52525B" strokeWidth="0.8"/>
-              <rect x="290" y="96" width="20" height="28" rx="4" fill="none" stroke="#52525B" strokeWidth="0.8"/>
-              <text x="210" y="153" style={{fontSize:9,fill:"#34C759",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Forward Club</text>
-              {/* Divider */}
-              <line x1="328" y1="38" x2="328" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
-
-              {/* Zone 2: Conference / Dining */}
-              <rect x="340" y="46" width="170" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
-              {/* Conference table */}
-              <rect x="375" y="60" width="100" height="60" rx="6" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>
-              {/* Seats around table */}
-              <rect x="355" y="65" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
-              <rect x="355" y="93" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
-              <rect x="480" y="65" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
-              <rect x="480" y="93" width="16" height="22" rx="4" fill="none" stroke="#FFD60A" strokeWidth="1.2"/>
-              <rect x="400" y="48" width="22" height="14" rx="3" fill="none" stroke="#FFD60A" strokeWidth="0.8"/>
-              <rect x="435" y="48" width="22" height="14" rx="3" fill="none" stroke="#FFD60A" strokeWidth="0.8"/>
-              <text x="425" y="153" style={{fontSize:9,fill:"#FFD60A",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Conference & Dining</text>
-              {/* Divider */}
-              <line x1="518" y1="38" x2="518" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
-
-              {/* Zone 3: Entertainment Suite */}
-              <rect x="530" y="46" width="160" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
-              {/* Sofa / credenza left */}
-              <rect x="545" y="54" width="50" height="24" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
-              <rect x="545" y="102" width="50" height="24" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
-              {/* TV screen */}
-              <rect x="615" y="64" width="4" height="52" rx="2" fill="#52525B"/>
-              {/* Seats facing screen */}
-              <rect x="635" y="56" width="40" height="26" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
-              <rect x="635" y="98" width="40" height="26" rx="5" fill="none" stroke="#A1A1AA" strokeWidth="1"/>
-              <text x="610" y="153" style={{fontSize:9,fill:"#A1A1AA",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Entertainment Suite</text>
-              {/* Divider */}
-              <line x1="698" y1="38" x2="698" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
-
-              {/* Zone 4: Master Stateroom + Lavatory */}
-              <rect x="710" y="46" width="170" height="88" rx="8" fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>
-              {/* Bed */}
-              <rect x="725" y="56" width="80" height="68" rx="6" fill="none" stroke="#E4E4E7" strokeWidth="1.2"/>
-              <line x1="725" y1="90" x2="805" y2="90" stroke="#3F3F46" strokeWidth="0.5"/>
-              {/* Pillow indicators */}
-              <rect x="735" y="62" width="24" height="14" rx="4" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>
-              <rect x="765" y="62" width="24" height="14" rx="4" fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>
-              {/* Lavatory partition */}
-              <line x1="818" y1="50" x2="818" y2="130" stroke="#3F3F46" strokeWidth="0.8"/>
-              {/* Shower/lav */}
-              <rect x="828" y="56" width="40" height="30" rx="5" fill="none" stroke="#52525B" strokeWidth="0.8"/>
-              <circle cx="848" cy="71" r="5" fill="none" stroke="#52525B" strokeWidth="0.6"/>
-              <rect x="828" y="96" width="40" height="28" rx="5" fill="none" stroke="#52525B" strokeWidth="0.8"/>
-              <text x="790" y="153" style={{fontSize:9,fill:"#E4E4E7",fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">Master Stateroom</text>
-
-              {/* Windows along top and bottom */}
-              {[100,130,170,200,230,260,290,320,350,380,410,440,470,500,530,560,590,620,650,680,710,740,770,800,830,860].map(function(wx,wi){return(<g key={wi}><ellipse cx={wx} cy="34" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/><ellipse cx={wx} cy="146" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/></g>)})}
-            </svg>
+            <CabinSVG layout={cabinLayout}/>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10,marginTop:20}}>
-            {[{color:C.gn,label:"Forward Club",desc:"4 club seats, work tables"},{color:C.gold,label:"Conference & Dining",desc:"6-seat dining, full service"},{color:C.s4,label:"Entertainment Suite",desc:"Sofa, 40\" 4K display"},{color:C.s2,label:"Master Stateroom",desc:"Lie-flat bed, full shower"}].map(function(z,i){
+            {cabinLayout.zones.map(function(z,i){
               return(<div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,padding:"10px 12px",borderRadius:10,background:"rgba(244,244,245,0.02)"}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:z.color,flexShrink:0,marginTop:4}}/>
-                <div><div style={{...sf(12,600),color:C.s1}}>{z.label}</div><div style={{...sf(11),color:C.s5,marginTop:2}}>{z.desc}</div></div>
+                <div><div style={{...sf(12,600),color:C.s1}}>{z.name}</div></div>
               </div>);
             })}
           </div>
