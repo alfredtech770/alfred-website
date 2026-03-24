@@ -105,8 +105,8 @@ export default function YachtDetailPage(){
     isFeatured: yacht.is_featured,
     city: yacht.city,
     location: yacht.location || yacht.city || "Charter",
-    features: yacht.whats_included || ["Fuel included","Captain included","First mate","Towels & ice"],
-    notIncluded: yacht.not_included || [],
+    features: (yacht.whats_included || ["Fuel included","Captain included","First mate","Towels & ice"]).filter(function(item){var low=item.toLowerCase();return low!=="ice box"&&low!=="gratuity"&&low!=="tax"&&low!=="cleaning fee"&&low!=="water"}).map(function(item){return item.toLowerCase()==="ice"?"Ice & Beverages":item}),
+    notIncluded: (yacht.not_included || []).filter(function(item){var low=item.toLowerCase();return low!=="ice box"&&low!=="gratuity"&&low!=="tax"&&low!=="cleaning fee"&&low!=="water"}).map(function(item){return item.toLowerCase()==="ice"?"Ice & Beverages":item}),
     tags: yacht.tags || [],
     deposit: yacht.security_deposit || 0,
     description: yacht.description || "",
@@ -279,7 +279,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
                   <div style={{display:"flex",alignItems:"flex-end",paddingBottom:12}}><div style={{width:10,height:1,background:"rgba(244,244,245,0.08)"}}/></div>
                   <div style={{flex:1}}>
                     <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Return</div>
-                    <DarkDatePicker value={returnD} onChange={pickReturn} label="Return"/>
+                    <DarkDatePicker value={returnD} onChange={pickReturn} label="Return" align="right"/>
                   </div>
                 </div>
 
@@ -329,11 +329,11 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             <div style={{display:"flex",gap:8,marginBottom:14}}>
               <div style={{flex:1}}>
                 <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Charter Date</div>
-                <input type="date" value={pickup} onChange={function(e){pickPickup(e.target.value)}} style={inputS}/>
+                <DarkDatePicker value={pickup} onChange={pickPickup} label="Charter Date"/>
               </div>
               <div style={{flex:1}}>
                 <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Return</div>
-                <input type="date" value={returnD} onChange={function(e){pickReturn(e.target.value)}} style={inputS}/>
+                <DarkDatePicker value={returnD} onChange={pickReturn} label="Return" align="right"/>
               </div>
             </div>
             <div style={{display:"flex",gap:4,marginBottom:16}}>
@@ -430,23 +430,6 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
         </div>
       </div>}
 
-      {/* Tags / Features */}
-      {YACHT.tags.length>0&&<div className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
-        {secDiv}
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Features & Amenities</p>
-        <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-          {YACHT.tags.map(function(tag,i){return <span key={i} style={{...sf(12,500),color:C.s3,padding:"8px 14px",borderRadius:10,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
-        </div>
-      </div>}
-
-      {/* Payment Methods */}
-      {YACHT.paymentMethods.length>0&&<div className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
-        {secDiv}
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Payment Methods</p>
-        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {YACHT.paymentMethods.map(function(m,i){return <span key={i} style={{...sf(12,500),color:C.s4,padding:"7px 14px",borderRadius:8,border:"0.5px solid "+C.bd,background:C.srf}}>{m}</span>})}
-        </div>
-      </div>}
 
       {/* Notes */}
       {YACHT.notes&&<div className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
