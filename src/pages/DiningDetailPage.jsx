@@ -219,11 +219,10 @@ export default function DiningDetailPage(){
 
           {/* RIGHT — Sticky Booking */}
           <div className="right-col">
-            <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}>
-              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
+            <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"visible"}}>
+              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",borderRadius:"20px 20px 0 0"}}/>
               <div style={{padding:"24px 22px"}}>
-                <div style={{...sf(18,700),color:C.s1,marginBottom:4}}>Arrange a Table</div>
-                <div style={{...sf(12),color:C.s5,marginBottom:20}}>{V.priceLevel}</div>
+                <div style={{...sf(18,700),color:C.s1,marginBottom:20}}>Arrange a Table</div>
 
                 {/* Date */}
                 <div style={{marginBottom:14}}>
