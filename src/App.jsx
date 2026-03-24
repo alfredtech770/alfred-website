@@ -399,6 +399,104 @@ export default function App(){
   );
 }
 
+var COUNTRY_CODES=[
+  {code:"+1",flag:"\u{1F1FA}\u{1F1F8}",name:"United States"},{code:"+44",flag:"\u{1F1EC}\u{1F1E7}",name:"United Kingdom"},{code:"+33",flag:"\u{1F1EB}\u{1F1F7}",name:"France"},
+  {code:"+971",flag:"\u{1F1E6}\u{1F1EA}",name:"UAE"},{code:"+966",flag:"\u{1F1F8}\u{1F1E6}",name:"Saudi Arabia"},{code:"+41",flag:"\u{1F1E8}\u{1F1ED}",name:"Switzerland"},
+  {code:"+377",flag:"\u{1F1F2}\u{1F1E8}",name:"Monaco"},{code:"+34",flag:"\u{1F1EA}\u{1F1F8}",name:"Spain"},{code:"+39",flag:"\u{1F1EE}\u{1F1F9}",name:"Italy"},
+  {code:"+49",flag:"\u{1F1E9}\u{1F1EA}",name:"Germany"},{code:"+81",flag:"\u{1F1EF}\u{1F1F5}",name:"Japan"},{code:"+852",flag:"\u{1F1ED}\u{1F1F0}",name:"Hong Kong"},
+  {code:"+65",flag:"\u{1F1F8}\u{1F1EC}",name:"Singapore"},{code:"+61",flag:"\u{1F1E6}\u{1F1FA}",name:"Australia"},{code:"+55",flag:"\u{1F1E7}\u{1F1F7}",name:"Brazil"},
+  {code:"+52",flag:"\u{1F1F2}\u{1F1FD}",name:"Mexico"},{code:"+91",flag:"\u{1F1EE}\u{1F1F3}",name:"India"},{code:"+86",flag:"\u{1F1E8}\u{1F1F3}",name:"China"},
+  {code:"+7",flag:"\u{1F1F7}\u{1F1FA}",name:"Russia"},{code:"+82",flag:"\u{1F1F0}\u{1F1F7}",name:"South Korea"},{code:"+31",flag:"\u{1F1F3}\u{1F1F1}",name:"Netherlands"},
+  {code:"+46",flag:"\u{1F1F8}\u{1F1EA}",name:"Sweden"},{code:"+47",flag:"\u{1F1F3}\u{1F1F4}",name:"Norway"},{code:"+351",flag:"\u{1F1F5}\u{1F1F9}",name:"Portugal"},
+  {code:"+90",flag:"\u{1F1F9}\u{1F1F7}",name:"Turkey"},{code:"+972",flag:"\u{1F1EE}\u{1F1F1}",name:"Israel"},{code:"+234",flag:"\u{1F1F3}\u{1F1EC}",name:"Nigeria"},
+];
+
+function WaitlistModal(p){
+  var [formData,setFormData]=useState({name:"",whatsapp:"",email:""});
+  var [countryCode,setCountryCode]=useState("+1");
+  var [showCodes,setShowCodes]=useState(false);
+  var [formSent,setFormSent]=useState(false);
+  var [formLoading,setFormLoading]=useState(false);
+  function submitWaitlist(){
+    if(!formData.name.trim()||!formData.whatsapp.trim())return;
+    setFormLoading(true);
+    fetch("https://a.klaviyo.com/client/subscriptions/?company_id=YOUR_PUBLIC_KEY",{
+      method:"POST",headers:{"Content-Type":"application/json","revision":"2024-02-15"},
+      body:JSON.stringify({data:{type:"subscription",attributes:{custom_source:"Alfred Waitlist",profile:{data:{type:"profile",attributes:{first_name:formData.name,phone_number:countryCode+formData.whatsapp.replace(/\D/g,""),email:formData.email||undefined,properties:{waitlist:true,source:"website"}}}}},relationships:{list:{data:{type:"list",id:"YOUR_KLAVIYO_LIST_ID"}}}}})
+    }).catch(function(e){console.log("Klaviyo error:",e)}).finally(function(){setFormLoading(false);setFormSent(true)});
+  }
+  if(!p.open)return null;
+  return(
+    <div onClick={function(){p.onClose()}} style={{position:"fixed",inset:0,zIndex:10000,display:"flex",alignItems:"center",justifyContent:"center",padding:20,animation:"modalBgIn 0.3s ease both"}}>
+      <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)"}}/>
+      <div onClick={function(e){e.stopPropagation()}} style={{width:420,maxWidth:"100%",borderRadius:24,background:C.el,border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 40px 120px rgba(0,0,0,0.6)",position:"relative",overflow:"hidden",animation:"modalIn 0.5s cubic-bezier(0.16,1,0.3,1) both"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
+        <div onClick={function(){p.onClose()}} style={{position:"absolute",top:16,right:16,width:32,height:32,borderRadius:10,background:"rgba(244,244,245,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"background 0.3s",zIndex:2}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </div>
+        {!formSent?(
+          <div style={{padding:"40px 32px 36px"}}>
+            <div style={{marginBottom:24}}><DrawMark size={20} color={C.s5} active={true} delay={0} id="wl"/></div>
+            <h3 style={{...sf(24,700),letterSpacing:-0.5,marginBottom:6}}>Join the waitlist</h3>
+            <p style={{...sf(13,400),color:C.s5,lineHeight:1.6,marginBottom:32}}>Get early access to Alfred. We'll reach out on WhatsApp when it's your turn.</p>
+            <div style={{marginBottom:16}}>
+              <label style={{...sf(10,500),color:C.s6,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:8}}>Name</label>
+              <input value={formData.name} onChange={function(e){setFormData({...formData,name:e.target.value})}} placeholder="Your name" style={{width:"100%",padding:"14px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,400),outline:"none",transition:"border-color 0.3s"}} onFocus={function(e){e.target.style.borderColor=C.s5}} onBlur={function(e){e.target.style.borderColor=C.bd}}/>
+            </div>
+            <div style={{marginBottom:16}}>
+              <label style={{...sf(10,500),color:C.s6,letterSpacing:2,textTransform:"uppercase",display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                <span>WhatsApp</span>
+              </label>
+              <div style={{display:"flex",gap:8}}>
+                <div style={{position:"relative",flexShrink:0}}>
+                  <div onClick={function(){setShowCodes(!showCodes)}} style={{display:"flex",alignItems:"center",gap:6,padding:"14px 12px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.3s",minWidth:90}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){if(!showCodes)e.currentTarget.style.borderColor=C.bd}}>
+                    <span style={{fontSize:16}}>{(COUNTRY_CODES.find(function(c){return c.code===countryCode})||{}).flag}</span>
+                    <span style={{...sf(14,500),color:C.s1}}>{countryCode}</span>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round" style={{marginLeft:"auto",transform:showCodes?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s"}}><path d="M6 9l6 6 6-6"/></svg>
+                  </div>
+                  {showCodes&&(
+                    <div className="code-list" style={{position:"absolute",top:"calc(100% + 4px)",left:0,width:240,maxHeight:240,overflowY:"auto",borderRadius:14,background:C.el,border:"1px solid "+C.bd,boxShadow:"0 20px 60px rgba(0,0,0,0.5)",zIndex:20,padding:"6px"}}>
+                      {COUNTRY_CODES.map(function(c){return(
+                        <div key={c.code} onClick={function(){setCountryCode(c.code);setShowCodes(false)}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:8,cursor:"pointer",transition:"background 0.2s",...sf(13,400),color:c.code===countryCode?C.s1:C.s4}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onMouseLeave={function(e){e.currentTarget.style.background="transparent"}}>
+                          <span style={{fontSize:16}}>{c.flag}</span>
+                          <span style={{...sf(13,500),color:C.s1}}>{c.name}</span>
+                          <span style={{...sf(12,400),color:C.s5,marginLeft:"auto"}}>{c.code}</span>
+                        </div>
+                      )})}
+                    </div>
+                  )}
+                </div>
+                <input value={formData.whatsapp} onChange={function(e){setFormData({...formData,whatsapp:e.target.value})}} placeholder="305 555 0000" type="tel" style={{flex:1,padding:"14px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,400),outline:"none",transition:"border-color 0.3s"}} onFocus={function(e){e.target.style.borderColor=C.s5}} onBlur={function(e){e.target.style.borderColor=C.bd}}/>
+              </div>
+            </div>
+            <div style={{marginBottom:28}}>
+              <label style={{...sf(10,500),color:C.s6,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:8}}>Email <span style={{color:C.s7,fontWeight:400,letterSpacing:0,textTransform:"none"}}>(optional)</span></label>
+              <input value={formData.email} onChange={function(e){setFormData({...formData,email:e.target.value})}} placeholder="you@email.com" type="email" style={{width:"100%",padding:"14px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,400),outline:"none",transition:"border-color 0.3s"}} onFocus={function(e){e.target.style.borderColor=C.s5}} onBlur={function(e){e.target.style.borderColor=C.bd}}/>
+            </div>
+            <div onClick={submitWaitlist} style={{width:"100%",padding:"16px",borderRadius:14,background:(!formData.name.trim()||!formData.whatsapp.trim())?C.bd:C.s1,cursor:(!formData.name.trim()||!formData.whatsapp.trim())?"not-allowed":"pointer",textAlign:"center",...sf(14,700),color:(!formData.name.trim()||!formData.whatsapp.trim())?C.s6:C.bg,transition:"all 0.3s",opacity:formLoading?0.6:1}}>
+              {formLoading?"Joining...":"Get Early Access"}
+            </div>
+            <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,lineHeight:1.5}}>Your concierge will message you on WhatsApp within 24 hours.</p>
+          </div>
+        ):(
+          <div style={{padding:"56px 32px 48px",textAlign:"center"}}>
+            <div style={{width:56,height:56,borderRadius:"50%",background:"rgba(52,199,89,0.1)",border:"1.5px solid rgba(52,199,89,0.3)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px"}}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray:24,animation:"checkDraw 0.5s ease 0.2s both"}}><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <h3 style={{...sf(24,700),letterSpacing:-0.5,marginBottom:8}}>You're on the list</h3>
+            <p style={{...sf(14,400),color:C.s5,lineHeight:1.6,marginBottom:8}}>Welcome, {formData.name}.</p>
+            <p style={{...sf(13,400),color:C.s6,lineHeight:1.6}}>A concierge will reach out to you on WhatsApp shortly. In the meantime, keep scrolling.</p>
+            <div onClick={function(){p.onClose()}} style={{display:"inline-block",marginTop:28,padding:"14px 32px",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.1)",cursor:"pointer",...sf(13,600),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}}>
+              Continue Exploring
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function AlfredSite(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
@@ -415,6 +513,7 @@ function AlfredSite(){
   var [hoverFinal,setHoverFinal]=useState(false);
   var [annual,setAnnual]=useState(false);
   var [modalCat,setModalCat]=useState(null);
+  var [showWaitlist,setShowWaitlist]=useState(false);
 
   var stepsRef=useRef(null);
   var showRef=useRef(null);
@@ -575,6 +674,10 @@ function AlfredSite(){
 @keyframes lineGrowY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 @keyframes shimmerSweep{0%{left:-30%}100%{left:130%}}
 @keyframes pulseGlow{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes modalBgIn{from{opacity:0}to{opacity:1}}
+@keyframes checkDraw{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+.code-list::-webkit-scrollbar{width:4px}.code-list::-webkit-scrollbar-track{background:transparent}.code-list::-webkit-scrollbar-thumb{background:#3F3F46;border-radius:2px}
 @keyframes slideFromLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideFromRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideFromBottom{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -724,12 +827,8 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             <CityCarousel loaded={loaded}/>
             <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
             <div className="hero-cta" style={{marginTop:48,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
-              <div style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 24px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)"}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
-                <svg width="18" height="22" viewBox="0 0 24 30" fill={hoverCta?C.bg:C.s1} style={{transition:"fill 0.4s"}}><path d={appSvg}/></svg>
-                <div style={{display:"flex",flexDirection:"column",gap:1}}>
-                  <span style={{...sf(9,400),color:hoverCta?C.bg+"90":C.s6,transition:"color 0.4s",lineHeight:1}}>Download on the</span>
-                  <span style={{...sf(15,600),color:hoverCta?C.bg:C.s1,transition:"color 0.4s",lineHeight:1.1,letterSpacing:-0.3}}>App Store</span>
-                </div>
+              <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 28px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",...sf(14,600),color:hoverCta?C.bg:C.s1}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
+                Join the Waitlist
               </div>
             </div>
           </div>
@@ -911,25 +1010,13 @@ input::placeholder{color:#52525B}input:focus{outline:none}
       <section ref={ctaRef} aria-label="Download" className="cta-section" style={{padding:"120px 0 140px",position:"relative"}}><div style={divider}/>
         <div style={{textAlign:"center",maxWidth:600,margin:"0 auto",padding:"0 40px"}}>
           <h2 className="sec-head cta-heading" style={{...sf(52,600),letterSpacing:-2,lineHeight:1.06,marginBottom:20,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.2s"}}>Your city.<br/>Your way.</h2>
-          <p style={{...sf(17,400),color:C.s5,lineHeight:1.7,maxWidth:420,margin:"0 auto 40px",opacity:ctaVis?1:0,transition:"all 0.8s ease 0.4s"}}>Download Alfred and discover why the best experiences aren't found — they're arranged.</p>
+          <p style={{...sf(17,400),color:C.s5,lineHeight:1.7,maxWidth:420,margin:"0 auto 40px",opacity:ctaVis?1:0,transition:"all 0.8s ease 0.4s"}}>Join the waitlist and discover why the best experiences aren't found — they're arranged.</p>
 
-          {/* App Store button */}
+          {/* Waitlist button */}
           <div style={{opacity:ctaVis?1:0,transition:"all 0.8s ease 0.55s",marginBottom:32}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:12,padding:"16px 28px",borderRadius:16,background:hoverFinal?C.s1:C.el,border:"1px solid "+(hoverFinal?C.s1:C.bd),cursor:"pointer",transform:hoverFinal?"translateY(-3px)":"translateY(0)",boxShadow:hoverFinal?"0 12px 40px rgba(244,244,245,0.1)":"none",transition:"all 0.4s ease"}} onMouseEnter={function(){setHoverFinal(true)}} onMouseLeave={function(){setHoverFinal(false)}}>
-              <svg width="22" height="26" viewBox="0 0 24 30" fill={hoverFinal?C.bg:C.s1} style={{transition:"fill 0.4s"}}><path d={appSvg}/></svg>
-              <div style={{display:"flex",flexDirection:"column",gap:2}}>
-                <span style={{...sf(10,400),color:hoverFinal?C.bg+"90":C.s6,transition:"color 0.4s",lineHeight:1}}>Download on the</span>
-                <span style={{...sf(18,600),color:hoverFinal?C.bg:C.s1,transition:"color 0.4s",lineHeight:1.1,letterSpacing:-0.3}}>App Store</span>
-              </div>
+            <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 36px",borderRadius:16,background:hoverFinal?C.s1:C.el,border:"1px solid "+(hoverFinal?C.s1:C.bd),cursor:"pointer",transform:hoverFinal?"translateY(-3px)":"translateY(0)",boxShadow:hoverFinal?"0 12px 40px rgba(244,244,245,0.1)":"none",transition:"all 0.4s ease",...sf(16,600),color:hoverFinal?C.bg:C.s1}} onMouseEnter={function(){setHoverFinal(true)}} onMouseLeave={function(){setHoverFinal(false)}}>
+              Get Early Access
             </div>
-          </div>
-
-          {/* App Store rating */}
-          <div style={{opacity:ctaVis?1:0,transition:"all 0.8s ease 0.7s"}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,marginBottom:8}}>
-              {[1,2,3,4,5].map(function(s){return <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>})}
-            </div>
-            <div style={{...sf(14,600),color:C.s3}}>4.9 out of 5</div>
           </div>
         </div>
       </section>
@@ -948,7 +1035,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* Explore */}
             <div>
               <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
-              {["How it Works","Events","Membership","Catalog","Business","Download"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Events"?"/events":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
+              {["How it Works","Events","Membership","Catalog","Business"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Events"?"/events":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
             </div>
 
             {/* Follow us */}
@@ -972,13 +1059,9 @@ input::placeholder{color:#52525B}input:focus{outline:none}
                 <div style={{...sf(12,600),color:"#0E0E11",background:C.s1,padding:"10px 18px",borderRadius:10,cursor:"pointer",whiteSpace:"nowrap",transition:"opacity 0.2s"}} onMouseEnter={function(e){e.target.style.opacity="0.85"}} onMouseLeave={function(e){e.target.style.opacity="1"}}>Subscribe</div>
               </div>
 
-              {/* App Store */}
-              <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
-                <svg width="16" height="19" viewBox="0 0 24 30" fill={C.s1}><path d={appSvg}/></svg>
-                <div style={{display:"flex",flexDirection:"column",gap:1}}>
-                  <span style={{...sf(8,400),color:C.s6,lineHeight:1}}>Download on the</span>
-                  <span style={{...sf(13,600),color:C.s1,lineHeight:1.1}}>App Store</span>
-                </div>
+              {/* Waitlist */}
+              <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s",...sf(13,600),color:C.s1}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+                Join Waitlist
               </div>
             </div>
           </div>
@@ -1032,15 +1115,17 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             })}
             {/* CTA at bottom of modal */}
             <div style={{marginTop:24,textAlign:"center"}}>
-              <div style={{...sf(13,400),color:C.s5,marginBottom:16}}>Download the app to book any venue instantly</div>
-              <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg}}>
-                <svg width="16" height="19" viewBox="0 0 24 30" fill={C.bg}><path d={appSvg}/></svg>
-                Download Alfred
+              <div style={{...sf(13,400),color:C.s5,marginBottom:16}}>Join the waitlist to book any venue</div>
+              <div onClick={function(){setModalCat(null);setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg}}>
+                Get Early Access
               </div>
             </div>
           </div>
         </div>
       </div>}
+
+      {/* Waitlist Modal */}
+      <WaitlistModal open={showWaitlist} onClose={function(){setShowWaitlist(false)}}/>
     </div>
   );
 }
@@ -1738,7 +1823,7 @@ body::-webkit-scrollbar{width:0}
         <div style={{display:"flex",alignItems:"center",gap:28}}>
           <a href="/" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
           <div style={{...sf(11,400),color:C.s1,letterSpacing:0.3}}>Catalog</div>
-          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,...sf(11,500),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1}}>Download App</a>
+          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,...sf(11,500),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1}}>Join Waitlist</a>
         </div>
       </nav>
 
@@ -1855,10 +1940,9 @@ body::-webkit-scrollbar{width:0}
         <div style={{maxWidth:480,margin:"0 auto"}}>
           <CDrawMark size={32} color={C.s5}/>
           <h2 style={{...sf(32,600),letterSpacing:-1,marginTop:24,marginBottom:14}}>Ready to experience it all?</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Download Alfred and get access to every venue, every service, every experience — through one beautiful app.</p>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Join the waitlist and get access to every venue, every service, every experience — through one concierge.</p>
           <a href="/" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,...sf(14,500),color:C.s1,transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg;e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1;e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-            <svg width="18" height="22" viewBox="0 0 24 30" fill="currentColor"><path d="M19.44 26.28c-1.22 1.76-2.56 3.52-4.6 3.56-2.02.04-2.66-1.18-4.96-1.18-2.32 0-3.02 1.14-4.92 1.22C3 29.96 1.52 28 .28 26.24-2.22 22.68-4.1 16.18-1.56 11.8c1.26-2.16 3.5-3.54 5.94-3.58 1.94-.04 3.78 1.32 4.96 1.32 1.18 0 3.4-1.64 5.74-1.4.98.04 3.72.4 5.48 2.98-.14.08-3.28 1.92-3.24 5.7.04 4.54 3.98 6.04 4.02 6.06-.04.1-.62 2.16-2.06 4.28L19.44 26.28zM15.1 5.56c1.04-1.26 1.74-3 1.56-4.76-1.5.06-3.32 1-4.4 2.26-.96 1.12-1.8 2.9-1.58 4.62 1.68.12 3.38-.86 4.42-2.12z"/></svg>
-            Download on the App Store
+            Get Early Access
           </a>
         </div>
       </section>
