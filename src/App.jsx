@@ -16,6 +16,7 @@ import ExoticCarsPage from "./pages/ExoticCarsPage";
 import CarDetailPage from "./pages/CarDetailPage";
 import YachtsPage from "./pages/YachtsPage";
 import YachtDetailPage from "./pages/YachtDetailPage";
+import FeaturedEvents from "./pages/FeaturedEvents";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -736,6 +737,9 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div className="hero-scroll-l" style={{position:"absolute",bottom:36,left:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.4s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr",transform:"rotate(180deg)"}}>Scroll</span></div>
         <div className="hero-scroll-r" style={{position:"absolute",bottom:36,right:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.5s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr"}}>©2026</span></div>
       </section>
+
+      {/* ═══ FEATURED EVENTS ═══ */}
+      <FeaturedEvents/>
 
       {/* ═══ HOW IT WORKS ═══ */}
       <section ref={stepsRef} aria-label="How it works" style={{padding:"140px 0 120px",position:"relative"}}><div style={divider}/>

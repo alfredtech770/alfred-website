@@ -1,0 +1,236 @@
+import { useState, useEffect, useRef } from "react";
+
+var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
+var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
+
+var EVENTS=[
+  {name:"Monaco Grand Prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",
+   venue:"The Alfred Lounge · Nobu Terrace · Swimming Pool Chicane",
+   desc:"Two private venues on the Swimming Pool chicane — the Alfred Lounge and the Nobu Terrace. Private chef, champagne service, Nobu catering, 25 guests per venue.",
+   perks:["Alfred Lounge · pool-side chicane view","Nobu Terrace · signature catering","Private chef · continuous service","Black card welcome · no lanyards","Personal highlight reel"],
+   img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg",color:"#E11D48",spots:12},
+  {name:"Miami Grand Prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",
+   venue:"Track-Side Luxury Suite · Turn 1",
+   desc:"Track-side hospitality suite overlooking Turn 1 with direct paddock access. Celebrity after-race parties at LIV, Story, and E11even — all arranged.",
+   perks:["Private luxury suite · Turn 1","Paddock Club access","After-race LIV takeover","Supercar parade entry","Personal concierge all weekend"],
+   img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",color:"#F97316",spots:8},
+  {name:"Ibiza Opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",
+   venue:"Hï Ibiza · Ushuaïa · Pacha · Amnesia",
+   desc:"Season opening week across all four superclubs. Front-row Ushuaïa access, VIP tables, private villa with chef, and artist meet & greets.",
+   perks:["Hï Ibiza VIP table · 4 nights","Ushuaïa front-row access","Private villa with chef","Artist meet & greets","Yacht day party · full crew"],
+   img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/image.jpg",color:"#8B5CF6",spots:15},
+  {name:"Roland Garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",
+   venue:"Philippe Chatrier · Private Box",
+   desc:"Courtside hospitality at the French Open. Private box seats in Philippe Chatrier, champagne terraces, Michelin dining experience, and chauffeur transfers.",
+   perks:["Philippe Chatrier box seats","Champagne terrace access","Michelin dining experience","Player lounge entry","Chauffeur from hotel"],
+   img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/AlfedHotelCrillionParis.jpeg",color:"#D97706",spots:6},
+  {name:"Royal Ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",
+   venue:"Royal Enclosure · Private Box for 12",
+   desc:"The Royal Enclosure experience. Private box, Michelin chefs, helicopter from central London, and Savile Row styling consultation included.",
+   perks:["Royal Enclosure badges","Private box for 12 guests","Michelin chef on-site","Helicopter from London","Savile Row styling session"],
+   img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Bulgari-Resort-Bali-Exterior.webp",color:"#0EA5E9",spots:4},
+];
+
+function spotsColor(s){return s<=6?"#FF453A":s<=10?"#FFD60A":"#34C759"}
+function spotsShadow(s){return s<=6?"rgba(255,69,58,0.5)":s<=10?"rgba(255,214,10,0.4)":"rgba(52,199,89,0.4)"}
+
+export default function FeaturedEvents(){
+  var [idx,setIdx]=useState(0);
+  var [entered,setEntered]=useState(false);
+  var sectionRef=useRef(null);
+  var lastWheel=useRef(0);
+
+  useEffect(function(){
+    var el=sectionRef.current;if(!el)return;
+    var obs=new IntersectionObserver(function(entries){if(entries[0].isIntersecting)setEntered(true)},{threshold:0.15});
+    obs.observe(el);
+    return function(){obs.disconnect()};
+  },[]);
+
+  /* scroll hijack */
+  useEffect(function(){
+    var el=sectionRef.current;if(!el)return;
+    function onWheel(e){
+      var rect=el.getBoundingClientRect();
+      var inView=rect.top<=50&&rect.bottom>=window.innerHeight-50;
+      if(!inView)return;
+      var now=Date.now();
+      if(now-lastWheel.current<800){e.preventDefault();return}
+      if(Math.abs(e.deltaY)<25)return;
+      if(e.deltaY>0&&idx<EVENTS.length-1){e.preventDefault();lastWheel.current=now;setIdx(idx+1)}
+      else if(e.deltaY<0&&idx>0){e.preventDefault();lastWheel.current=now;setIdx(idx-1)}
+    }
+    window.addEventListener("wheel",onWheel,{passive:false});
+    return function(){window.removeEventListener("wheel",onWheel)};
+  },[idx]);
+
+  /* touch swipe */
+  var touchY=useRef(0);
+  function onTouchStart(e){touchY.current=e.touches[0].clientY}
+  function onTouchEnd(e){
+    var diff=touchY.current-e.changedTouches[0].clientY;
+    var now=Date.now();
+    if(now-lastWheel.current<800)return;
+    if(Math.abs(diff)<40)return;
+    if(diff>0&&idx<EVENTS.length-1){lastWheel.current=now;setIdx(idx+1)}
+    else if(diff<0&&idx>0){lastWheel.current=now;setIdx(idx-1)}
+  }
+
+  function goTo(n){if(n>=0&&n<EVENTS.length)setIdx(n)}
+  var cur=EVENTS[idx];
+  var prevI=(idx-1+EVENTS.length)%EVENTS.length;
+  var nextI=(idx+1)%EVENTS.length;
+
+  return(
+    <section ref={sectionRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px 0",overflow:"hidden"}}>
+      <style>{`
+@keyframes evtFadeSlideUp{from{opacity:0;transform:translateY(40px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes evtFloatSlow{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+      `}</style>
+
+      {/* Full-bleed backgrounds */}
+      {EVENTS.map(function(evt,i){
+        return <div key={i} style={{position:"absolute",inset:0,opacity:i===idx?1:0,transition:"opacity 1.4s ease, transform 8s ease",zIndex:0,transform:i===idx?"scale(1)":"scale(1.05)"}}>
+          <img src={evt.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+        </div>
+      })}
+      <div style={{position:"absolute",inset:0,background:"rgba(10,10,11,0.62)",zIndex:1}}/>
+      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at center,transparent 20%,rgba(10,10,11,0.5) 70%,rgba(10,10,11,0.85) 100%)",zIndex:1}}/>
+      <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.3) 0%,rgba(10,10,11,0.15) 40%,rgba(10,10,11,0.4) 70%,rgba(10,10,11,0.9) 100%)",zIndex:1}}/>
+
+      {/* Side labels */}
+      <div className="evt-side-label" style={{position:"absolute",top:"50%",left:48,zIndex:10,...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",writingMode:"vertical-lr",transform:"translateY(-50%) rotate(180deg)"}}>Experiences</div>
+      <div className="evt-side-label" style={{position:"absolute",top:"50%",right:48,zIndex:10,...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",writingMode:"vertical-lr",transform:"translateY(-50%)"}}>{idx<EVENTS.length-1?"Keep scrolling":"Last event"}</div>
+
+      {/* Left peek */}
+      <div className="evt-peek" onClick={function(){goTo(idx-1)}} style={{position:"absolute",top:0,bottom:0,width:"14%",left:0,zIndex:3,overflow:"hidden",cursor:idx>0?"pointer":"default"}}>
+        {idx>0&&<div style={{position:"absolute",inset:0,opacity:1,transition:"opacity 0.8s ease"}}>
+          <img src={EVENTS[prevI].img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.55)"}}/>
+          <div style={{position:"absolute",inset:0,background:"linear-gradient(90deg,rgba(10,10,11,0.2),rgba(10,10,11,0.7))"}}/>
+          <div style={{position:"absolute",bottom:48,left:32,...sf(18,700),color:C.s2}}>{EVENTS[prevI].name}</div>
+        </div>}
+      </div>
+
+      {/* Right peek */}
+      <div className="evt-peek" onClick={function(){goTo(idx+1)}} style={{position:"absolute",top:0,bottom:0,width:"14%",right:0,zIndex:3,overflow:"hidden",cursor:idx<EVENTS.length-1?"pointer":"default"}}>
+        {idx<EVENTS.length-1&&<div style={{position:"absolute",inset:0,opacity:1,transition:"opacity 0.8s ease"}}>
+          <img src={EVENTS[nextI].img} alt="" style={{width:"100%",height:"100%",objectFit:"cover",filter:"brightness(0.55)"}}/>
+          <div style={{position:"absolute",inset:0,background:"linear-gradient(270deg,rgba(10,10,11,0.2),rgba(10,10,11,0.7))"}}/>
+          <div style={{position:"absolute",bottom:48,right:32,...sf(18,700),color:C.s2,textAlign:"right"}}>{EVENTS[nextI].name}</div>
+        </div>}
+      </div>
+
+      {/* Nav arrows */}
+      {idx>0&&<div className="evt-arr" onClick={function(){goTo(idx-1)}} style={{position:"absolute",top:"50%",transform:"translateY(-50%)",left:"15.5%",width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,0.4)",backdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:8,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)";e.currentTarget.style.borderColor="rgba(255,255,255,0.08)"}}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </div>}
+      {idx<EVENTS.length-1&&<div className="evt-arr" onClick={function(){goTo(idx+1)}} style={{position:"absolute",top:"50%",transform:"translateY(-50%)",right:"15.5%",width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,0.4)",backdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:8,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)";e.currentTarget.style.borderColor="rgba(255,255,255,0.08)"}}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+      </div>}
+
+      {/* CENTER CARD */}
+      <div style={{width:780,maxWidth:"68vw",borderRadius:28,overflow:"hidden",background:"rgba(24,24,27,0.85)",backdropFilter:"blur(40px) saturate(1.3)",border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 60px 160px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03)",position:"relative",zIndex:5,opacity:entered?1:0,transform:entered?"translateY(0) scale(1)":"translateY(40px) scale(0.97)",transition:"all 1s cubic-bezier(0.16,1,0.3,1) 0.3s"}}>
+        {/* shine line */}
+        <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",zIndex:10}}/>
+
+        {/* Counter */}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:14,padding:"18px 0 0"}}>
+          <span style={{...sf(13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{String(idx+1).padStart(2,"0")}</span>
+          <div style={{width:50,height:2,background:C.bd,borderRadius:1,position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:0,left:0,height:"100%",width:((idx+1)/EVENTS.length*100)+"%",background:C.s1,borderRadius:1,transition:"width 0.7s cubic-bezier(0.16,1,0.3,1)"}}/>
+          </div>
+          <span style={{...sf(13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{"0"+EVENTS.length}</span>
+        </div>
+
+        {/* Name */}
+        <div style={{position:"relative",height:46,margin:"12px 24px 14px",overflow:"hidden"}}>
+          {EVENTS.map(function(evt,i){
+            var isActive=i===idx;
+            return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":i<idx?"translateY(-30px)":"translateY(30px)",transition:"all 0.7s cubic-bezier(0.16,1,0.3,1)"}}>
+              <h3 style={{...sf(30,700),letterSpacing:-0.5,lineHeight:1.2,whiteSpace:"nowrap"}}>{evt.name}</h3>
+            </div>
+          })}
+        </div>
+
+        {/* Image */}
+        <div style={{height:260,margin:"0 16px",borderRadius:18,overflow:"hidden",position:"relative"}}>
+          {EVENTS.map(function(evt,i){
+            var isActive=i===idx;
+            return <div key={i} style={{position:"absolute",inset:0,opacity:isActive?1:0,transform:isActive?"scale(1)":"scale(1.06)",transition:"opacity 0.9s ease, transform 6s ease",zIndex:isActive?2:1}}>
+              <img src={evt.img} alt={evt.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(24,24,27,0.4) 100%)"}}/>
+            </div>
+          })}
+          {/* Tags overlay */}
+          <div style={{position:"absolute",top:16,left:16,display:"flex",gap:8,zIndex:10}}>
+            <div style={{padding:"5px 14px",borderRadius:10,backdropFilter:"blur(8px)",...sf(10,700),letterSpacing:0.8,textTransform:"uppercase",background:cur.color+"30",border:"1px solid "+cur.color+"50",color:cur.color,transition:"all 0.5s"}}>{cur.tag}</div>
+            <div style={{padding:"5px 14px",borderRadius:10,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",...sf(10,500),color:"rgba(255,255,255,0.7)"}}>{cur.date}</div>
+          </div>
+          {/* Location */}
+          <div style={{position:"absolute",bottom:16,left:16,display:"flex",alignItems:"center",gap:5,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)"}}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>{cur.location}</span>
+          </div>
+          {/* Spots */}
+          <div style={{position:"absolute",bottom:16,right:16,display:"flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:10,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",zIndex:10,...sf(11,600),transition:"all 0.5s"}}>
+            <div style={{width:6,height:6,borderRadius:"50%",background:spotsColor(cur.spots),boxShadow:"0 0 8px "+spotsShadow(cur.spots)}}/>
+            <span style={{color:spotsColor(cur.spots)}}>{cur.spots} spots left</span>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div style={{position:"relative",minHeight:56,margin:"14px 24px 0",overflow:"hidden"}}>
+          {EVENTS.map(function(evt,i){
+            var isActive=i===idx;
+            return <p key={i} style={{...sf(13,400),color:C.s4,lineHeight:1.7,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":"translateY(12px)",transition:"all 0.6s ease",position:i===0&&isActive?"relative":"absolute",top:0,left:0,right:0}}>{evt.desc}</p>
+          })}
+        </div>
+
+        {/* Venue */}
+        <div style={{position:"relative",height:18,margin:"0 24px 2px",overflow:"hidden"}}>
+          {EVENTS.map(function(evt,i){
+            var isActive=i===idx;
+            return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",...sf(10,500),color:C.s6,letterSpacing:1,textTransform:"uppercase",opacity:isActive?1:0,transition:"all 0.6s ease"}}>{evt.venue}</div>
+          })}
+        </div>
+
+        {/* Perks */}
+        <div style={{margin:"10px 24px 0",display:"flex",flexWrap:"wrap",justifyContent:"center",gap:6,minHeight:26,position:"relative"}}>
+          {EVENTS.map(function(evt,i){
+            var isActive=i===idx;
+            return <div key={i} style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:6,position:isActive?"relative":"absolute",top:0,left:0,right:0,opacity:isActive?1:0,transition:"all 0.6s ease"}}>
+              {evt.perks.map(function(pk,j){
+                return <span key={j} style={{padding:"4px 10px",borderRadius:7,background:"rgba(244,244,245,0.04)",border:"0.5px solid rgba(244,244,245,0.06)",...sf(10,500),color:C.s5}}>{pk}</span>
+              })}
+            </div>
+          })}
+        </div>
+
+        {/* CTA */}
+        <div style={{padding:"16px 24px 4px",display:"flex",justifyContent:"center"}}>
+          <button onClick={function(){}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",borderRadius:14,background:C.s1,border:"none",cursor:"pointer",...sf(13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+            Request Access <span style={{fontSize:18,fontWeight:300}}>+</span>
+          </button>
+        </div>
+
+        {/* Dots */}
+        <div style={{display:"flex",justifyContent:"center",gap:6,padding:"12px 0 18px"}}>
+          {EVENTS.map(function(evt,i){
+            var isActive=i===idx;
+            return <div key={i} onClick={function(){goTo(i)}} style={{height:8,borderRadius:5,cursor:"pointer",width:isActive?26:8,background:isActive?evt.color:C.s7,boxShadow:isActive?"0 0 16px "+evt.color+"40":"none",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}}/>
+          })}
+        </div>
+      </div>
+
+      {/* Scroll hint */}
+      <div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",animation:"evtFloatSlow 3s ease-in-out infinite"}}>
+        <div style={{width:1,height:32,background:"linear-gradient(180deg,transparent,"+C.s7+")",margin:"0 auto 8px",opacity:0.5}}/>
+        <span style={{...sf(9,500),color:C.s7,letterSpacing:3,textTransform:"uppercase"}}>{idx<EVENTS.length-1?"↓ Scroll for next":"↓ Continue"}</span>
+      </div>
+
+      <style>{`
+@media(max-width:900px){.evt-peek,.evt-side-label,.evt-arr{display:none!important}}
+      `}</style>
+    </section>
+  );
+}
