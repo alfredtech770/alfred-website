@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
+import DarkDatePicker from "../components/DarkDatePicker";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -155,6 +156,10 @@ export default function YachtsPage(){
   var [priceRange,setPriceRange]=useState("Price");
   var [location,setLocation]=useState("Location");
   var [sort,setSort]=useState("Featured");
+  var [charter,setCharter]=useState("2026-03-20");
+  var [returnD,setReturnD]=useState("2026-03-23");
+  var d1=new Date(charter);var d2=new Date(returnD);
+  var days=Math.max(1,Math.round((d2-d1)/86400000));
 
   var gridRef=useRef(null); var gridVis=useVis(gridRef);
   var heroRef=useRef(null);
@@ -240,14 +245,16 @@ body::-webkit-scrollbar{width:0}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .yc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto;padding:0 40px}
 .filter-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:1;min-width:0}
+.search-bar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px}
 .yc-hero{height:460px}
 @media(max-width:1024px){.yc-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
   .yc-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}
   .yc-hero{height:320px!important}
   .yc-title{font-size:34px!important}
+  .search-bar{grid-template-columns:1fr 1fr!important}
 }
-@media(max-width:390px){.yc-hero{height:260px!important}.yc-title{font-size:26px!important}}
+@media(max-width:390px){.yc-hero{height:260px!important}.yc-title{font-size:26px!important}.search-bar{grid-template-columns:1fr!important}}
       `}</style>
 
       {/* Film grain */}
@@ -267,6 +274,34 @@ body::-webkit-scrollbar{width:0}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
         <h1 className="yc-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Yachts</h1>
         <p style={{...sf(16,400),color:C.s5}}>Charter yachts for the day or week — crewed & ready.</p>
+      </div>
+
+      {/* Search Bar */}
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"0 40px",position:"relative",zIndex:10}}>
+        <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"24px 28px"}}>
+          <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",marginTop:-24,marginLeft:-28,marginRight:-28,marginBottom:20}}/>
+          <div className="search-bar">
+            <div>
+              <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Location</label>
+              <FilterDrop value={location} options={locations} onChange={setLocation} icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
+            </div>
+            <div>
+              <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Charter Date</label>
+              <DarkDatePicker value={charter} onChange={function(v){setCharter(v)}} label="Charter Date"/>
+            </div>
+            <div>
+              <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Return</label>
+              <DarkDatePicker value={returnD} onChange={function(v){setReturnD(v)}} label="Return" align="right"/>
+            </div>
+            <div>
+              <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Duration</label>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"0 16px",height:40,borderRadius:12,background:C.gn+"0A",border:"1px solid "+C.gn+"20",boxSizing:"border-box"}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span style={{...sf(11,600),color:C.gn}}>{days} day{days!==1?"s":""}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
