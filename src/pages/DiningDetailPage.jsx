@@ -105,14 +105,14 @@ export default function DiningDetailPage(){
 .page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
 .two-col{display:flex;gap:40px;align-items:flex-start}
 .left-col{flex:1;min-width:0}
-.right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
+.right-col{width:320px;flex-shrink:0;position:sticky;top:80px;overflow:hidden}
 .dish-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .dish-row::-webkit-scrollbar{display:none}
 .rev-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .rev-row::-webkit-scrollbar{display:none}
 @media(max-width:900px){
   .two-col{flex-direction:column!important}
-  .right-col{width:100%!important;position:relative!important;top:auto!important}
+  .right-col{width:100%!important;position:relative!important;top:auto!important;overflow:hidden!important}
 }
 @media(max-width:768px){
   .page-wrap{padding:0 24px!important}
