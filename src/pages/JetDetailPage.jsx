@@ -63,81 +63,91 @@ var CABIN_LAYOUTS={
 
 function drawZoneSeats(z){
   var cx=z.x,w=z.w,col=z.color;
+  var pad=10;/* inner padding from zone edges */
+  var x0=cx+pad,x1=cx+w-pad,iw=w-pad*2;/* inner left, inner right, inner width */
   var els=[];
   /* zone background */
   els.push(<rect key="bg" x={cx} y={46} width={w} height={88} rx={8} fill="#1A1A1E" stroke="#2C2C31" strokeWidth="0.8"/>);
   if(z.type==="club4"){
-    var mx=cx+w/2;
-    els.push(<rect key="s1" x={mx-50} y={56} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<rect key="s2" x={mx-50} y={96} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<rect key="tb" x={mx-15} y={64} width={30} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
-    els.push(<rect key="s3" x={mx+24} y={56} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<rect key="s4" x={mx+24} y={96} width={26} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+    var sw=Math.min(26,iw*0.22),tw=Math.min(30,iw*0.24),gap=4;
+    var grpW=sw+gap+tw+gap+sw;var mx=cx+w/2;
+    els.push(<rect key="s1" x={mx-grpW/2} y={56} width={sw} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s2" x={mx-grpW/2} y={96} width={sw} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="tb" x={mx-tw/2} y={64} width={tw} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+    els.push(<rect key="s3" x={mx+grpW/2-sw} y={56} width={sw} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s4" x={mx+grpW/2-sw} y={96} width={sw} height={28} rx={5} fill="none" stroke={col} strokeWidth="1.2"/>);
   }else if(z.type==="club6"){
-    var sp=w/3;
-    for(var i=0;i<3;i++){var bx=cx+sp*i+sp/2-15;
-      els.push(<rect key={"t"+i} x={bx} y={64} width={30} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
-      els.push(<rect key={"a"+i} x={bx-20} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
-      els.push(<rect key={"b"+i} x={bx-20} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
-      els.push(<rect key={"c"+i} x={bx+34} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
-      els.push(<rect key={"d"+i} x={bx+34} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+    var sp=iw/3,ssw=Math.min(14,sp*0.22),stw=Math.min(24,sp*0.32);
+    for(var i=0;i<3;i++){var bx=x0+sp*i+sp/2;
+      els.push(<rect key={"t"+i} x={bx-stw/2} y={64} width={stw} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+      els.push(<rect key={"a"+i} x={bx-stw/2-ssw-3} y={70} width={ssw} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"b"+i} x={bx-stw/2-ssw-3} y={92} width={ssw} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"c"+i} x={bx+stw/2+3} y={70} width={ssw} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"d"+i} x={bx+stw/2+3} y={92} width={ssw} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
     }
   }else if(z.type==="club8"){
-    var sp2=w/4;
-    for(var j=0;j<4;j++){var bx2=cx+sp2*j+sp2/2-15;
-      els.push(<rect key={"t"+j} x={bx2} y={64} width={30} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
-      els.push(<rect key={"a"+j} x={bx2-20} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
-      els.push(<rect key={"b"+j} x={bx2-20} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
-      els.push(<rect key={"c"+j} x={bx2+34} y={70} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
-      els.push(<rect key={"d"+j} x={bx2+34} y={92} width={16} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+    var sp2=iw/4,ssw2=Math.min(14,sp2*0.22),stw2=Math.min(24,sp2*0.32);
+    for(var j=0;j<4;j++){var bx2=x0+sp2*j+sp2/2;
+      els.push(<rect key={"t"+j} x={bx2-stw2/2} y={64} width={stw2} height={52} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+      els.push(<rect key={"a"+j} x={bx2-stw2/2-ssw2-3} y={70} width={ssw2} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"b"+j} x={bx2-stw2/2-ssw2-3} y={92} width={ssw2} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"c"+j} x={bx2+stw2/2+3} y={70} width={ssw2} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
+      els.push(<rect key={"d"+j} x={bx2+stw2/2+3} y={92} width={ssw2} height={18} rx={4} fill="none" stroke={col} strokeWidth="1"/>);
     }
   }else if(z.type==="conference"){
+    var tw2=Math.min(iw*0.6,100),sw2=Math.min(16,iw*0.12),hSeat=Math.min(22,iw*0.14);
     var mx2=cx+w/2;
-    els.push(<rect key="tbl" x={mx2-50} y={60} width={100} height={60} rx={6} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
-    els.push(<rect key="s1" x={mx2-65} y={65} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<rect key="s2" x={mx2-65} y={93} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<rect key="s3" x={mx2+49} y={65} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<rect key="s4" x={mx2+49} y={93} width={16} height={22} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<rect key="s5" x={mx2-30} y={48} width={22} height={14} rx={3} fill="none" stroke={col} strokeWidth="0.8"/>);
-    els.push(<rect key="s6" x={mx2+8} y={48} width={22} height={14} rx={3} fill="none" stroke={col} strokeWidth="0.8"/>);
+    els.push(<rect key="tbl" x={mx2-tw2/2} y={60} width={tw2} height={60} rx={6} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+    els.push(<rect key="s1" x={mx2-tw2/2-sw2-4} y={65} width={sw2} height={hSeat} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s2" x={mx2-tw2/2-sw2-4} y={93} width={sw2} height={hSeat} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s3" x={mx2+tw2/2+4} y={65} width={sw2} height={hSeat} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s4" x={mx2+tw2/2+4} y={93} width={sw2} height={hSeat} rx={4} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<rect key="s5" x={mx2-20} y={48} width={16} height={12} rx={3} fill="none" stroke={col} strokeWidth="0.8"/>);
+    els.push(<rect key="s6" x={mx2+4} y={48} width={16} height={12} rx={3} fill="none" stroke={col} strokeWidth="0.8"/>);
   }else if(z.type==="entertainment"){
-    els.push(<rect key="d1" x={cx+15} y={54} width={50} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="d2" x={cx+15} y={102} width={50} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="tv" x={cx+w/2+5} y={64} width={4} height={52} rx={2} fill="#52525B"/>);
-    els.push(<rect key="s1" x={cx+w/2+25} y={56} width={40} height={26} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="s2" x={cx+w/2+25} y={98} width={40} height={26} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    var sofaW=Math.min(iw*0.35,50),seatW=Math.min(iw*0.3,40);
+    els.push(<rect key="d1" x={x0} y={54} width={sofaW} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="d2" x={x0} y={102} width={sofaW} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    var tvX=x0+sofaW+Math.min((iw-sofaW-seatW)*0.4,20);
+    els.push(<rect key="tv" x={tvX} y={64} width={4} height={52} rx={2} fill="#52525B"/>);
+    els.push(<rect key="s1" x={x1-seatW} y={56} width={seatW} height={26} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="s2" x={x1-seatW} y={98} width={seatW} height={26} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
   }else if(z.type==="stateroom"){
-    var bw=Math.min(80,w*0.4);
-    els.push(<rect key="bed" x={cx+15} y={56} width={bw} height={68} rx={6} fill="none" stroke={col} strokeWidth="1.2"/>);
-    els.push(<line key="bl" x1={cx+15} y1={90} x2={cx+15+bw} y2={90} stroke="#3F3F46" strokeWidth="0.5"/>);
-    els.push(<rect key="p1" x={cx+25} y={62} width={24} height={14} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>);
-    if(bw>60)els.push(<rect key="p2" x={cx+55} y={62} width={24} height={14} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>);
-    var lx=cx+15+bw+18;
-    els.push(<line key="part" x1={lx-8} y1={50} x2={lx-8} y2={130} stroke="#3F3F46" strokeWidth="0.8"/>);
-    els.push(<rect key="lav" x={lx} y={56} width={Math.min(40,w-bw-50)} height={30} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
-    els.push(<circle key="sh" cx={lx+Math.min(20,w-bw-50)/2+5} cy={71} r={5} fill="none" stroke="#52525B" strokeWidth="0.6"/>);
-    els.push(<rect key="wc" x={lx} y={96} width={Math.min(40,w-bw-50)} height={28} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    var bedW=Math.min(iw*0.45,80),lavW=Math.min(iw*0.25,40);
+    els.push(<rect key="bed" x={x0} y={56} width={bedW} height={68} rx={6} fill="none" stroke={col} strokeWidth="1.2"/>);
+    els.push(<line key="bl" x1={x0} y1={90} x2={x0+bedW} y2={90} stroke="#3F3F46" strokeWidth="0.5"/>);
+    els.push(<rect key="p1" x={x0+6} y={62} width={Math.min(22,bedW*0.35)} height={14} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>);
+    if(bedW>50)els.push(<rect key="p2" x={x0+6+Math.min(22,bedW*0.35)+4} y={62} width={Math.min(22,bedW*0.35)} height={14} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.5"/>);
+    var partX=x0+bedW+8;
+    els.push(<line key="part" x1={partX} y1={50} x2={partX} y2={130} stroke="#3F3F46" strokeWidth="0.8"/>);
+    var lavX=partX+6;
+    els.push(<rect key="lav" x={lavX} y={56} width={lavW} height={30} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    els.push(<circle key="sh" cx={lavX+lavW/2} cy={71} r={Math.min(5,lavW/4)} fill="none" stroke="#52525B" strokeWidth="0.6"/>);
+    els.push(<rect key="wc" x={lavX} y={96} width={lavW} height={28} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
   }else if(z.type==="lounge"){
-    els.push(<rect key="sf1" x={cx+15} y={54} width={w*0.4} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="sf2" x={cx+15} y={102} width={w*0.4} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="tb" x={cx+w*0.5} y={66} width={w*0.3} height={48} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
+    var sofaLW=Math.min(iw*0.4,80),tblW=Math.min(iw*0.3,60);
+    els.push(<rect key="sf1" x={x0} y={54} width={sofaLW} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="sf2" x={x0} y={102} width={sofaLW} height={24} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="tb" x={x1-tblW} y={66} width={tblW} height={48} rx={4} fill="#2C2C31" stroke="#3F3F46" strokeWidth="0.6"/>);
   }else if(z.type==="rest"){
-    els.push(<rect key="dv1" x={cx+15} y={54} width={w*0.5} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="dv2" x={cx+15} y={98} width={w*0.5} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="cab" x={cx+w*0.7} y={56} width={w*0.2} height={68} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    var divW=Math.min(iw*0.5,100),cabW=Math.min(iw*0.25,50);
+    els.push(<rect key="dv1" x={x0} y={54} width={divW} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="dv2" x={x0} y={98} width={divW} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="cab" x={x1-cabW} y={56} width={cabW} height={68} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
   }else if(z.type==="divan"){
-    els.push(<rect key="dv" x={cx+15} y={54} width={w*0.4} height={72} rx={6} fill="none" stroke={col} strokeWidth="1"/>);
-    var gx=cx+w*0.55;
-    els.push(<rect key="gl" x={gx} y={54} width={w*0.35} height={34} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
-    els.push(<rect key="g2" x={gx} y={96} width={w*0.35} height={28} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    var dvW=Math.min(iw*0.4,120),glW=Math.min(iw*0.35,100);
+    els.push(<rect key="dv" x={x0} y={54} width={dvW} height={72} rx={6} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="gl" x={x1-glW} y={54} width={glW} height={34} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    els.push(<rect key="g2" x={x1-glW} y={96} width={glW} height={28} rx={5} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
   }else if(z.type==="galley"){
-    els.push(<rect key="g1" x={cx+15} y={54} width={w*0.35} height={34} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="g2" x={cx+15} y={96} width={w*0.35} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
-    els.push(<rect key="lv" x={cx+w*0.55} y={56} width={w*0.35} height={68} rx={6} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
-    els.push(<circle key="sk" cx={cx+w*0.55+w*0.175} cy={90} r={10} fill="none" stroke="#52525B" strokeWidth="0.6"/>);
+    var gW=Math.min(iw*0.35,100),lvW=Math.min(iw*0.35,100);
+    els.push(<rect key="g1" x={x0} y={54} width={gW} height={34} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="g2" x={x0} y={96} width={gW} height={28} rx={5} fill="none" stroke={col} strokeWidth="1"/>);
+    els.push(<rect key="lv" x={x1-lvW} y={56} width={lvW} height={68} rx={6} fill="none" stroke="#52525B" strokeWidth="0.8"/>);
+    els.push(<circle key="sk" cx={x1-lvW/2} cy={90} r={Math.min(10,lvW/4)} fill="none" stroke="#52525B" strokeWidth="0.6"/>);
   }
-  /* zone label */
-  els.push(<text key="lbl" x={cx+w/2} y={153} style={{fontSize:9,fill:col,fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">{z.name}</text>);
+  /* zone label — positioned below fuselage */
+  els.push(<text key="lbl" x={cx+w/2} y={166} style={{fontSize:9,fill:col,fontFamily:"-apple-system,sans-serif",fontWeight:600}} textAnchor="middle">{z.name}</text>);
   return els;
 }
 
@@ -145,10 +155,9 @@ function CabinSVG(p){
   var layout=p.layout;if(!layout)return null;
   var zones=layout.zones;
   var lastZ=zones[zones.length-1];
-  var totalW=lastZ.x+lastZ.w+20;
-  var svgW=Math.max(totalW,500);
+  var svgW=lastZ.x+lastZ.w+80;/* 80px padding for tail curve */
   return(
-    <svg viewBox={"0 0 "+svgW+" 180"} style={{width:"100%",minWidth:Math.min(680,svgW),height:"auto",display:"block"}}>
+    <svg viewBox={"0 0 "+svgW+" 185"} style={{width:"100%",minWidth:Math.min(680,svgW),height:"auto",display:"block"}}>
       <path d={"M60 30 Q0 90 60 150 L"+(svgW-60)+" 150 Q"+svgW+" 90 "+(svgW-60)+" 30 Z"} fill="#1F1F23" stroke="#2C2C31" strokeWidth="1.5"/>
       <path d="M60 30 Q20 90 60 150" fill="none" stroke="#3F3F46" strokeWidth="1"/>
       {/* Cockpit */}
@@ -157,7 +166,7 @@ function CabinSVG(p){
       <circle cx="85" cy="102" r="6" fill="none" stroke="#52525B" strokeWidth="1"/>
       <rect x="100" y="70" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
       <rect x="100" y="94" width="28" height="16" rx="3" fill="none" stroke="#52525B" strokeWidth="0.8"/>
-      <text x="100" y="145" style={{fontSize:9,fill:"#71717A",fontFamily:"-apple-system,sans-serif",fontWeight:500}}>Cockpit</text>
+      <text x="100" y="166" style={{fontSize:9,fill:"#71717A",fontFamily:"-apple-system,sans-serif",fontWeight:500}}>Cockpit</text>
       <line x1="145" y1="38" x2="145" y2="142" stroke="#2C2C31" strokeWidth="1" strokeDasharray="3,3"/>
       {/* Zones */}
       {zones.map(function(z,i){
@@ -167,7 +176,7 @@ function CabinSVG(p){
         return <g key={i}>{items}</g>;
       })}
       {/* Windows */}
-      {Array.from({length:Math.floor((svgW-200)/30)},function(_,i){return 100+i*30}).map(function(wx,wi){return(<g key={wi}><ellipse cx={wx} cy="34" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/><ellipse cx={wx} cy="146" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/></g>)})}
+      {Array.from({length:Math.floor((svgW-200)/30)},function(_,i){return 100+i*30}).filter(function(wx){return wx<svgW-80}).map(function(wx,wi){return(<g key={wi}><ellipse cx={wx} cy="34" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/><ellipse cx={wx} cy="146" rx="5" ry="2.5" fill="none" stroke="#2C2C31" strokeWidth="0.6"/></g>)})}
     </svg>
   );
 }
