@@ -271,6 +271,26 @@ export default function NightlifeDetailPage(){
 
       {/* ═══ FULL-WIDTH SECTIONS ═══ */}
 
+      {/* DJ Lineup */}
+      <div ref={djRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+        {secDiv}
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:djVis?1:0,transition:"all 0.8s ease"}}>DJ Lineup</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,opacity:djVis?1:0,transform:djVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+          {V.djs.map(function(dj,i){var isResident=dj.indexOf("Resident")!==-1;var djName=isResident?dj.replace(" (Resident)",""):dj;return(
+            <div key={i} style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 22px",display:"flex",alignItems:"center",gap:14,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-3px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+              <div style={{width:44,height:44,borderRadius:14,background:isResident?"linear-gradient(135deg,#FB923C20,#F472B620)":"rgba(244,244,245,0.04)",border:"1px solid "+(isResident?"rgba(251,146,60,0.2)":"rgba(244,244,245,0.06)"),display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <span style={{fontSize:18}}>{isResident?"🎧":"🎵"}</span>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{...sf(15,600),color:C.s1,marginBottom:2}}>{djName}</div>
+                <div style={{...sf(11,500),color:isResident?"#FB923C":C.s5}}>{isResident?"Resident DJ":"Guest DJ"}</div>
+              </div>
+              {isResident&&<div style={{width:6,height:6,borderRadius:"50%",background:"#FB923C",boxShadow:"0 0 8px rgba(251,146,60,0.4)",flexShrink:0}}/>}
+            </div>
+          )})}
+        </div>
+      </div>
+
       {/* Table Options */}
       <div ref={tablesRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
@@ -313,26 +333,6 @@ export default function NightlifeDetailPage(){
         {/* Best For tags */}
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:20,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
           {V.bestFor.map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
-        </div>
-      </div>
-
-      {/* DJ Lineup */}
-      <div ref={djRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
-        {secDiv}
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:djVis?1:0,transition:"all 0.8s ease"}}>DJ Lineup</p>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,opacity:djVis?1:0,transform:djVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {V.djs.map(function(dj,i){var isResident=dj.indexOf("Resident")!==-1;var djName=isResident?dj.replace(" (Resident)",""):dj;return(
-            <div key={i} style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 22px",display:"flex",alignItems:"center",gap:14,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-3px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
-              <div style={{width:44,height:44,borderRadius:14,background:isResident?"linear-gradient(135deg,#FB923C20,#F472B620)":"rgba(244,244,245,0.04)",border:"1px solid "+(isResident?"rgba(251,146,60,0.2)":"rgba(244,244,245,0.06)"),display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <span style={{fontSize:18}}>{isResident?"🎧":"🎵"}</span>
-              </div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{...sf(15,600),color:C.s1,marginBottom:2}}>{djName}</div>
-                <div style={{...sf(11,500),color:isResident?"#FB923C":C.s5}}>{isResident?"Resident DJ":"Guest DJ"}</div>
-              </div>
-              {isResident&&<div style={{width:6,height:6,borderRadius:"50%",background:"#FB923C",boxShadow:"0 0 8px rgba(251,146,60,0.4)",flexShrink:0}}/>}
-            </div>
-          )})}
         </div>
       </div>
 
