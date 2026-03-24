@@ -29,14 +29,19 @@ function FilterDrop(p){
   useEffect(function(){function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)};document.addEventListener("mousedown",h);return function(){document.removeEventListener("mousedown",h)}},[]);
   var hasActive=p.value!==p.options[0];
   return(
-    <div ref={ref} style={{position:"relative",flexShrink:0}}>
+    <div ref={ref} style={{position:"relative",flexShrink:0,zIndex:open?70:1}}>
       <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
-        {p.icon}
+        {p.emoji&&<span style={{fontSize:13}}>{p.emoji}</span>}
+        {!p.emoji&&p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2,transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      {open&&<div style={{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",zIndex:60,minWidth:160,boxShadow:"0 16px 48px rgba(0,0,0,0.6)"}}>
-        {p.options.map(function(opt){var active=p.value===opt;return <div key={opt} onClick={function(){p.onChange(opt);setOpen(false)}} style={{padding:"11px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,transition:"background 0.15s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>{active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}{opt}</div>})}
+      {open&&<div style={{position:"absolute",top:"calc(100% + 8px)",left:0,borderRadius:16,background:C.el,border:"1px solid "+C.bd,zIndex:70,minWidth:220,maxHeight:340,overflowY:"auto",boxShadow:"0 24px 64px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04)",padding:"6px",scrollbarWidth:"thin",scrollbarColor:C.s7+" transparent"}}>
+        {p.options.map(function(opt,i){var active=p.value===opt;var isFirst=i===0;var em=p.emojiMap&&p.emojiMap[opt];return <div key={opt} onClick={function(){p.onChange(opt);setOpen(false)}} style={{padding:"10px 14px",cursor:"pointer",background:active?"rgba(244,244,245,0.06)":"transparent",borderRadius:10,display:"flex",alignItems:"center",gap:10,marginBottom:1,...sf(13,active?600:400),color:active?C.s1:isFirst?C.s5:C.s3,transition:"background 0.15s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.08)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.06)":"transparent"}}>
+          {em&&<span style={{fontSize:15,width:20,textAlign:"center"}}>{em}</span>}
+          <span style={{flex:1}}>{opt}</span>
+          {active&&!isFirst&&<div style={{width:6,height:6,borderRadius:"50%",background:C.gn,flexShrink:0}}/>}
+        </div>})}
       </div>}
     </div>
   );
@@ -153,8 +158,7 @@ export default function NightlifePage(){
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:pointer}
 .n-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto;padding:0 40px}
 .search-bar{display:grid;grid-template-columns:1fr 1fr auto auto;gap:12px}
-.filter-row{display:flex;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
-.filter-row::-webkit-scrollbar{display:none}
+.filter-row{display:flex;gap:6px;align-items:center;overflow:visible;flex:1;min-width:0;flex-wrap:wrap}
 @media(max-width:1024px){.n-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
   .n-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}
@@ -209,15 +213,15 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       </div>
 
       {/* Filters */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:40}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:40}}>
           <div className="filter-row">
-            <FilterDrop value={type} options={["Type","Nightclub","Lounge","Members Club","Day Club"]} onChange={setType} icon={iconType}/>
-            <FilterDrop value={vibe} options={["Vibe","High Energy","Exclusive","Sophisticated","Underground","Pool Party"]} onChange={setVibe} icon={iconVibe}/>
-            <FilterDrop value={door} options={["Door","Members Only","Table Required","Guestlist"]} onChange={setDoor} icon={iconDoor}/>
-            <FilterDrop value={music} options={["Music","EDM","Hip Hop","House","Techno","Afrobeats"]} onChange={setMusic} icon={iconMusic}/>
+            <FilterDrop value={type} options={["Type","Nightclub","Lounge","Members Club","Day Club"]} onChange={setType} emoji="🏛" emojiMap={{Type:"🏛",Nightclub:"🪩",Lounge:"🛋","Members Club":"🔑","Day Club":"☀️"}}/>
+            <FilterDrop value={vibe} options={["Vibe","High Energy","Exclusive","Sophisticated","Underground","Pool Party"]} onChange={setVibe} emoji="✨" emojiMap={{Vibe:"✨","High Energy":"🔥",Exclusive:"💎",Sophisticated:"🥂",Underground:"🌀","Pool Party":"🏊"}}/>
+            <FilterDrop value={door} options={["Door","Members Only","Table Required","Guestlist"]} onChange={setDoor} emoji="🚪" emojiMap={{Door:"🚪","Members Only":"🔐","Table Required":"🍾",Guestlist:"📋"}}/>
+            <FilterDrop value={music} options={["Music","EDM","Hip Hop","House","Techno","Afrobeats"]} onChange={setMusic} emoji="🎵" emojiMap={{Music:"🎵",EDM:"⚡","Hip Hop":"🎤",House:"🎧",Techno:"🖤",Afrobeats:"🥁"}}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
-            <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
+            <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} emoji="⚡" emojiMap={{Featured:"⚡",Rating:"⭐","Table Min: Low":"📉","Table Min: High":"📈","Most Reviewed":"💬"}}/>
           </div>
           <span style={{...sf(12),color:C.s6,flexShrink:0,marginLeft:8}}>{filtered.length} venue{filtered.length!==1?"s":""}</span>
         </div>

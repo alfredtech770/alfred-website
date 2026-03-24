@@ -46,6 +46,7 @@ export default function NightlifeDetailPage(){
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var tablesRef=useRef(null);var tablesVis=useVis(tablesRef);
   var atmoRef=useRef(null);var atmoVis=useVis(atmoRef);
+  var djRef=useRef(null);var djVis=useVis(djRef);
   var rulesRef=useRef(null);var rulesVis=useVis(rulesRef);
   var revRef=useRef(null);var revVis=useVis(revRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
@@ -127,8 +128,6 @@ export default function NightlifeDetailPage(){
                 </div>
                 <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13),color:C.s4}}>{V.music}</span>
-                <div style={{width:1,height:14,background:C.bd}}/>
-                <span style={{...sf(13),color:C.s4}}>Cap. {V.capacity}</span>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:7,marginTop:12}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -311,16 +310,29 @@ export default function NightlifeDetailPage(){
             </div>
           )})}
         </div>
-        {/* DJs */}
-        <div style={{marginTop:20,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.4s"}}>
-          <div style={{...sf(10,500),color:C.s7,letterSpacing:3,textTransform:"uppercase",marginBottom:12}}>Resident & Guest DJs</div>
-          <div className="dj-row">
-            {V.djs.map(function(dj,i){return <span key={i} style={{...sf(12,500),color:C.s4,padding:"8px 18px",borderRadius:14,background:C.el,border:"1px solid "+C.bd}}>{dj}</span>})}
-          </div>
-        </div>
         {/* Best For tags */}
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:20,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
           {V.bestFor.map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
+        </div>
+      </div>
+
+      {/* DJ Lineup */}
+      <div ref={djRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+        {secDiv}
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:djVis?1:0,transition:"all 0.8s ease"}}>DJ Lineup</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,opacity:djVis?1:0,transform:djVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+          {V.djs.map(function(dj,i){var isResident=dj.indexOf("Resident")!==-1;var djName=isResident?dj.replace(" (Resident)",""):dj;return(
+            <div key={i} style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 22px",display:"flex",alignItems:"center",gap:14,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-3px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+              <div style={{width:44,height:44,borderRadius:14,background:isResident?"linear-gradient(135deg,#FB923C20,#F472B620)":"rgba(244,244,245,0.04)",border:"1px solid "+(isResident?"rgba(251,146,60,0.2)":"rgba(244,244,245,0.06)"),display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <span style={{fontSize:18}}>{isResident?"🎧":"🎵"}</span>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{...sf(15,600),color:C.s1,marginBottom:2}}>{djName}</div>
+                <div style={{...sf(11,500),color:isResident?"#FB923C":C.s5}}>{isResident?"Resident DJ":"Guest DJ"}</div>
+              </div>
+              {isResident&&<div style={{width:6,height:6,borderRadius:"50%",background:"#FB923C",boxShadow:"0 0 8px rgba(251,146,60,0.4)",flexShrink:0}}/>}
+            </div>
+          )})}
         </div>
       </div>
 
