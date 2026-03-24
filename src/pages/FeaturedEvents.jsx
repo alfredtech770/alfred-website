@@ -88,19 +88,8 @@ export default function FeaturedEvents(){
 @keyframes evtFloatSlow{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
       `}</style>
 
-      {/* Full-bleed backgrounds */}
-      {EVENTS.map(function(evt,i){
-        return <div key={i} style={{position:"absolute",inset:0,opacity:i===idx?1:0,transition:"opacity 1.4s ease, transform 8s ease",zIndex:0,transform:i===idx?"scale(1)":"scale(1.05)"}}>
-          <img src={evt.img} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-        </div>
-      })}
-      <div style={{position:"absolute",inset:0,background:"rgba(10,10,11,0.62)",zIndex:1}}/>
-      <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at center,transparent 20%,rgba(10,10,11,0.5) 70%,rgba(10,10,11,0.85) 100%)",zIndex:1}}/>
-      <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.3) 0%,rgba(10,10,11,0.15) 40%,rgba(10,10,11,0.4) 70%,rgba(10,10,11,0.9) 100%)",zIndex:1}}/>
-
-      {/* Side labels */}
-      <div className="evt-side-label" style={{position:"absolute",top:"50%",left:48,zIndex:10,...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",writingMode:"vertical-lr",transform:"translateY(-50%) rotate(180deg)"}}>Experiences</div>
-      <div className="evt-side-label" style={{position:"absolute",top:"50%",right:48,zIndex:10,...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",writingMode:"vertical-lr",transform:"translateY(-50%)"}}>{idx<EVENTS.length-1?"Keep scrolling":"Last event"}</div>
+      {/* Clean background */}
+      <div style={{position:"absolute",inset:0,background:C.bg,zIndex:0}}/>
 
       {/* Left peek */}
       <div className="evt-peek" onClick={function(){goTo(idx-1)}} style={{position:"absolute",top:0,bottom:0,width:"14%",left:0,zIndex:3,overflow:"hidden",cursor:idx>0?"pointer":"default"}}>
