@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import DarkDatePicker from "../components/DarkDatePicker";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -273,12 +274,12 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
                 <div style={{display:"flex",gap:8,marginBottom:16}}>
                   <div style={{flex:1}}>
                     <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Charter Date</div>
-                    <input type="date" value={pickup} onChange={function(e){pickPickup(e.target.value)}} style={inputS}/>
+                    <DarkDatePicker value={pickup} onChange={pickPickup} label="Charter Date"/>
                   </div>
                   <div style={{display:"flex",alignItems:"flex-end",paddingBottom:12}}><div style={{width:10,height:1,background:"rgba(244,244,245,0.08)"}}/></div>
                   <div style={{flex:1}}>
                     <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Return</div>
-                    <input type="date" value={returnD} onChange={function(e){pickReturn(e.target.value)}} style={inputS}/>
+                    <DarkDatePicker value={returnD} onChange={pickReturn} label="Return"/>
                   </div>
                 </div>
 
