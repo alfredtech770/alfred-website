@@ -142,9 +142,27 @@ export default function DiningPage(){
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
-  /* Dynamic filter options from data */
+  /* Dynamic filter options from data — group cuisines into broad categories */
   var cities=["All Cities","Miami","Paris"];
-  var cuisines=["Cuisine"].concat([...new Set(restaurants.map(function(r){return r.cuisine}).filter(Boolean))].sort());
+  var CUISINE_MAP={
+    "French":["French","French Fine Dining","French Bistro","French Brasserie","French Cafe","French Café","French Classic","French Contemporary","French Gastronomic","French Mediterranean","French Seafood","French Steakhouse","French, Bar Lounge","French, Bistro","French, Brasserie","French, Cafe","French, Contemporary","French, Fine Dining","French, Wine Bar","French-American","French-American Fusion","French-Mediterranean","Contemporary French","Modern French","Franco-Japanese Fusion","Pastries, French","Cafe, French"],
+    "Italian":["Italian","Italian Fine Dining","Italian Casual","Italian Pasta","Italian Pasta Bar","Italian Pizza","Italian Wine Bar","Italian, Contemporary","Italian, Seafood","Italian, Trattoria","Italian-American","Italian-Ligurian","Italian-Mediterranean","Italian-Mediterranean Cafe","Italian-Piedmont","Italian-Roman","Italian-Sicilian","Italian-Venetian","Italian Bakery","Mediterranean-Italian","Roman Italian","Southern Italian","Sicilian Pizza","Modern Italian"],
+    "Japanese":["Japanese","Japanese Omakase","Japanese Sushi","Japanese Kaiseki","Japanese Ramen","Japanese Robata","Japanese Modern","Japanese Hand Rolls","Japanese Steakhouse","Japanese Tea Cafe","Japanese, Cafe","Japanese, Sushi","Japanese-Inspired Café","Japanese-Korean Fusion","Japanese-Kosher","Japanese-Kosher Fusion","Japanese-Peruvian","Japanese-Peruvian Fusion","Nikkei Fusion"],
+    "Mediterranean":["Mediterranean","Mediterranean Bakery","Mediterranean-Asian Fusion","Mediterranean-Kosher Fusion","Mediterranean-Middle Eastern","MediterrAsian","Latin-Asian-Mediterranean","Israeli, Mediterranean","Israeli-Mediterranean","Israeli Farm-to-Table","Israeli-Middle Eastern","Greek","Greek Mediterranean"],
+    "American":["American","American, Bistro","American-Mediterranean","New American","New American / Mediterranean-Asian Fusion","New York-Contemporary","Farm-to-Table"],
+    "Steakhouse":["Steakhouse","Argentine Steakhouse","Korean Steakhouse","Kosher Steakhouse"],
+    "Seafood":["Seafood","Seafood Fine Dining"],
+    "Asian":["Asian Fusion","Asian-Latin Fusion","Korean-Contemporary","Vietnamese Modern","Chinese"],
+    "Latin & Mexican":["Mexican","Mexican Fine Dining","Cuban Cafe","Latin American","Latin American Brunch","Brazilian","Vegetarian-Latin"],
+    "Spanish":["Spanish","Spanish, Cafe","Basque","Basque, Spanish","Portuguese, Bistro","Croatian"],
+    "Middle Eastern":["Lebanese","Middle Eastern","Modern Middle Eastern","Egyptian","Moroccan, North African"],
+    "Cafe & Bakery":["Cafe","Cafe & Market","Cafe, Coffee","Cafe, Contemporary","Cafe, Nordic","Cafe, Pastries","Café","Coffee & Juice","Coffee & Pastries","Specialty Coffee","Bakery, Pastries","Artisan Bakery","European Bakery","Patisserie","Cookies & Desserts","Dessert & Ice Cream","Bagels & Breakfast","Brunch & Coffee","Breakfast & Brunch","Healthy Brunch","Health & Juice Bar","Pastries, Contemporary"],
+    "Contemporary":["Contemporary","Contemporary Global","International Bistro","International Modern","Modern Bistro","Modern European","Nordic-Contemporary","Scandinavian","Austrian Modern","Russian-Fine Dining","Cocktail Bar & Bites","Multi-Cuisine","Jewish","Kosher"]
+  };
+  var cuisineGroupLookup={};Object.keys(CUISINE_MAP).forEach(function(group){CUISINE_MAP[group].forEach(function(c){cuisineGroupLookup[c]=group})});
+  /* Add grouped cuisine to each restaurant */
+  restaurants.forEach(function(r){r.cuisineGroup=cuisineGroupLookup[r.cuisine]||"Other"});
+  var cuisineGroups=["Cuisine"].concat(Object.keys(CUISINE_MAP).filter(function(g){return restaurants.some(function(r){return r.cuisineGroup===g})}));
   var vibes=["Vibe"].concat([...new Set(restaurants.map(function(r){return r.vibe}).filter(Boolean))].sort());
   var prices=["Price","$","$$","$$$","$$$$"];
 
@@ -152,7 +170,7 @@ export default function DiningPage(){
 
   var filtered=restaurants.filter(function(r){
     if(city!=="All Cities"&&!cityMatch(r.loc,city))return false;
-    if(cuisine!=="Cuisine"&&r.cuisine!==cuisine)return false;
+    if(cuisine!=="Cuisine"&&r.cuisineGroup!==cuisine)return false;
     if(price!=="Price"&&r.price!==price)return false;
     if(vibe!=="Vibe"&&r.vibe!==vibe)return false;
     return true;
@@ -241,7 +259,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:40}}>
         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:40}}>
           <div className="filter-row">
-            <FilterDrop value={cuisine} options={cuisines} onChange={setCuisine} emoji="🍽" emojiMap={{Cuisine:"🍽",French:"🇫🇷","French Fine Dining":"🇫🇷","French Bistro":"🇫🇷","French Brasserie":"🇫🇷","French Contemporary":"🇫🇷","French Classic":"🇫🇷","French Cafe":"🇫🇷","French Café":"🇫🇷","French Gastronomic":"🇫🇷","French Mediterranean":"🇫🇷","French Seafood":"🇫🇷","French Steakhouse":"🇫🇷",Italian:"🇮🇹","Italian Fine Dining":"🇮🇹","Italian Casual":"🇮🇹","Italian Pasta":"🇮🇹","Italian Pizza":"🇮🇹","Italian-Roman":"🇮🇹","Italian-Sicilian":"🇮🇹","Italian-Mediterranean":"🇮🇹",Japanese:"🇯🇵","Japanese Omakase":"🇯🇵","Japanese Sushi":"🇯🇵","Japanese Kaiseki":"🇯🇵","Japanese Ramen":"🇯🇵","Japanese Modern":"🇯🇵","Japanese Robata":"🇯🇵",Mediterranean:"🌊",Steakhouse:"🥩","Korean Steakhouse":"🇰🇷",Greek:"🇬🇷","Greek Mediterranean":"🇬🇷",Lebanese:"🇱🇧",Mexican:"🇲🇽",Spanish:"🇪🇸",Seafood:"🦞",American:"🇺🇸","New American":"🇺🇸",Cafe:"☕","Specialty Coffee":"☕",Bakery:"🥐","Patisserie":"🧁"}}/>
+            <FilterDrop value={cuisine} options={cuisineGroups} onChange={setCuisine} emoji="🍽" emojiMap={{Cuisine:"🍽",French:"🇫🇷",Italian:"🇮🇹",Japanese:"🇯🇵",Mediterranean:"🌊",American:"🇺🇸",Steakhouse:"🥩",Seafood:"🦞",Asian:"🥢","Latin & Mexican":"🇲🇽",Spanish:"🇪🇸","Middle Eastern":"🧆","Cafe & Bakery":"☕",Contemporary:"🍴"}}/>
             <FilterDrop value={price} options={prices} onChange={setPrice} emoji="💰" emojiMap={{Price:"💰","$":"💲","$$":"💵","$$$":"💎","$$$$":"👑"}}/>
             <FilterDrop value={vibe} options={vibes} onChange={setVibe} emoji="✨" emojiMap={{Vibe:"✨",Romantic:"🕯",Luxury:"👑",Trendy:"🔥",Lively:"🎉",Chill:"😎",Loud:"🔊",Party:"🎊"}}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
