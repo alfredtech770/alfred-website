@@ -62,32 +62,32 @@ export default function DiningDetailPage(){
     name:_sess.name,
     tagline:_sess.tagline||("Fine dining · "+_sess.cuisine),
     cuisine:_sess.cuisine,
-    address:_sess.loc,
+    address:_sess.address||_sess.loc,
     rating:_sess.rating,
     reviewCount:_sess.reviews,
     priceLevel:_sess.price,
     avgSpend:_sess.avg,
     imgs:_sess.imgs||[_sess.img].filter(Boolean),
-    hours:{lunch:_sess.meal==="Dinner"?"Not served":"12:00 – 2:30 PM",dinner:"7:00 – 10:30 PM",closed:"Check availability"},
-    dressCode:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual",
+    hours:{lunch:_sess.hoursLunch||"Check availability",dinner:_sess.hoursDinner||"Check availability",closed:_sess.hoursClosed||"Check availability"},
+    dressCode:_sess.dressCode==="formal"?"Smart Elegant":_sess.dressCode==="smart casual"?"Smart Casual":_sess.dressCode||"Smart Casual",
     michelin:_sess.michelin||0,
-    alfredNote:"Contact Alfred to arrange your table at "+_sess.name+". We handle the reservation, seating preference, and any special occasions.",
-    alfredTip:"Mention Alfred at arrival for preferred treatment and the best available table.",
-    chef:{name:"Executive Chef",title:"Head of Kitchen",note:_sess.loc+" · "+_sess.cuisine},
+    alfredNote:_sess.alfredNote||("Contact Alfred to arrange your table at "+_sess.name+". We handle the reservation, seating preference, and any special occasions."),
+    alfredTip:_sess.alfredTip||"Mention Alfred at arrival for preferred treatment and the best available table.",
+    chef:_sess.chefName?{name:_sess.chefName,title:_sess.chefTitle||"Executive Chef",note:_sess.chefNote||""}:null,
     dishes:[],
-    wineNote:"Our sommelier will guide you through a thoughtful selection paired to your meal.",
+    wineNote:_sess.wineNote||"",
     atmosphere:[
-      {label:"Noise",value:_sess.vibe==="Scene"?72:_sess.vibe==="Casual"?55:30},
-      {label:"Intimacy",value:_sess.vibe==="Romantic"?92:_sess.vibe==="Formal"?75:55},
-      {label:"Formality",value:_sess.vibe==="Formal"?85:_sess.vibe==="Casual"?20:50},
-      {label:"Scene",value:_sess.vibe==="Scene"?88:40},
+      {label:"Noise",value:_sess.atmNoise||(_sess.vibe==="Scene"?72:_sess.vibe==="Casual"?55:30)},
+      {label:"Intimacy",value:_sess.atmIntimacy||(_sess.vibe==="Romantic"?92:_sess.vibe==="Formal"?75:55)},
+      {label:"Formality",value:_sess.atmFormality||(_sess.vibe==="Formal"?85:_sess.vibe==="Casual"?20:50)},
+      {label:"Scene",value:_sess.atmScene||(_sess.vibe==="Scene"?88:40)},
     ],
-    bestFor:_sess.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_sess.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
+    bestFor:(_sess.bestFor&&_sess.bestFor.length>0)?_sess.bestFor:_sess.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_sess.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
     reviews:[],
     facts:[
-      {icon:"€",label:"Avg. spend",value:_sess.avg+" / person"},
-      {icon:"🕐",label:"Best time",value:_sess.meal==="Both"?"Lunch or dinner":_sess.meal+" service"},
-      {icon:"👔",label:"Dress code",value:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual"},
+      {icon:"💰",label:"Avg. spend",value:(_sess.avg||"N/A")+" / person"},
+      {icon:"🕐",label:"Best time",value:_sess.hoursDinner?"Dinner service":"Check availability"},
+      {icon:"👔",label:"Dress code",value:_sess.dressCode==="formal"?"Smart Elegant":"Smart Casual"},
       {icon:"👥",label:"Party size",value:"2 – 8 guests"},
     ],
   }:LE_CINQ;
@@ -286,8 +286,8 @@ export default function DiningDetailPage(){
         </div>
       </div>
 
-      {/* Signature Dishes */}
-      <div ref={dishRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+      {/* Signature Dishes — only show if dishes exist */}
+      {V.dishes&&V.dishes.length>0&&<div ref={dishRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:dishVis?1:0,transition:"all 0.8s ease"}}>Signature Dishes</p>
@@ -311,7 +311,7 @@ export default function DiningDetailPage(){
             </div>
           )})}
         </div>
-      </div>
+      </div>}
 
       {/* Atmosphere + Wine + Chef */}
       <div ref={atmoRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
@@ -328,18 +328,19 @@ export default function DiningDetailPage(){
             </div>
           )})}
         </div>
-        <div style={{display:"flex",gap:14,marginTop:14}}>
-          <div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.4s"}}>
+        {/* Wine Cellar + Chef — only show cards that have data */}
+        {(V.wineNote||V.chef)&&<div style={{display:"flex",gap:14,marginTop:14}}>
+          {V.wineNote&&<div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.4s"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:14}}>🍷</span><span style={{...sf(10,500),letterSpacing:1.5,color:"#A78BFA80",textTransform:"uppercase"}}>Wine Cellar</span></div>
             <p style={{...sf(13),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{V.wineNote}"</p>
-          </div>
-          <div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
+          </div>}
+          {V.chef&&<div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:14}}>🔥</span><span style={{...sf(10,500),letterSpacing:1.5,color:C.s6,textTransform:"uppercase"}}>The Kitchen</span></div>
             <div style={{...sf(16,600),color:C.s1,marginBottom:4}}>{V.chef.name}</div>
             <div style={{...sf(13),color:C.s5,marginBottom:2}}>{V.chef.title}</div>
             <div style={{...sf(12),color:C.s6}}>{V.chef.note}</div>
-          </div>
-        </div>
+          </div>}
+        </div>}
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>
           {V.bestFor.map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
         </div>

@@ -132,6 +132,14 @@ export default function DiningPage(){
           slug:r.slug||(r.id?String(r.id):""),imgs:r.photos_order||r.gallery_photos||[r.hero_image_url||r.image_url||r.img].filter(Boolean),
           available:r.available!==false,
           avg:r.avg_spend||r.avg||"",
+          chefName:r.chef_name||"",chefTitle:r.chef_title||"",chefNote:r.chef_note||"",
+          wineNote:r.wine_note||"",
+          alfredNote:r.alfred_note||"",alfredTip:r.alfred_tip||"",
+          address:r.address||"",
+          dressCode:r.dress_code||"",
+          hoursLunch:r.hours_lunch||"",hoursDinner:r.hours_dinner||"",hoursClosed:r.hours_closed||"",
+          atmNoise:r.atm_noise||0,atmIntimacy:r.atm_intimacy||0,atmFormality:r.atm_formality||0,atmScene:r.atm_scene||0,
+          bestFor:r.best_for||[],
         }}));
       }catch(e){console.error("Restaurants fetch:",e);}
       finally{setFetching(false);}
