@@ -14,19 +14,19 @@ var SB="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Websit
 var EVENTS=[
   {name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",color:"#E11D48",spots:12,
    desc:"Two private venues on the Swimming Pool chicane. Private chef, champagne, Nobu catering.",
-   img:SB+"DPPI_00124009_1978.jpg",pricing:"From €15,000"},
+   img:SB+"DPPI_00124009_1978.jpg"},
   {name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",color:"#F97316",spots:8,
    desc:"Track-side luxury suite at Turn 1 with paddock access. Celebrity after-parties at LIV & E11even.",
-   img:SB+"Keinmusik.jpeg",pricing:"From €12,000"},
+   img:SB+"Keinmusik.jpeg"},
   {name:"Ibiza Opening",slug:"ibiza-opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",color:"#8B5CF6",spots:15,
    desc:"Season opening across all four superclubs. Private villa, yacht parties, artist access.",
-   img:SB+"image.jpg",pricing:"From €8,000"},
+   img:SB+"image.jpg"},
   {name:"Roland Garros",slug:"roland-garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",color:"#D97706",spots:6,
    desc:"Private box in Philippe Chatrier. Michelin dining, champagne terraces, chauffeur transfers.",
-   img:SB+"AlfedHotelCrillionParis.jpeg",pricing:"From €6,000"},
+   img:SB+"AlfedHotelCrillionParis.jpeg"},
   {name:"Royal Ascot",slug:"royal-ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",color:"#0EA5E9",spots:4,
    desc:"Royal Enclosure badges, private box for 12, Michelin chef, helicopter from London.",
-   img:SB+"Bulgari-Resort-Bali-Exterior.webp",pricing:"From €5,000"},
+   img:SB+"Bulgari-Resort-Bali-Exterior.webp"},
 ];
 
 var TAGS=["All","F1","Nightlife","Tennis","Racing"];
@@ -49,8 +49,6 @@ function EventCard(p){
           <div style={{width:6,height:6,borderRadius:"50%",background:spotsColor(e.spots),boxShadow:"0 0 6px "+spotsShadow(e.spots)}}/>
           <span style={{...sf(10,600),color:spotsColor(e.spots)}}>{e.spots} spots</span>
         </div>
-        {/* Pricing */}
-        <div style={{position:"absolute",bottom:14,right:14,...sf(13,700),color:C.s1}}>{e.pricing}</div>
       </div>
       {/* Content */}
       <div style={{padding:"18px 20px 20px"}}>

@@ -29,7 +29,6 @@ var EVENTS={
     includes:["Private hospitality venue","Nobu catering all weekend","Open bar — champagne, spirits, wine","Personal concierge on-site","Airport/hotel transfers","After-party access","Professional photography"],
     alfredNote:"This is one of our most exclusive packages. The Swimming Pool chicane is where races are won and lost — you'll feel the cars shake the ground beneath you. We limit this to 50 guests total across both venues to keep it intimate. Request early — Monaco sells out faster than any other event on our calendar.",
     alfredTip:"Fly into Nice and take our helicopter transfer. The 7-minute flight over the coastline is worth it alone.",
-    pricing:"From €15,000 per person",pricingNote:"Includes all hospitality, transfers, and after-party access. Group packages available for 6+.",
   },
   "miami-grand-prix":{
     name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",color:"#F97316",spots:8,
@@ -47,7 +46,6 @@ var EVENTS={
     includes:["Turn 1 private suite","Paddock Club passes","Full catering & open bar","After-party access (LIV, Story, E11even)","Hotel-circuit transfers","Personal concierge","Supercar parade ride-along"],
     alfredNote:"Miami is our most high-energy package. The after-parties are legendary — last year we had guests stay until sunrise. The Turn 1 suite is limited to 20 guests, so the atmosphere stays right. If you're bringing a group, ask about our full suite buyout.",
     alfredTip:"Stay at the Faena or the Edition. We'll arrange everything — and the after-parties are closer.",
-    pricing:"From €12,000 per person",pricingNote:"Includes race weekend hospitality, all after-party access, and ground transfers.",
   },
   "ibiza-opening":{
     name:"Ibiza Opening",slug:"ibiza-opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",color:"#8B5CF6",spots:15,
@@ -66,7 +64,6 @@ var EVENTS={
     includes:["4 nights VIP club access","Private villa (up to 8 guests)","Personal chef · daily","Yacht day party","Artist meet & greets","Airport transfers","Nightlife concierge every night"],
     alfredNote:"This is our most popular summer package. The villa is the key — having your own private space with a chef means you can recover properly between nights. We've curated the schedule so the energy builds each day. Trust the order.",
     alfredTip:"Book the 8-person villa even if you're fewer — the space is worth it. And pace yourself on night one.",
-    pricing:"From €8,000 per person",pricingNote:"Based on 4-person villa occupancy. Includes all club access, villa, chef, and activities.",
   },
   "roland-garros":{
     name:"Roland Garros",slug:"roland-garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",color:"#D97706",spots:6,
@@ -82,7 +79,6 @@ var EVENTS={
     includes:["Private box seats (up to 4 guests)","Michelin dining experience","Champagne terrace access","Player lounge entry","Chauffeur hotel transfers","Official Roland Garros gift pack","Personal concierge on-site"],
     alfredNote:"Roland Garros is pure elegance. Our private box in Philippe Chatrier gives you the best sightlines in the stadium — centre court, eye level. The Michelin lunch between sessions is extraordinary. We recommend the quarter-finals or semi-finals for the best combination of atmosphere and quality of play.",
     alfredTip:"Stay at the Hôtel de Crillon — it's a 20-minute chauffeur ride and the perfect complement to a day at Roland Garros.",
-    pricing:"From €6,000 per person",pricingNote:"Per match day. Multi-day packages available at preferred rates.",
   },
   "royal-ascot":{
     name:"Royal Ascot",slug:"royal-ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",color:"#0EA5E9",spots:4,
@@ -98,7 +94,6 @@ var EVENTS={
     includes:["Royal Enclosure badges","Private box (up to 12)","Michelin chef · full day","Helicopter transfers","Savile Row styling consultation","Fine wine & champagne","Racing expert & tips"],
     alfredNote:"Royal Ascot is one of the few events where the experience is as much about the social occasion as the sport. Our private box is in the heart of the Royal Enclosure — you'll see the Royal Procession from your table. The Savile Row consultation is complimentary for first-time guests and genuinely worthwhile.",
     alfredTip:"Ladies' Day (Thursday) has the best atmosphere. Gold Cup Day (Thursday) is the prestige race. We recommend both.",
-    pricing:"From €5,000 per person",pricingNote:"Per race day. Full-week packages and private box buyouts available.",
   },
 };
 
@@ -113,7 +108,6 @@ export default function EventDetailPage(){
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var schedRef=useRef(null);var schedVis=useVis(schedRef);
   var inclRef=useRef(null);var inclVis=useVis(inclRef);
-  var pricRef=useRef(null);var pricVis=useVis(pricRef);
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200);window.scrollTo(0,0)},[slug]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
@@ -264,12 +258,6 @@ export default function EventDetailPage(){
               <div style={{padding:"24px 22px"}}>
                 <div style={{...sf(18,700),color:C.s1,marginBottom:6}}>Request Access</div>
                 <p style={{...sf(12,400),color:C.s5,marginBottom:20}}>{V.venue}</p>
-
-                {/* Pricing */}
-                <div style={{padding:"16px 0",borderTop:"1px solid "+C.bd,borderBottom:"1px solid "+C.bd,marginBottom:16}}>
-                  <p style={{...sf(24,700),color:C.s1}}>{V.pricing}</p>
-                  <p style={{...sf(11,400),color:C.s5,marginTop:4}}>{V.pricingNote}</p>
-                </div>
 
                 {/* Key details */}
                 <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
