@@ -280,9 +280,9 @@ function AlfredLoader(p){
       if(t<1){raf=requestAnimationFrame(tick)}
       else{setPercent(100);
         setTimeout(function(){setLit(true)},400);
-        setTimeout(function(){setReady(true)},2200);
-        setTimeout(function(){setLoaderDone(true)},4000);
-        setTimeout(function(){p.onComplete()},5000);
+        setTimeout(function(){setReady(true)},1800);
+        setTimeout(function(){setLoaderDone(true)},4200);
+        setTimeout(function(){p.onComplete()},5800);
       }
     };
     raf=requestAnimationFrame(tick);
@@ -290,7 +290,7 @@ function AlfredLoader(p){
   },[]);
 
   return (
-    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transition:"opacity 1.8s ease"}}>
+    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transition:"opacity 2.5s cubic-bezier(0.4,0,0.2,1)"}}>
       <style>{`
         @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
         @keyframes ldFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -308,29 +308,26 @@ function AlfredLoader(p){
       {/* Wordmark */}
       <p style={{...sf(11,300),color:"#F4F4F5",letterSpacing:10,textTransform:"uppercase",marginTop:-20,zIndex:2,animation:"ldWordIn 3s ease 0.8s both",opacity:lit?0.85:undefined,transition:"opacity 2s"}}>Alfred</p>
 
-      {/* Percentage / Ready */}
-      <div style={{marginTop:32,zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:12,animation:"ldFadeUp 1.5s ease 1s both",minHeight:60}}>
-        {ready ? (
-          <p style={{...sf(13,300),color:"#71717A",opacity:0,animation:"ldFadeUp 1s ease 0.1s forwards"}}>Your concierge is ready</p>
-        ) : (
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
-            <div style={{display:"flex",alignItems:"baseline",gap:2}}>
-              <span style={{...sf(22,300),color:"#F4F4F5",letterSpacing:2,minWidth:40,textAlign:"right",display:"inline-block"}}>{percent}</span>
-              <span style={{...sf(13,300),color:"#52525B"}}>%</span>
-            </div>
-            <div style={{width:100,height:1,background:"rgba(63,63,70,0.4)",borderRadius:1,overflow:"hidden",opacity:lit?0:0.5,transition:"opacity 0.8s"}}>
-              <div style={{height:"100%",width:percent+"%",background:"linear-gradient(90deg,#3F3F46,#71717A)",borderRadius:1,transition:"width 0.1s linear"}} />
-            </div>
+      {/* Percentage / Ready — crossfade */}
+      <div style={{marginTop:32,zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:12,animation:"ldFadeUp 1.5s ease 1s both",minHeight:60,position:"relative"}}>
+        {/* Percentage counter — fades out */}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:14,opacity:ready?0:1,transform:ready?"translateY(-8px) scale(0.96)":"translateY(0) scale(1)",transition:"opacity 1.2s ease, transform 1.2s ease",position:ready?"absolute":"relative"}}>
+          <div style={{display:"flex",alignItems:"baseline",gap:2}}>
+            <span style={{...sf(22,300),color:"#F4F4F5",letterSpacing:2,minWidth:40,textAlign:"right",display:"inline-block"}}>{percent}</span>
+            <span style={{...sf(13,300),color:"#52525B"}}>%</span>
           </div>
-        )}
+          <div style={{width:100,height:1,background:"rgba(63,63,70,0.4)",borderRadius:1,overflow:"hidden",opacity:lit?0:0.5,transition:"opacity 0.8s"}}>
+            <div style={{height:"100%",width:percent+"%",background:"linear-gradient(90deg,#3F3F46,#71717A)",borderRadius:1,transition:"width 0.1s linear"}} />
+          </div>
+        </div>
+        {/* "Your concierge is ready" — fades in */}
+        <p style={{...sf(13,300),color:"#A1A1AA",letterSpacing:1,opacity:ready?1:0,transform:ready?"translateY(0)":"translateY(10px)",transition:"opacity 1.4s ease 0.3s, transform 1.4s ease 0.3s",position:ready?"relative":"absolute"}}>Your concierge is ready</p>
       </div>
 
       {/* Dots */}
-      {!ready && (
-        <div style={{display:"flex",gap:5,marginTop:20,zIndex:2,animation:"ldFadeUp 1s ease 2s both"}}>
-          {[0,1,2].map(function(i){return <div key={i} style={{width:2,height:2,borderRadius:"50%",background:"#3F3F46",animation:"ldDotPulse 1.6s ease infinite "+i*0.3+"s"}} />})}
-        </div>
-      )}
+      <div style={{display:"flex",gap:5,marginTop:20,zIndex:2,animation:"ldFadeUp 1s ease 2s both",opacity:ready?0:1,transform:ready?"scale(0.8)":"scale(1)",transition:"opacity 1s ease, transform 1s ease"}}>
+        {[0,1,2].map(function(i){return <div key={i} style={{width:2,height:2,borderRadius:"50%",background:"#3F3F46",animation:"ldDotPulse 1.6s ease infinite "+i*0.3+"s"}} />})}
+      </div>
 
       {/* City carousel */}
       <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2}}>
