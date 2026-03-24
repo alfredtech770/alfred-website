@@ -256,23 +256,7 @@ body::-webkit-scrollbar{width:0}
         </div>
       </nav>
 
-      {/* Hero */}
-      <section ref={heroRef} className="yc-hero" style={{position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px)"}}>
-          <img src="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg" alt="Yachts" style={{width:"100%",height:"120%",objectFit:"cover"}}/>
-        </div>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.35) 0%,transparent 35%,rgba(10,10,11,0.6) 65%,#0A0A0B 100%)"}}/>
-
-        <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 40px 56px"}}>
-          <div style={{maxWidth:1060,margin:"0 auto"}}>
-            <div style={{marginBottom:12,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s"}}>
-              <span style={{...sf(9,600),letterSpacing:3,color:C.s4,textTransform:"uppercase"}}>Alfred · Charter Fleet</span>
-            </div>
-            <h1 className="yc-title" style={{...sf(56,700),letterSpacing:-2,lineHeight:1,marginBottom:14,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.35s"}}>Yachts</h1>
-            <p style={{...sf(16,400),color:C.s4,maxWidth:440,lineHeight:1.6,opacity:loaded?1:0,transition:"opacity 0.8s ease 0.5s"}}>{fetching?"Loading fleet...":filtered.length+" yacht"+(filtered.length!==1?"s":"")+" available for charter"}</p>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Filter bar */}
       <div style={{position:"sticky",top:64,zIndex:50,borderBottom:"1px solid "+C.bd,background:"rgba(10,10,11,0.9)",backdropFilter:"blur(20px) saturate(1.5)"}}>
