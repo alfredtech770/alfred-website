@@ -185,14 +185,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div style={{display:"flex",alignItems:"center",gap:20}}>
           <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
-          <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>Nightlife</div>
+          <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>NightLife</div>
         </div>
       </nav>
 
       {/* Header */}
       <div style={{paddingTop:100,paddingBottom:40,textAlign:"center",opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
-        <h1 className="n-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Nightlife</h1>
+        <h1 className="n-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>NightLife</h1>
         <p style={{...sf(16,400),color:C.s5}}>Tables, guestlists & VIP — skip every line.</p>
       </div>
 
