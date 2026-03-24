@@ -105,7 +105,7 @@ export default function DiningDetailPage(){
 .page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
 .two-col{display:flex;gap:40px;align-items:flex-start}
 .left-col{flex:1;min-width:0}
-.right-col{width:320px;flex-shrink:0;position:sticky;top:80px;overflow:hidden}
+.right-col{width:300px;flex-shrink:0;position:sticky;top:80px;overflow:hidden}
 .dish-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .dish-row::-webkit-scrollbar{display:none}
 .rev-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
@@ -231,7 +231,7 @@ export default function DiningDetailPage(){
                 {/* Date */}
                 <div style={{marginBottom:14}}>
                   <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Date</div>
-                  <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={{padding:"12px 16px",borderRadius:12,background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"}}/>
+                  <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={{padding:"10px 12px",borderRadius:10,maxWidth:"100%",background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"}}/>
                 </div>
 
                 {/* Time */}
