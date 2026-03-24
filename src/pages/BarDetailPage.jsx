@@ -42,7 +42,6 @@ var V={
 
 export default function BarDetailPage(){
   var [idx,setIdx]=useState(0);
-  var [liked,setLiked]=useState(false);
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
 
@@ -98,7 +97,6 @@ export default function BarDetailPage(){
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
         <div style={{position:"absolute",top:56,right:40,display:"flex",gap:8,zIndex:10}}>
-          <div onClick={function(){setLiked(!liked)}} style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}><svg width="13" height="13" viewBox="0 0 24 24" fill={liked?C.red:"none"} stroke={liked?C.red:"rgba(255,255,255,0.5)"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
           <div style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg></div>
         </div>
         <div style={{position:"absolute",top:56,left:40,display:"flex",gap:6,zIndex:10}}>

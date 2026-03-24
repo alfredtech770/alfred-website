@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
+import DarkDatePicker from "../components/DarkDatePicker";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -77,7 +78,7 @@ function RestCard(p){
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <span style={{...sf(11),color:C.s5}}>{r.loc}</span>
             </div>
-            <span style={{...sf(11),color:C.s6}}>Avg. {r.avg}</span>
+            {false&&<span style={{...sf(11),color:C.s6}}>Avg. {r.avg}</span>}
           </div>
           <div style={{...sf(11,500),color:hover&&r.available?C.s1:C.s5,transition:"color 0.3s"}}>
             {r.available?"View →":"Notify me"}
@@ -206,7 +207,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Date</label>
-              <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={inputS}/>
+              <DarkDatePicker value={date} onChange={function(v){setDate(v)}} label="Date"/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Guests</label>
@@ -214,8 +215,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
                 {["2","4","6","8+"].map(function(g,gi){var active=guests===g;return <div key={g} onClick={function(){setGuests(g)}} style={{padding:"11px 14px",background:active?"rgba(244,244,245,0.06)":"transparent",borderLeft:gi>0?"1px solid "+C.bd:"none",cursor:"pointer",...sf(13,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{g}</div>})}
               </div>
             </div>
-            <div style={{display:"flex",alignItems:"flex-end"}}>
-              <div style={{padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg,transition:"transform 0.3s",whiteSpace:"nowrap",marginTop:21}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)"}}>
+            <div>
+              <label style={{display:"block",...sf(9,600),color:"transparent",letterSpacing:1.5,textTransform:"uppercase",marginBottom:8,userSelect:"none"}}>.</label>
+              <div style={{padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg,transition:"transform 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)"}}>
                 Search
               </div>
             </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import DarkDatePicker from "../components/DarkDatePicker";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -353,11 +354,11 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Pickup</label>
-              <input type="date" value={pickup} onChange={function(e){setPickup(e.target.value)}} style={inputS}/>
+              <DarkDatePicker value={pickup} onChange={function(v){setPickup(v)}} label="Pickup"/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Return</label>
-              <input type="date" value={returnD} onChange={function(e){setReturnD(e.target.value)}} style={inputS}/>
+              <DarkDatePicker value={returnD} onChange={function(v){setReturnD(v)}} label="Return" align="right"/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Duration</label>

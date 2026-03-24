@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import DarkDatePicker from "../components/DarkDatePicker";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -176,7 +177,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Date</label>
-              <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={inputS}/>
+              <DarkDatePicker value={date} onChange={function(v){setDate(v)}} label="Date"/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Preferred Time</label>
@@ -184,8 +185,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
                 {["Morning","Afternoon","Evening"].map(function(t,ti){var active=time===t;return <div key={t} onClick={function(){setTime(t)}} style={{flex:1,textAlign:"center",padding:"11px 10px",background:active?"rgba(244,244,245,0.06)":"transparent",borderLeft:ti>0?"1px solid "+C.bd:"none",cursor:"pointer",...sf(12,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{t}</div>})}
               </div>
             </div>
-            <div style={{display:"flex",alignItems:"flex-end"}}>
-              <div style={{padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg,transition:"transform 0.3s",whiteSpace:"nowrap",marginTop:21}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)"}}>Search</div>
+            <div><label style={{display:"block",fontSize:9,color:"transparent",letterSpacing:1.5,marginBottom:8,userSelect:"none"}}>.</label>
+              <div style={{padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg,transition:"transform 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)"}}>Search</div>
             </div>
           </div>
         </div>

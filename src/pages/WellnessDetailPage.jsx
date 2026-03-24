@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import DarkDatePicker from "../components/DarkDatePicker";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -35,7 +36,6 @@ var V={
 export default function WellnessDetailPage(){
   var [idx,setIdx]=useState(0);
   var [lightbox,setLightbox]=useState(false);
-  var [liked,setLiked]=useState(false);
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [date,setDate]=useState("2026-03-22");
@@ -230,7 +230,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
                 {/* Date */}
                 <div style={{marginBottom:14}}>
                   <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Date</div>
-                  <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={{padding:"12px 16px",borderRadius:12,background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"}}/>
+                  <DarkDatePicker value={date} onChange={function(v){setDate(v)}} label="Date"/>
                 </div>
                 {/* Time */}
                 <div style={{marginBottom:14}}>

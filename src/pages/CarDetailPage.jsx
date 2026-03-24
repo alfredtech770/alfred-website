@@ -59,7 +59,6 @@ export default function CarDetailPage(){
   };
 
   var [idx,setIdx]=useState(0);
-  var [liked,setLiked]=useState(false);
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [days,setDays]=useState(3);
