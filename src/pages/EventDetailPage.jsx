@@ -10,6 +10,8 @@ function spotsColor(s){return s<=6?"#FF453A":s<=10?"#FFD60A":"#34C759"}
 function spotsShadow(s){return s<=6?"rgba(255,69,58,0.5)":s<=10?"rgba(255,214,10,0.4)":"rgba(52,199,89,0.4)"}
 
 var SB="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/";
+var WA_NUM="447449562204";
+function openWA(msg){window.open("https://wa.me/"+WA_NUM+"?text="+encodeURIComponent(msg),"_blank")}
 
 var EVENTS={
   "monaco-grand-prix":{
@@ -29,6 +31,7 @@ var EVENTS={
     includes:["Private hospitality venue","Nobu catering all weekend","Open bar — champagne, spirits, wine","Personal concierge on-site","Airport/hotel transfers","After-party access","Professional photography"],
     alfredNote:"This is one of our most exclusive packages. The Swimming Pool chicane is where races are won and lost — you'll feel the cars shake the ground beneath you. We limit this to 50 guests total across both venues to keep it intimate. Request early — Monaco sells out faster than any other event on our calendar.",
     alfredTip:"Fly into Nice and take our helicopter transfer. The 7-minute flight over the coastline is worth it alone.",
+    waMsg:"Hi Alfred, I'm interested in the Monaco Grand Prix experience (June 4–7, 2026). I'd like to learn more about availability and access.",
   },
   "miami-grand-prix":{
     name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",color:"#F97316",spots:8,
@@ -46,6 +49,7 @@ var EVENTS={
     includes:["Turn 1 private suite","Paddock Club passes","Full catering & open bar","After-party access (LIV, Story, E11even)","Hotel-circuit transfers","Personal concierge","Supercar parade ride-along"],
     alfredNote:"Miami is our most high-energy package. The after-parties are legendary — last year we had guests stay until sunrise. The Turn 1 suite is limited to 20 guests, so the atmosphere stays right. If you're bringing a group, ask about our full suite buyout.",
     alfredTip:"Stay at the Faena or the Edition. We'll arrange everything — and the after-parties are closer.",
+    waMsg:"Hi Alfred, I'm interested in the Miami Grand Prix experience (May 1–3, 2026). I'd like to know more about the Turn 1 suite and paddock access.",
   },
   "ibiza-opening":{
     name:"Ibiza Opening",slug:"ibiza-opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",color:"#8B5CF6",spots:15,
@@ -64,6 +68,7 @@ var EVENTS={
     includes:["4 nights VIP club access","Private villa (up to 8 guests)","Personal chef · daily","Yacht day party","Artist meet & greets","Airport transfers","Nightlife concierge every night"],
     alfredNote:"This is our most popular summer package. The villa is the key — having your own private space with a chef means you can recover properly between nights. We've curated the schedule so the energy builds each day. Trust the order.",
     alfredTip:"Book the 8-person villa even if you're fewer — the space is worth it. And pace yourself on night one.",
+    waMsg:"Hi Alfred, I'm interested in the Ibiza Opening experience (May–June 2026). I'd like to learn more about the villa and VIP club access.",
   },
   "roland-garros":{
     name:"Roland Garros",slug:"roland-garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",color:"#D97706",spots:6,
@@ -79,6 +84,7 @@ var EVENTS={
     includes:["Private box seats (up to 4 guests)","Michelin dining experience","Champagne terrace access","Player lounge entry","Chauffeur hotel transfers","Official Roland Garros gift pack","Personal concierge on-site"],
     alfredNote:"Roland Garros is pure elegance. Our private box in Philippe Chatrier gives you the best sightlines in the stadium — centre court, eye level. The Michelin lunch between sessions is extraordinary. We recommend the quarter-finals or semi-finals for the best combination of atmosphere and quality of play.",
     alfredTip:"Stay at the Hôtel de Crillon — it's a 20-minute chauffeur ride and the perfect complement to a day at Roland Garros.",
+    waMsg:"Hi Alfred, I'm interested in the Roland Garros experience (May 18–Jun 7, 2026). I'd like to know more about the private box and hospitality.",
   },
   "royal-ascot":{
     name:"Royal Ascot",slug:"royal-ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",color:"#0EA5E9",spots:4,
@@ -94,6 +100,7 @@ var EVENTS={
     includes:["Royal Enclosure badges","Private box (up to 12)","Michelin chef · full day","Helicopter transfers","Savile Row styling consultation","Fine wine & champagne","Racing expert & tips"],
     alfredNote:"Royal Ascot is one of the few events where the experience is as much about the social occasion as the sport. Our private box is in the heart of the Royal Enclosure — you'll see the Royal Procession from your table. The Savile Row consultation is complimentary for first-time guests and genuinely worthwhile.",
     alfredTip:"Ladies' Day (Thursday) has the best atmosphere. Gold Cup Day (Thursday) is the prestige race. We recommend both.",
+    waMsg:"Hi Alfred, I'm interested in the Royal Ascot experience (June 16–20, 2026). I'd like to learn more about the Royal Enclosure and private box.",
   },
 };
 
@@ -132,7 +139,7 @@ export default function EventDetailPage(){
             <span style={{...sf(11,500),color:C.s3}}>All Events</span>
           </div>
         </div>
-        <div onClick={function(){}} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 22px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,700),color:C.bg,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+        <div onClick={function(){openWA(V.waMsg)}} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 22px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,700),color:C.bg,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
           Request Access
         </div>
       </div>
@@ -184,7 +191,7 @@ export default function EventDetailPage(){
               {["No fees","Personal concierge","Limited spots"].map(function(t,i){return <span key={i} style={{...sf(11),color:C.s5}}>{t}</span>})}
             </div>
           </div>
-          <div onClick={function(){}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+          <div onClick={function(){openWA(V.waMsg)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             Request Access
           </div>
         </div>
