@@ -266,12 +266,11 @@ function AlfredLoader(p){
 
   useEffect(function(){
     var start=null,raf;
-    var duration=6000;
+    var duration=3000;
     var ease=function(t){
-      if(t<0.6)return(t/0.6)*0.8;
-      if(t<0.85)return 0.8+((t-0.6)/0.25)*0.12;
-      if(t<0.95)return 0.92+((t-0.85)/0.1)*0.04;
-      return 0.96+((t-0.95)/0.05)*0.04;
+      if(t<0.5)return(t/0.5)*0.75;
+      if(t<0.8)return 0.75+((t-0.5)/0.3)*0.17;
+      return 0.92+((t-0.8)/0.2)*0.08;
     };
     var tick=function(ts){
       if(!start)start=ts;
@@ -279,10 +278,10 @@ function AlfredLoader(p){
       setPercent(Math.floor(ease(t)*100));
       if(t<1){raf=requestAnimationFrame(tick)}
       else{setPercent(100);
-        setTimeout(function(){setLit(true)},400);
-        setTimeout(function(){setReady(true)},1800);
-        setTimeout(function(){setLoaderDone(true)},4200);
-        setTimeout(function(){p.onComplete()},5800);
+        setTimeout(function(){setLit(true)},300);
+        setTimeout(function(){setReady(true)},1000);
+        setTimeout(function(){setLoaderDone(true)},2400);
+        setTimeout(function(){p.onComplete()},3600);
       }
     };
     raf=requestAnimationFrame(tick);
@@ -290,7 +289,7 @@ function AlfredLoader(p){
   },[]);
 
   return (
-    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transition:"opacity 2.5s cubic-bezier(0.4,0,0.2,1)"}}>
+    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transition:"opacity 1.6s cubic-bezier(0.4,0,0.2,1)"}}>
       <style>{`
         @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
         @keyframes ldFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
