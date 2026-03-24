@@ -121,7 +121,7 @@ export default function DiningPage(){
           michelin:r.michelin_stars||r.michelin||0,
           img:r.hero_image_url||r.image_url||r.img||"",
           tagline:r.tagline||"",
-          slug:r.slug||(r.id?String(r.id):""),
+          slug:r.slug||(r.id?String(r.id):""),imgs:r.photos_order||r.gallery_photos||[r.hero_image_url||r.image_url||r.img].filter(Boolean),
           available:r.available!==false,
           avg:r.avg_spend||r.avg||"",
         }}));
