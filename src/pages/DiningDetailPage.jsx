@@ -223,12 +223,12 @@ export default function DiningDetailPage(){
               <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
               <div style={{padding:"24px 22px"}}>
                 <div style={{...sf(18,700),color:C.s1,marginBottom:4}}>Arrange a Table</div>
-                <div style={{...sf(12),color:C.s5,marginBottom:20}}>Avg. {V.avgSpend} / person · {V.priceLevel}</div>
+                <div style={{...sf(12),color:C.s5,marginBottom:20}}>{V.priceLevel}</div>
 
                 {/* Date */}
                 <div style={{marginBottom:14}}>
                   <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Date</div>
-                  <DarkDatePicker value={date} onChange={function(v){setDate(v)}} label="Date"/>
+                  <DarkDatePicker value={date} onChange={function(v){setDate(v)}} label="Date" align="center"/>
                 </div>
 
                 {/* Time */}
