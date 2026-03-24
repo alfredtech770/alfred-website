@@ -9,8 +9,8 @@ function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} hei
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
 
-var CITIES=["All Cities","Miami","Paris"];
 var SORT_OPTIONS=["Featured","Rating","Price: Low","Price: High","Most Reviewed"];
+function capitalize(s){if(!s)return s;return s.charAt(0).toUpperCase()+s.slice(1)}
 
 function FilterDrop(p){
   var [open,setOpen]=useState(false);
@@ -98,7 +98,6 @@ export default function DiningPage(){
   var [cuisine,setCuisine]=useState("Cuisine");
   var [price,setPrice]=useState("Price");
   var [vibe,setVibe]=useState("Vibe");
-  var [meal,setMeal]=useState("Meal");
   var [sort,setSort]=useState("Featured");
   var [guests,setGuests]=useState("2");
   var [date,setDate]=useState("2026-03-20");
@@ -113,11 +112,14 @@ export default function DiningPage(){
       try{
         var {data,error}=await supabase.from("restaurants").select("*").order("name");
         if(error)throw error;
-        setRestaurants((data||[]).map(function(r){return{
+        setRestaurants((data||[]).map(function(r){
+          var pl=r.price_level||0;
+          return{
           name:r.name||"",cuisine:r.cuisine||"",
-          price:r.price_level||r.price||"€€€€",
+          price:pl===1?"$":pl===2?"$$":pl===3?"$$$":pl===4?"$$$$":"$$$$",
+          priceLevel:pl,
           loc:r.city||r.location||r.loc||"",
-          vibe:r.vibe||"",meal:r.meal_type||r.meal||"Both",
+          vibe:capitalize(r.vibe)||"",
           rating:r.rating||0,reviews:r.review_count||r.reviews||0,
           michelin:r.michelin_stars||r.michelin||0,
           img:r.hero_image_url||r.image_url||r.img||"",
@@ -135,28 +137,32 @@ export default function DiningPage(){
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
+  /* Dynamic filter options from data */
+  var cities=["All Cities"].concat([...new Set(restaurants.map(function(r){return r.loc}).filter(Boolean))].sort());
+  var cuisines=["Cuisine"].concat([...new Set(restaurants.map(function(r){return r.cuisine}).filter(Boolean))].sort());
+  var vibes=["Vibe"].concat([...new Set(restaurants.map(function(r){return r.vibe}).filter(Boolean))].sort());
+  var prices=["Price","$","$$","$$$","$$$$"];
+
   var filtered=restaurants.filter(function(r){
     if(city!=="All Cities"&&r.loc!==city)return false;
     if(cuisine!=="Cuisine"&&r.cuisine!==cuisine)return false;
     if(price!=="Price"&&r.price!==price)return false;
     if(vibe!=="Vibe"&&r.vibe!==vibe)return false;
-    if(meal!=="Meal"&&((meal==="Lunch"&&r.meal==="Dinner")||(meal==="Dinner"&&r.meal==="Lunch")))return false;
     return true;
   });
 
   if(sort==="Rating")filtered=filtered.slice().sort(function(a,b){return b.rating-a.rating});
-  else if(sort==="Price: Low")filtered=filtered.slice().sort(function(a,b){return a.price.length-b.price.length});
-  else if(sort==="Price: High")filtered=filtered.slice().sort(function(a,b){return b.price.length-a.price.length});
+  else if(sort==="Price: Low")filtered=filtered.slice().sort(function(a,b){return a.priceLevel-b.priceLevel});
+  else if(sort==="Price: High")filtered=filtered.slice().sort(function(a,b){return b.priceLevel-a.priceLevel});
   else if(sort==="Most Reviewed")filtered=filtered.slice().sort(function(a,b){return b.reviews-a.reviews});
 
-  var activeFilters=[city!=="All Cities"?city:null,cuisine!=="Cuisine"?cuisine:null,price!=="Price"?price:null,vibe!=="Vibe"?vibe:null,meal!=="Meal"?meal:null].filter(Boolean);
-  var clearAll=function(){setCity("All Cities");setCuisine("Cuisine");setPrice("Price");setVibe("Vibe");setMeal("Meal")};
+  var activeFilters=[city!=="All Cities"?city:null,cuisine!=="Cuisine"?cuisine:null,price!=="Price"?price:null,vibe!=="Vibe"?vibe:null].filter(Boolean);
+  var clearAll=function(){setCity("All Cities");setCuisine("Cuisine");setPrice("Price");setVibe("Vibe")};
 
   var inputS={padding:"12px 16px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"};
   var iconCuisine=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>;
   var iconPrice=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>;
   var iconVibe=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/><circle cx="12" cy="12" r="4"/></svg>;
-  var iconMeal=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>;
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
@@ -203,7 +209,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           <div className="search-bar">
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Location</label>
-              <FilterDrop value={city} options={CITIES} onChange={setCity} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
+              <FilterDrop value={city} options={cities} onChange={setCity} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Date</label>
@@ -229,10 +235,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
           <div className="filter-row">
-            <FilterDrop value={cuisine} options={["Cuisine","French","Italian","Japanese","Asian Fusion","Steakhouse","Mediterranean"]} onChange={setCuisine} icon={iconCuisine}/>
-            <FilterDrop value={price} options={["Price","€€€","€€€€"]} onChange={setPrice} icon={iconPrice}/>
-            <FilterDrop value={vibe} options={["Vibe","Formal","Scene","Romantic","Casual"]} onChange={setVibe} icon={iconVibe}/>
-            <FilterDrop value={meal} options={["Meal","Lunch","Dinner","Both"]} onChange={setMeal} icon={iconMeal}/>
+            <FilterDrop value={cuisine} options={cuisines} onChange={setCuisine} icon={iconCuisine}/>
+            <FilterDrop value={price} options={prices} onChange={setPrice} icon={iconPrice}/>
+            <FilterDrop value={vibe} options={vibes} onChange={setVibe} icon={iconVibe}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
             <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>
