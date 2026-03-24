@@ -26,22 +26,32 @@ var SORT_OPTIONS=["Featured","Rating","Price: Low","Price: High","Most Reviewed"
 function FilterDrop(p){
   var [open,setOpen]=useState(false);
   var ref=useRef(null);
-  useEffect(function(){function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)};document.addEventListener("mousedown",h);return function(){document.removeEventListener("mousedown",h)}},[]);
+  useEffect(function(){
+    if(!open) return;
+    var timer=setTimeout(function(){
+      function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
+      document.addEventListener("pointerdown",h);
+      document.addEventListener("touchstart",h,{passive:true});
+      ref.current._cleanup=function(){document.removeEventListener("pointerdown",h);document.removeEventListener("touchstart",h)}
+    },10);
+    return function(){clearTimeout(timer);if(ref.current&&ref.current._cleanup){ref.current._cleanup();ref.current._cleanup=null}}
+  },[open]);
   var hasActive=p.value!==p.options[0];
   return(
-    <div ref={ref} style={{position:"relative",flexShrink:0,zIndex:open?70:1}}>
-      <div onClick={function(){setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"12px 16px",borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
-        {p.emoji&&<span style={{fontSize:13}}>{p.emoji}</span>}
-        {!p.emoji&&p.icon}
+    <div ref={ref} style={{position:"relative",WebkitTapHighlightColor:"transparent"}}>
+      <div onClick={function(e){e.stopPropagation();setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+        {p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform 0.3s"}}><path d="M6 9l6 6 6-6"/></svg>
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      {open&&<div style={{position:"absolute",top:"calc(100% + 8px)",left:0,borderRadius:16,background:C.el,border:"1px solid "+C.bd,zIndex:70,minWidth:220,maxHeight:340,overflowY:"auto",boxShadow:"0 24px 64px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04)",padding:"6px",scrollbarWidth:"thin",scrollbarColor:C.s7+" transparent"}}>
-        {p.options.map(function(opt,i){var active=p.value===opt;var isFirst=i===0;var em=p.emojiMap&&p.emojiMap[opt];return <div key={opt} onClick={function(){p.onChange(opt);setOpen(false)}} style={{padding:"10px 14px",cursor:"pointer",background:active?"rgba(244,244,245,0.06)":"transparent",borderRadius:10,display:"flex",alignItems:"center",gap:10,...sf(13,active?600:400),color:active?C.s1:C.s4,transition:"all 0.2s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.08)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.06)":"transparent"}}>
-          {em&&<span style={{fontSize:15,width:20,textAlign:"center"}}>{em}</span>}
-          <span style={{flex:1}}>{opt}</span>
-          {active&&!isFirst&&<div style={{width:6,height:6,borderRadius:"50%",background:C.gn,flexShrink:0}}/>}
-        </div>})}
+      {open&&<div style={{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:C.el,border:"1px solid "+C.bd,overflowY:"auto",overflowX:"hidden",zIndex:9999,minWidth:180,maxHeight:320,boxShadow:"0 16px 48px rgba(0,0,0,0.6)",WebkitOverflowScrolling:"touch"}}>
+        {p.options.map(function(opt){
+          var active=p.value===opt;
+          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onMouseLeave={function(e){e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+            {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
+            {opt}
+          </div>
+        })}
       </div>}
     </div>
   );
@@ -200,9 +210,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:40}}>
         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
           <div className="filter-row">
-            <FilterDrop value={type} options={["Type","Luxury Spa","Wellness Center","Facialist","Fitness"]} onChange={setType} emoji="🏛" emojiMap={{Type:"🏛","Luxury Spa":"🧖","Wellness Center":"🌿",Facialist:"✨",Fitness:"💪"}}/>
-            <FilterDrop value={treatment} options={["Treatment","Full-Service","Facial","Training"]} onChange={setTreatment} emoji="💆" emojiMap={{Treatment:"💆","Full-Service":"🛁",Facial:"🪷",Training:"🏋️"}}/>
-            <FilterDrop value={price} options={["Price","€€€","€€€€"]} onChange={setPrice} emoji="💰" emojiMap={{Price:"💰","€€€":"💵","€€€€":"💎"}}/>
+            <FilterDrop value={type} options={["Type","Luxury Spa","Wellness Center","Facialist","Fitness"]} onChange={setType} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>}/>
+            <FilterDrop value={treatment} options={["Treatment","Full-Service","Facial","Training"]} onChange={setTreatment} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>}/>
+            <FilterDrop value={price} options={["Price","€€€","€€€€"]} onChange={setPrice} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
             <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>
