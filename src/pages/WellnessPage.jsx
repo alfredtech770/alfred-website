@@ -204,7 +204,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             <FilterDrop value={treatment} options={["Treatment","Full-Service","Facial","Training"]} onChange={setTreatment} emoji="💆" emojiMap={{Treatment:"💆","Full-Service":"🛁",Facial:"🪷",Training:"🏋️"}}/>
             <FilterDrop value={price} options={["Price","€€€","€€€€"]} onChange={setPrice} emoji="💰" emojiMap={{Price:"💰","€€€":"💵","€€€€":"💎"}}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
-            <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} emoji="📊" emojiMap={{Featured:"📊",Rating:"⭐","Price: Low":"📉","Price: High":"📈","Most Reviewed":"💬"}}/>
+            <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>
           <span style={{...sf(12),color:C.s6,flexShrink:0,marginLeft:8}}>{filtered.length} venue{filtered.length!==1?"s":""}</span>
         </div>
