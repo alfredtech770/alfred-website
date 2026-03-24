@@ -246,8 +246,8 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             {/* Alfred's Note */}
             <div ref={noteRef} style={{paddingTop:32,marginBottom:40}}>
               {secDiv}
-              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:noteVis?1:0,transition:"all 0.8s ease"}}>Alfred's Note</p>
-              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"clamp(20px,4vw,36px) clamp(16px,3vw,32px)",position:"relative",overflow:"hidden",wordBreak:"break-word",opacity:noteVis?1:0,transform:noteVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s"}}>
+              <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Alfred's Note</p>
+              <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"clamp(20px,4vw,36px) clamp(16px,3vw,32px)",position:"relative",overflow:"hidden",wordBreak:"break-word"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
                 <div style={{position:"absolute",bottom:20,right:24,opacity:0.025}}><Mark size={100} color={C.s1}/></div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}><Mark size={18} color={C.s5}/><span style={{...sf(11,500),color:C.s5,letterSpacing:1}}>From your concierge</span><div style={{marginLeft:"auto",width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px rgba(52,199,89,0.4)"}}/></div>
@@ -351,13 +351,13 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       {/* Specifications */}
       <div ref={specsRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:specsVis?1:0,transition:"all 0.8s ease"}}>Specifications</p>
-        <div className="spec-grid" style={{marginBottom:14,opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.1s"}}>
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Specifications</p>
+        <div className="spec-grid" style={{marginBottom:14}}>
           {[{emoji:"📏",value:YACHT.sizeFt?YACHT.sizeFt+" ft":"—",label:"Length"},{emoji:"👥",value:YACHT.maxPassengers||"—",label:"Max Guests"},{emoji:"⚓",value:YACHT.brand,label:"Brand"}].map(function(s,i){
             return(<div key={i} style={{padding:"18px 10px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,textAlign:"center",transition:"border-color 0.3s",overflow:"hidden"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}><div style={{fontSize:18,marginBottom:8}}>{s.emoji}</div><div style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:2}}><span style={{...sf(24,700),color:C.s1}}>{s.value}</span></div><div style={{...sf(9,500),color:C.s5,letterSpacing:0.5,textTransform:"uppercase",marginTop:5}}>{s.label}</div></div>);
           })}
         </div>
-        <div className="detail-grid" style={{opacity:specsVis?1:0,transform:specsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.2s"}}>
+        <div className="detail-grid">
           {[{l:"Location",v:YACHT.city||YACHT.location},{l:"Max Passengers",v:YACHT.maxPassengers?YACHT.maxPassengers+" people":null},{l:"Vessel Type",v:YACHT.body}].filter(function(d){return d.v}).map(function(d,i){
             return(<div key={i} style={{padding:"12px 14px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}><div style={{...sf(9,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",marginBottom:4}}>{d.l}</div><div style={{...sf(13,500),color:C.s1,wordBreak:"break-word"}}>{d.v}</div></div>);
           })}
@@ -373,8 +373,8 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       {/* Pricing Table */}
       <div ref={priceRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:priceVis?1:0,transition:"all 0.8s ease"}}>Pricing</p>
-        <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"0 20px",opacity:priceVis?1:0,transform:priceVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Pricing</p>
+        <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"0 20px"}}>
           {[
             {label:"4 hr",price:YACHT.price4hr},
             {label:"6 hr",price:YACHT.price6hr},
@@ -400,8 +400,8 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       {/* What's Included */}
       {YACHT.features.length>0&&<div ref={inclRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:inclVis?1:0,transition:"all 0.8s ease"}}>What's Included</p>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,opacity:inclVis?1:0,transform:inclVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>What's Included</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           {YACHT.features.map(function(item,i){return(
             <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"12px 14px",borderRadius:12,background:C.srf,border:"0.5px solid "+C.bd}}>
               <div style={{width:22,height:22,borderRadius:"50%",background:C.gn+"12",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
@@ -460,10 +460,10 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
         {secDiv}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:revVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
-          <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{YACHT.reviews} reviews</span>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase"}}>From Members</p>
+          <span style={{...sf(12),color:C.s6}}>{YACHT.reviews} reviews</span>
         </div>
-        <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+        <div className="rev-row">
           {REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(<div key={i} style={{width:320,minWidth:280,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
               <div style={{width:32,height:32,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(14,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
@@ -479,11 +479,11 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Reserve</p>
-          <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>Ready to charter<br/>the {YACHT.name}?</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred your dates and we'll arrange everything. Captain, crew, and open water.</p>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
-          <p style={{...sf(12),color:C.s6,marginTop:20,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>Captain included · Fuel included · 24/7 concierge</p>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20}}>Reserve</p>
+          <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1}}>Ready to charter<br/>the {YACHT.name}?</h2>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36}}>Tell Alfred your dates and we'll arrange everything. Captain, crew, and open water.</p>
+          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
+          <p style={{...sf(12),color:C.s6,marginTop:20}}>Captain included · Fuel included · 24/7 concierge</p>
         </div>
       </section>
 
