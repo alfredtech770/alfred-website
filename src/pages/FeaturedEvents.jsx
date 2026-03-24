@@ -187,8 +187,8 @@ export default function FeaturedEvents(){
 
         {/* CTA */}
         <div style={{padding:"16px 24px 4px",display:"flex",justifyContent:"center"}}>
-          <button onClick={function(){openWA(cur.waMsg)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",borderRadius:14,background:C.s1,border:"none",cursor:"pointer",...sf(13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-            Request Access <span style={{fontSize:18,fontWeight:300}}>+</span>
+          <button onClick={function(){nav("/events/"+cur.slug)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",borderRadius:14,background:C.s1,border:"none",cursor:"pointer",...sf(13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+            View Experience <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
 
