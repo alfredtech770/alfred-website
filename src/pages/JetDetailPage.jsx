@@ -172,36 +172,147 @@ function CabinSVG(p){
   );
 }
 
-var J={
+var JETS={
+"global-7500":{
   name:"Bombardier Global 7500",tagline:"VistaJet's flagship. Four living spaces. Permanent stateroom.",
   type:"Ultra Long Range",from:"$25,000/hr",
   imgs:["https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80","https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=900&q=80"],
-  pax:19,range:"14,260 km",speed:"Mach 0.925",maxSpeed:"Mach 0.925 (1,142 km/h)",ceiling:"51,000 ft",
+  pax:19,range:"14,260 km",speed:"Mach 0.925",ceiling:"51,000 ft",
   engine:"2× GE Passport",cabin:"6'2\" tall · 8'0\" wide · 54 ft long",
-  baggage:"195 cu ft",wifi:"Ka-band high-speed",entertainment:"40\" 4K display · Surround sound · Bluetooth",
   rating:4.9,reviewCount:36,
-  alfredNote:"The Global 7500 is the reason VistaJet exists at this level. Four distinct living spaces — use the forward club for meetings, the mid-cabin for dining, the entertainment zone for films, and the permanent stateroom with closing door for sleep. At 4,500 ft cabin altitude at 45,000 ft cruise, you land feeling like you haven't flown. Request the full dining service 24 hours ahead — it's restaurant-quality.",
+  alfredNote:"The Global 7500 is the reason VistaJet exists at this level. Four distinct living spaces — use the forward club for meetings, the mid-cabin for dining, the entertainment zone for films, and the permanent stateroom with closing door for sleep. At 4,500 ft cabin altitude at 45,000 ft cruise, you land feeling like you haven't flown.",
   alfredTip:"Empty legs are frequently available on the MIA→NYC and CDG→LBG routes. Ask Alfred — we can save you up to 60%.",
   included:["Dedicated crew (2 pilots + flight attendant)","Custom Dior amenity kits","Full catering & premium beverages","Ground transportation coordination","Ka-band Wi-Fi & satellite phone","Permanent stateroom with lie-flat bed","Full-size lavatory with shower","195 cu ft baggage hold"],
-  routes:[
-    {from:"Miami",to:"Paris",time:"~9 hrs",est:"$225,000"},
-    {from:"Miami",to:"New York",time:"~3 hrs",est:"$75,000"},
-    {from:"Paris",to:"Dubai",time:"~7 hrs",est:"$175,000"},
-    {from:"New York",to:"London",time:"~7.5 hrs",est:"$187,500"},
-    {from:"Miami",to:"Ibiza",time:"~10 hrs",est:"$250,000"},
-    {from:"Paris",to:"Nice",time:"~1.5 hrs",est:"$37,500"},
-  ],
-  specs:[
-    {l:"Range",v:"14,260 km / 7,700 nmi"},{l:"Max Speed",v:"Mach 0.925"},{l:"Ceiling",v:"51,000 ft"},
-    {l:"Engine",v:"2× GE Passport"},{l:"Passengers",v:"Up to 19 (8 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},
-    {l:"Cabin Height",v:"6 ft 2 in"},{l:"Cabin Width",v:"8 ft 0 in"},{l:"Cabin Length",v:"54 ft"},
-    {l:"Baggage",v:"195 cu ft"},{l:"Wi-Fi",v:"Ka-band high-speed"},{l:"Cabin Altitude",v:"4,500 ft at FL450"},
-  ],
-  reviews:[
-    {name:"Robert C.",tier:"Noir",rating:5,text:"MIA to CDG, 9 hours flat. Slept in the stateroom, woke up to espresso and croissants. Alfred handled ground transport on both ends. VistaJet's silver livery is unmistakable on the tarmac.",date:"2 weeks ago"},
-    {name:"Jonathan W.",tier:"Black",rating:5,text:"Booked an empty leg NYC to Miami — 60% off. The Global 7500 cabin is unmatched. Four zones, full shower, Dior amenity kit. This is the benchmark.",date:"1 month ago"},
-    {name:"Sarah K.",tier:"Member",rating:5,text:"Team offsite: 12 of us flew Miami to Aspen. Used the forward cabin for a board meeting mid-flight. Catering was restaurant-quality. Never flying commercial again.",date:"3 weeks ago"},
-  ],
+  routes:[{from:"Miami",to:"Paris",time:"~9 hrs",est:"$225,000"},{from:"Miami",to:"New York",time:"~3 hrs",est:"$75,000"},{from:"Paris",to:"Dubai",time:"~7 hrs",est:"$175,000"},{from:"New York",to:"London",time:"~7.5 hrs",est:"$187,500"},{from:"Miami",to:"Ibiza",time:"~10 hrs",est:"$250,000"},{from:"Paris",to:"Nice",time:"~1.5 hrs",est:"$37,500"}],
+  specs:[{l:"Range",v:"14,260 km / 7,700 nmi"},{l:"Max Speed",v:"Mach 0.925"},{l:"Ceiling",v:"51,000 ft"},{l:"Engine",v:"2× GE Passport"},{l:"Passengers",v:"Up to 19 (8 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},{l:"Cabin Height",v:"6 ft 2 in"},{l:"Cabin Width",v:"8 ft 0 in"},{l:"Cabin Length",v:"54 ft"},{l:"Baggage",v:"195 cu ft"},{l:"Wi-Fi",v:"Ka-band high-speed"},{l:"Cabin Altitude",v:"4,500 ft at FL450"}],
+  reviews:[{name:"Robert C.",tier:"Noir",rating:5,text:"MIA to CDG, 9 hours flat. Slept in the stateroom, woke up to espresso and croissants. Alfred handled ground transport on both ends.",date:"2 weeks ago"},{name:"Jonathan W.",tier:"Black",rating:5,text:"Booked an empty leg NYC to Miami — 60% off. The Global 7500 cabin is unmatched. Four zones, full shower, Dior amenity kit.",date:"1 month ago"},{name:"Sarah K.",tier:"Member",rating:5,text:"Team offsite: 12 of us flew Miami to Aspen. Used the forward cabin for a board meeting mid-flight. Catering was restaurant-quality.",date:"3 weeks ago"}],
+},
+"global-6000":{
+  name:"Bombardier Global 6000",tagline:"Intercontinental workhorse. Three cabin zones.",
+  type:"Long Range",from:"$20,000/hr",
+  imgs:["https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80","https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=900&q=80"],
+  pax:17,range:"11,112 km",speed:"Mach 0.89",ceiling:"51,000 ft",
+  engine:"2× Rolls-Royce BR710",cabin:"6'1\" tall · 7'11\" wide · 48 ft long",
+  rating:4.8,reviewCount:28,
+  alfredNote:"The Global 6000 delivers serious intercontinental range with three distinct cabin zones. Perfect for transatlantic missions where you need a workspace forward, a lounge mid-cabin, and a private suite aft. The wide-body cabin means you can walk the aisle without hunching.",
+  alfredTip:"Popular on the NYC→LON and MIA→CDG corridors. Ask about positioning flights — often available at significant discounts.",
+  included:["Dedicated crew (2 pilots + flight attendant)","Premium catering & beverages","Ground transportation coordination","Ka-band Wi-Fi & satellite phone","Three-zone cabin layout","Lie-flat sleeping for 8","Full-size lavatory","170 cu ft baggage hold"],
+  routes:[{from:"New York",to:"London",time:"~7 hrs",est:"$140,000"},{from:"Miami",to:"Paris",time:"~9 hrs",est:"$180,000"},{from:"Los Angeles",to:"Tokyo",time:"~12 hrs",est:"$240,000"},{from:"Miami",to:"New York",time:"~2.5 hrs",est:"$50,000"},{from:"London",to:"Dubai",time:"~7 hrs",est:"$140,000"},{from:"Paris",to:"Moscow",time:"~4 hrs",est:"$80,000"}],
+  specs:[{l:"Range",v:"11,112 km / 6,000 nmi"},{l:"Max Speed",v:"Mach 0.89"},{l:"Ceiling",v:"51,000 ft"},{l:"Engine",v:"2× Rolls-Royce BR710"},{l:"Passengers",v:"Up to 17 (8 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},{l:"Cabin Height",v:"6 ft 1 in"},{l:"Cabin Width",v:"7 ft 11 in"},{l:"Cabin Length",v:"48 ft"},{l:"Baggage",v:"170 cu ft"},{l:"Wi-Fi",v:"Ka-band high-speed"},{l:"Cabin Altitude",v:"5,680 ft at FL410"}],
+  reviews:[{name:"David L.",tier:"Noir",rating:5,text:"NYC to London direct, smooth as glass. Three cabin zones gave our team private meeting space and rest area. Landed ready for the morning session.",date:"1 month ago"},{name:"Elena R.",tier:"Black",rating:5,text:"Regularly fly the Global 6000 for transatlantic trips. The range and comfort combination is hard to beat at this price point.",date:"2 weeks ago"},{name:"Marcus T.",tier:"Member",rating:4,text:"Excellent aircraft for coast-to-coast with room to spare. The cabin width makes all the difference on longer flights.",date:"3 weeks ago"}],
+},
+"global-5000":{
+  name:"Bombardier Global 5000",tagline:"Transatlantic range. Wide-body comfort.",
+  type:"Long Range",from:"$18,000/hr",
+  imgs:["https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=900&q=80"],
+  pax:16,range:"9,630 km",speed:"Mach 0.89",ceiling:"51,000 ft",
+  engine:"2× Rolls-Royce BR710",cabin:"6'1\" tall · 7'11\" wide · 42 ft long",
+  rating:4.7,reviewCount:22,
+  alfredNote:"The Global 5000 offers genuine transatlantic capability at a more accessible price point. Same wide-body cabin cross-section as its bigger siblings, with three living areas — forward club for work, mid lounge for relaxation, and aft rest area for sleep.",
+  alfredTip:"The sweet spot for Atlantic crossings when the 7500 isn't available. Often positioned in the Northeast — ask about one-way availability.",
+  included:["Dedicated crew (2 pilots + flight attendant)","Premium catering & beverages","Ground transportation coordination","High-speed Wi-Fi","Three-zone cabin layout","Lie-flat sleeping for 6","Full lavatory","150 cu ft baggage hold"],
+  routes:[{from:"New York",to:"London",time:"~7.5 hrs",est:"$135,000"},{from:"Miami",to:"Bermuda",time:"~2.5 hrs",est:"$45,000"},{from:"Los Angeles",to:"New York",time:"~5 hrs",est:"$90,000"},{from:"Paris",to:"Marrakech",time:"~3.5 hrs",est:"$63,000"},{from:"Miami",to:"Cancun",time:"~2 hrs",est:"$36,000"},{from:"London",to:"Nice",time:"~2 hrs",est:"$36,000"}],
+  specs:[{l:"Range",v:"9,630 km / 5,200 nmi"},{l:"Max Speed",v:"Mach 0.89"},{l:"Ceiling",v:"51,000 ft"},{l:"Engine",v:"2× Rolls-Royce BR710"},{l:"Passengers",v:"Up to 16 (6 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},{l:"Cabin Height",v:"6 ft 1 in"},{l:"Cabin Width",v:"7 ft 11 in"},{l:"Cabin Length",v:"42 ft"},{l:"Baggage",v:"150 cu ft"},{l:"Wi-Fi",v:"Ka-band high-speed"},{l:"Cabin Altitude",v:"5,680 ft at FL410"}],
+  reviews:[{name:"Thomas B.",tier:"Black",rating:5,text:"Flew Miami to London nonstop. The wide cabin cross-section makes it feel bigger than competitors in the same class. Very comfortable overnight crossing.",date:"1 month ago"},{name:"Claudia M.",tier:"Member",rating:4,text:"Great transatlantic option. Cabin is quiet and well-appointed. The crew was exceptional — personalized everything down to the pillow firmness.",date:"2 weeks ago"},{name:"James F.",tier:"Noir",rating:5,text:"My go-to for NYC to Europe runs. Reliable, comfortable, and the price-to-range ratio is excellent.",date:"3 weeks ago"}],
+},
+"challenger-850":{
+  name:"Bombardier Challenger 850",tagline:"Widest cabin in class. Conference to bedroom.",
+  type:"Large Cabin",from:"$16,000/hr",
+  imgs:["https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80"],
+  pax:14,range:"5,230 km",speed:"Mach 0.85",ceiling:"41,000 ft",
+  engine:"2× GE CF34-3B1",cabin:"6'1\" tall · 8'2\" wide · 48 ft long",
+  rating:4.7,reviewCount:19,
+  alfredNote:"The Challenger 850 is the widest cabin you'll find in its class — wider than many heavy jets. Based on the CRJ airframe, it gives you airliner-level cabin volume at a fraction of the cost. Three zones: club seating forward, a social lounge mid-cabin, and a full bedroom aft.",
+  alfredTip:"Ideal for groups of 8-14 heading to the Caribbean or coast-to-coast. Ask about group pricing — it's competitive with first class per seat.",
+  included:["Dedicated crew (2 pilots + flight attendant)","Full catering & bar service","Ground transportation coordination","Wi-Fi connectivity","Three-zone cabin with bedroom","Widest-in-class cabin","Full lavatory","Generous baggage hold"],
+  routes:[{from:"Miami",to:"Aspen",time:"~4.5 hrs",est:"$72,000"},{from:"New York",to:"Miami",time:"~3 hrs",est:"$48,000"},{from:"Los Angeles",to:"Las Vegas",time:"~1 hr",est:"$16,000"},{from:"Miami",to:"Nassau",time:"~1 hr",est:"$16,000"},{from:"Chicago",to:"Cabo",time:"~5 hrs",est:"$80,000"},{from:"New York",to:"Cancun",time:"~4 hrs",est:"$64,000"}],
+  specs:[{l:"Range",v:"5,230 km / 2,825 nmi"},{l:"Max Speed",v:"Mach 0.85"},{l:"Ceiling",v:"41,000 ft"},{l:"Engine",v:"2× GE CF34-3B1"},{l:"Passengers",v:"Up to 14 (6 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},{l:"Cabin Height",v:"6 ft 1 in"},{l:"Cabin Width",v:"8 ft 2 in"},{l:"Cabin Length",v:"48 ft"},{l:"Baggage",v:"200 cu ft"},{l:"Wi-Fi",v:"Air-to-ground"},{l:"Cabin Altitude",v:"8,000 ft at FL370"}],
+  reviews:[{name:"Victoria S.",tier:"Black",rating:5,text:"The cabin width is unreal for this price point. We had 10 people and it never felt crowded. Miami to Aspen was smooth.",date:"3 weeks ago"},{name:"Ryan P.",tier:"Member",rating:4,text:"Perfect for our team retreat — enough space for everyone with a separate meeting area. Great value.",date:"1 month ago"},{name:"Lisa H.",tier:"Noir",rating:5,text:"The bedroom in the back is a game-changer for red-eye flights. Wider than my Global flights somehow.",date:"2 weeks ago"}],
+},
+"challenger-605":{
+  name:"Bombardier Challenger 605",tagline:"Flat floor. Coast-to-coast with margin.",
+  type:"Large Cabin",from:"$15,000/hr",
+  imgs:["https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80"],
+  pax:12,range:"7,408 km",speed:"Mach 0.82",ceiling:"41,000 ft",
+  engine:"2× GE CF34-3B",cabin:"6'1\" tall · 7'11\" wide · 28 ft long",
+  rating:4.8,reviewCount:31,
+  alfredNote:"The Challenger 605 is the gold standard for coast-to-coast business travel. Flat floor throughout, stand-up cabin, and enough range to reach Europe from the East Coast. The two-zone layout gives you club seating for work and a divan for rest.",
+  alfredTip:"One of the most popular charter aircraft in the US. Book early for peak weekends — Aspen, Nantucket, and Sun Valley fill fast.",
+  included:["Dedicated crew (2 pilots + flight attendant)","Premium catering & beverages","Ground transportation coordination","Wi-Fi & entertainment system","Club seating for 8","Aft divan/berthing","Full galley","115 cu ft baggage hold"],
+  routes:[{from:"New York",to:"Los Angeles",time:"~5.5 hrs",est:"$82,500"},{from:"Miami",to:"Aspen",time:"~4 hrs",est:"$60,000"},{from:"Teterboro",to:"Nantucket",time:"~1 hr",est:"$15,000"},{from:"Chicago",to:"Miami",time:"~3 hrs",est:"$45,000"},{from:"New York",to:"Bermuda",time:"~2.5 hrs",est:"$37,500"},{from:"Los Angeles",to:"Cabo",time:"~2.5 hrs",est:"$37,500"}],
+  specs:[{l:"Range",v:"7,408 km / 4,000 nmi"},{l:"Max Speed",v:"Mach 0.82"},{l:"Ceiling",v:"41,000 ft"},{l:"Engine",v:"2× GE CF34-3B"},{l:"Passengers",v:"Up to 12 (4 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},{l:"Cabin Height",v:"6 ft 1 in"},{l:"Cabin Width",v:"7 ft 11 in"},{l:"Cabin Length",v:"28 ft"},{l:"Baggage",v:"115 cu ft"},{l:"Wi-Fi",v:"Air-to-ground"},{l:"Cabin Altitude",v:"7,900 ft at FL410"}],
+  reviews:[{name:"Michael K.",tier:"Noir",rating:5,text:"My go-to for NYC to LA. Flat floor, stand-up cabin, arrives before you finish your second espresso. The 605 just works.",date:"1 week ago"},{name:"Andrew T.",tier:"Black",rating:5,text:"Chartered for a Teterboro to Aspen ski trip. Eight of us fit comfortably with all our gear. Alfred even arranged the SUV at the FBO.",date:"2 weeks ago"},{name:"Natalie D.",tier:"Member",rating:4,text:"Solid coast-to-coast option. The divan in the back is perfect for napping on red-eye flights.",date:"1 month ago"}],
+},
+"challenger-350":{
+  name:"Bombardier Challenger 350",tagline:"Best-in-class super midsize. Standing cabin.",
+  type:"Super Midsize",from:"$15,000/hr",
+  imgs:["https://images.unsplash.com/photo-1559589688-6ba6beafe1e9?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=900&q=80"],
+  pax:10,range:"5,926 km",speed:"Mach 0.83",ceiling:"45,000 ft",
+  engine:"2× Honeywell HTF7350",cabin:"6'0\" tall · 7'2\" wide · 25 ft long",
+  rating:4.8,reviewCount:42,
+  alfredNote:"The Challenger 350 is the world's best-selling super midsize jet for good reason. Standing cabin height, flat floor, and enough range for coast-to-coast with reserves. It punches well above its weight class — you get big-jet comfort at midsize economics.",
+  alfredTip:"Best value for groups of 4-8 on domestic routes. Ask about empty legs on the TEB→PBI corridor — they pop up weekly.",
+  included:["Dedicated crew (2 pilots)","Premium catering & beverages","Ground transportation coordination","Wi-Fi connectivity","Club seating for 8-10","Refreshment center","Full lavatory","106 cu ft baggage hold"],
+  routes:[{from:"Teterboro",to:"Palm Beach",time:"~2.5 hrs",est:"$37,500"},{from:"Los Angeles",to:"New York",time:"~5 hrs",est:"$75,000"},{from:"Miami",to:"Nassau",time:"~1 hr",est:"$15,000"},{from:"Chicago",to:"Aspen",time:"~3 hrs",est:"$45,000"},{from:"Dallas",to:"Las Vegas",time:"~3 hrs",est:"$45,000"},{from:"Atlanta",to:"Cancun",time:"~3 hrs",est:"$45,000"}],
+  specs:[{l:"Range",v:"5,926 km / 3,200 nmi"},{l:"Max Speed",v:"Mach 0.83"},{l:"Ceiling",v:"45,000 ft"},{l:"Engine",v:"2× Honeywell HTF7350"},{l:"Passengers",v:"Up to 10"},{l:"Crew",v:"2 pilots"},{l:"Cabin Height",v:"6 ft 0 in"},{l:"Cabin Width",v:"7 ft 2 in"},{l:"Cabin Length",v:"25 ft"},{l:"Baggage",v:"106 cu ft"},{l:"Wi-Fi",v:"Air-to-ground"},{l:"Cabin Altitude",v:"4,850 ft at FL450"}],
+  reviews:[{name:"Chris W.",tier:"Black",rating:5,text:"The 350 is my workhorse. TEB to PBI every other week — it's faster than commercial door-to-door and the cabin is surprisingly spacious.",date:"1 week ago"},{name:"Sophia L.",tier:"Member",rating:5,text:"First time chartering. The Challenger 350 exceeded every expectation. Standing cabin, great food, landed refreshed.",date:"3 weeks ago"},{name:"Peter J.",tier:"Noir",rating:4,text:"Excellent for domestic missions. Not quite as wide as the 605 but the range and performance make up for it.",date:"2 weeks ago"}],
+},
+"falcon-7x":{
+  name:"Dassault Falcon 7X",tagline:"Trijet. Whisper-quiet. Short-field capable.",
+  type:"Long Range",from:"$18,500/hr",
+  imgs:["https://images.unsplash.com/photo-1583396082781-aa44e665ee8f?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80","https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=900&q=80"],
+  pax:16,range:"11,019 km",speed:"Mach 0.90",ceiling:"51,000 ft",
+  engine:"3× Pratt & Whitney PW307A",cabin:"6'2\" tall · 7'8\" wide · 39 ft long",
+  rating:4.9,reviewCount:24,
+  alfredNote:"The Falcon 7X is engineering art. Three engines give you the safety margin to fly routes other jets can't — over water, into challenging airports, in any weather. The cabin is whisper-quiet thanks to Dassault's aerodynamics. It can land at airports like St. Barth's and Lugano that most large-cabin jets can't touch.",
+  alfredTip:"The short-field capability is the hidden gem. Ask about St. Barth's, Aspen, and European mountain airports — the 7X handles them all.",
+  included:["Dedicated crew (2 pilots + flight attendant)","Gourmet catering & wine selection","Ground transportation coordination","Ka-band Wi-Fi","Three-zone cabin layout","Lie-flat sleeping for 6","Full galley & lavatory","140 cu ft baggage hold"],
+  routes:[{from:"New York",to:"Paris",time:"~7.5 hrs",est:"$138,750"},{from:"Miami",to:"St. Barth's",time:"~3 hrs",est:"$55,500"},{from:"London",to:"Moscow",time:"~4 hrs",est:"$74,000"},{from:"Paris",to:"Dubai",time:"~7 hrs",est:"$129,500"},{from:"Geneva",to:"Nice",time:"~1 hr",est:"$18,500"},{from:"New York",to:"Aspen",time:"~4.5 hrs",est:"$83,250"}],
+  specs:[{l:"Range",v:"11,019 km / 5,950 nmi"},{l:"Max Speed",v:"Mach 0.90"},{l:"Ceiling",v:"51,000 ft"},{l:"Engine",v:"3× Pratt & Whitney PW307A"},{l:"Passengers",v:"Up to 16 (6 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},{l:"Cabin Height",v:"6 ft 2 in"},{l:"Cabin Width",v:"7 ft 8 in"},{l:"Cabin Length",v:"39 ft"},{l:"Baggage",v:"140 cu ft"},{l:"Wi-Fi",v:"Ka-band high-speed"},{l:"Cabin Altitude",v:"4,800 ft at FL410"}],
+  reviews:[{name:"Philippe D.",tier:"Noir",rating:5,text:"The trijet is in a class of its own. Flew into St. Barth's — no other large-cabin jet can do that runway. Absolute confidence in every approach.",date:"2 weeks ago"},{name:"Catherine R.",tier:"Black",rating:5,text:"Quietest cabin I've flown in. Paris to Dubai felt like 3 hours. The Dassault attention to detail is everywhere.",date:"1 month ago"},{name:"Henry M.",tier:"Member",rating:5,text:"The short-field performance sold me. Aspen in winter, no diversions, no stress. The 7X just handles it.",date:"3 weeks ago"}],
+},
+"g450":{
+  name:"Gulfstream G450",tagline:"Iconic Gulfstream. PlaneView cockpit.",
+  type:"Large Cabin",from:"$14,000/hr",
+  imgs:["https://images.unsplash.com/photo-1529832393073-e362750f78b3?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80"],
+  pax:16,range:"8,061 km",speed:"Mach 0.88",ceiling:"45,000 ft",
+  engine:"2× Rolls-Royce Tay 611-8C",cabin:"6'2\" tall · 7'4\" wide · 45 ft long",
+  rating:4.7,reviewCount:34,
+  alfredNote:"The G450 is the quintessential Gulfstream — elegant, reliable, and with that unmistakable oval-window silhouette. Three cabin zones with 14 panoramic windows flood the space with natural light. The PlaneView cockpit is still one of the most advanced in aviation.",
+  alfredTip:"The G450 offers excellent value — Gulfstream quality at a competitive hourly rate. Popular for same-day round trips on the East Coast.",
+  included:["Dedicated crew (2 pilots + flight attendant)","Premium catering & beverages","Ground transportation coordination","Wi-Fi & satellite phone","Three-zone cabin layout","Lie-flat sleeping for 6","Full galley & dual lavatory","169 cu ft baggage hold"],
+  routes:[{from:"Teterboro",to:"Palm Beach",time:"~2.5 hrs",est:"$35,000"},{from:"New York",to:"London",time:"~7.5 hrs",est:"$105,000"},{from:"Miami",to:"Los Angeles",time:"~5 hrs",est:"$70,000"},{from:"Chicago",to:"Cabo",time:"~5 hrs",est:"$70,000"},{from:"Dallas",to:"New York",time:"~3.5 hrs",est:"$49,000"},{from:"Atlanta",to:"Bermuda",time:"~3 hrs",est:"$42,000"}],
+  specs:[{l:"Range",v:"8,061 km / 4,353 nmi"},{l:"Max Speed",v:"Mach 0.88"},{l:"Ceiling",v:"45,000 ft"},{l:"Engine",v:"2× Rolls-Royce Tay 611-8C"},{l:"Passengers",v:"Up to 16 (6 sleeping)"},{l:"Crew",v:"2 pilots + 1 attendant"},{l:"Cabin Height",v:"6 ft 2 in"},{l:"Cabin Width",v:"7 ft 4 in"},{l:"Cabin Length",v:"45 ft"},{l:"Baggage",v:"169 cu ft"},{l:"Wi-Fi",v:"Air-to-ground"},{l:"Cabin Altitude",v:"6,000 ft at FL450"}],
+  reviews:[{name:"Alexandra V.",tier:"Black",rating:5,text:"The Gulfstream oval windows never get old. 14 of them in the G450 — the cabin is bathed in light. TEB to PBI is my weekly commute now.",date:"1 week ago"},{name:"Daniel R.",tier:"Member",rating:4,text:"Solid performer for coast-to-coast. The three-zone layout works well for our team — work up front, relax in back.",date:"3 weeks ago"},{name:"Isabella C.",tier:"Noir",rating:5,text:"The G450 is the Gulfstream sweet spot. Enough range for Europe, enough cabin for a team dinner, and that iconic ramp presence.",date:"2 weeks ago"}],
+},
+"citation-xls":{
+  name:"Cessna Citation XLS+",tagline:"Efficient city-hopper. Short runway performer.",
+  type:"Light Jet",from:"$8,500/hr",
+  imgs:["https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1559589688-6ba6beafe1e9?w=900&q=80","https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=900&q=80"],
+  pax:8,range:"3,441 km",speed:"Mach 0.75",ceiling:"45,000 ft",
+  engine:"2× Pratt & Whitney PW545C",cabin:"5'8\" tall · 5'7\" wide · 18 ft long",
+  rating:4.6,reviewCount:48,
+  alfredNote:"The Citation XLS+ is the most delivered business jet in history for good reason. It's the smart choice for regional hops — efficient, fast to board, and can operate from shorter runways that larger jets can't access. Perfect for 2-4 passengers on trips under 3 hours.",
+  alfredTip:"At $8,500/hr, this is your most cost-effective private option. Great for Teterboro to Nantucket, Palm Beach, or the Hamptons.",
+  included:["Dedicated crew (2 pilots)","Light catering & beverages","Ground transportation coordination","Club seating for 8","Enclosed lavatory","75 cu ft baggage hold"],
+  routes:[{from:"Teterboro",to:"Nantucket",time:"~50 min",est:"$7,100"},{from:"Miami",to:"Key West",time:"~45 min",est:"$6,400"},{from:"New York",to:"Washington DC",time:"~1 hr",est:"$8,500"},{from:"Los Angeles",to:"San Francisco",time:"~1.5 hrs",est:"$12,750"},{from:"Chicago",to:"Detroit",time:"~1 hr",est:"$8,500"},{from:"Dallas",to:"Houston",time:"~1 hr",est:"$8,500"}],
+  specs:[{l:"Range",v:"3,441 km / 1,858 nmi"},{l:"Max Speed",v:"Mach 0.75"},{l:"Ceiling",v:"45,000 ft"},{l:"Engine",v:"2× Pratt & Whitney PW545C"},{l:"Passengers",v:"Up to 8"},{l:"Crew",v:"2 pilots"},{l:"Cabin Height",v:"5 ft 8 in"},{l:"Cabin Width",v:"5 ft 7 in"},{l:"Cabin Length",v:"18 ft"},{l:"Baggage",v:"75 cu ft"},{l:"Wi-Fi",v:"Optional"},{l:"Cabin Altitude",v:"8,000 ft at FL430"}],
+  reviews:[{name:"Mark T.",tier:"Member",rating:5,text:"TEB to ACK in 50 minutes. By the time you'd clear security at JFK, I'm already on the beach. The XLS is the perfect weekend escape jet.",date:"1 week ago"},{name:"Julie F.",tier:"Black",rating:4,text:"Efficient and no-fuss. We use the XLS for all our East Coast day trips. Four of us fit perfectly with luggage.",date:"2 weeks ago"},{name:"Steven B.",tier:"Member",rating:5,text:"Best value in private aviation. Miami to Key West for a dinner and back same night — try doing that on a commercial flight.",date:"1 month ago"}],
+},
+"lineage-1000e":{
+  name:"Embraer Lineage 1000E",tagline:"Five distinct cabin zones. Master suite.",
+  type:"VIP Airliner",from:"$22,000/hr",
+  imgs:["https://images.unsplash.com/photo-1557862921-37829c790f19?w=900&q=80","https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=900&q=85","https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=900&q=80","https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=900&q=80"],
+  pax:19,range:"8,519 km",speed:"Mach 0.82",ceiling:"41,000 ft",
+  engine:"2× GE CF34-10E",cabin:"6'7\" tall · 8'9\" wide · 80 ft long",
+  rating:4.9,reviewCount:12,
+  alfredNote:"The Lineage 1000E is a converted Embraer E-190 airliner — 80 feet of cabin with five distinct zones. Walk-around master suite, full shower, stand-up bar, conference room, and entertainment lounge. This isn't a jet — it's a flying penthouse. Perfect for groups, events, or when you want to make a statement.",
+  alfredTip:"Available for special events and group charters. Ask about the Miami→Ibiza direct route — it's a signature Alfred experience.",
+  included:["Dedicated crew (2 pilots + 2 attendants)","Gourmet catering & sommelier service","Ground transportation coordination","Ka-band Wi-Fi & satellite phone","Five-zone cabin layout","Walk-around master suite with shower","Full stand-up bar","700 cu ft baggage hold"],
+  routes:[{from:"Miami",to:"Ibiza",time:"~10 hrs",est:"$220,000"},{from:"New York",to:"London",time:"~8 hrs",est:"$176,000"},{from:"Los Angeles",to:"New York",time:"~5 hrs",est:"$110,000"},{from:"Miami",to:"Cancun",time:"~2 hrs",est:"$44,000"},{from:"New York",to:"Paris",time:"~8 hrs",est:"$176,000"},{from:"London",to:"Dubai",time:"~7 hrs",est:"$154,000"}],
+  specs:[{l:"Range",v:"8,519 km / 4,600 nmi"},{l:"Max Speed",v:"Mach 0.82"},{l:"Ceiling",v:"41,000 ft"},{l:"Engine",v:"2× GE CF34-10E"},{l:"Passengers",v:"Up to 19 (VIP config)"},{l:"Crew",v:"2 pilots + 2 attendants"},{l:"Cabin Height",v:"6 ft 7 in"},{l:"Cabin Width",v:"8 ft 9 in"},{l:"Cabin Length",v:"80 ft"},{l:"Baggage",v:"700 cu ft"},{l:"Wi-Fi",v:"Ka-band high-speed"},{l:"Cabin Altitude",v:"6,900 ft at FL410"}],
+  reviews:[{name:"Alexander P.",tier:"Noir",rating:5,text:"Chartered the Lineage for a corporate retreat — 16 executives, Miami to Cancun. Five zones meant everyone had space. The bar area was the highlight.",date:"2 weeks ago"},{name:"Victoria H.",tier:"Black",rating:5,text:"The master suite with shower is unlike anything else in the sky. Flew NYC to London and arrived looking like I'd just left a spa.",date:"1 month ago"},{name:"Omar K.",tier:"Noir",rating:5,text:"Used the Lineage for a wedding party — Teterboro to Nassau. 18 guests, full bar, DJ setup in the lounge. Unforgettable.",date:"3 weeks ago"}],
+},
 };
 
 export default function JetDetailPage(){
@@ -214,6 +325,7 @@ export default function JetDetailPage(){
   var [date,setDate]=useState("2026-03-25");
   var [pax,setPax]=useState("6");
   var [tripType,setTripType]=useState("One Way");
+  var J=JETS[slug]||JETS["global-7500"];
   var cabinLayout=CABIN_LAYOUTS[slug]||CABIN_LAYOUTS["global-7500"];
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
@@ -295,7 +407,7 @@ export default function JetDetailPage(){
                 <span style={{...sf(13),color:C.s4}}>{J.range} range</span>
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:6,marginTop:16}}>
-                <span style={{...sf(30,700),color:C.s1}}>$25,000</span>
+                <span style={{...sf(30,700),color:C.s1}}>{J.from.replace("/hr","")}</span>
                 <span style={{...sf(14),color:C.s6}}>/flight hour</span>
               </div>
             </div>
@@ -319,7 +431,7 @@ export default function JetDetailPage(){
               <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
               <div style={{padding:"24px 22px"}}>
                 <div style={{...sf(18,700),color:C.s1,marginBottom:4}}>Request a Quote</div>
-                <div style={{...sf(12),color:C.s5,marginBottom:20}}>From $25,000/hr · {J.name}</div>
+                <div style={{...sf(12),color:C.s5,marginBottom:20}}>From {J.from} · {J.name}</div>
                 {/* Route */}
                 <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"flex-end"}}>
                   <div style={{flex:1}}>
