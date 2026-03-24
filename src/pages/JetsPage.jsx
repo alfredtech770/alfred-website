@@ -7,6 +7,244 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
+/* ═══ AIRPORT DATABASE ═══ */
+var AIRPORTS=[
+  {code:"MIA",city:"Miami",name:"Miami International",country:"US"},
+  {code:"OPF",city:"Miami",name:"Opa-Locka Executive",country:"US"},
+  {code:"FLL",city:"Fort Lauderdale",name:"Fort Lauderdale-Hollywood Intl",country:"US"},
+  {code:"PBI",city:"Palm Beach",name:"Palm Beach International",country:"US"},
+  {code:"TEB",city:"New York",name:"Teterboro",country:"US"},
+  {code:"HPN",city:"New York",name:"Westchester County",country:"US"},
+  {code:"JFK",city:"New York",name:"John F. Kennedy International",country:"US"},
+  {code:"EWR",city:"Newark",name:"Newark Liberty International",country:"US"},
+  {code:"LGA",city:"New York",name:"LaGuardia",country:"US"},
+  {code:"LAX",city:"Los Angeles",name:"Los Angeles International",country:"US"},
+  {code:"VNY",city:"Los Angeles",name:"Van Nuys",country:"US"},
+  {code:"BUR",city:"Burbank",name:"Hollywood Burbank",country:"US"},
+  {code:"SNA",city:"Orange County",name:"John Wayne",country:"US"},
+  {code:"SFO",city:"San Francisco",name:"San Francisco International",country:"US"},
+  {code:"OAK",city:"Oakland",name:"Oakland International",country:"US"},
+  {code:"SJC",city:"San Jose",name:"San Jose International",country:"US"},
+  {code:"ORD",city:"Chicago",name:"O'Hare International",country:"US"},
+  {code:"MDW",city:"Chicago",name:"Midway International",country:"US"},
+  {code:"PWK",city:"Chicago",name:"Chicago Executive",country:"US"},
+  {code:"DFW",city:"Dallas",name:"Dallas/Fort Worth International",country:"US"},
+  {code:"DAL",city:"Dallas",name:"Dallas Love Field",country:"US"},
+  {code:"ADS",city:"Dallas",name:"Addison Airport",country:"US"},
+  {code:"IAH",city:"Houston",name:"George Bush Intercontinental",country:"US"},
+  {code:"HOU",city:"Houston",name:"William P. Hobby",country:"US"},
+  {code:"ATL",city:"Atlanta",name:"Hartsfield-Jackson International",country:"US"},
+  {code:"PDK",city:"Atlanta",name:"DeKalb-Peachtree",country:"US"},
+  {code:"BOS",city:"Boston",name:"Logan International",country:"US"},
+  {code:"BED",city:"Boston",name:"Hanscom Field",country:"US"},
+  {code:"DCA",city:"Washington D.C.",name:"Ronald Reagan National",country:"US"},
+  {code:"IAD",city:"Washington D.C.",name:"Dulles International",country:"US"},
+  {code:"SEA",city:"Seattle",name:"Seattle-Tacoma International",country:"US"},
+  {code:"BFI",city:"Seattle",name:"Boeing Field",country:"US"},
+  {code:"DEN",city:"Denver",name:"Denver International",country:"US"},
+  {code:"APA",city:"Denver",name:"Centennial",country:"US"},
+  {code:"LAS",city:"Las Vegas",name:"Harry Reid International",country:"US"},
+  {code:"VGT",city:"Las Vegas",name:"North Las Vegas",country:"US"},
+  {code:"PHX",city:"Phoenix",name:"Phoenix Sky Harbor",country:"US"},
+  {code:"SDL",city:"Scottsdale",name:"Scottsdale Airport",country:"US"},
+  {code:"MSP",city:"Minneapolis",name:"Minneapolis-Saint Paul Intl",country:"US"},
+  {code:"DTW",city:"Detroit",name:"Detroit Metropolitan",country:"US"},
+  {code:"MCO",city:"Orlando",name:"Orlando International",country:"US"},
+  {code:"TPA",city:"Tampa",name:"Tampa International",country:"US"},
+  {code:"RSW",city:"Fort Myers",name:"Southwest Florida Intl",country:"US"},
+  {code:"ASE",city:"Aspen",name:"Aspen/Pitkin County",country:"US"},
+  {code:"EGE",city:"Vail",name:"Eagle County Regional",country:"US"},
+  {code:"MVY",city:"Martha's Vineyard",name:"Martha's Vineyard",country:"US"},
+  {code:"ACK",city:"Nantucket",name:"Nantucket Memorial",country:"US"},
+  {code:"SXM",city:"St. Maarten",name:"Princess Juliana Intl",country:"Caribbean"},
+  {code:"NAS",city:"Nassau",name:"Lynden Pindling Intl",country:"Bahamas"},
+  {code:"PLS",city:"Turks & Caicos",name:"Providenciales Intl",country:"Caribbean"},
+  {code:"MBJ",city:"Montego Bay",name:"Sangster International",country:"Jamaica"},
+  {code:"CUN",city:"Cancun",name:"Cancun International",country:"Mexico"},
+  {code:"SJD",city:"Cabo San Lucas",name:"Los Cabos International",country:"Mexico"},
+  {code:"PVR",city:"Puerto Vallarta",name:"Gustavo Diaz Ordaz Intl",country:"Mexico"},
+  {code:"MEX",city:"Mexico City",name:"Benito Juarez International",country:"Mexico"},
+  {code:"TLC",city:"Toluca",name:"Toluca International",country:"Mexico"},
+  {code:"CDG",city:"Paris",name:"Charles de Gaulle",country:"France"},
+  {code:"LBG",city:"Paris",name:"Le Bourget",country:"France"},
+  {code:"NCE",city:"Nice",name:"Nice Côte d'Azur",country:"France"},
+  {code:"MRS",city:"Marseille",name:"Marseille Provence",country:"France"},
+  {code:"LHR",city:"London",name:"Heathrow",country:"UK"},
+  {code:"LTN",city:"London",name:"Luton",country:"UK"},
+  {code:"STN",city:"London",name:"Stansted",country:"UK"},
+  {code:"LCY",city:"London",name:"London City",country:"UK"},
+  {code:"BQH",city:"London",name:"Biggin Hill",country:"UK"},
+  {code:"FAB",city:"London",name:"Farnborough",country:"UK"},
+  {code:"MAN",city:"Manchester",name:"Manchester",country:"UK"},
+  {code:"EDI",city:"Edinburgh",name:"Edinburgh",country:"UK"},
+  {code:"GVA",city:"Geneva",name:"Geneva",country:"Switzerland"},
+  {code:"ZRH",city:"Zurich",name:"Zurich",country:"Switzerland"},
+  {code:"FCO",city:"Rome",name:"Leonardo da Vinci–Fiumicino",country:"Italy"},
+  {code:"CIA",city:"Rome",name:"Ciampino",country:"Italy"},
+  {code:"MXP",city:"Milan",name:"Malpensa",country:"Italy"},
+  {code:"LIN",city:"Milan",name:"Linate",country:"Italy"},
+  {code:"VCE",city:"Venice",name:"Marco Polo",country:"Italy"},
+  {code:"NAP",city:"Naples",name:"Naples International",country:"Italy"},
+  {code:"OLB",city:"Sardinia",name:"Olbia Costa Smeralda",country:"Italy"},
+  {code:"AGP",city:"Malaga",name:"Malaga-Costa del Sol",country:"Spain"},
+  {code:"BCN",city:"Barcelona",name:"Barcelona-El Prat",country:"Spain"},
+  {code:"MAD",city:"Madrid",name:"Adolfo Suarez Madrid-Barajas",country:"Spain"},
+  {code:"IBZ",city:"Ibiza",name:"Ibiza",country:"Spain"},
+  {code:"PMI",city:"Palma de Mallorca",name:"Palma de Mallorca",country:"Spain"},
+  {code:"FRA",city:"Frankfurt",name:"Frankfurt am Main",country:"Germany"},
+  {code:"MUC",city:"Munich",name:"Munich",country:"Germany"},
+  {code:"TXL",city:"Berlin",name:"Berlin Brandenburg",country:"Germany"},
+  {code:"AMS",city:"Amsterdam",name:"Schiphol",country:"Netherlands"},
+  {code:"BRU",city:"Brussels",name:"Brussels",country:"Belgium"},
+  {code:"VIE",city:"Vienna",name:"Vienna International",country:"Austria"},
+  {code:"LIS",city:"Lisbon",name:"Humberto Delgado",country:"Portugal"},
+  {code:"FAO",city:"Faro",name:"Faro",country:"Portugal"},
+  {code:"ATH",city:"Athens",name:"Eleftherios Venizelos",country:"Greece"},
+  {code:"JMK",city:"Mykonos",name:"Mykonos",country:"Greece"},
+  {code:"JTR",city:"Santorini",name:"Santorini (Thira)",country:"Greece"},
+  {code:"SKG",city:"Thessaloniki",name:"Makedonia",country:"Greece"},
+  {code:"DUB",city:"Dublin",name:"Dublin",country:"Ireland"},
+  {code:"DXB",city:"Dubai",name:"Dubai International",country:"UAE"},
+  {code:"DWC",city:"Dubai",name:"Al Maktoum International",country:"UAE"},
+  {code:"AUH",city:"Abu Dhabi",name:"Zayed International",country:"UAE"},
+  {code:"DOH",city:"Doha",name:"Hamad International",country:"Qatar"},
+  {code:"RUH",city:"Riyadh",name:"King Khalid International",country:"Saudi Arabia"},
+  {code:"JED",city:"Jeddah",name:"King Abdulaziz International",country:"Saudi Arabia"},
+  {code:"TLV",city:"Tel Aviv",name:"Ben Gurion International",country:"Israel"},
+  {code:"IST",city:"Istanbul",name:"Istanbul Airport",country:"Turkey"},
+  {code:"CAI",city:"Cairo",name:"Cairo International",country:"Egypt"},
+  {code:"CMN",city:"Casablanca",name:"Mohammed V International",country:"Morocco"},
+  {code:"RAK",city:"Marrakech",name:"Menara",country:"Morocco"},
+  {code:"CPT",city:"Cape Town",name:"Cape Town International",country:"South Africa"},
+  {code:"JNB",city:"Johannesburg",name:"O.R. Tambo International",country:"South Africa"},
+  {code:"NRT",city:"Tokyo",name:"Narita International",country:"Japan"},
+  {code:"HND",city:"Tokyo",name:"Haneda",country:"Japan"},
+  {code:"HKG",city:"Hong Kong",name:"Hong Kong International",country:"China"},
+  {code:"PVG",city:"Shanghai",name:"Pudong International",country:"China"},
+  {code:"PEK",city:"Beijing",name:"Capital International",country:"China"},
+  {code:"SIN",city:"Singapore",name:"Changi",country:"Singapore"},
+  {code:"ICN",city:"Seoul",name:"Incheon International",country:"South Korea"},
+  {code:"BKK",city:"Bangkok",name:"Suvarnabhumi",country:"Thailand"},
+  {code:"SYD",city:"Sydney",name:"Kingsford Smith",country:"Australia"},
+  {code:"MEL",city:"Melbourne",name:"Melbourne",country:"Australia"},
+  {code:"YYZ",city:"Toronto",name:"Pearson International",country:"Canada"},
+  {code:"YUL",city:"Montreal",name:"Trudeau International",country:"Canada"},
+  {code:"YVR",city:"Vancouver",name:"Vancouver International",country:"Canada"},
+  {code:"GRU",city:"Sao Paulo",name:"Guarulhos International",country:"Brazil"},
+  {code:"GIG",city:"Rio de Janeiro",name:"Galeao International",country:"Brazil"},
+  {code:"EZE",city:"Buenos Aires",name:"Ministro Pistarini",country:"Argentina"},
+  {code:"BOG",city:"Bogota",name:"El Dorado International",country:"Colombia"},
+  {code:"SCL",city:"Santiago",name:"Arturo Merino Benitez",country:"Chile"},
+  {code:"LIM",city:"Lima",name:"Jorge Chavez International",country:"Peru"},
+  {code:"PTY",city:"Panama City",name:"Tocumen International",country:"Panama"},
+  {code:"BDA",city:"Bermuda",name:"L.F. Wade International",country:"Bermuda"},
+  {code:"AUA",city:"Aruba",name:"Queen Beatrix International",country:"Aruba"},
+  {code:"SBH",city:"St. Barts",name:"Gustaf III",country:"Caribbean"},
+  {code:"EIS",city:"Tortola",name:"Terrance B. Lettsome Intl",country:"BVI"},
+  {code:"ANU",city:"Antigua",name:"V.C. Bird International",country:"Antigua"},
+  {code:"BGI",city:"Barbados",name:"Grantley Adams International",country:"Barbados"},
+  {code:"MNL",city:"Manila",name:"Ninoy Aquino International",country:"Philippines"},
+  {code:"DEL",city:"New Delhi",name:"Indira Gandhi International",country:"India"},
+  {code:"BOM",city:"Mumbai",name:"Chhatrapati Shivaji Maharaj Intl",country:"India"},
+  {code:"MLE",city:"Maldives",name:"Velana International",country:"Maldives"},
+  {code:"MBA",city:"Mombasa",name:"Moi International",country:"Kenya"},
+  {code:"NBO",city:"Nairobi",name:"Jomo Kenyatta International",country:"Kenya"},
+  {code:"ADD",city:"Addis Ababa",name:"Bole International",country:"Ethiopia"},
+  {code:"LOS",city:"Lagos",name:"Murtala Muhammed International",country:"Nigeria"},
+  {code:"ACC",city:"Accra",name:"Kotoka International",country:"Ghana"},
+  {code:"CMB",city:"Colombo",name:"Bandaranaike International",country:"Sri Lanka"},
+  {code:"KUL",city:"Kuala Lumpur",name:"KL International",country:"Malaysia"},
+  {code:"DPS",city:"Bali",name:"Ngurah Rai International",country:"Indonesia"},
+  {code:"HNL",city:"Honolulu",name:"Daniel K. Inouye International",country:"US"},
+  {code:"ANC",city:"Anchorage",name:"Ted Stevens International",country:"US"},
+  {code:"SJU",city:"San Juan",name:"Luis Munoz Marin International",country:"Puerto Rico"},
+  {code:"STT",city:"St. Thomas",name:"Cyril E. King",country:"USVI"},
+  {code:"AGC",city:"Pittsburgh",name:"Allegheny County",country:"US"},
+  {code:"PIT",city:"Pittsburgh",name:"Pittsburgh International",country:"US"},
+  {code:"CLE",city:"Cleveland",name:"Cleveland Hopkins",country:"US"},
+  {code:"CMH",city:"Columbus",name:"John Glenn International",country:"US"},
+  {code:"CVG",city:"Cincinnati",name:"Cincinnati/NKY International",country:"US"},
+  {code:"IND",city:"Indianapolis",name:"Indianapolis International",country:"US"},
+  {code:"MKE",city:"Milwaukee",name:"General Mitchell International",country:"US"},
+  {code:"STL",city:"St. Louis",name:"Lambert International",country:"US"},
+  {code:"MCI",city:"Kansas City",name:"Kansas City International",country:"US"},
+  {code:"MSY",city:"New Orleans",name:"Louis Armstrong International",country:"US"},
+  {code:"BNA",city:"Nashville",name:"Nashville International",country:"US"},
+  {code:"MEM",city:"Memphis",name:"Memphis International",country:"US"},
+  {code:"CLT",city:"Charlotte",name:"Charlotte Douglas International",country:"US"},
+  {code:"RDU",city:"Raleigh",name:"Raleigh-Durham International",country:"US"},
+  {code:"JAX",city:"Jacksonville",name:"Jacksonville International",country:"US"},
+  {code:"SAV",city:"Savannah",name:"Savannah/Hilton Head Intl",country:"US"},
+  {code:"PDX",city:"Portland",name:"Portland International",country:"US"},
+  {code:"SLC",city:"Salt Lake City",name:"Salt Lake City International",country:"US"},
+  {code:"ABQ",city:"Albuquerque",name:"Albuquerque Intl Sunport",country:"US"},
+  {code:"AUS",city:"Austin",name:"Austin-Bergstrom International",country:"US"},
+  {code:"SAT",city:"San Antonio",name:"San Antonio International",country:"US"},
+  {code:"SAN",city:"San Diego",name:"San Diego International",country:"US"},
+  {code:"SMO",city:"Santa Monica",name:"Santa Monica Municipal",country:"US"},
+  {code:"SDM",city:"San Diego",name:"Brown Field Municipal",country:"US"},
+];
+
+function AirportSearch(p){
+  var [query,setQuery]=useState("");
+  var [open,setOpen]=useState(false);
+  var [focusIdx,setFocusIdx]=useState(-1);
+  var ref=useRef(null);
+  var inputRef=useRef(null);
+  var listRef=useRef(null);
+
+  /* close on outside click */
+  useEffect(function(){
+    function h(e){if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
+    document.addEventListener("pointerdown",h);
+    return function(){document.removeEventListener("pointerdown",h)}
+  },[]);
+
+  var displayVal=p.value;/* e.g. "Miami (MIA)" */
+  var q=query.toLowerCase().trim();
+  var results=q.length===0?AIRPORTS.slice(0,12):AIRPORTS.filter(function(a){
+    return a.city.toLowerCase().indexOf(q)>-1||a.code.toLowerCase().indexOf(q)>-1||a.name.toLowerCase().indexOf(q)>-1||a.country.toLowerCase().indexOf(q)>-1;
+  }).slice(0,12);
+
+  function pick(a){
+    p.onChange(a.city+" ("+a.code+")");
+    setQuery("");
+    setOpen(false);
+    setFocusIdx(-1);
+  }
+
+  function onKey(e){
+    if(!open)return;
+    if(e.key==="ArrowDown"){e.preventDefault();setFocusIdx(function(i){var n=Math.min(i+1,results.length-1);if(listRef.current&&listRef.current.children[n])listRef.current.children[n].scrollIntoView({block:"nearest"});return n})}
+    else if(e.key==="ArrowUp"){e.preventDefault();setFocusIdx(function(i){var n=Math.max(i-1,0);if(listRef.current&&listRef.current.children[n])listRef.current.children[n].scrollIntoView({block:"nearest"});return n})}
+    else if(e.key==="Enter"&&focusIdx>=0&&focusIdx<results.length){e.preventDefault();pick(results[focusIdx])}
+    else if(e.key==="Escape"){setOpen(false)}
+  }
+
+  return(
+    <div ref={ref} style={{position:"relative"}}>
+      <div onClick={function(){setOpen(true);setTimeout(function(){if(inputRef.current)inputRef.current.focus()},50)}} style={{display:"flex",alignItems:"center",gap:8,padding:"0 14px",height:40,borderRadius:12,background:open?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(open?C.s5:C.bd),cursor:"text",transition:"all 0.3s"}} onMouseEnter={function(e){if(!open)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!open)e.currentTarget.style.borderColor=C.bd}}>
+        {p.icon}
+        {open?<input ref={inputRef} value={query} onChange={function(e){setQuery(e.target.value);setFocusIdx(-1);if(!open)setOpen(true)}} onKeyDown={onKey} placeholder={displayVal} style={{flex:1,background:"none",border:"none",outline:"none",color:C.s1,...sf(11,400),width:"100%"}}/>
+        :<span style={{...sf(11,500),color:C.s1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{displayVal}</span>}
+      </div>
+      {open&&results.length>0&&<div ref={listRef} style={{position:"absolute",top:"100%",left:0,right:0,marginTop:6,borderRadius:14,background:C.el,border:"1px solid "+C.bd,overflowY:"auto",overflowX:"hidden",zIndex:9999,maxHeight:320,boxShadow:"0 16px 48px rgba(0,0,0,0.6)"}}>
+        {results.map(function(a,i){
+          var focused=i===focusIdx;
+          return <div key={a.code} onClick={function(){pick(a)}} style={{padding:"11px 14px",cursor:"pointer",background:focused?"rgba(244,244,245,0.08)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,transition:"background 0.15s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";setFocusIdx(i)}} onMouseLeave={function(e){if(!focused)e.currentTarget.style.background="transparent"}}>
+            <div>
+              <div style={{...sf(13,500),color:C.s1}}>{a.city}<span style={{...sf(11,400),color:C.s5,marginLeft:6}}>({a.code})</span></div>
+              <div style={{...sf(10,400),color:C.s6,marginTop:2}}>{a.name}</div>
+            </div>
+            <span style={{...sf(9,400),color:C.s7,whiteSpace:"nowrap"}}>{a.country}</span>
+          </div>
+        })}
+        {q.length>0&&results.length===0&&<div style={{padding:"16px 14px",textAlign:"center",...sf(12,400),color:C.s6}}>No airports found</div>}
+      </div>}
+    </div>
+  );
+}
+
 var JETS=[
   {name:"Bombardier Global 7500",type:"Ultra Long Range",pax:19,range:"14,260 km",speed:"Mach 0.925",from:"$25,000/hr",img:"https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=600&h=400&fit=crop&q=80",tagline:"Flagship. Four living spaces. Permanent stateroom.",slug:"global-7500",available:true,cabin:"6'2\" tall · 54 ft long",crew:"2 pilots + 1 attendant"},
   {name:"Bombardier Global 6000",type:"Long Range",pax:17,range:"11,112 km",speed:"Mach 0.89",from:"$20,000/hr",img:"https://images.unsplash.com/photo-1569629743817-70d8db6c323b?w=600&h=400&fit=crop&q=80",tagline:"Intercontinental workhorse. Three cabin zones.",slug:"global-6000",available:true,cabin:"6'1\" tall · 48 ft long",crew:"2 pilots + 1 attendant"},
@@ -186,7 +424,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           <div className="search-bar">
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>From</label>
-              <FilterDrop value={from} options={["Miami (MIA)","Paris (CDG)","Paris (LBG)","New York (TEB)","London (LTN)","Dubai (DWC)"]} onChange={setFrom} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>}/>
+              <AirportSearch value={from} onChange={setFrom} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>}/>
             </div>
             {/* Swap */}
             <div style={{display:"flex",alignItems:"flex-end",paddingBottom:4}}>
@@ -196,7 +434,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>To</label>
-              <FilterDrop value={to} options={["Paris (CDG)","Paris (LBG)","Miami (MIA)","New York (TEB)","London (LTN)","Dubai (DWC)","Ibiza (IBZ)","Nice (NCE)"]} onChange={setTo} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
+              <AirportSearch value={to} onChange={setTo} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Date</label>
