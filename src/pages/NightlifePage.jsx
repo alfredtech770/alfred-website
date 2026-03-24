@@ -122,7 +122,7 @@ export default function NightlifePage(){
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
   var filtered=VENUES.filter(function(v){
-    if(city!=="All Cities"&&v.loc!==city)return false;
+    if(city!=="All Cities"){if(city==="Paris"&&v.loc!=="Paris")return false;if(city==="Miami"&&v.loc==="Paris")return false;}
     if(type!=="Type"&&v.type!==type)return false;
     if(vibe!=="Vibe"&&v.vibe!==vibe)return false;
     if(door!=="Door"&&v.door!==door)return false;

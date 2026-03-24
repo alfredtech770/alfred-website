@@ -116,7 +116,7 @@ export default function WellnessPage(){
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;
 
   var filtered=VENUES.filter(function(v){
-    if(city!=="All Cities"&&v.loc!==city)return false;
+    if(city!=="All Cities"){if(city==="Paris"&&v.loc!=="Paris")return false;if(city==="Miami"&&v.loc==="Paris")return false;}
     if(type!=="Type"&&v.type!==type)return false;
     if(treatment!=="Treatment"&&v.treatment!==treatment)return false;
     if(price!=="Price"&&v.price!==price)return false;

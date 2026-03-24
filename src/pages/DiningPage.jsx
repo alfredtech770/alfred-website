@@ -138,13 +138,15 @@ export default function DiningPage(){
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
   /* Dynamic filter options from data */
-  var cities=["All Cities"].concat([...new Set(restaurants.map(function(r){return r.loc}).filter(Boolean))].sort());
+  var cities=["All Cities","Miami","Paris"];
   var cuisines=["Cuisine"].concat([...new Set(restaurants.map(function(r){return r.cuisine}).filter(Boolean))].sort());
   var vibes=["Vibe"].concat([...new Set(restaurants.map(function(r){return r.vibe}).filter(Boolean))].sort());
   var prices=["Price","$","$$","$$$","$$$$"];
 
+  function cityMatch(loc,filter){if(filter==="Paris")return loc==="Paris";return loc!=="Paris"}
+
   var filtered=restaurants.filter(function(r){
-    if(city!=="All Cities"&&r.loc!==city)return false;
+    if(city!=="All Cities"&&!cityMatch(r.loc,city))return false;
     if(cuisine!=="Cuisine"&&r.cuisine!==cuisine)return false;
     if(price!=="Price"&&r.price!==price)return false;
     if(vibe!=="Vibe"&&r.vibe!==vibe)return false;

@@ -187,12 +187,12 @@ export default function YachtsPage(){
 
   /* Dynamic filter options from data */
   var brands=["Brand"].concat([...new Set(yachts.map(function(y){return y.brand}).filter(Boolean))].sort());
-  var locations=["Location"].concat([...new Set(yachts.map(function(y){return y.city||y.location}).filter(Boolean))].sort());
+  var locations=["Location","Miami","Paris"];
 
   /* Filter logic */
   var filtered=yachts.filter(function(y){
     if(brand!=="Brand"&&y.brand!==brand) return false;
-    if(location!=="Location"&&(y.city||y.location)!==location) return false;
+    if(location!=="Location"){if(location==="Paris"&&(y.city||y.location)!=="Paris")return false;if(location==="Miami"&&(y.city||y.location)==="Paris")return false;}
     if(sizeRange==="Under 40 ft"&&(y.size_ft===null||y.size_ft>=40)) return false;
     if(sizeRange==="40–60 ft"&&(y.size_ft===null||y.size_ft<40||y.size_ft>60)) return false;
     if(sizeRange==="60–80 ft"&&(y.size_ft===null||y.size_ft<60||y.size_ft>80)) return false;
