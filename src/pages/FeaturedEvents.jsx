@@ -113,8 +113,14 @@ export default function FeaturedEvents(){
           })}
         </div>
 
-        {/* Image */}
+        {/* Image + Nav arrows */}
         <div style={{height:260,margin:"0 16px",borderRadius:18,overflow:"hidden",position:"relative"}}>
+          {idx>0&&<div onClick={function(){goTo(idx-1)}} style={{position:"absolute",top:"50%",transform:"translateY(-50%)",left:12,width:40,height:40,borderRadius:"50%",background:"rgba(0,0,0,0.45)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:12,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.45)";e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </div>}
+          {idx<EVENTS.length-1&&<div onClick={function(){goTo(idx+1)}} style={{position:"absolute",top:"50%",transform:"translateY(-50%)",right:12,width:40,height:40,borderRadius:"50%",background:"rgba(0,0,0,0.45)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:12,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.45)";e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>}
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
             return <div key={i} style={{position:"absolute",inset:0,opacity:isActive?1:0,transform:isActive?"scale(1)":"scale(1.06)",transition:"opacity 0.9s ease, transform 6s ease",zIndex:isActive?2:1}}>
