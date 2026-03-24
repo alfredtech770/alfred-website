@@ -256,40 +256,36 @@ body::-webkit-scrollbar{width:0}
       {/* Nav */}
       <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
-        <div style={{display:"flex",alignItems:"center",gap:24}}>
-          <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>← Catalog</a>
-          <a href="/catalog/exotic-cars" style={{...sf(11,400),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Cars</a>
-          <a href="/catalog/jets" style={{...sf(11,400),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Jets</a>
-          <span style={{...sf(11,600),color:C.s1,borderBottom:"1px solid "+C.s1,paddingBottom:1}}>Yachts</span>
+        <div style={{display:"flex",alignItems:"center",gap:20}}>
+          <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
+          <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>Yachts</div>
         </div>
       </nav>
 
-      
+      {/* Header */}
+      <div style={{paddingTop:100,paddingBottom:40,textAlign:"center",opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
+        <h1 className="yc-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Yachts</h1>
+        <p style={{...sf(16,400),color:C.s5}}>Charter yachts for the day or week — crewed & ready.</p>
+      </div>
 
-      {/* Filter bar */}
-      <div style={{position:"sticky",top:64,zIndex:50,borderBottom:"1px solid "+C.bd,background:"rgba(10,10,11,0.9)",backdropFilter:"blur(20px) saturate(1.5)"}}>
-        <div style={{maxWidth:1060,margin:"0 auto",padding:"16px 40px",display:"flex",gap:12,alignItems:"center"}}>
+      {/* Filters */}
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
           <div className="filter-row">
             <FilterDrop icon={iconBrand} value={brand} options={brands} onChange={setBrand}/>
             <FilterDrop icon={iconSize} value={sizeRange} options={["Size","Under 40 ft","40–60 ft","60–80 ft","80 ft+"]} onChange={setSizeRange}/>
             <FilterDrop icon={iconPrice} value={priceRange} options={["Price","Under $1,000","$1,000–$3,000","$3,000–$6,000","$6,000+"]} onChange={setPriceRange}/>
             <FilterDrop icon={iconLoc} value={location} options={locations} onChange={setLocation}/>
+            <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
+            <FilterDrop value={sort} options={["Featured","Price: Low","Price: High","Largest","Most Passengers"]} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>
-
-          <div style={{display:"flex",gap:8,alignItems:"center",flexShrink:0,marginLeft:"auto"}}>
-            {activeFilters.length>0&&
-              <div onClick={clearAll} style={{...sf(11,500),color:C.s5,cursor:"pointer",padding:"8px 12px",borderRadius:10,border:"1px solid "+C.bd,transition:"all 0.2s",whiteSpace:"nowrap"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s5}}>
-                Clear {activeFilters.length>0?"("+activeFilters.length+")":""}
-              </div>
-            }
-            <FilterDrop
-              icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg>}
-              value={sort}
-              options={["Featured","Price: Low","Price: High","Largest","Most Passengers"]}
-              onChange={setSort}
-            />
-          </div>
+          <span style={{...sf(12),color:C.s6,flexShrink:0,marginLeft:8}}>{filtered.length} yacht{filtered.length!==1?"s":""}</span>
         </div>
+        {activeFilters.length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:24}}>
+          {activeFilters.map(function(f){return <span key={f} style={{...sf(11,500),color:C.s1,padding:"5px 12px",borderRadius:8,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.1)"}}>{f}</span>})}
+          {activeFilters.length>1&&<span onClick={clearAll} style={{...sf(11,500),color:C.s5,padding:"5px 12px",borderRadius:8,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Clear all</span>}
+        </div>}
       </div>
 
       {/* Grid */}
