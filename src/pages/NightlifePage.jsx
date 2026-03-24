@@ -89,8 +89,8 @@ function VenueCard(p){
       <div style={{padding:"18px 20px 22px"}}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:6}}>
           <div style={{flex:1,minWidth:0}}>
-            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4}}>{v.name}</h3>
-            <p style={{...sf(12),color:C.s5,marginBottom:8}}>{v.tagline}</p>
+            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v.name}</h3>
+            <p style={{...sf(12),color:C.s5,marginBottom:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v.tagline}</p>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>

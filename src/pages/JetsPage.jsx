@@ -80,8 +80,8 @@ function JetCard(p){
       <div style={{padding:"18px 20px 22px"}}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:6}}>
           <div style={{flex:1,minWidth:0}}>
-            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4}}>{j.name}</h3>
-            <p style={{...sf(12),color:C.s5,marginBottom:8}}>{j.tagline}</p>
+            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{j.name}</h3>
+            <p style={{...sf(12),color:C.s5,marginBottom:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{j.tagline}</p>
           </div>
           <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
             <div style={{...sf(16,700),color:C.s1}}>{j.from}</div>
