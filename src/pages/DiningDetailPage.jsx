@@ -231,7 +231,7 @@ export default function DiningDetailPage(){
                 {/* Date */}
                 <div style={{marginBottom:14}}>
                   <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Date</div>
-                  <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={{padding:"10px 12px",borderRadius:10,maxWidth:"100%",background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"}}/>
+                  <input type="date" style={{maxWidth:"100%",boxSizing:"border-box"}} value={date} onChange={function(e){setDate(e.target.value)}} style={{padding:"10px 12px",borderRadius:10,maxWidth:"100%",background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"}}/>
                 </div>
 
                 {/* Time */}
