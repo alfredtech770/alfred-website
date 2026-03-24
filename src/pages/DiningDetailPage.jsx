@@ -67,7 +67,7 @@ export default function DiningDetailPage(){
     reviewCount:_sess.reviews,
     priceLevel:_sess.price,
     avgSpend:_sess.avg,
-    imgs:[_sess.img],
+    imgs:_sess.imgs||[_sess.img].filter(Boolean),
     hours:{lunch:_sess.meal==="Dinner"?"Not served":"12:00 – 2:30 PM",dinner:"7:00 – 10:30 PM",closed:"Check availability"},
     dressCode:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual",
     michelin:_sess.michelin||0,
