@@ -14,8 +14,8 @@ var SB="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Websit
 var EVENTS={
   "monaco-grand-prix":{
     name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",color:"#E11D48",spots:12,
-    hero:SB+"DPPI_00124009_1978.jpg",
-    imgs:[SB+"DPPI_00124009_1978.jpg",SB+"Keinmusik.jpeg",SB+"AlfedHotelCrillionParis.jpeg"],
+    hero:SB+"Monaco%20grand%20prix.jpeg",
+    imgs:[SB+"Monaco%20grand%20prix.jpeg",SB+"Keinmusik.jpeg",SB+"AlfedHotelCrillionParis.jpeg"],
     tagline:"Two private venues on the most famous corner in motorsport",
     desc:"Experience the Monaco Grand Prix from the Swimming Pool chicane — the most iconic corner in Formula 1. Alfred secures two private venues: the Alfred Lounge and the Nobu Terrace. Both overlook the chicane with unobstructed views of the action. Private chef, continuous champagne service, Nobu catering, and capacity for 25 guests per venue. No lanyards, no crowds, no compromises.",
     venue:"The Alfred Lounge · Nobu Terrace · Swimming Pool Chicane",

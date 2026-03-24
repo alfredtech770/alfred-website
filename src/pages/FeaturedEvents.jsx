@@ -9,7 +9,7 @@ var EVENTS=[
    venue:"The Alfred Lounge · Nobu Terrace · Swimming Pool Chicane",
    desc:"Two private venues on the Swimming Pool chicane — the Alfred Lounge and the Nobu Terrace. Private chef, champagne service, Nobu catering, 25 guests per venue.",
    perks:["Alfred Lounge · pool-side chicane view","Nobu Terrace · signature catering","Private chef · continuous service","Black card welcome · no lanyards","Personal highlight reel"],
-   img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg",color:"#E11D48",spots:12},
+   img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Monaco%20grand%20prix.jpeg",color:"#E11D48",spots:12},
   {name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",
    venue:"Track-Side Luxury Suite · Turn 1",
    desc:"Track-side hospitality suite overlooking Turn 1 with direct paddock access. Celebrity after-race parties at LIV, Story, and E11even — all arranged.",
