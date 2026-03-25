@@ -226,7 +226,7 @@ export default function CityPage(){
           </p>
           <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
             <button style={{...sf(14,600),padding:"14px 28px",background:C.gn,color:C.bg,border:"none",borderRadius:12,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.target.style.transform="scale(1.05)"}} onMouseLeave={function(e){e.target.style.transform="scale(1)"}}>Download Alfred App</button>
-            <button style={{...sf(14,600),padding:"14px 28px",background:"transparent",border:"1px solid "+C.bd,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.target.style.borderColor=C.s7}} onMouseLeave={function(e){e.target.style.borderColor=C.bd}}}>Contact on WhatsApp</button>
+            <button style={{...sf(14,600),padding:"14px 28px",background:"transparent",border:"1px solid "+C.bd,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.target.style.borderColor=C.s7}} onMouseLeave={function(e){e.target.style.borderColor=C.bd}}>Contact on WhatsApp</button>
           </div>
         </div>
       </section>
@@ -316,7 +316,7 @@ export default function CityPage(){
           </p>
           <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center"}}>
             <button style={{...sf(14,600),padding:"14px 32px",background:C.gold,color:C.bg,border:"none",borderRadius:12,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.target.style.transform="scale(1.05)"}} onMouseLeave={function(e){e.target.style.transform="scale(1)"}}>Download Alfred App</button>
-            <a href="https://wa.me/+18005273353?text=Hi Alfred, I'd like to book luxury experiences in "+city.name target="_blank" rel="noopener noreferrer" style={{...sf(14,600),padding:"14px 32px",background:"transparent",border:"1px solid "+C.s1,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s",textDecoration:"none",display:"inline-block"}} onMouseEnter={function(e){e.target.style.background=C.s1;e.target.style.color=C.bg}} onMouseLeave={function(e){e.target.style.background="transparent";e.target.style.color=C.s1}}>Message on WhatsApp</a>
+            <a href={"https://wa.me/+18005273353?text=Hi Alfred, I'd like to book luxury experiences in "+city.name} target="_blank" rel="noopener noreferrer" style={{...sf(14,600),padding:"14px 32px",background:"transparent",border:"1px solid "+C.s1,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s",textDecoration:"none",display:"inline-block"}} onMouseEnter={function(e){e.target.style.background=C.s1;e.target.style.color=C.bg}} onMouseLeave={function(e){e.target.style.background="transparent";e.target.style.color=C.s1}}>Message on WhatsApp</a>
           </div>
         </div>
       </section>
