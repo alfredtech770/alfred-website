@@ -43,12 +43,24 @@ var EVENTS=[
 function spotsColor(s){return s<=6?"#FF453A":s<=10?"#FFD60A":"#34C759"}
 function spotsShadow(s){return s<=6?"rgba(255,69,58,0.5)":s<=10?"rgba(255,214,10,0.4)":"rgba(52,199,89,0.4)"}
 
+function useIsMobile(breakpoint){
+  var bp=breakpoint||768;
+  var [mob,setMob]=useState(function(){return typeof window!=="undefined"&&window.innerWidth<=bp});
+  useEffect(function(){
+    function check(){setMob(window.innerWidth<=bp)}
+    window.addEventListener("resize",check);
+    return function(){window.removeEventListener("resize",check)};
+  },[bp]);
+  return mob;
+}
+
 export default function FeaturedEvents(){
   var nav=useNavigate();
   var [idx,setIdx]=useState(0);
   var [entered,setEntered]=useState(false);
   var sectionRef=useRef(null);
   var lastWheel=useRef(0);
+  var mob=useIsMobile(768);
 
   useEffect(function(){
     var el=sectionRef.current;if(!el)return;
@@ -90,7 +102,7 @@ export default function FeaturedEvents(){
   var cur=EVENTS[idx];
 
   return(
-    <section ref={sectionRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px 0",overflow:"hidden"}}>
+    <section ref={sectionRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",padding:mob?"20px 0":"40px 0",overflow:"hidden"}}>
       <style>{`
 @keyframes evtFadeSlideUp{from{opacity:0;transform:translateY(40px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes evtFloatSlow{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
@@ -100,39 +112,39 @@ export default function FeaturedEvents(){
       <div style={{position:"absolute",inset:0,background:C.bg,zIndex:0}}/>
 
       {/* CARD + ARROWS WRAPPER */}
-      <div style={{display:"flex",alignItems:"center",gap:20,zIndex:5,opacity:entered?1:0,transform:entered?"translateY(0) scale(1)":"translateY(40px) scale(0.97)",transition:"all 1s cubic-bezier(0.16,1,0.3,1) 0.3s"}}>
+      <div style={{display:"flex",alignItems:"center",gap:mob?0:20,zIndex:5,opacity:entered?1:0,transform:entered?"translateY(0) scale(1)":"translateY(40px) scale(0.97)",transition:"all 1s cubic-bezier(0.16,1,0.3,1) 0.3s",width:mob?"100%":"auto",justifyContent:"center"}}>
 
-      {/* Left arrow */}
-      <div onClick={function(){if(idx>0)goTo(idx-1)}} style={{width:48,height:48,borderRadius:"50%",background:idx>0?"rgba(255,255,255,0.06)":"transparent",border:idx>0?"1px solid rgba(255,255,255,0.1)":"1px solid transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:idx>0?"pointer":"default",transition:"all 0.3s",opacity:idx>0?1:0.2,flexShrink:0}} onMouseEnter={function(e){if(idx>0){e.currentTarget.style.background="rgba(255,255,255,0.12)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}}} onMouseLeave={function(e){e.currentTarget.style.background=idx>0?"rgba(255,255,255,0.06)":"transparent";e.currentTarget.style.borderColor=idx>0?"rgba(255,255,255,0.1)":"transparent"}}>
+      {/* Left arrow — hidden on mobile */}
+      {!mob&&<div onClick={function(){if(idx>0)goTo(idx-1)}} style={{width:48,height:48,borderRadius:"50%",background:idx>0?"rgba(255,255,255,0.06)":"transparent",border:idx>0?"1px solid rgba(255,255,255,0.1)":"1px solid transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:idx>0?"pointer":"default",transition:"all 0.3s",opacity:idx>0?1:0.2,flexShrink:0}} onMouseEnter={function(e){if(idx>0){e.currentTarget.style.background="rgba(255,255,255,0.12)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}}} onMouseLeave={function(e){e.currentTarget.style.background=idx>0?"rgba(255,255,255,0.06)":"transparent";e.currentTarget.style.borderColor=idx>0?"rgba(255,255,255,0.1)":"transparent"}}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      </div>
+      </div>}
 
       {/* CENTER CARD */}
-      <div style={{width:780,maxWidth:"68vw",borderRadius:28,overflow:"hidden",background:"rgba(24,24,27,0.85)",backdropFilter:"blur(40px) saturate(1.3)",border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 60px 160px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03)",position:"relative",flexShrink:1}}>
+      <div style={{width:mob?"100%":780,maxWidth:mob?"calc(100vw - 32px)":"68vw",borderRadius:mob?22:28,overflow:"hidden",background:"rgba(24,24,27,0.85)",backdropFilter:"blur(40px) saturate(1.3)",border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 60px 160px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03)",position:"relative",flexShrink:1,margin:mob?"0 16px":"0"}}>
         {/* shine line */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",zIndex:10}}/>
 
         {/* Counter */}
-        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:14,padding:"18px 0 0"}}>
-          <span style={{...sf(13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{String(idx+1).padStart(2,"0")}</span>
-          <div style={{width:50,height:2,background:C.bd,borderRadius:1,position:"relative",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:mob?10:14,padding:mob?"14px 0 0":"18px 0 0"}}>
+          <span style={{...sf(mob?11:13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{String(idx+1).padStart(2,"0")}</span>
+          <div style={{width:mob?40:50,height:2,background:C.bd,borderRadius:1,position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",top:0,left:0,height:"100%",width:((idx+1)/EVENTS.length*100)+"%",background:C.s1,borderRadius:1,transition:"width 0.7s cubic-bezier(0.16,1,0.3,1)"}}/>
           </div>
-          <span style={{...sf(13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{"0"+EVENTS.length}</span>
+          <span style={{...sf(mob?11:13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{"0"+EVENTS.length}</span>
         </div>
 
         {/* Name */}
-        <div style={{position:"relative",height:46,margin:"12px 24px 14px",overflow:"hidden"}}>
+        <div style={{position:"relative",height:mob?36:46,margin:mob?"8px 16px 10px":"12px 24px 14px",overflow:"hidden"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
             return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":i<idx?"translateY(-30px)":"translateY(30px)",transition:"all 0.7s cubic-bezier(0.16,1,0.3,1)"}}>
-              <h3 style={{...sf(30,700),letterSpacing:-0.5,lineHeight:1.2,whiteSpace:"nowrap"}}>{evt.name}</h3>
+              <h3 style={{...sf(mob?20:30,700),letterSpacing:-0.5,lineHeight:1.2,whiteSpace:mob?"normal":"nowrap",margin:0}}>{evt.name}</h3>
             </div>
           })}
         </div>
 
         {/* Image */}
-        <div style={{height:260,margin:"0 16px",borderRadius:18,overflow:"hidden",position:"relative"}}>
+        <div style={{height:mob?200:260,margin:mob?"0 10px":"0 16px",borderRadius:mob?14:18,overflow:"hidden",position:"relative"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
             return <div key={i} style={{position:"absolute",inset:0,opacity:isActive?1:0,transform:isActive?"scale(1)":"scale(1.06)",transition:"opacity 0.9s ease, transform 6s ease",zIndex:isActive?2:1}}>
@@ -141,82 +153,79 @@ export default function FeaturedEvents(){
             </div>
           })}
           {/* Tags overlay */}
-          <div style={{position:"absolute",top:16,left:16,display:"flex",gap:8,zIndex:10}}>
-            <div style={{padding:"5px 14px",borderRadius:10,backdropFilter:"blur(8px)",...sf(10,700),letterSpacing:0.8,textTransform:"uppercase",background:cur.color+"30",border:"1px solid "+cur.color+"50",color:cur.color,transition:"all 0.5s"}}>{cur.tag}</div>
-            <div style={{padding:"5px 14px",borderRadius:10,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",...sf(10,500),color:"rgba(255,255,255,0.7)"}}>{cur.date}</div>
+          <div style={{position:"absolute",top:mob?10:16,left:mob?10:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
+            <div style={{padding:mob?"4px 10px":"5px 14px",borderRadius:mob?8:10,backdropFilter:"blur(8px)",...sf(mob?9:10,700),letterSpacing:0.8,textTransform:"uppercase",background:cur.color+"30",border:"1px solid "+cur.color+"50",color:cur.color,transition:"all 0.5s"}}>{cur.tag}</div>
+            <div style={{padding:mob?"4px 10px":"5px 14px",borderRadius:mob?8:10,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",...sf(mob?9:10,500),color:"rgba(255,255,255,0.7)"}}>{cur.date}</div>
           </div>
           {/* Location */}
-          <div style={{position:"absolute",bottom:16,left:16,display:"flex",alignItems:"center",gap:5,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)"}}>
+          <div style={{position:"absolute",bottom:mob?10:16,left:mob?10:16,display:"flex",alignItems:"center",gap:5,zIndex:10,...sf(mob?10:11,500),color:"rgba(255,255,255,0.6)"}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             <span>{cur.location}</span>
           </div>
           {/* Spots */}
-          <div style={{position:"absolute",bottom:16,right:16,display:"flex",alignItems:"center",gap:6,padding:"6px 14px",borderRadius:10,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",zIndex:10,...sf(11,600),transition:"all 0.5s"}}>
+          <div style={{position:"absolute",bottom:mob?10:16,right:mob?10:16,display:"flex",alignItems:"center",gap:6,padding:mob?"4px 10px":"6px 14px",borderRadius:mob?8:10,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",zIndex:10,...sf(mob?10:11,600),transition:"all 0.5s"}}>
             <div style={{width:6,height:6,borderRadius:"50%",background:spotsColor(cur.spots),boxShadow:"0 0 8px "+spotsShadow(cur.spots)}}/>
             <span style={{color:spotsColor(cur.spots)}}>{cur.spots} spots left</span>
           </div>
         </div>
 
         {/* Description */}
-        <div style={{position:"relative",minHeight:56,margin:"14px 24px 0",overflow:"hidden"}}>
+        <div style={{position:"relative",minHeight:mob?48:56,margin:mob?"10px 16px 0":"14px 24px 0",overflow:"hidden"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
-            return <p key={i} style={{...sf(13,400),color:C.s4,lineHeight:1.7,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":"translateY(12px)",transition:"all 0.6s ease",position:i===0&&isActive?"relative":"absolute",top:0,left:0,right:0}}>{evt.desc}</p>
+            return <p key={i} style={{...sf(mob?12:13,400),color:C.s4,lineHeight:1.7,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":"translateY(12px)",transition:"all 0.6s ease",position:i===0&&isActive?"relative":"absolute",top:0,left:0,right:0,margin:0}}>{evt.desc}</p>
           })}
         </div>
 
         {/* Venue */}
-        <div style={{position:"relative",height:18,margin:"0 24px 2px",overflow:"hidden"}}>
+        <div style={{position:"relative",height:mob?16:18,margin:mob?"0 16px 2px":"0 24px 2px",overflow:"hidden"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
-            return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",...sf(10,500),color:C.s6,letterSpacing:1,textTransform:"uppercase",opacity:isActive?1:0,transition:"all 0.6s ease"}}>{evt.venue}</div>
+            return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",...sf(mob?8:10,500),color:C.s6,letterSpacing:1,textTransform:"uppercase",opacity:isActive?1:0,transition:"all 0.6s ease"}}>{evt.venue}</div>
           })}
         </div>
 
-        {/* Perks */}
-        <div style={{margin:"10px 24px 0",display:"flex",flexWrap:"wrap",justifyContent:"center",gap:6,minHeight:26,position:"relative"}}>
+        {/* Perks — hidden on mobile to save space, show max 3 on small screens */}
+        <div style={{margin:mob?"8px 12px 0":"10px 24px 0",display:"flex",flexWrap:"wrap",justifyContent:"center",gap:mob?4:6,minHeight:mob?22:26,position:"relative"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
-            return <div key={i} style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:6,position:isActive?"relative":"absolute",top:0,left:0,right:0,opacity:isActive?1:0,transition:"all 0.6s ease"}}>
-              {evt.perks.map(function(pk,j){
-                return <span key={j} style={{padding:"4px 10px",borderRadius:7,background:"rgba(244,244,245,0.04)",border:"0.5px solid rgba(244,244,245,0.06)",...sf(10,500),color:C.s5}}>{pk}</span>
+            var displayPerks=mob?evt.perks.slice(0,3):evt.perks;
+            return <div key={i} style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:mob?4:6,position:isActive?"relative":"absolute",top:0,left:0,right:0,opacity:isActive?1:0,transition:"all 0.6s ease"}}>
+              {displayPerks.map(function(pk,j){
+                return <span key={j} style={{padding:mob?"3px 8px":"4px 10px",borderRadius:mob?6:7,background:"rgba(244,244,245,0.04)",border:"0.5px solid rgba(244,244,245,0.06)",...sf(mob?9:10,500),color:C.s5}}>{pk}</span>
               })}
             </div>
           })}
         </div>
 
         {/* CTA */}
-        <div style={{padding:"16px 24px 4px",display:"flex",justifyContent:"center"}}>
-          <button onClick={function(){nav("/events/"+cur.slug)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",borderRadius:14,background:C.s1,border:"none",cursor:"pointer",...sf(13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+        <div style={{padding:mob?"12px 16px 4px":"16px 24px 4px",display:"flex",justifyContent:"center"}}>
+          <button onClick={function(){nav("/events/"+cur.slug)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:mob?"12px 28px":"14px 32px",borderRadius:mob?12:14,background:C.s1,border:"none",cursor:"pointer",...sf(mob?12:13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s",width:mob?"100%":"auto",justifyContent:"center"}} onMouseEnter={function(e){if(!mob){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             View Experience <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
 
         {/* Dots */}
-        <div style={{display:"flex",justifyContent:"center",gap:6,padding:"12px 0 18px"}}>
+        <div style={{display:"flex",justifyContent:"center",gap:6,padding:mob?"10px 0 14px":"12px 0 18px"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
-            return <div key={i} onClick={function(){goTo(i)}} style={{height:8,borderRadius:5,cursor:"pointer",width:isActive?26:8,background:isActive?evt.color:C.s7,boxShadow:isActive?"0 0 16px "+evt.color+"40":"none",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}}/>
+            return <div key={i} onClick={function(){goTo(i)}} style={{height:mob?6:8,borderRadius:5,cursor:"pointer",width:isActive?(mob?20:26):(mob?6:8),background:isActive?evt.color:C.s7,boxShadow:isActive?"0 0 16px "+evt.color+"40":"none",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}}/>
           })}
         </div>
       </div>
 
-      {/* Right arrow */}
-      <div onClick={function(){if(idx<EVENTS.length-1)goTo(idx+1)}} style={{width:48,height:48,borderRadius:"50%",background:idx<EVENTS.length-1?"rgba(255,255,255,0.06)":"transparent",border:idx<EVENTS.length-1?"1px solid rgba(255,255,255,0.1)":"1px solid transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:idx<EVENTS.length-1?"pointer":"default",transition:"all 0.3s",opacity:idx<EVENTS.length-1?1:0.2,flexShrink:0}} onMouseEnter={function(e){if(idx<EVENTS.length-1){e.currentTarget.style.background="rgba(255,255,255,0.12)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}}} onMouseLeave={function(e){e.currentTarget.style.background=idx<EVENTS.length-1?"rgba(255,255,255,0.06)":"transparent";e.currentTarget.style.borderColor=idx<EVENTS.length-1?"rgba(255,255,255,0.1)":"transparent"}}>
+      {/* Right arrow — hidden on mobile */}
+      {!mob&&<div onClick={function(){if(idx<EVENTS.length-1)goTo(idx+1)}} style={{width:48,height:48,borderRadius:"50%",background:idx<EVENTS.length-1?"rgba(255,255,255,0.06)":"transparent",border:idx<EVENTS.length-1?"1px solid rgba(255,255,255,0.1)":"1px solid transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:idx<EVENTS.length-1?"pointer":"default",transition:"all 0.3s",opacity:idx<EVENTS.length-1?1:0.2,flexShrink:0}} onMouseEnter={function(e){if(idx<EVENTS.length-1){e.currentTarget.style.background="rgba(255,255,255,0.12)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}}} onMouseLeave={function(e){e.currentTarget.style.background=idx<EVENTS.length-1?"rgba(255,255,255,0.06)":"transparent";e.currentTarget.style.borderColor=idx<EVENTS.length-1?"rgba(255,255,255,0.1)":"transparent"}}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </div>
+      </div>}
 
       </div>{/* end wrapper */}
 
       {/* Scroll hint */}
-      <div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",animation:"evtFloatSlow 3s ease-in-out infinite"}}>
-        <div style={{width:1,height:32,background:"linear-gradient(180deg,transparent,"+C.s7+")",margin:"0 auto 8px",opacity:0.5}}/>
-        <span style={{...sf(9,500),color:C.s7,letterSpacing:3,textTransform:"uppercase"}}>{idx<EVENTS.length-1?"↓ Scroll for next":"↓ Continue"}</span>
+      <div style={{position:"absolute",bottom:mob?16:24,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",animation:"evtFloatSlow 3s ease-in-out infinite"}}>
+        <div style={{width:1,height:mob?24:32,background:"linear-gradient(180deg,transparent,"+C.s7+")",margin:"0 auto 8px",opacity:0.5}}/>
+        <span style={{...sf(9,500),color:C.s7,letterSpacing:3,textTransform:"uppercase"}}>{idx<EVENTS.length-1?"↓ Swipe for next":"↓ Continue"}</span>
       </div>
-
-      <style>{`
-@media(max-width:900px){.evt-peek,.evt-side-label,.evt-arr,.evt-nav-arrow{display:none!important}}
-      `}</style>
     </section>
   );
 }
