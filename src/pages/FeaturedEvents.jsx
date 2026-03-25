@@ -120,31 +120,31 @@ export default function FeaturedEvents(){
       </div>}
 
       {/* CENTER CARD */}
-      <div style={{width:mob?"100%":780,maxWidth:mob?"calc(100vw - 32px)":"68vw",borderRadius:mob?22:28,overflow:"hidden",background:"rgba(24,24,27,0.85)",backdropFilter:"blur(40px) saturate(1.3)",border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 60px 160px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03)",position:"relative",flexShrink:1,margin:mob?"0 16px":"0"}}>
+      <div style={{width:mob?"100%":780,maxWidth:mob?"calc(100vw - 40px)":"68vw",borderRadius:mob?24:28,overflow:"hidden",background:"rgba(24,24,27,0.85)",backdropFilter:"blur(40px) saturate(1.3)",border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 60px 160px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.03)",position:"relative",flexShrink:1,margin:mob?"0 20px":"0"}}>
         {/* shine line */}
         <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",zIndex:10}}/>
 
         {/* Counter */}
-        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:mob?10:14,padding:mob?"20px 0 0":"18px 0 0"}}>
-          <span style={{...sf(mob?11:13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{String(idx+1).padStart(2,"0")}</span>
-          <div style={{width:mob?40:50,height:2,background:C.bd,borderRadius:1,position:"relative",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:mob?10:14,padding:mob?"24px 0 0":"18px 0 0"}}>
+          <span style={{...sf(mob?12:13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{String(idx+1).padStart(2,"0")}</span>
+          <div style={{width:mob?44:50,height:2,background:C.bd,borderRadius:1,position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",top:0,left:0,height:"100%",width:((idx+1)/EVENTS.length*100)+"%",background:C.s1,borderRadius:1,transition:"width 0.7s cubic-bezier(0.16,1,0.3,1)"}}/>
           </div>
-          <span style={{...sf(mob?11:13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{"0"+EVENTS.length}</span>
+          <span style={{...sf(mob?12:13,300),color:C.s3,fontVariantNumeric:"tabular-nums"}}>{"0"+EVENTS.length}</span>
         </div>
 
         {/* Name */}
-        <div style={{position:"relative",height:mob?36:46,margin:mob?"16px 16px 16px":"12px 24px 14px",overflow:"hidden"}}>
+        <div style={{position:"relative",height:mob?44:46,margin:mob?"20px 20px 20px":"12px 24px 14px",overflow:"hidden"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
             return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":i<idx?"translateY(-30px)":"translateY(30px)",transition:"all 0.7s cubic-bezier(0.16,1,0.3,1)"}}>
-              <h3 style={{...sf(mob?20:30,700),letterSpacing:-0.5,lineHeight:1.2,whiteSpace:mob?"normal":"nowrap",margin:0}}>{evt.name}</h3>
+              <h3 style={{...sf(mob?26:30,700),letterSpacing:-0.5,lineHeight:1.2,whiteSpace:mob?"normal":"nowrap",margin:0}}>{evt.name}</h3>
             </div>
           })}
         </div>
 
         {/* Image */}
-        <div style={{height:mob?380:260,margin:mob?"0 10px":"0 16px",borderRadius:mob?14:18,overflow:"hidden",position:"relative"}}>
+        <div style={{height:mob?360:260,margin:mob?"0 14px":"0 16px",borderRadius:mob?16:18,overflow:"hidden",position:"relative"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
             return <div key={i} style={{position:"absolute",inset:0,opacity:isActive?1:0,transform:isActive?"scale(1)":"scale(1.06)",transition:"opacity 0.9s ease, transform 6s ease",zIndex:isActive?2:1}}>
@@ -153,63 +153,63 @@ export default function FeaturedEvents(){
             </div>
           })}
           {/* Tags overlay */}
-          <div style={{position:"absolute",top:mob?10:16,left:mob?10:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
-            <div style={{padding:mob?"4px 10px":"5px 14px",borderRadius:mob?8:10,backdropFilter:"blur(8px)",...sf(mob?9:10,700),letterSpacing:0.8,textTransform:"uppercase",background:cur.color+"30",border:"1px solid "+cur.color+"50",color:cur.color,transition:"all 0.5s"}}>{cur.tag}</div>
-            <div style={{padding:mob?"4px 10px":"5px 14px",borderRadius:mob?8:10,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",...sf(mob?9:10,500),color:"rgba(255,255,255,0.7)"}}>{cur.date}</div>
+          <div style={{position:"absolute",top:mob?12:16,left:mob?12:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
+            <div style={{padding:mob?"5px 12px":"5px 14px",borderRadius:mob?8:10,backdropFilter:"blur(8px)",...sf(mob?10:10,700),letterSpacing:0.8,textTransform:"uppercase",background:cur.color+"30",border:"1px solid "+cur.color+"50",color:cur.color,transition:"all 0.5s"}}>{cur.tag}</div>
+            <div style={{padding:mob?"5px 12px":"5px 14px",borderRadius:mob?8:10,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",...sf(mob?10:10,500),color:"rgba(255,255,255,0.7)"}}>{cur.date}</div>
           </div>
           {/* Location */}
-          <div style={{position:"absolute",bottom:mob?10:16,left:mob?10:16,display:"flex",alignItems:"center",gap:5,zIndex:10,...sf(mob?10:11,500),color:"rgba(255,255,255,0.6)"}}>
+          <div style={{position:"absolute",bottom:mob?12:16,left:mob?12:16,display:"flex",alignItems:"center",gap:5,zIndex:10,...sf(mob?11:11,500),color:"rgba(255,255,255,0.6)"}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             <span>{cur.location}</span>
           </div>
           {/* Spots */}
-          <div style={{position:"absolute",bottom:mob?10:16,right:mob?10:16,display:"flex",alignItems:"center",gap:6,padding:mob?"4px 10px":"6px 14px",borderRadius:mob?8:10,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",zIndex:10,...sf(mob?10:11,600),transition:"all 0.5s"}}>
+          <div style={{position:"absolute",bottom:mob?12:16,right:mob?12:16,display:"flex",alignItems:"center",gap:6,padding:mob?"5px 12px":"6px 14px",borderRadius:mob?8:10,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)",zIndex:10,...sf(mob?11:11,600),transition:"all 0.5s"}}>
             <div style={{width:6,height:6,borderRadius:"50%",background:spotsColor(cur.spots),boxShadow:"0 0 8px "+spotsShadow(cur.spots)}}/>
             <span style={{color:spotsColor(cur.spots)}}>{cur.spots} spots left</span>
           </div>
         </div>
 
         {/* Description */}
-        <div style={{position:"relative",minHeight:mob?48:56,margin:mob?"20px 16px 0":"14px 24px 0",overflow:"hidden"}}>
+        <div style={{position:"relative",minHeight:mob?56:56,margin:mob?"24px 20px 0":"14px 24px 0",overflow:"hidden"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
-            return <p key={i} style={{...sf(mob?12:13,400),color:C.s4,lineHeight:1.7,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":"translateY(12px)",transition:"all 0.6s ease",position:i===0&&isActive?"relative":"absolute",top:0,left:0,right:0,margin:0}}>{evt.desc}</p>
+            return <p key={i} style={{...sf(mob?13:13,400),color:C.s4,lineHeight:1.75,textAlign:"center",opacity:isActive?1:0,transform:isActive?"translateY(0)":"translateY(12px)",transition:"all 0.6s ease",position:i===0&&isActive?"relative":"absolute",top:0,left:0,right:0,margin:0}}>{evt.desc}</p>
           })}
         </div>
 
         {/* Venue */}
-        <div style={{position:"relative",height:mob?16:18,margin:mob?"12px 16px 2px":"0 24px 2px",overflow:"hidden"}}>
+        <div style={{position:"relative",height:mob?18:18,margin:mob?"16px 20px 4px":"0 24px 2px",overflow:"hidden"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
-            return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",...sf(mob?8:10,500),color:C.s6,letterSpacing:1,textTransform:"uppercase",opacity:isActive?1:0,transition:"all 0.6s ease"}}>{evt.venue}</div>
+            return <div key={i} style={{position:"absolute",left:0,right:0,textAlign:"center",...sf(mob?9:10,500),color:C.s6,letterSpacing:1,textTransform:"uppercase",opacity:isActive?1:0,transition:"all 0.6s ease"}}>{evt.venue}</div>
           })}
         </div>
 
-        {/* Perks — hidden on mobile to save space, show max 3 on small screens */}
-        <div style={{margin:mob?"16px 12px 0":"10px 24px 0",display:"flex",flexWrap:"wrap",justifyContent:"center",gap:mob?4:6,minHeight:mob?22:26,position:"relative"}}>
+        {/* Perks */}
+        <div style={{margin:mob?"20px 16px 0":"10px 24px 0",display:"flex",flexWrap:"wrap",justifyContent:"center",gap:mob?6:6,minHeight:mob?26:26,position:"relative"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
             var displayPerks=mob?evt.perks.slice(0,3):evt.perks;
-            return <div key={i} style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:mob?4:6,position:isActive?"relative":"absolute",top:0,left:0,right:0,opacity:isActive?1:0,transition:"all 0.6s ease"}}>
+            return <div key={i} style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:mob?6:6,position:isActive?"relative":"absolute",top:0,left:0,right:0,opacity:isActive?1:0,transition:"all 0.6s ease"}}>
               {displayPerks.map(function(pk,j){
-                return <span key={j} style={{padding:mob?"3px 8px":"4px 10px",borderRadius:mob?6:7,background:"rgba(244,244,245,0.04)",border:"0.5px solid rgba(244,244,245,0.06)",...sf(mob?9:10,500),color:C.s5}}>{pk}</span>
+                return <span key={j} style={{padding:mob?"4px 10px":"4px 10px",borderRadius:mob?7:7,background:"rgba(244,244,245,0.04)",border:"0.5px solid rgba(244,244,245,0.06)",...sf(mob?10:10,500),color:C.s5}}>{pk}</span>
               })}
             </div>
           })}
         </div>
 
         {/* CTA */}
-        <div style={{padding:mob?"20px 16px 4px":"16px 24px 4px",display:"flex",justifyContent:"center"}}>
-          <button onClick={function(){nav("/events/"+cur.slug)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:mob?"12px 28px":"14px 32px",borderRadius:mob?12:14,background:C.s1,border:"none",cursor:"pointer",...sf(mob?12:13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s",width:mob?"100%":"auto",justifyContent:"center"}} onMouseEnter={function(e){if(!mob){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+        <div style={{padding:mob?"24px 20px 6px":"16px 24px 4px",display:"flex",justifyContent:"center"}}>
+          <button onClick={function(){nav("/events/"+cur.slug)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:mob?"14px 28px":"14px 32px",borderRadius:mob?14:14,background:C.s1,border:"none",cursor:"pointer",...sf(mob?13:13,700),color:C.bg,letterSpacing:0.5,transition:"all 0.4s",width:mob?"100%":"auto",justifyContent:"center"}} onMouseEnter={function(e){if(!mob){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 16px 48px rgba(244,244,245,0.15)"}}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             View Experience <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
 
         {/* Dots */}
-        <div style={{display:"flex",justifyContent:"center",gap:6,padding:mob?"16px 0 20px":"12px 0 18px"}}>
+        <div style={{display:"flex",justifyContent:"center",gap:6,padding:mob?"18px 0 24px":"12px 0 18px"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
-            return <div key={i} onClick={function(){goTo(i)}} style={{height:mob?6:8,borderRadius:5,cursor:"pointer",width:isActive?(mob?20:26):(mob?6:8),background:isActive?evt.color:C.s7,boxShadow:isActive?"0 0 16px "+evt.color+"40":"none",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}}/>
+            return <div key={i} onClick={function(){goTo(i)}} style={{height:mob?7:8,borderRadius:5,cursor:"pointer",width:isActive?(mob?22:26):(mob?7:8),background:isActive?evt.color:C.s7,boxShadow:isActive?"0 0 16px "+evt.color+"40":"none",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}}/>
           })}
         </div>
       </div>

@@ -845,25 +845,36 @@ input::placeholder{color:#52525B}input:focus{outline:none}
       </section>
 
       {/* ═══ MOBILE MENU OVERLAY ═══ */}
-      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(10,10,11,0.97)",backdropFilter:"blur(40px) saturate(1.3)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"menuFadeIn 0.3s ease"}}>
-        <style>{`@keyframes menuFadeIn{from{opacity:0}to{opacity:1}}@keyframes menuSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`}</style>
-        {/* Close button */}
-        <div onClick={function(){setMobileMenu(false)}} style={{position:"absolute",top:32,right:20,width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(5,5,6,0.98)",backdropFilter:"blur(60px) saturate(1.5)",display:"flex",flexDirection:"column",animation:"menuSlideIn 0.4s cubic-bezier(0.16,1,0.3,1)"}}>
+        <style>{`
+@keyframes menuSlideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+@keyframes menuSlideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(100%)}}
+@keyframes menuItemIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes menuFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        `}</style>
+        {/* Top bar */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 24px"}}>
+          <PMark size={22} color={C.s1} style={{opacity:0,animation:"menuFadeUp 0.5s ease 0.2s forwards"}}/>
+          <div onClick={function(){setMobileMenu(false)}} style={{width:44,height:44,borderRadius:14,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </div>
         </div>
-        {/* Logo */}
-        <div style={{marginBottom:48,animation:"menuSlideUp 0.5s ease 0.1s both"}}><PMark size={28} color={C.s1}/></div>
-        {/* Menu links */}
-        {["Events","Membership","Catalog","Business","Contact"].map(function(item,i){
-          var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Events"?"/events":item==="Contact"?"https://wa.me/447449562204":"#"+item.toLowerCase();
-          return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(24,500),color:C.s4,letterSpacing:1,textDecoration:"none",padding:"16px 0",display:"block",textAlign:"center",animation:"menuSlideUp 0.5s ease "+(0.15+i*0.06)+"s both",transition:"color 0.3s"}}>{item}</a>
-        })}
-        {/* CTA */}
-        <div style={{marginTop:40,animation:"menuSlideUp 0.5s ease 0.5s both"}}>
-          <div onClick={function(){setMobileMenu(false);setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 32px",borderRadius:14,background:C.s1,...sf(14,700),color:C.bg,cursor:"pointer"}}>
+        {/* Links */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
+          {[{label:"Events",href:"/events"},{label:"Membership",href:"/#membership"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(item,i){
+            return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
+              <span>{item.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          })}
+        </div>
+        {/* Bottom CTA */}
+        <div style={{padding:"0 36px 48px",opacity:0,animation:"menuFadeUp 0.5s ease 0.6s forwards"}}>
+          <div onClick={function(){setMobileMenu(false);setShowWaitlist(true)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,cursor:"pointer",width:"100%",transition:"transform 0.3s"}}>
             <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
             Download on the App Store
           </div>
+          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Dubai · London</p>
         </div>
       </div>}
 
@@ -1336,18 +1347,29 @@ textarea{resize:vertical;min-height:100px}
       </nav>
 
       {/* ═══ MOBILE MENU (Business) ═══ */}
-      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(10,10,11,0.97)",backdropFilter:"blur(40px) saturate(1.3)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"menuFadeIn 0.3s ease"}}>
-        <style>{`@keyframes menuFadeIn{from{opacity:0}to{opacity:1}}@keyframes menuSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`}</style>
-        <div onClick={function(){setMobileMenu(false)}} style={{position:"absolute",top:32,right:20,width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(5,5,6,0.98)",backdropFilter:"blur(60px) saturate(1.5)",display:"flex",flexDirection:"column",animation:"menuSlideIn 0.4s cubic-bezier(0.16,1,0.3,1)"}}>
+        <style>{`
+@keyframes menuSlideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+@keyframes menuItemIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes menuFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        `}</style>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 24px"}}>
+          <PMark size={22} color={C.s1}/>
+          <div onClick={function(){setMobileMenu(false)}} style={{width:44,height:44,borderRadius:14,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </div>
         </div>
-        <div style={{marginBottom:48,animation:"menuSlideUp 0.5s ease 0.1s both"}}><PMark size={28} color={C.s1}/></div>
-        {["Home","Events","Catalog","Business","Contact"].map(function(item,i){
-          var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Events"?"/events":item==="Home"?"/":item==="Contact"?"https://wa.me/447449562204":"#"+item.toLowerCase();
-          return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(24,500),color:C.s4,letterSpacing:1,textDecoration:"none",padding:"16px 0",display:"block",textAlign:"center",animation:"menuSlideUp 0.5s ease "+(0.15+i*0.06)+"s both",transition:"color 0.3s"}}>{item}</a>
-        })}
-        <div style={{marginTop:40,animation:"menuSlideUp 0.5s ease 0.5s both"}}>
-          <a href="#apply" onClick={function(){setMobileMenu(false)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 32px",borderRadius:14,background:C.s1,...sf(14,700),color:C.bg,textDecoration:"none"}}>Apply Now</a>
+        <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
+          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(item,i){
+            return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
+              <span>{item.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          })}
+        </div>
+        <div style={{padding:"0 36px 48px",opacity:0,animation:"menuFadeUp 0.5s ease 0.6s forwards"}}>
+          <a href="#apply" onClick={function(){setMobileMenu(false)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,textDecoration:"none",width:"100%"}}>Apply Now</a>
+          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Dubai · London</p>
         </div>
       </div>}
 
@@ -1842,8 +1864,9 @@ body::-webkit-scrollbar{width:0}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes menuFadeIn{from{opacity:0}to{opacity:1}}
-@keyframes menuSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes menuSlideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+@keyframes menuItemIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes menuFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1100px;margin:0 auto;padding:0 40px}
 .cat-card{aspect-ratio:3/4}
 @media(max-width:1024px){
@@ -1890,18 +1913,24 @@ body::-webkit-scrollbar{width:0}
       </nav>
 
       {/* ═══ MOBILE MENU ═══ */}
-      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(10,10,11,0.97)",backdropFilter:"blur(40px) saturate(1.3)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"menuFadeIn 0.3s ease"}}>
-        <div onClick={function(){setMobileMenu(false)}} style={{position:"absolute",top:24,right:20,width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(5,5,6,0.98)",backdropFilter:"blur(60px) saturate(1.5)",display:"flex",flexDirection:"column",animation:"menuSlideIn 0.4s cubic-bezier(0.16,1,0.3,1)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 24px"}}>
+          <CDrawMark size={22} color={C.s1}/>
+          <div onClick={function(){setMobileMenu(false)}} style={{width:44,height:44,borderRadius:14,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </div>
         </div>
-        <div style={{marginBottom:48}}>
-          <CDrawMark size={28} color={C.s1}/>
+        <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
+          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(link,i){
+            return <a key={link.label} href={link.href} target={link.ext?"_blank":undefined} rel={link.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
+              <span>{link.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          })}
         </div>
-        {[{label:"Home",href:"/"},{label:"Events",href:"/#events"},{label:"Membership",href:"/#membership"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204"}].map(function(link,i){
-          return <a key={link.label} href={link.href} onClick={function(){setMobileMenu(false)}} style={{...sf(28,300),color:C.s1,letterSpacing:-0.5,marginBottom:20,opacity:0,animation:"menuSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.1+i*0.06)+"s forwards",textAlign:"center"}}>{link.label}</a>;
-        })}
-        <div style={{marginTop:32,opacity:0,animation:"menuSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards"}}>
-          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 32px",borderRadius:16,background:C.s1,color:C.bg,...sf(13,600),letterSpacing:0.2,transition:"transform 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="scale(1.03)"}} onMouseLeave={function(e){e.currentTarget.style.transform="scale(1)"}}>Download App</a>
+        <div style={{padding:"0 36px 48px",opacity:0,animation:"menuFadeUp 0.5s ease 0.6s forwards"}}>
+          <a href="/" onClick={function(){setMobileMenu(false)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,textDecoration:"none",width:"100%"}}>Download App</a>
+          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Dubai · London</p>
         </div>
       </div>}
 
