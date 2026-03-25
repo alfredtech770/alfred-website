@@ -320,7 +320,7 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
   .ec-hero{height:340px!important}
   .ec-title{font-size:32px!important}
   .search-bar{grid-template-columns:1fr 1fr!important;gap:8px!important}
-  .filter-row{flex-wrap:nowrap!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .filter-row{flex-wrap:nowrap!important;overflow:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
   .filter-row::-webkit-scrollbar{display:none}
 }
 @media(max-width:480px){
@@ -375,8 +375,8 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
       </div>
 
       {/* ═══ FILTERS ═══ */}
-      <div style={{maxWidth:1280,margin:"0 auto",padding:"28px clamp(16px,4vw,40px) 0"}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
+      <div style={{maxWidth:1280,margin:"0 auto",padding:"28px clamp(16px,4vw,40px) 0",position:"relative",zIndex:50}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:50}}>
           <div className="filter-row">
             <FilterDrop value={brand} options={brands} onChange={setBrand} icon={iconBrand}/>
             <FilterDrop value={bodyType} options={["Type","Coupe","Convertible","SUV","Sedan","Hatchback","Van"]} onChange={setBodyType} icon={iconBody}/>

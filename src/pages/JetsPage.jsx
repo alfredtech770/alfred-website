@@ -406,7 +406,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 .search-bar{display:grid;grid-template-columns:1fr auto 1fr 1fr auto;gap:12px;align-items:end}
 .filter-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:1;min-width:0}
 @media(max-width:1024px){.j-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:768px){.j-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}.j-hero{height:340px!important}.j-title{font-size:36px!important}.search-bar{grid-template-columns:1fr 1fr!important}.filter-row{flex-wrap:nowrap!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}.filter-row::-webkit-scrollbar{display:none}}
+@media(max-width:768px){.j-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}.j-hero{height:340px!important}.j-title{font-size:36px!important}.search-bar{grid-template-columns:1fr 1fr!important}.filter-row{flex-wrap:nowrap!important;overflow:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}.filter-row::-webkit-scrollbar{display:none}}
 @media(max-width:390px){.j-hero{height:280px!important}.j-title{font-size:28px!important}.search-bar{grid-template-columns:1fr!important}}
       `}</style>
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
@@ -460,8 +460,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       </div>
 
       {/* Filters */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:50}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:50}}>
           <div className="filter-row">
             <FilterDrop value={type} options={["Class","Ultra Long Range","Long Range","Large Cabin","Super Midsize","Light Jet","VIP Airliner"]} onChange={setType} icon={iconClass}/>
             <FilterDrop value={pax} options={["Passengers","1-8","9-16","17+"]} onChange={setPax} icon={iconPax}/>

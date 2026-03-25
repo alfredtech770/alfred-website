@@ -177,7 +177,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
   .n-hero{height:340px!important}
   .n-title{font-size:36px!important}
   .search-bar{grid-template-columns:1fr 1fr!important}
-  .filter-row{flex-wrap:nowrap!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .filter-row{flex-wrap:nowrap!important;overflow:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
   .filter-row::-webkit-scrollbar{display:none}
 }
 @media(max-width:390px){.n-hero{height:280px!important}.n-title{font-size:28px!important}.search-bar{grid-template-columns:1fr!important}}
@@ -227,8 +227,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       </div>
 
       {/* Filters */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:40}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:40}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:50}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:50}}>
           <div className="filter-row">
             <FilterDrop value={type} options={["Type","Nightclub","Lounge","Members Club","Day Club"]} onChange={setType} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>}/>
             <FilterDrop value={vibe} options={["Vibe","High Energy","Exclusive","Sophisticated","Underground","Pool Party"]} onChange={setVibe} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>}/>

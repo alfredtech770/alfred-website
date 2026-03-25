@@ -255,7 +255,7 @@ body::-webkit-scrollbar{width:0}
   .yc-hero{height:320px!important}
   .yc-title{font-size:34px!important}
   .search-bar{grid-template-columns:1fr 1fr!important}
-  .filter-row{flex-wrap:nowrap!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .filter-row{flex-wrap:nowrap!important;overflow:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
   .filter-row::-webkit-scrollbar{display:none}
 }
 @media(max-width:390px){.yc-hero{height:260px!important}.yc-title{font-size:26px!important}.search-bar{grid-template-columns:1fr!important}}
@@ -309,8 +309,8 @@ body::-webkit-scrollbar{width:0}
       </div>
 
       {/* Filters */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0"}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:50}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:50}}>
           <div className="filter-row">
             <FilterDrop icon={iconBrand} value={brand} options={brands} onChange={setBrand}/>
             <FilterDrop icon={iconSize} value={sizeRange} options={["Size","Under 40 ft","40–60 ft","60–80 ft","80 ft+"]} onChange={setSizeRange}/>
