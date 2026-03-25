@@ -130,7 +130,31 @@ export default function YachtDetailPage(){
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
-      <SEOHead title={yacht.name+" — Luxury Yacht Charter | "+yacht.city+" | Alfred"} description={"Charter the "+yacht.name+". "+yacht.size_ft+" ft luxury yacht with full crew in "+yacht.city+". Private yacht charter for your next trip."} path={"/catalog/yachts/"+id} />
+      <SEOHead
+        title={yacht.name+" — Luxury Yacht Charter | "+yacht.city+" | Alfred"}
+        description={"Charter the "+yacht.name+". "+yacht.size_ft+" ft luxury yacht with full crew in "+yacht.city+". Private yacht charter for your next trip."}
+        path={"/catalog/yachts/"+id}
+        jsonLd={[
+          {
+            "@context":"https://schema.org",
+            "@type":"Product",
+            "name":yacht.name,
+            "description":"Charter the "+yacht.name+". "+yacht.size_ft+" ft luxury yacht with full crew in "+yacht.city+". Private yacht charter for your next trip.",
+            "image":yacht.hero_image_url||yacht.imgs?.[0],
+            "category":"Yacht Charter"
+          },
+          {
+            "@context":"https://schema.org",
+            "@type":"BreadcrumbList",
+            "itemListElement":[
+              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+              {"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},
+              {"@type":"ListItem","position":3,"name":"Yachts","item":"https://alfredconcierge.app/catalog/yachts"},
+              {"@type":"ListItem","position":4,"name":yacht.name,"item":"https://alfredconcierge.app/catalog/yachts/"+id}
+            ]
+          }
+        ]}
+      />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 html,body{overflow-x:hidden;max-width:100vw}

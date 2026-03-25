@@ -61,7 +61,32 @@ export default function NightlifeDetailPage(){
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      <SEOHead title={V.name+" — VIP Tables & Nightlife Booking | Alfred"} description={"Book VIP tables at "+V.name+" through Alfred Concierge. "+V.music+". Private table reservations and guestlist access."} path={"/catalog/nightlife/"+V.slug} />
+      <SEOHead
+        title={V.name+" — VIP Tables & Nightlife Booking | Alfred"}
+        description={"Book VIP tables at "+V.name+" through Alfred Concierge. "+V.music+". Private table reservations and guestlist access."}
+        path={"/catalog/nightlife/"+V.slug}
+        jsonLd={[
+          {
+            "@context":"https://schema.org",
+            "@type":"NightClub",
+            "name":V.name,
+            "description":"VIP tables and nightlife booking at "+V.name+". "+V.music+".",
+            "image":V.imgs[0],
+            "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":"Miami Beach","addressRegion":"FL","postalCode":"33140","addressCountry":"US"},
+            "url":"https://alfredconcierge.app/catalog/nightlife/"+V.slug
+          },
+          {
+            "@context":"https://schema.org",
+            "@type":"BreadcrumbList",
+            "itemListElement":[
+              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+              {"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},
+              {"@type":"ListItem","position":3,"name":"Nightlife","item":"https://alfredconcierge.app/catalog/nightlife"},
+              {"@type":"ListItem","position":4,"name":V.name,"item":"https://alfredconcierge.app/catalog/nightlife/"+V.slug}
+            ]
+          }
+        ]}
+      />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}

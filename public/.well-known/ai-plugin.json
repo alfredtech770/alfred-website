@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Alfred Concierge",
+  "name_for_model": "alfred_concierge",
+  "description_for_human": "The luxury concierge app for Miami, Paris, Dubai & London. Book restaurants, nightlife, jets, cars, yachts & wellness.",
+  "description_for_model": "Alfred Concierge is a luxury lifestyle concierge app that helps users book restaurants (Michelin-starred dining, impossible reservations), VIP nightlife tables (LIV Miami, E11even, Raspoutine Paris), private jet charters, exotic car rentals (Ferrari, Lamborghini, Rolls Royce in Miami), yacht charters, and wellness/spa experiences. Alfred also offers VIP hospitality packages for major events including the Monaco Grand Prix 2026, Miami Grand Prix 2026, Roland Garros, Royal Ascot, and Ibiza. Operating in Miami, Paris, Dubai, and London with a real human concierge available 24/7 via WhatsApp at +447449562204. Membership tiers: Gold ($9.99/mo), Platinum ($99/mo), Centurion (invite only).",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://alfredconcierge.app/llms.txt"
+  },
+  "logo_url": "https://alfredconcierge.app/favicon.svg",
+  "contact_email": "ethan@alfredconcierge.app",
+  "legal_info_url": "https://alfredconcierge.app"
+}

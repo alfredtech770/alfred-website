@@ -125,7 +125,32 @@ export default function EventDetailPage(){
 
   return(
     <div style={{background:C.bg,color:C.s1,minHeight:"100vh",overflowX:"hidden"}}>
-      <SEOHead title={V.name+" — VIP Tickets & Hospitality | Alfred"} description={V.desc} path={"/events/"+V.slug} keywords={"tickets "+V.name+", "+V.name+" VIP, "+V.name+" hospitality, "+V.name+" 2026"} />
+      <SEOHead
+        title={V.name+" — VIP Tickets & Hospitality | Alfred"}
+        description={V.desc}
+        path={"/events/"+V.slug}
+        keywords={"tickets "+V.name+", "+V.name+" VIP, "+V.name+" hospitality, "+V.name+" 2026"}
+        jsonLd={[
+          {
+            "@context":"https://schema.org",
+            "@type":"Event",
+            "name":V.name,
+            "description":V.desc,
+            "startDate":V.date.split(" ")[0],
+            "location":{"@type":"Place","name":V.location},
+            "offers":{"@type":"Offer","url":"https://alfredconcierge.app/events/"+V.slug,"availability":"https://schema.org/PreOrder"}
+          },
+          {
+            "@context":"https://schema.org",
+            "@type":"BreadcrumbList",
+            "itemListElement":[
+              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+              {"@type":"ListItem","position":2,"name":"Events","item":"https://alfredconcierge.app/events"},
+              {"@type":"ListItem","position":3,"name":V.name,"item":"https://alfredconcierge.app/events/"+V.slug}
+            ]
+          }
+        ]}
+      />
       <style>{`
 @keyframes evtSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 @keyframes evtFadeIn{from{opacity:0}to{opacity:1}}

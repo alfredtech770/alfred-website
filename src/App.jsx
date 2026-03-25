@@ -377,6 +377,36 @@ function HomePage(){
   );
 }
 
+/* ═══ 404 PAGE ═══ */
+function NotFoundPage(){
+  return(
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40,fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif"}}>
+      <SEOHead title="Page Not Found | Alfred Concierge" description="The page you're looking for doesn't exist. Explore Alfred's luxury concierge services." path="/404"/>
+      <div style={{...sf(120,900),color:C.s7,letterSpacing:-4,marginBottom:8}}>404</div>
+      <h1 style={{...sf(28,600),color:C.s1,marginBottom:12}}>Page not found</h1>
+      <p style={{...sf(16,400),color:C.s5,marginBottom:40,textAlign:"center",maxWidth:460,lineHeight:1.6}}>The page you're looking for doesn't exist. But there's plenty to explore.</p>
+      <div style={{display:"flex",flexWrap:"wrap",gap:12,justifyContent:"center"}}>
+        {[
+          {label:"Browse Catalog",href:"/catalog"},
+          {label:"Upcoming Events",href:"/events"},
+          {label:"Read Our Blog",href:"/blog"},
+          {label:"Go Home",href:"/"}
+        ].map(function(l){return <a key={l.href} href={l.href} style={{...sf(14,600),color:C.bg,background:C.s1,padding:"12px 24px",borderRadius:12,textDecoration:"none",transition:"opacity 0.2s"}} onMouseEnter={function(e){e.target.style.opacity="0.85"}} onMouseLeave={function(e){e.target.style.opacity="1"}}>{l.label}</a>})}
+      </div>
+      <div style={{marginTop:60,textAlign:"center"}}>
+        <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:16}}>Popular</div>
+        {[
+          {label:"Best Restaurants in Miami",href:"/blog/best-restaurants-miami-2026"},
+          {label:"Monaco Grand Prix 2026 Guide",href:"/blog/monaco-grand-prix-2026-guide"},
+          {label:"Exotic Car Rental Miami",href:"/catalog/exotic-cars"},
+          {label:"VIP Nightlife Miami",href:"/catalog/nightlife"},
+          {label:"Yacht Charter Miami",href:"/catalog/yachts"}
+        ].map(function(l){return <a key={l.href} href={l.href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:10,textDecoration:"none",transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l.label}</a>})}
+      </div>
+    </div>
+  );
+}
+
 /* ═══ ROUTER ═══ */
 export default function App(){
   return (
@@ -402,6 +432,7 @@ export default function App(){
         <Route path="/blog" element={<BlogPage/>}/>
         <Route path="/blog/:slug" element={<BlogPost/>}/>
         <Route path="/city/:slug" element={<CityPage/>}/>
+        <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
     </BrowserRouter>
   );

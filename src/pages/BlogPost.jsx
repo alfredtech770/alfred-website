@@ -671,16 +671,27 @@ function BlogPost(){
     );
   }
 
-  var seoJsonLd={
-    "@context":"https://schema.org",
-    "@type":"BlogPosting",
-    "headline":post.title,
-    "description":post.excerpt,
-    "image":post.image,
-    "datePublished":post.date,
-    "keywords":post.keywords,
-    "author":{"@type":"Organization","name":"Alfred Concierge"}
-  };
+  var seoJsonLd=[
+    {
+      "@context":"https://schema.org",
+      "@type":"BlogPosting",
+      "headline":post.title,
+      "description":post.excerpt,
+      "image":post.image,
+      "datePublished":post.date,
+      "keywords":post.keywords,
+      "author":{"@type":"Organization","name":"Alfred Concierge"}
+    },
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+        {"@type":"ListItem","position":2,"name":"Blog","item":"https://alfredconcierge.app/blog"},
+        {"@type":"ListItem","position":3,"name":post.title,"item":"https://alfredconcierge.app/blog/"+slug}
+      ]
+    }
+  ];
 
   return(
     <div style={{background:C.bg,minHeight:"100vh",color:C.s1}}>

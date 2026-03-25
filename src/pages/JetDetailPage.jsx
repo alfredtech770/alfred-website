@@ -695,7 +695,31 @@ export default function JetDetailPage(){
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      <SEOHead title={J.name+" — Private Jet Charter | Book Now | Alfred"} description={"Charter the "+J.name+" for your next flight. "+J.range+" range, "+J.pax+" passengers. Worldwide flights, empty legs available."} path={"/catalog/jets/"+slug} />
+      <SEOHead
+        title={J.name+" — Private Jet Charter | Book Now | Alfred"}
+        description={"Charter the "+J.name+" for your next flight. "+J.range+" range, "+J.pax+" passengers. Worldwide flights, empty legs available."}
+        path={"/catalog/jets/"+slug}
+        jsonLd={[
+          {
+            "@context":"https://schema.org",
+            "@type":"Product",
+            "name":J.name,
+            "description":"Charter the "+J.name+" for your next flight. "+J.range+" range, "+J.pax+" passengers. Worldwide flights, empty legs available.",
+            "image":J.imgs[0],
+            "category":"Private Jet Charter"
+          },
+          {
+            "@context":"https://schema.org",
+            "@type":"BreadcrumbList",
+            "itemListElement":[
+              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+              {"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},
+              {"@type":"ListItem","position":3,"name":"Private Jets","item":"https://alfredconcierge.app/catalog/jets"},
+              {"@type":"ListItem","position":4,"name":J.name,"item":"https://alfredconcierge.app/catalog/jets/"+slug}
+            ]
+          }
+        ]}
+      />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}

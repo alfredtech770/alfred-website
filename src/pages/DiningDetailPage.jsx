@@ -100,7 +100,33 @@ export default function DiningDetailPage(){
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      <SEOHead title={V.name+" — Best Restaurant "+V.address+", Book Now | Alfred"} description={"Book "+V.name+" through Alfred Concierge. "+V.cuisine+" dining in "+V.address+". Michelin-rated."} path={"/catalog/dining/"+slug} />
+      <SEOHead
+        title={V.name+" — Best Restaurant "+V.address+", Book Now | Alfred"}
+        description={"Book "+V.name+" through Alfred Concierge. "+V.cuisine+" dining in "+V.address+". Michelin-rated."}
+        path={"/catalog/dining/"+slug}
+        jsonLd={[
+          {
+            "@context":"https://schema.org",
+            "@type":"Restaurant",
+            "name":V.name,
+            "description":V.tagline||("Fine dining at "+V.name),
+            "image":V.imgs[0],
+            "cuisine":V.cuisine,
+            "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":"Paris","addressCountry":"FR"},
+            "servesCuisine":V.cuisine
+          },
+          {
+            "@context":"https://schema.org",
+            "@type":"BreadcrumbList",
+            "itemListElement":[
+              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+              {"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},
+              {"@type":"ListItem","position":3,"name":"Dining","item":"https://alfredconcierge.app/catalog/dining"},
+              {"@type":"ListItem","position":4,"name":V.name,"item":"https://alfredconcierge.app/catalog/dining/"+slug}
+            ]
+          }
+        ]}
+      />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
