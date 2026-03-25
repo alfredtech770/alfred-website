@@ -86,14 +86,33 @@ export default function FeaturedEvents(){
     return function(){window.removeEventListener("wheel",onWheel)};
   },[idx]);
 
-  /* touch swipe */
-  var touchY=useRef(0);
-  function onTouchStart(e){touchY.current=e.touches[0].clientY}
+  /* touch swipe — horizontal on mobile, vertical fallback */
+  var touchStart=useRef({x:0,y:0});
+  var swiping=useRef(false);
+  function onTouchStart(e){
+    touchStart.current={x:e.touches[0].clientX,y:e.touches[0].clientY};
+    swiping.current=false;
+  }
+  function onTouchMove(e){
+    if(!swiping.current){
+      var dx=Math.abs(e.touches[0].clientX-touchStart.current.x);
+      var dy=Math.abs(e.touches[0].clientY-touchStart.current.y);
+      if(dx>10||dy>10){
+        swiping.current=true;
+        if(dx>dy&&mob){e.preventDefault()}
+      }
+    } else if(mob){
+      e.preventDefault();
+    }
+  }
   function onTouchEnd(e){
-    var diff=touchY.current-e.changedTouches[0].clientY;
+    var diffX=touchStart.current.x-e.changedTouches[0].clientX;
+    var diffY=touchStart.current.y-e.changedTouches[0].clientY;
     var now=Date.now();
-    if(now-lastWheel.current<800)return;
-    if(Math.abs(diff)<40)return;
+    if(now-lastWheel.current<400)return;
+    /* Use horizontal swipe on mobile, vertical on desktop */
+    var diff=mob?diffX:diffY;
+    if(Math.abs(diff)<30)return;
     if(diff>0&&idx<EVENTS.length-1){lastWheel.current=now;setIdx(idx+1)}
     else if(diff<0&&idx>0){lastWheel.current=now;setIdx(idx-1)}
   }
@@ -102,7 +121,7 @@ export default function FeaturedEvents(){
   var cur=EVENTS[idx];
 
   return(
-    <section ref={sectionRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",padding:mob?"20px 0":"40px 0",overflow:"hidden"}}>
+    <section ref={sectionRef} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} style={{minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",justifyContent:"center",padding:mob?"20px 0":"40px 0",overflow:"hidden",touchAction:mob?"pan-y":"auto"}}>
       <style>{`
 @keyframes evtFadeSlideUp{from{opacity:0;transform:translateY(40px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes evtFloatSlow{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
@@ -112,7 +131,7 @@ export default function FeaturedEvents(){
       <div style={{position:"absolute",inset:0,background:C.bg,zIndex:0}}/>
 
       {/* CARD + ARROWS WRAPPER */}
-      <div style={{display:"flex",alignItems:"center",gap:mob?0:20,zIndex:5,opacity:entered?1:0,transform:entered?"translateY(0) scale(1)":"translateY(40px) scale(0.97)",transition:"all 1s cubic-bezier(0.16,1,0.3,1) 0.3s",width:mob?"100%":"auto",justifyContent:"center"}}>
+      <div style={{display:"flex",alignItems:mob?"stretch":"center",gap:mob?0:20,zIndex:5,opacity:entered?1:0,transform:entered?"translateY(0) scale(1)":"translateY(40px) scale(0.97)",transition:"all 1s cubic-bezier(0.16,1,0.3,1) 0.3s",width:mob?"100%":"auto",justifyContent:"center",flexDirection:mob?"column":"row"}}>
 
       {/* Left arrow — hidden on mobile */}
       {!mob&&<div onClick={function(){if(idx>0)goTo(idx-1)}} style={{width:48,height:48,borderRadius:"50%",background:idx>0?"rgba(255,255,255,0.06)":"transparent",border:idx>0?"1px solid rgba(255,255,255,0.1)":"1px solid transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:idx>0?"pointer":"default",transition:"all 0.3s",opacity:idx>0?1:0.2,flexShrink:0}} onMouseEnter={function(e){if(idx>0){e.currentTarget.style.background="rgba(255,255,255,0.12)";e.currentTarget.style.borderColor="rgba(255,255,255,0.2)"}}} onMouseLeave={function(e){e.currentTarget.style.background=idx>0?"rgba(255,255,255,0.06)":"transparent";e.currentTarget.style.borderColor=idx>0?"rgba(255,255,255,0.1)":"transparent"}}>
@@ -219,13 +238,25 @@ export default function FeaturedEvents(){
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </div>}
 
+      {/* Swipe hint — below card on mobile */}
+      {mob&&<div style={{textAlign:"center",padding:"20px 0 0",zIndex:10}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span style={{...sf(11,500),color:C.s5,letterSpacing:1.5,textTransform:"uppercase"}}>{idx<EVENTS.length-1?"Swipe for next":"Swipe back"}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </div>
+        <div style={{display:"flex",justifyContent:"center",gap:4,marginTop:10}}>
+          {EVENTS.map(function(evt,i){return <div key={i} style={{width:i===idx?16:4,height:4,borderRadius:2,background:i===idx?C.s4:C.s7,transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)"}}/>})}
+        </div>
+      </div>}
+
       </div>{/* end wrapper */}
 
-      {/* Scroll hint */}
-      <div style={{position:"absolute",bottom:mob?16:24,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",animation:"evtFloatSlow 3s ease-in-out infinite"}}>
-        <div style={{width:1,height:mob?24:32,background:"linear-gradient(180deg,transparent,"+C.s7+")",margin:"0 auto 8px",opacity:0.5}}/>
-        <span style={{...sf(9,500),color:C.s7,letterSpacing:3,textTransform:"uppercase"}}>{idx<EVENTS.length-1?"↓ Swipe for next":"↓ Continue"}</span>
-      </div>
+      {/* Scroll hint — desktop only */}
+      {!mob&&<div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",zIndex:10,textAlign:"center",animation:"evtFloatSlow 3s ease-in-out infinite"}}>
+        <div style={{width:1,height:32,background:"linear-gradient(180deg,transparent,"+C.s7+")",margin:"0 auto 8px",opacity:0.5}}/>
+        <span style={{...sf(9,500),color:C.s7,letterSpacing:3,textTransform:"uppercase"}}>{idx<EVENTS.length-1?"Scroll for next":"Continue"}</span>
+      </div>}
     </section>
   );
 }
