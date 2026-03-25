@@ -3,33 +3,47 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Alfred — Luxury Concierge App | Restaurants, Nightlife, Jets & More</title>
-  <meta name="description" content="Alfred is the luxury concierge app for Miami, Paris, Dubai & beyond. Book Michelin-starred restaurants, VIP nightlife, private jets, exotic cars, wellness spas & impossible reservations. Real human concierge, 24/7."/>
-  <meta name="keywords" content="luxury concierge app, Miami concierge, Paris concierge, Dubai concierge, restaurant reservations, best restaurants Miami, best restaurants Paris, VIP nightlife Miami, private jet charter, exotic car rental Miami, yacht charter, wellness spa booking, Alfred concierge, Alfred app, personal concierge service, luxury lifestyle app, Resy reservations, OpenTable VIP"/>
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1"/>
+  <title>Alfred — Luxury Concierge App | Restaurants, Nightlife, Jets, Yachts & More</title>
+  <meta name="description" content="Alfred is the luxury concierge app for Miami, Paris, Dubai & London. Book Michelin-starred restaurants, VIP nightlife tables, private jets, exotic car rentals, yacht charters, wellness spas & impossible reservations. Real human concierge, 24/7. Monaco Grand Prix tickets, Miami F1 hospitality & exclusive events."/>
+  <meta name="keywords" content="luxury concierge app, Miami concierge, Paris concierge, Dubai concierge, London concierge, best concierge service, restaurant reservations Miami, best restaurants Miami, best restaurants Paris, Michelin star restaurants Miami, VIP nightlife Miami, LIV Miami table, E11even Miami, Story Miami, private jet charter, exotic car rental Miami, Ferrari rental Miami, Lamborghini rental Miami, yacht charter Miami, yacht rental Miami, wellness spa Miami, Alfred concierge, Alfred app, personal concierge service, luxury lifestyle app, Monaco Grand Prix tickets, Monaco Grand Prix hospitality, Monaco F1 2026, Miami Grand Prix tickets, Miami F1 hospitality, F1 VIP packages, Roland Garros tickets, Royal Ascot VIP, Ibiza VIP, concierge service app, best concierge app, luxury travel concierge, Miami luxury rentals, exotic car rental, supercar rental Miami, yacht rental, boat charter Miami, nightclub tables Miami, nightclub reservations Paris, Raspoutine Paris, Castel Paris"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
   <meta name="theme-color" content="#0A0A0B"/>
   <meta name="author" content="Alfred Concierge"/>
   <meta name="application-name" content="Alfred"/>
+  <meta name="publisher" content="Alfred Concierge"/>
+  <meta name="copyright" content="Alfred Concierge 2026"/>
+  <meta name="rating" content="general"/>
+  <meta name="distribution" content="global"/>
+  <meta name="revisit-after" content="3 days"/>
   <link rel="canonical" href="https://alfredconcierge.app"/>
+
+  <!-- Geo targeting -->
+  <meta name="geo.region" content="US-FL"/>
+  <meta name="geo.placename" content="Miami"/>
+  <meta name="geo.position" content="25.7617;-80.1918"/>
+  <meta name="ICBM" content="25.7617, -80.1918"/>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website"/>
   <meta property="og:title" content="Alfred — Luxury Concierge App | Restaurants, Nightlife, Jets & More"/>
-  <meta property="og:description" content="Book the best restaurants, VIP nightlife, private jets, exotic cars, wellness & impossible reservations. Real human concierge, 24/7."/>
+  <meta property="og:description" content="Book the best restaurants, VIP nightlife, private jets, exotic cars, yachts, wellness & impossible reservations in Miami, Paris, Dubai & London. Real human concierge, 24/7."/>
   <meta property="og:url" content="https://alfredconcierge.app"/>
   <meta property="og:site_name" content="Alfred Concierge"/>
   <meta property="og:image" content="https://alfredconcierge.app/og-image.jpg"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
-  <meta property="og:image:alt" content="Alfred — Luxury Concierge App"/>
+  <meta property="og:image:alt" content="Alfred — Luxury Concierge App for Restaurants, Nightlife, Jets, Cars & Yachts"/>
   <meta property="og:locale" content="en_US"/>
+  <meta property="og:locale:alternate" content="en_GB"/>
+  <meta property="og:locale:alternate" content="fr_FR"/>
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="Alfred — Luxury Concierge App"/>
-  <meta name="twitter:description" content="Restaurants, nightlife, wellness, private jets, exotic cars & yachts. One app. One concierge."/>
+  <meta name="twitter:description" content="Restaurants, nightlife, wellness, private jets, exotic cars & yachts. One app. One concierge. Miami, Paris, Dubai & London."/>
   <meta name="twitter:image" content="https://alfredconcierge.app/og-image.jpg"/>
   <meta name="twitter:site" content="@alfredconcierge"/>
+  <meta name="twitter:creator" content="@alfredconcierge"/>
 
   <!-- App Store -->
   <meta name="apple-itunes-app" content="app-id=YOURAPPID"/>
@@ -45,38 +59,66 @@
   <link rel="preconnect" href="https://fbdgbnnkgyljehtccgaq.supabase.co"/>
   <link rel="preconnect" href="https://images.unsplash.com"/>
   <link rel="dns-prefetch" href="https://fbdgbnnkgyljehtccgaq.supabase.co"/>
+  <link rel="dns-prefetch" href="https://images.unsplash.com"/>
 
-  <!-- JSON-LD Structured Data -->
+  <!-- JSON-LD: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Alfred Concierge",
+    "alternateName": ["Alfred", "Alfred App", "Alfred Concierge App"],
+    "url": "https://alfredconcierge.app",
+    "logo": "https://alfredconcierge.app/favicon.svg",
+    "description": "Alfred is the world's leading luxury concierge app. We connect members with the best restaurants, VIP nightlife, private jets, exotic car rentals, yacht charters and wellness experiences across Miami, Paris, Dubai, London and beyond.",
+    "foundingDate": "2024",
+    "areaServed": [
+      {"@type": "City", "name": "Miami", "containedInPlace": {"@type": "State", "name": "Florida"}},
+      {"@type": "City", "name": "Paris", "containedInPlace": {"@type": "Country", "name": "France"}},
+      {"@type": "City", "name": "Dubai", "containedInPlace": {"@type": "Country", "name": "UAE"}},
+      {"@type": "City", "name": "London", "containedInPlace": {"@type": "Country", "name": "United Kingdom"}}
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": ["English", "French"],
+      "url": "https://wa.me/447449562204"
+    },
+    "sameAs": [
+      "https://www.instagram.com/alfredconcierge",
+      "https://twitter.com/alfredconcierge"
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Alfred Concierge Services",
+      "itemListElement": [
+        {"@type": "OfferCatalog", "name": "Restaurant Reservations", "description": "Book Michelin-starred restaurants, impossible reservations, and VIP dining experiences in Miami, Paris, Dubai and London"},
+        {"@type": "OfferCatalog", "name": "VIP Nightlife", "description": "VIP tables, guestlists and bottle service at LIV Miami, E11even, Story, Raspoutine Paris, and top nightclubs worldwide"},
+        {"@type": "OfferCatalog", "name": "Private Jet Charter", "description": "Private jet charters, empty legs, and luxury aviation services worldwide"},
+        {"@type": "OfferCatalog", "name": "Exotic Car Rental", "description": "Ferrari, Lamborghini, Rolls Royce, and supercar rentals in Miami, Paris and Dubai"},
+        {"@type": "OfferCatalog", "name": "Yacht Charter", "description": "Luxury yacht charters and boat rentals in Miami, Monaco, Ibiza and the French Riviera"},
+        {"@type": "OfferCatalog", "name": "Wellness & Spa", "description": "Premium spa bookings, personal training, and wellness experiences"},
+        {"@type": "OfferCatalog", "name": "Event Tickets & Hospitality", "description": "Monaco Grand Prix tickets, Miami F1 hospitality, Roland Garros box seats, Royal Ascot VIP packages"}
+      ]
+    }
+  }
+  </script>
+
+  <!-- JSON-LD: MobileApplication -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "MobileApplication",
     "name": "Alfred",
     "alternateName": "Alfred Concierge",
-    "description": "Luxury concierge app for restaurants, nightlife, private jets, exotic cars, wellness and lifestyle management. Available in Miami, Paris, Dubai and beyond.",
+    "description": "The luxury concierge app. Book restaurants, nightlife, private jets, exotic cars, yachts and wellness experiences. Real human concierge, 24/7.",
     "url": "https://alfredconcierge.app",
     "applicationCategory": "LifestyleApplication",
     "operatingSystem": "iOS",
     "offers": [
-      {
-        "@type": "Offer",
-        "name": "Alfred Gold",
-        "price": "9.99",
-        "priceCurrency": "USD",
-        "description": "Full app access, AI concierge, restaurant bookings, venue catalog"
-      },
-      {
-        "@type": "Offer",
-        "name": "Alfred Platinum",
-        "price": "99",
-        "priceCurrency": "USD",
-        "description": "Skip the line, VIP treatment, strategic table placement, dedicated concierge"
-      },
-      {
-        "@type": "Offer",
-        "name": "Alfred Centurion",
-        "description": "Invite only. Dedicated personal agent, 24/7 WhatsApp, worldwide VIP, impossible reservations"
-      }
+      {"@type": "Offer", "name": "Alfred Gold", "price": "9.99", "priceCurrency": "USD", "description": "Full app access, AI concierge, restaurant bookings, venue catalog"},
+      {"@type": "Offer", "name": "Alfred Platinum", "price": "99", "priceCurrency": "USD", "description": "Skip the line, VIP treatment, strategic table placement, dedicated concierge"},
+      {"@type": "Offer", "name": "Alfred Centurion", "description": "Invite only. Dedicated personal agent, 24/7 WhatsApp, worldwide VIP, impossible reservations"}
     ],
     "aggregateRating": {
       "@type": "AggregateRating",
@@ -84,47 +126,265 @@
       "ratingCount": "2400",
       "bestRating": "5"
     },
-    "author": {
-      "@type": "Organization",
-      "name": "Alfred Concierge",
-      "url": "https://alfredconcierge.app"
-    }
+    "author": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"}
   }
   </script>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Alfred Concierge",
-    "url": "https://alfredconcierge.app",
-    "logo": "https://alfredconcierge.app/favicon.svg",
-    "description": "Luxury concierge service connecting members with the world's best restaurants, nightlife, private aviation, exotic cars and wellness experiences.",
-    "areaServed": ["Miami", "Paris", "Dubai", "London", "New York"],
-    "serviceType": ["Concierge Service", "Restaurant Reservations", "Private Jet Charter", "Luxury Car Rental", "VIP Nightlife Access", "Wellness Booking"]
-  }
-  </script>
-
+  <!-- JSON-LD: WebSite + SearchAction -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Alfred Concierge",
+    "alternateName": "Alfred",
     "url": "https://alfredconcierge.app",
+    "description": "Luxury concierge app for restaurants, nightlife, private jets, exotic cars, yachts and wellness.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://alfredconcierge.app/catalog?q={search_term_string}",
+      "target": {"@type": "EntryPoint", "urlTemplate": "https://alfredconcierge.app/catalog?q={search_term_string}"},
       "query-input": "required name=search_term_string"
     }
+  }
+  </script>
+
+  <!-- JSON-LD: Events (Monaco GP, Miami GP, etc.) -->
+  <script type="application/ld+json">
+  [{
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Monaco Grand Prix 2026 — VIP Hospitality by Alfred",
+    "description": "Exclusive VIP hospitality at the Monaco Grand Prix 2026. Private lounge overlooking the Swimming Pool chicane, caviar & champagne service, private chef, premium catering, helicopter transfers from Nice, and after-party VIP access. Limited to 12 spots.",
+    "startDate": "2026-06-05",
+    "endDate": "2026-06-07",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "location": {"@type": "Place", "name": "Circuit de Monaco", "address": {"@type": "PostalAddress", "addressLocality": "Monte Carlo", "addressCountry": "MC"}},
+    "image": "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Monaco%20grand%20prix.jpeg",
+    "organizer": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "offers": {"@type": "Offer", "url": "https://alfredconcierge.app/events/monaco-grand-prix", "availability": "https://schema.org/LimitedAvailability", "validFrom": "2025-12-01"},
+    "url": "https://alfredconcierge.app/events/monaco-grand-prix"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Miami Grand Prix 2026 — VIP Hospitality by Alfred",
+    "description": "Track-side luxury hospitality suite overlooking Turn 1 at the Miami Grand Prix. Direct paddock access, celebrity after-race parties at LIV, Story, and E11even. Personal concierge all weekend. Limited to 8 spots.",
+    "startDate": "2026-05-01",
+    "endDate": "2026-05-03",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "location": {"@type": "Place", "name": "Miami International Autodrome", "address": {"@type": "PostalAddress", "addressLocality": "Miami Gardens", "addressRegion": "FL", "addressCountry": "US"}},
+    "image": "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",
+    "organizer": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "offers": {"@type": "Offer", "url": "https://alfredconcierge.app/events/miami-grand-prix", "availability": "https://schema.org/LimitedAvailability", "validFrom": "2025-11-01"},
+    "url": "https://alfredconcierge.app/events/miami-grand-prix"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Ibiza Opening 2026 — VIP Season Pass by Alfred",
+    "description": "Season opening week across Hï Ibiza, Ushuaïa, Pacha & Amnesia. VIP tables, front-row Ushuaïa access, private villa with chef, artist meet & greets, and yacht day party.",
+    "startDate": "2026-05-01",
+    "endDate": "2026-06-30",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "location": {"@type": "Place", "name": "Ibiza", "address": {"@type": "PostalAddress", "addressLocality": "Ibiza", "addressCountry": "ES"}},
+    "organizer": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "offers": {"@type": "Offer", "url": "https://alfredconcierge.app/events/ibiza-opening", "availability": "https://schema.org/LimitedAvailability"},
+    "url": "https://alfredconcierge.app/events/ibiza-opening"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Roland Garros 2026 — Private Box by Alfred",
+    "description": "Courtside VIP hospitality at the French Open. Private box seats in Philippe Chatrier, champagne terraces, Michelin dining experience, player lounge entry, and chauffeur transfers.",
+    "startDate": "2026-05-18",
+    "endDate": "2026-06-07",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "location": {"@type": "Place", "name": "Stade Roland Garros", "address": {"@type": "PostalAddress", "addressLocality": "Paris", "addressCountry": "FR"}},
+    "organizer": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "offers": {"@type": "Offer", "url": "https://alfredconcierge.app/events/roland-garros", "availability": "https://schema.org/LimitedAvailability"},
+    "url": "https://alfredconcierge.app/events/roland-garros"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Royal Ascot 2026 — VIP Royal Enclosure by Alfred",
+    "description": "The Royal Enclosure experience at Royal Ascot. Private box for 12, Michelin chefs, helicopter from central London, and Savile Row styling consultation included.",
+    "startDate": "2026-06-16",
+    "endDate": "2026-06-20",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "location": {"@type": "Place", "name": "Ascot Racecourse", "address": {"@type": "PostalAddress", "addressLocality": "Ascot", "addressCountry": "GB"}},
+    "organizer": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "offers": {"@type": "Offer", "url": "https://alfredconcierge.app/events/royal-ascot", "availability": "https://schema.org/LimitedAvailability"},
+    "url": "https://alfredconcierge.app/events/royal-ascot"
+  }]
+  </script>
+
+  <!-- JSON-LD: Service (for AI discovery) -->
+  <script type="application/ld+json">
+  [{
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Alfred Concierge — Miami Luxury Concierge",
+    "description": "The best luxury concierge service in Miami. Restaurant reservations at top Miami restaurants, VIP nightlife tables at LIV, E11even, Story, exotic car rentals (Ferrari, Lamborghini), yacht charters, private jet bookings, and wellness experiences. Real human concierge available 24/7 via WhatsApp.",
+    "provider": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "serviceType": "Luxury Concierge",
+    "areaServed": {"@type": "City", "name": "Miami"},
+    "url": "https://alfredconcierge.app",
+    "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Miami Services", "itemListElement": [
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Miami Restaurant Reservations", "description": "Book the best restaurants in Miami — impossible reservations, Michelin-starred dining, waterfront tables, and private dining rooms"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Miami VIP Nightlife", "description": "VIP tables and bottle service at LIV Miami, E11even, Story, Club Space, Hyde Beach and more"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Miami Exotic Car Rental", "description": "Rent Ferrari, Lamborghini, Rolls Royce, McLaren, Porsche, and luxury cars in Miami. Delivered to your door."}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Miami Yacht Charter", "description": "Private yacht charters and boat rentals in Miami, Biscayne Bay, and the Florida Keys"}},
+      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Miami Private Jet", "description": "Private jet charters from Miami, Opa-Locka, Fort Lauderdale. Empty leg deals available."}}
+    ]}
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Alfred Concierge — Paris Luxury Concierge",
+    "description": "The best luxury concierge service in Paris. Michelin restaurant reservations, VIP nightlife at Raspoutine, Castel, L'Arc, CoCo Club, private jet charters, exotic car rentals, and luxury experiences. 24/7 concierge via WhatsApp.",
+    "provider": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "serviceType": "Luxury Concierge",
+    "areaServed": {"@type": "City", "name": "Paris"},
+    "url": "https://alfredconcierge.app"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Monaco Grand Prix Tickets & VIP Hospitality",
+    "description": "Buy Monaco Grand Prix 2026 tickets and VIP hospitality packages through Alfred Concierge. Private lounge on the Swimming Pool chicane, paddock access, helicopter transfers, caviar & champagne service, after-party VIP. Limited availability.",
+    "provider": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "serviceType": "Event Hospitality",
+    "areaServed": {"@type": "City", "name": "Monte Carlo"},
+    "url": "https://alfredconcierge.app/events/monaco-grand-prix"
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Miami Grand Prix Tickets & VIP Hospitality",
+    "description": "Miami Grand Prix 2026 VIP hospitality packages. Track-side luxury suite at Turn 1, paddock access, after-race parties at LIV and E11even, personal concierge. Book through Alfred.",
+    "provider": {"@type": "Organization", "name": "Alfred Concierge", "url": "https://alfredconcierge.app"},
+    "serviceType": "Event Hospitality",
+    "areaServed": {"@type": "City", "name": "Miami"},
+    "url": "https://alfredconcierge.app/events/miami-grand-prix"
+  }]
+  </script>
+
+  <!-- JSON-LD: FAQ (for rich snippets + AI) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Alfred Concierge?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Alfred is a luxury concierge app that connects members with the world's best restaurants, VIP nightlife, private jets, exotic car rentals, yacht charters, and wellness experiences. Available in Miami, Paris, Dubai, and London with a real human concierge available 24/7 via WhatsApp."}
+      },
+      {
+        "@type": "Question",
+        "name": "How do I book a restaurant through Alfred?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Simply tell Alfred what you want — a table at a specific restaurant, cuisine type, or vibe — and your dedicated concierge handles everything. Alfred can secure impossible reservations at Michelin-starred restaurants, arrange private dining rooms, and ensure VIP treatment."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can Alfred get me VIP tables at LIV Miami or E11even?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Alfred has direct relationships with LIV Miami, E11even, Story, Club Space, Hyde Beach, and every top nightclub in Miami. We arrange VIP tables, bottle service, guestlist access, and after-party arrangements."}
+      },
+      {
+        "@type": "Question",
+        "name": "How do I rent an exotic car in Miami through Alfred?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Alfred offers Ferrari, Lamborghini, Rolls Royce, McLaren, Porsche, and other exotic car rentals in Miami delivered to your door. Browse our catalog, pick your car and dates, and Alfred handles the rest — including insurance and delivery."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can Alfred book Monaco Grand Prix tickets?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Alfred offers exclusive VIP hospitality packages for the Monaco Grand Prix 2026 including private lounge on the Swimming Pool chicane, caviar & champagne service, private chef, helicopter transfers from Nice, and after-party VIP access. Limited to 12 spots."}
+      },
+      {
+        "@type": "Question",
+        "name": "Does Alfred operate in Paris?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Alfred is fully operational in Paris with access to the best restaurants, VIP nightlife at Raspoutine, Castel, L'Arc, CoCo Club and Le Carmen, exotic car rentals, and luxury experiences including Roland Garros hospitality."}
+      },
+      {
+        "@type": "Question",
+        "name": "How do I charter a yacht through Alfred?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Alfred offers luxury yacht charters and boat rentals in Miami, the French Riviera, Ibiza, and Monaco. Browse our yacht catalog, select your preferred vessel, dates and route — and Alfred handles everything from crew to catering."}
+      },
+      {
+        "@type": "Question",
+        "name": "What is the best luxury concierge app?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Alfred is rated 4.9 stars by over 2,400 members and is considered one of the best luxury concierge apps available. Unlike other services, Alfred provides a real human concierge available 24/7 via WhatsApp, covering restaurants, nightlife, private jets, exotic cars, yachts, wellness, and exclusive events across Miami, Paris, Dubai, and London."}
+      },
+      {
+        "@type": "Question",
+        "name": "How much does Alfred cost?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Alfred offers three membership tiers: Gold ($9.99/month) with full app access and AI concierge, Platinum ($99/month) with VIP treatment and dedicated concierge, and Centurion (invite only) with a personal agent available 24/7 worldwide."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I book Miami Grand Prix hospitality through Alfred?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Alfred offers VIP hospitality at the Miami Grand Prix 2026 including a track-side luxury suite at Turn 1, Paddock Club access, after-race parties at LIV and E11even, supercar parade entry, and a personal concierge all weekend."}
+      }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://alfredconcierge.app"},
+      {"@type": "ListItem", "position": 2, "name": "Catalog", "item": "https://alfredconcierge.app/catalog"},
+      {"@type": "ListItem", "position": 3, "name": "Events", "item": "https://alfredconcierge.app/events"},
+      {"@type": "ListItem", "position": 4, "name": "Business", "item": "https://alfredconcierge.app/business"}
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: ItemList for catalog categories -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Alfred Concierge Catalog",
+    "description": "Browse luxury experiences available through Alfred Concierge",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Dining", "url": "https://alfredconcierge.app/catalog/dining", "description": "Michelin-starred restaurants and VIP dining reservations"},
+      {"@type": "ListItem", "position": 2, "name": "Nightlife", "url": "https://alfredconcierge.app/catalog/nightlife", "description": "VIP tables, bottle service and nightclub access"},
+      {"@type": "ListItem", "position": 3, "name": "Exotic Cars", "url": "https://alfredconcierge.app/catalog/exotic-cars", "description": "Ferrari, Lamborghini, Rolls Royce and supercar rentals"},
+      {"@type": "ListItem", "position": 4, "name": "Private Jets", "url": "https://alfredconcierge.app/catalog/jets", "description": "Private jet charters and luxury aviation"},
+      {"@type": "ListItem", "position": 5, "name": "Yachts", "url": "https://alfredconcierge.app/catalog/yachts", "description": "Luxury yacht charters and boat rentals"},
+      {"@type": "ListItem", "position": 6, "name": "Wellness", "url": "https://alfredconcierge.app/catalog/wellness", "description": "Premium spa, fitness and wellness experiences"}
+    ]
   }
   </script>
 </head>
 <body style="margin:0;background:#0A0A0B">
   <noscript>
     <div style="background:#0A0A0B;color:#F4F4F5;padding:40px;text-align:center;font-family:system-ui">
-      <h1>Alfred Concierge</h1>
-      <p>Luxury concierge app for restaurants, nightlife, private jets, exotic cars & wellness.</p>
-      <p>Please enable JavaScript to use Alfred.</p>
+      <h1>Alfred Concierge — Luxury Concierge App</h1>
+      <p>Book the best restaurants, VIP nightlife, private jets, exotic cars, yachts & wellness in Miami, Paris, Dubai & London.</p>
+      <h2>Our Services</h2>
+      <p><a href="/catalog/dining">Restaurant Reservations</a> — Michelin-starred restaurants, impossible reservations, private dining rooms</p>
+      <p><a href="/catalog/nightlife">VIP Nightlife</a> — LIV Miami, E11even, Story, Raspoutine Paris, VIP tables & bottle service</p>
+      <p><a href="/catalog/exotic-cars">Exotic Car Rental</a> — Ferrari, Lamborghini, Rolls Royce, McLaren rentals in Miami</p>
+      <p><a href="/catalog/jets">Private Jets</a> — Private jet charters worldwide</p>
+      <p><a href="/catalog/yachts">Yacht Charter</a> — Luxury yachts in Miami, Monaco, Ibiza</p>
+      <p><a href="/catalog/wellness">Wellness & Spa</a> — Premium spa and wellness experiences</p>
+      <h2>Featured Events</h2>
+      <p><a href="/events/monaco-grand-prix">Monaco Grand Prix 2026 VIP Hospitality</a> — June 5–7, 2026</p>
+      <p><a href="/events/miami-grand-prix">Miami Grand Prix 2026 VIP Hospitality</a> — May 1–3, 2026</p>
+      <p><a href="/events/ibiza-opening">Ibiza Opening 2026</a></p>
+      <p><a href="/events/roland-garros">Roland Garros 2026 Private Box</a></p>
+      <p><a href="/events/royal-ascot">Royal Ascot 2026 VIP</a></p>
+      <p>Contact us on <a href="https://wa.me/447449562204">WhatsApp</a></p>
     </div>
   </noscript>
   <div id="root"></div>

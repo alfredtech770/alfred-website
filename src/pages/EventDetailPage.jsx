@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import SEOHead from "../components/SEOHead";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -124,6 +125,7 @@ export default function EventDetailPage(){
 
   return(
     <div style={{background:C.bg,color:C.s1,minHeight:"100vh",overflowX:"hidden"}}>
+      <SEOHead title={V.name+" — VIP Tickets & Hospitality | Alfred"} description={V.desc} path={"/events/"+V.slug} keywords={"tickets "+V.name+", "+V.name+" VIP, "+V.name+" hospitality, "+V.name+" 2026"} />
       <style>{`
 @keyframes evtSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 @keyframes evtFadeIn{from{opacity:0}to{opacity:1}}

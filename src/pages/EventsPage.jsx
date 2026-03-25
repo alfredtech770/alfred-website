@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import SEOHead, { SEO } from "../components/SEOHead";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -80,6 +81,7 @@ export default function EventsPage(){
 
   return(
     <div style={{background:C.bg,color:C.s1,minHeight:"100vh"}}>
+      <SEOHead {...SEO.events}/>
       <style>{`
 @keyframes evtCardIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 .evt-filters{scrollbar-width:none;-webkit-overflow-scrolling:touch}
