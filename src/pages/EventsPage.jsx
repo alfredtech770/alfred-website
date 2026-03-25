@@ -88,7 +88,7 @@ export default function EventsPage(){
 .evt-filters::-webkit-scrollbar{display:none}
 .evt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340,1fr));gap:24}
 @media(max-width:768px){
-  .evt-filters{padding:24px 16px 0!important;justify-content:flex-start!important;overflow-x:auto!important;flex-wrap:nowrap!important}
+  .evt-filters{padding:24px 24px 0!important;justify-content:flex-start!important;overflow-x:auto!important;flex-wrap:nowrap!important;gap:6px!important}
   .evt-grid{grid-template-columns:1fr;padding:0 16px!important}
 }
       `}</style>
