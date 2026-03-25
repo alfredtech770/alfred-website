@@ -144,7 +144,7 @@ export default function FeaturedEvents(){
         </div>
 
         {/* Image */}
-        <div style={{height:mob?200:260,margin:mob?"0 10px":"0 16px",borderRadius:mob?14:18,overflow:"hidden",position:"relative"}}>
+        <div style={{height:mob?320:260,margin:mob?"0 10px":"0 16px",borderRadius:mob?14:18,overflow:"hidden",position:"relative"}}>
           {EVENTS.map(function(evt,i){
             var isActive=i===idx;
             return <div key={i} style={{position:"absolute",inset:0,opacity:isActive?1:0,transform:isActive?"scale(1)":"scale(1.06)",transition:"opacity 0.9s ease, transform 6s ease",zIndex:isActive?2:1}}>
