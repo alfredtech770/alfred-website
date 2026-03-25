@@ -267,6 +267,11 @@ var JETS=[
 
 var SORT_OPTIONS=["Featured","Price: Low","Price: High","Range","Passengers"];
 
+var BRANDS=["Bombardier","Gulfstream","Embraer","Dassault","Cessna"];
+function stripBrand(name){for(var i=0;i<BRANDS.length;i++){if(name.indexOf(BRANDS[i])===0)return name.slice(BRANDS[i].length+1)}return name}
+
+var CATEGORY_ORDER=["Light Jet","Super Midsize","Large Cabin","Long Range","Ultra Long Range","VIP Airliner"];
+
 function FilterDrop(p){
   var [open,setOpen]=useState(false);
   var ref=useRef(null);
@@ -325,7 +330,7 @@ function JetCard(p){
       <div style={{padding:"18px 20px 22px"}}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:6}}>
           <div style={{flex:1,minWidth:0}}>
-            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{j.name}</h3>
+            <h3 style={{...sf(20,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{stripBrand(j.name)}</h3>
             <p style={{...sf(12),color:C.s5,marginBottom:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{j.tagline}</p>
           </div>
           <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
@@ -471,15 +476,34 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
         </div>}
       </div>
 
-      <div ref={gridRef} className="j-grid" style={{paddingBottom:80}}>
+      <div ref={gridRef} style={{paddingBottom:80,maxWidth:1060,margin:"0 auto",padding:"0 40px 80px"}}>
         {filtered.length===0?(
-          <div style={{gridColumn:"1 / -1",textAlign:"center",padding:"60px 20px"}}>
+          <div style={{textAlign:"center",padding:"60px 20px"}}>
             <div style={{fontSize:40,marginBottom:16}}>✈️</div>
             <h3 style={{...sf(20,600),color:C.s3,marginBottom:8}}>No aircraft match</h3>
             <p style={{...sf(14),color:C.s5,marginBottom:24}}>Try adjusting your filters.</p>
             <div onClick={clearAll} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,cursor:"pointer",...sf(13,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>Clear all filters</div>
           </div>
-        ):filtered.map(function(j,i){return <JetCard key={j.name} j={j} i={i} vis={gridVis}/>})}
+        ):(function(){
+          var grouped={};var cardIndex=0;
+          filtered.forEach(function(j){if(!grouped[j.type])grouped[j.type]=[];grouped[j.type].push(j)});
+          var cats=CATEGORY_ORDER.filter(function(c){return grouped[c]});
+          return cats.map(function(cat,ci){
+            return(
+              <div key={cat}>
+                {ci>0&&<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)",margin:"48px 0 40px"}}/>}
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+                  <h2 style={{...sf(14,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",whiteSpace:"nowrap"}}>{cat}</h2>
+                  <div style={{flex:1,height:1,background:C.bd,opacity:0.5}}/>
+                  <span style={{...sf(11,500),color:C.s6,whiteSpace:"nowrap"}}>{grouped[cat].length} aircraft{grouped[cat].length!==1?"s":""}</span>
+                </div>
+                <div className="j-grid" style={{maxWidth:"none",margin:0,padding:0}}>
+                  {grouped[cat].map(function(j){var idx=cardIndex++;return <JetCard key={j.name} j={j} i={idx} vis={gridVis}/>})}
+                </div>
+              </div>
+            );
+          });
+        })()}
       </div>
 
       <section ref={ctaRef} style={{padding:"100px 0 120px",position:"relative"}}><div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
