@@ -82,6 +82,13 @@ export default function EventsPage(){
     <div style={{background:C.bg,color:C.s1,minHeight:"100vh"}}>
       <style>{`
 @keyframes evtCardIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.evt-filters{scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.evt-filters::-webkit-scrollbar{display:none}
+.evt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340,1fr));gap:24}
+@media(max-width:768px){
+  .evt-filters{padding:24px 16px 0!important;justify-content:flex-start!important;overflow-x:auto!important;flex-wrap:nowrap!important}
+  .evt-grid{grid-template-columns:1fr;padding:0 16px!important}
+}
       `}</style>
 
       {/* Header */}
@@ -101,7 +108,7 @@ export default function EventsPage(){
       </div>
 
       {/* Filters */}
-      <div style={{display:"flex",justifyContent:"center",gap:8,padding:"36px 40px 0",opacity:loaded?1:0,transition:"all 0.8s ease 0.3s"}}>
+      <div className="evt-filters" style={{display:"flex",justifyContent:"center",gap:8,padding:"36px 40px 0",opacity:loaded?1:0,transition:"all 0.8s ease 0.3s"}}>
         {TAGS.map(function(tag){
           var active=filter===tag;
           return <div key={tag} onClick={function(){setFilter(tag)}} style={{padding:"7px 18px",borderRadius:10,cursor:"pointer",background:active?"rgba(244,244,245,0.08)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.15)":C.bd),...sf(12,active?600:400),color:active?C.s1:C.s5,transition:"all 0.3s"}} onMouseEnter={function(e){if(!active)e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){if(!active)e.currentTarget.style.borderColor=C.bd}}>
@@ -111,7 +118,7 @@ export default function EventsPage(){
       </div>
 
       {/* Grid */}
-      <div ref={gridRef} style={{maxWidth:1100,margin:"0 auto",padding:"48px 40px 80px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340,1fr))",gap:24}}>
+      <div ref={gridRef} className="evt-grid" style={{maxWidth:1100,margin:"0 auto",padding:"48px 40px 80px"}}>
         {filtered.map(function(evt,i){
           return <EventCard key={evt.slug} evt={evt} vis={gridVis} delay={i*0.1}/>
         })}
