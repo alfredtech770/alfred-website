@@ -1,3 +1,4 @@
+/* Jets catalog — grouped by category */
 import { useState, useEffect, useRef } from "react";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
