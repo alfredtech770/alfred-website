@@ -420,9 +420,9 @@ function WaitlistModal(p){
   function submitWaitlist(){
     if(!formData.name.trim()||!formData.whatsapp.trim())return;
     setFormLoading(true);
-    fetch("https://a.klaviyo.com/client/subscriptions/?company_id=YOUR_PUBLIC_KEY",{
+    fetch("https://a.klaviyo.com/client/subscriptions/?company_id=RcviU7",{
       method:"POST",headers:{"Content-Type":"application/json","revision":"2024-02-15"},
-      body:JSON.stringify({data:{type:"subscription",attributes:{custom_source:"Alfred Waitlist",profile:{data:{type:"profile",attributes:{first_name:formData.name,phone_number:countryCode+formData.whatsapp.replace(/\D/g,""),email:formData.email||undefined,properties:{waitlist:true,source:"website"}}}}},relationships:{list:{data:{type:"list",id:"YOUR_KLAVIYO_LIST_ID"}}}}})
+      body:JSON.stringify({data:{type:"subscription",attributes:{custom_source:"Alfred Waitlist",profile:{data:{type:"profile",attributes:{first_name:formData.name,phone_number:countryCode+formData.whatsapp.replace(/\D/g,""),email:formData.email||undefined,properties:{waitlist:true,source:"website"}}}}},relationships:{list:{data:{type:"list",id:"WeK9YR"}}}}})
     }).catch(function(e){console.log("Klaviyo error:",e)}).finally(function(){setFormLoading(false);setFormSent(true)});
   }
   if(!p.open)return null;
