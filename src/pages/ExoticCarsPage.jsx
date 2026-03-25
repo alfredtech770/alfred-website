@@ -181,7 +181,7 @@ function CarCard(p){
   function goDetail(){sessionStorage.setItem("alfred_car_"+carSlug,JSON.stringify(car));window.location.href="/catalog/exotic-cars/"+carSlug}
   function goWA(e){e.stopPropagation();window.open("https://wa.me/447449562204?text="+encodeURIComponent("Hi Alfred, I'm interested in renting the "+car.name+". Could you let me know about availability and pricing?"),"_blank")}
   return(
-    <div onClick={goDetail} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+    <div onClick={goDetail} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",display:"flex",flexDirection:"column",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
       <div style={{height:260,position:"relative",overflow:"hidden",flexShrink:0}}>
         <img src={car.img} alt={car.brand+" "+car.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 40%",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:"brightness(1.25)"}} loading="lazy"/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(10,10,11,0.7) 100%)"}}/>
@@ -223,7 +223,7 @@ function CarCard(p){
           })}
         </div>
         <div style={{marginTop:"auto",paddingTop:14}}>
-          <div onClick={goWA} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:btnHover?C.s1:"transparent",border:"1px solid "+(btnHover?C.s1:C.bd),cursor:"pointer",...sf(13,600),color:btnHover?C.bg:C.s4,transition:"all 0.4s"}} onMouseEnter={function(){setBtnHover(true)}} onMouseLeave={function(){setBtnHover(false)}}>
+          <div onClick={goWA} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:btnHover?C.s1:"transparent",border:"1px solid "+(btnHover?C.s1:C.bd),cursor:"pointer",...sf(13,600),color:btnHover?C.bg:C.s4,transition:"all 0.4s",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setBtnHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setBtnHover(false)}}>
             {car.available?"Book This Car":"Join Waitlist"}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
           </div>
