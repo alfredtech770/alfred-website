@@ -20,6 +20,9 @@ import YachtDetailPage from "./pages/YachtDetailPage";
 import FeaturedEvents from "./pages/FeaturedEvents";
 import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
+import BlogPage from "./pages/BlogPage";
+import BlogPost from "./pages/BlogPost";
+import CityPage from "./pages/CityPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -396,6 +399,9 @@ export default function App(){
         <Route path="/catalog/yachts/:id" element={<YachtDetailPage/>}/>
         <Route path="/events" element={<EventsPage/>}/>
         <Route path="/events/:slug" element={<EventDetailPage/>}/>
+        <Route path="/blog" element={<BlogPage/>}/>
+        <Route path="/blog/:slug" element={<BlogPost/>}/>
+        <Route path="/city/:slug" element={<CityPage/>}/>
       </Routes>
     </BrowserRouter>
   );
@@ -1079,7 +1085,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* Explore */}
             <div>
               <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
-              {["How it Works","Events","Membership","Catalog","Business"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Events"?"/events":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
+              {["How it Works","Events","Catalog","Blog","Business"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Events"?"/events":l==="Blog"?"/blog":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
             </div>
 
             {/* Follow us */}
