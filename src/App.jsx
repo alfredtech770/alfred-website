@@ -514,6 +514,7 @@ function AlfredSite(){
   var [annual,setAnnual]=useState(false);
   var [modalCat,setModalCat]=useState(null);
   var [showWaitlist,setShowWaitlist]=useState(false);
+  var [mobileMenu,setMobileMenu]=useState(false);
 
   var stepsRef=useRef(null);
   var showRef=useRef(null);
@@ -749,6 +750,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 @media(max-width:640px){
   .hero-title{font-size:14vw!important;letter-spacing:0.5px!important}
   .hero-nav{display:none!important}
+  .mob-menu-btn{display:flex!important}
   .hero-corner{display:none!important}
   .hero-scroll-l,.hero-scroll-r{display:none!important}
   .hero-tagline{font-size:13px!important;max-width:280px!important;margin-top:24px!important}
@@ -817,6 +819,10 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.8s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:32,left:40,zIndex:10,animation:loaded?"slideFromLeft 1s cubic-bezier(0.16,1,0.3,1) 0.3s both":"none"}}><DrawMark size={22} color={C.s1} active={loaded} delay={0.5} id="mg1"/></div>
         <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Events","Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Events"?"/events":item==="Contact"?"https://wa.me/447449562204":"#"+item.toLowerCase();return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
+        {/* Mobile hamburger button */}
+        <div className="mob-menu-btn" onClick={function(){setMobileMenu(true)}} style={{position:"absolute",top:32,right:20,zIndex:110,display:"none",alignItems:"center",justifyContent:"center",width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer",animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </div>
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
           <div style={{textAlign:"center",transform:"translateY("+(heroY+my)+"px) translateX("+mx+"px) scale("+heroScale+")",opacity:heroOp,filter:"blur("+heroBlur+"px)",willChange:"transform,opacity,filter",transition:"transform 0.5s cubic-bezier(0.16,1,0.3,1)"}}>
             <p className="hero-label" style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
@@ -837,6 +843,29 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div className="hero-scroll-l" style={{position:"absolute",bottom:36,left:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.4s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr",transform:"rotate(180deg)"}}>Scroll</span></div>
         <div className="hero-scroll-r" style={{position:"absolute",bottom:36,right:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.5s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr"}}>©2026</span></div>
       </section>
+
+      {/* ═══ MOBILE MENU OVERLAY ═══ */}
+      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(10,10,11,0.97)",backdropFilter:"blur(40px) saturate(1.3)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"menuFadeIn 0.3s ease"}}>
+        <style>{`@keyframes menuFadeIn{from{opacity:0}to{opacity:1}}@keyframes menuSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`}</style>
+        {/* Close button */}
+        <div onClick={function(){setMobileMenu(false)}} style={{position:"absolute",top:32,right:20,width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </div>
+        {/* Logo */}
+        <div style={{marginBottom:48,animation:"menuSlideUp 0.5s ease 0.1s both"}}><PMark size={28} color={C.s1}/></div>
+        {/* Menu links */}
+        {["Events","Membership","Catalog","Business","Contact"].map(function(item,i){
+          var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Events"?"/events":item==="Contact"?"https://wa.me/447449562204":"#"+item.toLowerCase();
+          return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(24,500),color:C.s4,letterSpacing:1,textDecoration:"none",padding:"16px 0",display:"block",textAlign:"center",animation:"menuSlideUp 0.5s ease "+(0.15+i*0.06)+"s both",transition:"color 0.3s"}}>{item}</a>
+        })}
+        {/* CTA */}
+        <div style={{marginTop:40,animation:"menuSlideUp 0.5s ease 0.5s both"}}>
+          <div onClick={function(){setMobileMenu(false);setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 32px",borderRadius:14,background:C.s1,...sf(14,700),color:C.bg,cursor:"pointer"}}>
+            <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+            Download on the App Store
+          </div>
+        </div>
+      </div>}
 
       {/* ═══ FEATURED EVENTS ═══ */}
       <FeaturedEvents/>
@@ -1276,6 +1305,8 @@ textarea{resize:vertical;min-height:100px}
   .stats-row{grid-template-columns:1fr 1fr!important}
   .form-grid{grid-template-columns:1fr!important}
   .why-grid{grid-template-columns:1fr!important;gap:14px!important}
+  .biz-nav-links{display:none!important}
+  .biz-menu-btn{display:flex!important}
   .hero-t{font-size:36px!important;letter-spacing:-1px!important}
   .hero-sub{font-size:14px!important;max-width:340px!important}
   .step-row{flex-direction:column!important;gap:32px!important}
@@ -1295,11 +1326,30 @@ textarea{resize:vertical;min-height:100px}
       {/* ═══ NAV ═══ */}
       <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><PMark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
-        <div style={{display:"flex",alignItems:"center",gap:20}}>
+        <div className="biz-nav-links" style={{display:"flex",alignItems:"center",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
           <a href="#apply" style={{padding:"10px 20px",borderRadius:12,...sf(11,600),color:C.bg,background:C.s1,transition:"transform 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)"}}>Apply Now</a>
         </div>
+        <div className="biz-menu-btn" onClick={function(){setMobileMenu(true)}} style={{display:"none",alignItems:"center",justifyContent:"center",width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </div>
       </nav>
+
+      {/* ═══ MOBILE MENU (Business) ═══ */}
+      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(10,10,11,0.97)",backdropFilter:"blur(40px) saturate(1.3)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"menuFadeIn 0.3s ease"}}>
+        <style>{`@keyframes menuFadeIn{from{opacity:0}to{opacity:1}}@keyframes menuSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`}</style>
+        <div onClick={function(){setMobileMenu(false)}} style={{position:"absolute",top:32,right:20,width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </div>
+        <div style={{marginBottom:48,animation:"menuSlideUp 0.5s ease 0.1s both"}}><PMark size={28} color={C.s1}/></div>
+        {["Home","Events","Catalog","Business","Contact"].map(function(item,i){
+          var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Events"?"/events":item==="Home"?"/":item==="Contact"?"https://wa.me/447449562204":"#"+item.toLowerCase();
+          return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(24,500),color:C.s4,letterSpacing:1,textDecoration:"none",padding:"16px 0",display:"block",textAlign:"center",animation:"menuSlideUp 0.5s ease "+(0.15+i*0.06)+"s both",transition:"color 0.3s"}}>{item}</a>
+        })}
+        <div style={{marginTop:40,animation:"menuSlideUp 0.5s ease 0.5s both"}}>
+          <a href="#apply" onClick={function(){setMobileMenu(false)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 32px",borderRadius:14,background:C.s1,...sf(14,700),color:C.bg,textDecoration:"none"}}>Apply Now</a>
+        </div>
+      </div>}
 
       {/* ═══ HERO ═══ */}
       <section style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden",padding:"0 40px"}}>
@@ -1768,6 +1818,7 @@ function AlfredCatalog() {
   var [selected, setSelected] = useState(null);
   var [loaded, setLoaded] = useState(false);
   var [scrollY, setScrollY] = useState(0);
+  var [mobileMenu, setMobileMenu] = useState(false);
 
   useEffect(function(){ setTimeout(function(){ setLoaded(true); }, 100); }, []);
   useEffect(function(){
@@ -1791,6 +1842,8 @@ body::-webkit-scrollbar{width:0}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes menuFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes menuSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1100px;margin:0 auto;padding:0 40px}
 .cat-card{aspect-ratio:3/4}
 @media(max-width:1024px){
@@ -1807,6 +1860,8 @@ body::-webkit-scrollbar{width:0}
   .detail-hero{height:280px!important}
   .detail-title{font-size:32px!important}
   .modal-item{padding:16px 20px!important}
+  .cat-nav-links{display:none!important}
+  .cat-menu-btn{display:flex!important}
 }
 @media(max-width:390px){
   .cat-grid{grid-template-columns:repeat(2,1fr);padding:0 16px;gap:10px}
@@ -1824,12 +1879,31 @@ body::-webkit-scrollbar{width:0}
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}>
           <CDrawMark size={22} color={C.s1}/>
         </a>
-        <div style={{display:"flex",alignItems:"center",gap:28}}>
+        <div className="cat-nav-links" style={{display:"flex",alignItems:"center",gap:28}}>
           <a href="/" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
           <div style={{...sf(11,400),color:C.s1,letterSpacing:0.3}}>Catalog</div>
           <a href="/" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,...sf(11,500),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1}}>Download App</a>
         </div>
+        <div className="cat-menu-btn" onClick={function(){setMobileMenu(true)}} style={{display:"none",alignItems:"center",justifyContent:"center",width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </div>
       </nav>
+
+      {/* ═══ MOBILE MENU ═══ */}
+      {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(10,10,11,0.97)",backdropFilter:"blur(40px) saturate(1.3)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",animation:"menuFadeIn 0.3s ease"}}>
+        <div onClick={function(){setMobileMenu(false)}} style={{position:"absolute",top:24,right:20,width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </div>
+        <div style={{marginBottom:48}}>
+          <CDrawMark size={28} color={C.s1}/>
+        </div>
+        {[{label:"Home",href:"/"},{label:"Events",href:"/#events"},{label:"Membership",href:"/#membership"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204"}].map(function(link,i){
+          return <a key={link.label} href={link.href} onClick={function(){setMobileMenu(false)}} style={{...sf(28,300),color:C.s1,letterSpacing:-0.5,marginBottom:20,opacity:0,animation:"menuSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.1+i*0.06)+"s forwards",textAlign:"center"}}>{link.label}</a>;
+        })}
+        <div style={{marginTop:32,opacity:0,animation:"menuSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards"}}>
+          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 32px",borderRadius:16,background:C.s1,color:C.bg,...sf(13,600),letterSpacing:0.2,transition:"transform 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="scale(1.03)"}} onMouseLeave={function(e){e.currentTarget.style.transform="scale(1)"}}>Download App</a>
+        </div>
+      </div>}
 
       {/* ═══ DETAIL VIEW ═══ */}
       {activeCat && (
