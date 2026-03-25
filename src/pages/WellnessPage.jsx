@@ -223,7 +223,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
             <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>
-          <span style={{...sf(12),color:C.s6,flexShrink:0,marginLeft:8}}>{filtered.length} venue{filtered.length!==1?"s":""}</span>
         </div>
         {activeFilters.length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:24}}>
           {activeFilters.map(function(f){return <span key={f} style={{...sf(11,500),color:C.s1,padding:"5px 12px",borderRadius:8,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.1)"}}>{f}</span>})}
