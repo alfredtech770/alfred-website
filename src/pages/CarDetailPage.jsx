@@ -91,8 +91,8 @@ export default function CarDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <SEOHead
-        title={CAR.name+" — Exotic Car Rental Miami | "+CAR.brand+" | Alfred"}
-        description={"Rent the "+CAR.name+" in Miami. "+CAR.hp+" hp supercar. Full insurance included. Delivered to your door."}
+        title={CAR.name+" Rental Miami — "+CAR.brand+" Exotic Car | Alfred Concierge"}
+        description={"Rent the "+CAR.name+" in Miami. "+CAR.hp+"hp, "+CAR.transmission+", "+CAR.drive+". Full insurance included. Delivered to your door. Book through Alfred Concierge."}
         path={"/catalog/exotic-cars/"+params.slug}
         jsonLd={[
           {
