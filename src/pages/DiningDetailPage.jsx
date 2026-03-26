@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
+import { supabase } from "../lib/supabase";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -47,6 +48,8 @@ export default function DiningDetailPage(){
   var [guests,setGuests]=useState("2");
   var [date,setDate]=useState("2026-03-20");
   var [time,setTime]=useState("20:00");
+  var [dbRestaurant,setDbRestaurant]=useState(null);
+  var [dbLoading,setDbLoading]=useState(false);
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var factsRef=useRef(null);var factsVis=useVis(factsRef);
@@ -58,37 +61,79 @@ export default function DiningDetailPage(){
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
+
+  /* Fetch from Supabase if sessionStorage is empty — needed for Google indexing */
+  useEffect(function(){
+    var hasSess=false;
+    try{hasSess=!!JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
+    if(hasSess)return;
+    setDbLoading(true);
+    supabase.from("restaurants").select("*").eq("slug",slug).single().then(function(res){
+      if(res.data){
+        var r=res.data;
+        var pl=r.price_level||0;
+        setDbRestaurant({
+          name:r.name||"",cuisine:r.cuisine||"",
+          price:pl===1?"$":pl===2?"$$":pl===3?"$$$":pl===4?"$$$$":"$$$$",
+          loc:r.city||r.location||r.loc||"",
+          vibe:r.vibe||"",rating:r.rating||0,reviews:r.review_count||r.reviews||0,
+          michelin:r.michelin_stars||r.michelin||0,
+          img:r.hero_image_url||r.image_url||r.img||"",tagline:r.tagline||"",
+          slug:r.slug||(r.id?String(r.id):""),
+          imgs:r.photos_order||r.gallery_photos||[r.hero_image_url||r.image_url||r.img].filter(Boolean),
+          available:r.available!==false,avg:r.avg_spend||r.avg||"",
+          chefName:r.chef_name||"",chefTitle:r.chef_title||"",chefNote:r.chef_note||"",
+          wineNote:r.wine_note||"",alfredNote:r.alfred_note||"",alfredTip:r.alfred_tip||"",
+          address:r.address||r.city||"",dressCode:r.dress_code||"",
+          hoursLunch:r.hours_lunch||"",hoursDinner:r.hours_dinner||"",hoursClosed:r.hours_closed||"",
+          atmNoise:r.atm_noise||0,atmIntimacy:r.atm_intimacy||0,atmFormality:r.atm_formality||0,atmScene:r.atm_scene||0,
+          bestFor:r.best_for||[],
+        });
+      }
+      setDbLoading(false);
+    });
+  },[slug]);
+
   var _sess=null;try{_sess=JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
-  var V=_sess?{
-    name:_sess.name,
-    tagline:_sess.tagline||("Fine dining · "+_sess.cuisine),
-    cuisine:_sess.cuisine,
-    address:_sess.address||_sess.loc,
-    rating:_sess.rating,
-    reviewCount:_sess.reviews,
-    priceLevel:_sess.price,
-    avgSpend:_sess.avg,
-    imgs:_sess.imgs||[_sess.img].filter(Boolean),
-    hours:{lunch:_sess.hoursLunch||"Check availability",dinner:_sess.hoursDinner||"Check availability",closed:_sess.hoursClosed||"Check availability"},
-    dressCode:_sess.dressCode==="formal"?"Smart Elegant":_sess.dressCode==="smart casual"?"Smart Casual":_sess.dressCode||"Smart Casual",
-    michelin:_sess.michelin||0,
-    alfredNote:_sess.alfredNote||("Contact Alfred to arrange your table at "+_sess.name+". We handle the reservation, seating preference, and any special occasions."),
-    alfredTip:_sess.alfredTip||"Mention Alfred at arrival for preferred treatment and the best available table.",
-    chef:_sess.chefName?{name:_sess.chefName,title:_sess.chefTitle||"Executive Chef",note:_sess.chefNote||""}:null,
+  var _src=_sess||dbRestaurant;
+
+  /* Show loading state while Supabase fetches (only when sessionStorage empty) */
+  if(dbLoading&&!_src){
+    return(<div style={{width:"100%",minHeight:"100vh",background:"#0A0A0B",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <span style={{color:"#71717A",fontFamily:"system-ui",fontSize:14}}>Loading…</span>
+    </div>);
+  }
+
+  var V=_src?{
+    name:_src.name,
+    tagline:_src.tagline||("Fine dining · "+_src.cuisine),
+    cuisine:_src.cuisine,
+    address:_src.address||_src.loc,
+    rating:_src.rating,
+    reviewCount:_src.reviews,
+    priceLevel:_src.price,
+    avgSpend:_src.avg,
+    imgs:_src.imgs||[_src.img].filter(Boolean),
+    hours:{lunch:_src.hoursLunch||"Check availability",dinner:_src.hoursDinner||"Check availability",closed:_src.hoursClosed||"Check availability"},
+    dressCode:_src.dressCode==="formal"?"Smart Elegant":_src.dressCode==="smart casual"?"Smart Casual":_src.dressCode||"Smart Casual",
+    michelin:_src.michelin||0,
+    alfredNote:_src.alfredNote||("Contact Alfred to arrange your table at "+_src.name+". We handle the reservation, seating preference, and any special occasions."),
+    alfredTip:_src.alfredTip||"Mention Alfred at arrival for preferred treatment and the best available table.",
+    chef:_src.chefName?{name:_src.chefName,title:_src.chefTitle||"Executive Chef",note:_src.chefNote||""}:null,
     dishes:[],
-    wineNote:_sess.wineNote||"",
+    wineNote:_src.wineNote||"",
     atmosphere:[
-      {label:"Noise",value:_sess.atmNoise||(_sess.vibe==="Scene"?72:_sess.vibe==="Casual"?55:30)},
-      {label:"Intimacy",value:_sess.atmIntimacy||(_sess.vibe==="Romantic"?92:_sess.vibe==="Formal"?75:55)},
-      {label:"Formality",value:_sess.atmFormality||(_sess.vibe==="Formal"?85:_sess.vibe==="Casual"?20:50)},
-      {label:"Scene",value:_sess.atmScene||(_sess.vibe==="Scene"?88:40)},
+      {label:"Noise",value:_src.atmNoise||(_src.vibe==="Scene"?72:_src.vibe==="Casual"?55:30)},
+      {label:"Intimacy",value:_src.atmIntimacy||(_src.vibe==="Romantic"?92:_src.vibe==="Formal"?75:55)},
+      {label:"Formality",value:_src.atmFormality||(_src.vibe==="Formal"?85:_src.vibe==="Casual"?20:50)},
+      {label:"Scene",value:_src.atmScene||(_src.vibe==="Scene"?88:40)},
     ],
-    bestFor:(_sess.bestFor&&_sess.bestFor.length>0)?_sess.bestFor:_sess.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_sess.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
+    bestFor:(_src.bestFor&&_src.bestFor.length>0)?_src.bestFor:_src.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_src.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
     reviews:[],
     facts:[
-      {icon:"💰",label:"Avg. spend",value:(_sess.avg||"N/A")+" / person"},
-      {icon:"🕐",label:"Best time",value:_sess.hoursDinner?"Dinner service":"Check availability"},
-      {icon:"👔",label:"Dress code",value:_sess.dressCode==="formal"?"Smart Elegant":"Smart Casual"},
+      {icon:"💰",label:"Avg. spend",value:(_src.avg||"N/A")+" / person"},
+      {icon:"🕐",label:"Best time",value:_src.hoursDinner?"Dinner service":"Check availability"},
+      {icon:"👔",label:"Dress code",value:_src.dressCode==="formal"?"Smart Elegant":"Smart Casual"},
       {icon:"👥",label:"Party size",value:"2 – 8 guests"},
     ],
   }:LE_CINQ;
@@ -101,8 +146,9 @@ export default function DiningDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" — Best Restaurant "+V.address+", Book Now | Alfred"}
-        description={"Book "+V.name+" through Alfred Concierge. "+V.cuisine+" dining in "+V.address+". Michelin-rated."}
+        title={V.name+" "+(V.address||"").toLowerCase().includes("paris")?"Paris":"Miami"+" — Book a Table | "+V.cuisine+" | Alfred Concierge"}
+        description={"Book a table at "+V.name+" in "+((V.address||"").toLowerCase().includes("paris")?"Paris":"Miami")+". "+V.cuisine+" restaurant. "+(V.michelin>0?V.michelin+" Michelin star"+(V.michelin>1?"s":"")+". ":"")+"Reserve through Alfred Concierge — instant confirmation, best table."}
+        image={V.imgs&&V.imgs[0]?V.imgs[0]:undefined}
         path={"/catalog/dining/"+slug}
         jsonLd={[
           {

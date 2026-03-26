@@ -3,6 +3,7 @@
 /**
  * Pre-rendering script for SEO optimization
  * Generates static HTML files for all routes by rendering with Puppeteer
+ * Also fetches dynamic routes (restaurants, yachts) from Supabase
  * Run after vite build: node prerender.js
  */
 
@@ -11,9 +12,35 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const http = require('http');
 const handler = require('serve-handler');
+const https = require('https');
 
-// Routes to pre-render
-const ROUTES = [
+// Supabase config
+const SUPABASE_URL = 'https://fbdgbnnkgyljehtccgaq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZGdibm5rZ3lsamVodGNjZ2FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjA5MzgsImV4cCI6MjA4MjMzNjkzOH0.NmlSkGMDZ-DmhV0bmSCFPQmuFNo4E5H-Sz1cjRyYs8Q';
+
+// Fetch all rows from a Supabase table
+function supabaseFetch(table, select) {
+  return new Promise((resolve) => {
+    const url = `${SUPABASE_URL}/rest/v1/${table}?select=${select||'*'}`;
+    const req = https.get(url, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); } catch(e) { resolve([]); }
+      });
+    });
+    req.on('error', () => resolve([]));
+  });
+}
+
+// Static routes to pre-render
+const STATIC_ROUTES = [
   '/',
   '/business',
   '/catalog',
@@ -118,9 +145,73 @@ async function renderRoute(browser, route) {
   }
 }
 
+// Generate sitemap.xml with all pages
+function generateSitemap(restaurantSlugs, yachtIds) {
+  const base = 'https://alfredconcierge.app';
+  const now = new Date().toISOString().split('T')[0];
+
+  const staticUrls = STATIC_ROUTES.map(r =>
+    `  <url><loc>${base}${r}</loc><changefreq>weekly</changefreq><priority>${r==='/'?'1.0':r.startsWith('/catalog')?'0.9':'0.85'}</priority></url>`
+  ).join('\n');
+
+  const restaurantUrls = restaurantSlugs.map(({slug, name, city}) =>
+    `  <url><loc>${base}/catalog/dining/${slug}</loc><changefreq>weekly</changefreq><priority>0.9</priority>\n    <image:image><image:loc>${base}/og-image.jpg</image:loc><image:title>${name} ${city||'Miami'} — Book a Table | Alfred</image:title></image:image>\n  </url>`
+  ).join('\n');
+
+  const yachtUrls = yachtIds.map(({id, name, city}) =>
+    `  <url><loc>${base}/catalog/yachts/${id}</loc><changefreq>weekly</changefreq><priority>0.9</priority>\n    <image:image><image:loc>${base}/og-image.jpg</image:loc><image:title>${name} Yacht Charter ${city||'Miami'} | Alfred</image:title></image:image>\n  </url>`
+  ).join('\n');
+
+  const nightlifeUrls = ['liv','e11even','story','club-space','raspoutine','castel','larc','coco-club','hyde-beach','le-carmen'].map(slug =>
+    `  <url><loc>${base}/catalog/nightlife/${slug}</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>`
+  ).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Static pages -->
+${staticUrls}
+
+  <!-- Nightlife venues -->
+${nightlifeUrls}
+
+  <!-- Restaurant detail pages -->
+${restaurantUrls}
+
+  <!-- Yacht detail pages -->
+${yachtUrls}
+
+</urlset>`;
+}
+
 // Main pre-rendering function
 async function prerender() {
   console.log('Starting pre-rendering...\n');
+
+  // Fetch dynamic routes from Supabase
+  console.log('Fetching restaurants from Supabase...');
+  const restaurants = await supabaseFetch('restaurants', 'slug,name,city');
+  const restaurantSlugs = (restaurants||[]).filter(r => r.slug).map(r => ({slug:r.slug, name:r.name||'', city:r.city||'Miami'}));
+  console.log(`Found ${restaurantSlugs.length} restaurants`);
+
+  console.log('Fetching yachts from Supabase...');
+  const yachts = await supabaseFetch('yachts', 'id,name,city');
+  const yachtIds = (yachts||[]).filter(y => y.id).map(y => ({id:y.id, name:y.name||'', city:y.city||'Miami'}));
+  console.log(`Found ${yachtIds.length} yachts`);
+
+  // Build full routes list
+  const dynamicRoutes = [
+    ...restaurantSlugs.map(r => '/catalog/dining/'+r.slug),
+    ...yachtIds.map(y => '/catalog/yachts/'+y.id),
+  ];
+  const ROUTES = [...STATIC_ROUTES, ...dynamicRoutes];
+
+  // Generate and save updated sitemap
+  const sitemap = generateSitemap(restaurantSlugs, yachtIds);
+  fs.writeFileSync(path.join(DIST_DIR, 'sitemap.xml'), sitemap, 'utf8');
+  fs.writeFileSync(path.join(__dirname, 'sitemap.xml'), sitemap, 'utf8');
+  console.log(`✓ Sitemap updated with ${ROUTES.length} total pages\n`);
 
   // Start server
   const server = await startServer();
@@ -154,7 +245,7 @@ async function prerender() {
 
     console.log('\n--- Pre-rendering Summary ---');
     const successful = results.filter(r => r.success).length;
-    console.log(`✓ Successful: ${successful}/${ROUTES.length}`);
+    console.log(`✓ Successful: ${successful}/${results.length}`);
     const failed = results.filter(r => !r.success);
     if (failed.length > 0) {
       console.log(`✗ Failed: ${failed.length}/${ROUTES.length}`);

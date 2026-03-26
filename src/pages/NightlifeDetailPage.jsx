@@ -62,8 +62,8 @@ export default function NightlifeDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" — VIP Tables & Nightlife Booking | Alfred"}
-        description={"Book VIP tables at "+V.name+" through Alfred Concierge. "+V.music+". Private table reservations and guestlist access."}
+        title={V.name+" Miami — Book VIP Table | Nightlife | Alfred Concierge"}
+        description={"Reserve a VIP table at "+V.name+" Miami. "+V.music+". Bottle service, guestlist & guaranteed entry through Alfred Concierge."}
         path={"/catalog/nightlife/"+V.slug}
         jsonLd={[
           {
