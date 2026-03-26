@@ -146,7 +146,7 @@ export default function DiningDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" "+(V.address||"").toLowerCase().includes("paris")?"Paris":"Miami"+" — Book a Table | "+V.cuisine+" | Alfred Concierge"}
+        title={V.name+" "+((V.address||"").toLowerCase().includes("paris")?"Paris":"Miami")+" — Book a Table | Alfred Concierge"}
         description={"Book a table at "+V.name+" in "+((V.address||"").toLowerCase().includes("paris")?"Paris":"Miami")+". "+V.cuisine+" restaurant. "+(V.michelin>0?V.michelin+" Michelin star"+(V.michelin>1?"s":"")+". ":"")+"Reserve through Alfred Concierge — instant confirmation, best table."}
         image={V.imgs&&V.imgs[0]?V.imgs[0]:undefined}
         path={"/catalog/dining/"+slug}
