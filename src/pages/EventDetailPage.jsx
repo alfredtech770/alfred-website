@@ -126,7 +126,7 @@ export default function EventDetailPage(){
   return(
     <div style={{background:C.bg,color:C.s1,minHeight:"100vh",overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" — VIP Tickets & Hospitality | Alfred"}
+        title={V.name+" — Book VIP Tickets | Alfred Concierge"}
         description={V.desc}
         path={"/events/"+V.slug}
         keywords={"tickets "+V.name+", "+V.name+" VIP, "+V.name+" hospitality, "+V.name+" 2026"}

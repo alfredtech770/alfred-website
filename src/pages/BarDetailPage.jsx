@@ -62,7 +62,7 @@ export default function BarDetailPage(){
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      <SEOHead title={V.name+" — Cocktails & Lounge Dining | Paris | Alfred"} description={"Dinner and cocktails at "+V.name+". "+V.type+" with "+V.music+" in the heart of Paris. Reservations through Alfred."} path={"/catalog/nightlife/l-arc"} />
+      <SEOHead title={V.name+" Paris — Book a Table | Alfred Concierge"} description={"Dinner and cocktails at "+V.name+". "+V.type+" with "+V.music+" in the heart of Paris. Reservations through Alfred."} path={"/catalog/nightlife/l-arc"} />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}

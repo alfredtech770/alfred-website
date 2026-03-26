@@ -63,7 +63,7 @@ export default function WellnessDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" — Spa & Wellness Booking | "+V.type+" | Alfred"}
+        title={V.name+" Paris — Book a Treatment | Alfred Concierge"}
         description={"Book "+V.name+". "+V.type+" with premium treatments in Paris. "+V.priceLevel+" pricing. Full relaxation and rejuvenation."}
         path={"/catalog/wellness/"+V.name.toLowerCase().replace(/\s+/g,"-")}
         jsonLd={[

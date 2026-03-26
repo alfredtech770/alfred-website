@@ -131,7 +131,7 @@ export default function YachtDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <SEOHead
-        title={yacht.name+" Yacht Charter "+yacht.city+" — "+yacht.size_ft+"ft | Alfred Concierge"}
+        title={yacht.name+" "+(yacht.city||"Miami")+" — Charter a Yacht | Alfred Concierge"}
         description={"Charter the "+yacht.name+" in "+(yacht.city||"Miami")+". "+(yacht.size_ft||"")+"ft luxury yacht, up to "+(yacht.max_passengers||"")+" guests. Captain, fuel & crew included. Book through Alfred Concierge."}
         image={yacht.hero_image_url||undefined}
         path={"/catalog/yachts/"+id}

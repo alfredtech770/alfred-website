@@ -696,7 +696,7 @@ export default function JetDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={J.name+" — Private Jet Charter | Book Now | Alfred"}
+        title={J.name+" — Charter a Private Jet | Alfred Concierge"}
         description={"Charter the "+J.name+" for your next flight. "+J.range+" range, "+J.pax+" passengers. Worldwide flights, empty legs available."}
         path={"/catalog/jets/"+slug}
         jsonLd={[
