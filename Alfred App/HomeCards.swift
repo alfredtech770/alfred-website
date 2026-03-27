@@ -503,7 +503,7 @@ struct AlfredSectionHeader: View {
             }
         }
         .padding(.horizontal, 22)
-        .padding(.top, 20)
+        .padding(.top, 32)
         .padding(.bottom, 12)
         .background(cBG)
     }
