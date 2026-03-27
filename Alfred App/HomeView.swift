@@ -895,6 +895,7 @@ struct HomeView: View {
                             )
                         }
                         .buttonStyle(CategoryPressStyle())
+                        .tint(.clear)
                     }
                 }
             }
