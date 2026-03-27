@@ -45,6 +45,65 @@ private struct CarDetailDestination: Identifiable {
     var id: Int { car.id }
 }
 
+private struct FeaturedEvent: Identifiable {
+    let id = UUID()
+    let title: String
+    let dates: String
+    let location: String
+    let imageURL: String
+    let tags: [String]
+    let spotsBadge: String?
+    let webPath: String
+}
+
+private let alfredFeaturedEvents: [FeaturedEvent] = [
+    FeaturedEvent(
+        title: "Monaco Grand Prix",
+        dates: "Jun 5–7 · Monte Carlo",
+        location: "Circuit de Monaco",
+        imageURL: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Monaco%20grand%20prix.jpeg",
+        tags: ["Paddock Access", "Private Chef", "Helicopter"],
+        spotsBadge: "Limited · 12 Spots",
+        webPath: "/events/monaco-grand-prix"
+    ),
+    FeaturedEvent(
+        title: "Miami Grand Prix",
+        dates: "May 1–3 · Miami Gardens",
+        location: "Miami International Autodrome",
+        imageURL: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",
+        tags: ["Paddock Club", "LIV After-Party", "Supercar Parade"],
+        spotsBadge: "Limited · 8 Spots",
+        webPath: "/events/miami-grand-prix"
+    ),
+    FeaturedEvent(
+        title: "Roland Garros",
+        dates: "May 18–Jun 7 · Paris",
+        location: "Stade Roland Garros",
+        imageURL: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Monaco%20grand%20prix.jpeg",
+        tags: ["Courtside Box", "Michelin Dining", "Champagne"],
+        spotsBadge: nil,
+        webPath: "/events/roland-garros"
+    ),
+    FeaturedEvent(
+        title: "Ibiza Opening",
+        dates: "May–Jun · Ibiza",
+        location: "Ushuaïa Beach Hotel",
+        imageURL: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",
+        tags: ["VIP Tables", "Private Villa", "Yacht Day Party"],
+        spotsBadge: nil,
+        webPath: "/events/ibiza-opening"
+    ),
+    FeaturedEvent(
+        title: "Royal Ascot",
+        dates: "Jun 16–20 · London",
+        location: "Ascot Racecourse",
+        imageURL: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Monaco%20grand%20prix.jpeg",
+        tags: ["Private Box", "Michelin Chef", "Helicopter"],
+        spotsBadge: nil,
+        webPath: "/events/royal-ascot"
+    ),
+]
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MARK: – Helpers
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -328,7 +387,7 @@ struct HomeView: View {
     @State private var activeTab: AppTab = .home
     @State private var city = "Paris"
     @State private var showCity = false
-    @State private var selectedCategoryId: String = "dining"
+    @State private var selectedCategoryIdx: Int = 0
     @State private var heroIndex: Int = 0
 
     // ── Browse overlay ──────────────────────────
@@ -342,7 +401,7 @@ struct HomeView: View {
     @State private var jetsFilterVisible = false
 
     // ── Data ────────────────────────────────────
-    @State private var featuredRestaurants: [Restaurant] = []
+    private let featuredEvents = alfredFeaturedEvents
     @State private var diningVenues:        [Restaurant] = []
     @State private var nightlifeVenues:     [Nightclub]  = []
     @State private var wellnessVenues:      [Wellness]   = []
@@ -350,7 +409,6 @@ struct HomeView: View {
     @State private var carVenues:           [Car]        = []
     @State private var yachtVenues:         [Yacht]      = []
     @State private var jetVenues:           [Jet]        = []
-    @State private var featuredLoading = true
     @State private var isLoadingDetail = false
     @State private var userName = ""
 
@@ -365,12 +423,10 @@ struct HomeView: View {
     @State private var heroAutoTimer: Timer? = nil
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // MARK: – Computed: current featured venue
+    // MARK: – Computed: current featured event
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    private var currentFeatured: Restaurant? {
-        guard !featuredRestaurants.isEmpty else { return nil }
-        let idx = heroIndex % featuredRestaurants.count
-        return featuredRestaurants[idx]
+    private var currentFeatured: FeaturedEvent {
+        featuredEvents[heroIndex % featuredEvents.count]
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -494,37 +550,26 @@ struct HomeView: View {
                 VStack(spacing: 0) {
                     // ── ZONE 1: Hero Card ─────────────
                     ZStack(alignment: .bottom) {
+                        let featured = currentFeatured
+
                         // Layer 1: Image
-                        Group {
-                            if let featured = currentFeatured,
-                               let urlStr = featured.heroImageURL, !urlStr.isEmpty,
-                               let url = URL(string: urlStr) {
-                                AsyncImage(url: url) { phase in
-                                    switch phase {
-                                    case .success(let img):
-                                        img.resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: geo.size.width, height: heroH)
-                                            .clipped()
-                                    case .failure:
-                                        HV.elevated.frame(width: geo.size.width, height: heroH)
-                                    default:
-                                        HV.elevated.frame(width: geo.size.width, height: heroH)
-                                            .overlay(ProgressView().tint(HV.s5))
-                                    }
+                        if let url = URL(string: featured.imageURL) {
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .success(let img):
+                                    img.resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: geo.size.width, height: heroH)
+                                        .clipped()
+                                default:
+                                    HV.elevated.frame(width: geo.size.width, height: heroH)
                                 }
-                                .id(featured.id)
-                                .transition(.opacity)
-                                .opacity(heroContentOpacity)
-                            } else {
-                                HV.elevated
-                                    .frame(width: geo.size.width, height: heroH)
-                                    .overlay(
-                                        Group {
-                                            if featuredLoading { ProgressView().tint(HV.s5) }
-                                        }
-                                    )
                             }
+                            .id(featured.id)
+                            .transition(.opacity)
+                            .opacity(heroContentOpacity)
+                        } else {
+                            HV.elevated.frame(width: geo.size.width, height: heroH)
                         }
 
                         // Layer 2: Gradient
@@ -532,11 +577,11 @@ struct HomeView: View {
                             stops: [
                                 .init(color: .black.opacity(0.50), location: 0.00),
                                 .init(color: .clear,                location: 0.18),
-                                .init(color: .clear,                location: 0.40),
-                                .init(color: .black.opacity(0.32), location: 0.55),
-                                .init(color: .black.opacity(0.74), location: 0.72),
-                                .init(color: .black.opacity(0.92), location: 0.86),
-                                .init(color: .black.opacity(0.98), location: 1.00),
+                                .init(color: .clear,                location: 0.38),
+                                .init(color: .black.opacity(0.28), location: 0.52),
+                                .init(color: .black.opacity(0.70), location: 0.70),
+                                .init(color: .black.opacity(0.90), location: 0.84),
+                                .init(color: .black.opacity(0.97), location: 1.00),
                             ],
                             startPoint: .top, endPoint: .bottom
                         )
@@ -581,40 +626,64 @@ struct HomeView: View {
                         }
                         .frame(height: heroH)
 
-                        // Layer 4: Bottom content (title + stats)
+                        // Layer 4: Bottom content — event info
                         VStack(alignment: .leading, spacing: 0) {
-                            if let featured = currentFeatured {
-                                // Title row
-                                HStack(alignment: .top) {
-                                    Text(featured.name)
-                                        .font(.outfit(22, weight: .semibold))
-                                        .tracking(-0.4)
-                                        .foregroundStyle(.white)
-                                        .lineLimit(1)
+                            // Spots badge (if limited)
+                            if let badge = featured.spotsBadge {
+                                Text(badge)
+                                    .font(.outfit(10, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    .tracking(0.6)
+                                    .padding(.horizontal, 9)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color(hex: "C9A96E").opacity(0.85))
+                                    )
+                                    .padding(.bottom, 10)
+                            }
 
-                                    Spacer(minLength: 8)
-
-                                    Text(priceLabel(featured.priceLevel))
-                                        .font(.outfit(19, weight: .semibold))
-                                        .foregroundStyle(.white)
-                                }
-
-                                // Subtitle
-                                Text(heroSubtitle(featured))
-                                    .font(.outfit(13, weight: .light))
-                                    .foregroundStyle(.white.opacity(0.42))
+                            // Title row
+                            HStack(alignment: .bottom) {
+                                Text(featured.title)
+                                    .font(.outfit(24, weight: .semibold))
+                                    .tracking(-0.5)
+                                    .foregroundStyle(.white)
                                     .lineLimit(1)
-                                    .padding(.top, 4)
-                                    .padding(.bottom, 11)
+                                Spacer(minLength: 6)
+                                Image(systemName: "arrow.up.right")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(.white.opacity(0.55))
+                            }
 
-                                // Divider
-                                Rectangle()
-                                    .fill(.white.opacity(0.14))
-                                    .frame(height: 0.5)
-                                    .padding(.bottom, 11)
+                            // Date · Location subtitle
+                            Text(featured.dates)
+                                .font(.outfit(13, weight: .light))
+                                .foregroundStyle(.white.opacity(0.55))
+                                .lineLimit(1)
+                                .padding(.top, 4)
+                                .padding(.bottom, 12)
 
-                                // Stats row
-                                heroStats(featured)
+                            // Divider
+                            Rectangle()
+                                .fill(.white.opacity(0.14))
+                                .frame(height: 0.5)
+                                .padding(.bottom, 12)
+
+                            // Tags row
+                            HStack(spacing: 8) {
+                                ForEach(featured.tags.prefix(3), id: \.self) { tag in
+                                    Text(tag)
+                                        .font(.outfit(11, weight: .medium))
+                                        .foregroundStyle(.white.opacity(0.80))
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(
+                                            Capsule()
+                                                .fill(.white.opacity(0.12))
+                                                .overlay(Capsule().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
+                                        )
+                                }
                             }
                         }
                         .padding(.horizontal, 20)
@@ -635,8 +704,8 @@ struct HomeView: View {
                     .contentShape(Rectangle())
                     .highPriorityGesture(heroGesture)
                     .onTapGesture {
-                        if let featured = currentFeatured {
-                            openRestaurantDetail(featured)
+                        if let url = URL(string: "https://alfredconcierge.app\(currentFeatured.webPath)") {
+                            UIApplication.shared.open(url)
                         }
                     }
                     .stag(appeared, 0.0)
@@ -644,11 +713,11 @@ struct HomeView: View {
                     // ── ZONE 2: Bottom Panel (scrollable) ──
                     VStack(spacing: 0) {
                         // Pagination dots
-                        if featuredRestaurants.count > 1 {
+                        if featuredEvents.count > 1 {
                             HStack(spacing: 6) {
-                                ForEach(0..<min(featuredRestaurants.count, 5), id: \.self) { i in
+                                ForEach(0..<featuredEvents.count, id: \.self) { i in
                                     Circle()
-                                        .fill(HV.s1.opacity(i == (heroIndex % min(featuredRestaurants.count, 5)) ? 0.88 : 0.22))
+                                        .fill(HV.s1.opacity(i == (heroIndex % featuredEvents.count) ? 0.88 : 0.22))
                                         .frame(width: 6, height: 6)
                                         .animation(.easeInOut(duration: 0.25), value: heroIndex)
                                 }
@@ -685,7 +754,6 @@ struct HomeView: View {
                         }
 
                         // 2. Membership
-                        AlfredSectionHeader(title: "Membership", trailing: "Learn More")
                         AlfredMembershipCard(isMember: storeKit.isMember) {
                             Superwall.shared.register(placement: "campaign_trigger")
                         }
@@ -778,18 +846,15 @@ struct HomeView: View {
             .onEnded { v in
                 let threshold: CGFloat = 50
                 let predicted = v.predictedEndTranslation.width
-                let count = featuredRestaurants.count
+                let count = featuredEvents.count
 
                 if count > 1 && (v.translation.width < -threshold || predicted < -200) {
-                    // Swipe left → next
                     crossfadeHero(to: (heroIndex + 1) % count)
                 } else if count > 1 && (v.translation.width > threshold || predicted > 200) {
-                    // Swipe right → previous
                     crossfadeHero(to: (heroIndex - 1 + count) % count)
                 } else if abs(v.translation.width) < 8 && abs(v.translation.height) < 8 {
-                    // Tap
-                    if let featured = currentFeatured {
-                        openRestaurantDetail(featured)
+                    if let url = URL(string: "https://alfredconcierge.app\(currentFeatured.webPath)") {
+                        UIApplication.shared.open(url)
                     }
                 }
             }
@@ -813,10 +878,10 @@ struct HomeView: View {
 
     private func startHeroTimer() {
         heroAutoTimer?.invalidate()
-        heroAutoTimer = Timer.scheduledTimer(withTimeInterval: 3.5, repeats: true) { _ in
-            let count = featuredRestaurants.count
+        heroAutoTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true) { _ in
+            let count = self.featuredEvents.count
             guard count > 1 else { return }
-            crossfadeHero(to: (heroIndex + 1) % count)
+            self.crossfadeHero(to: (self.heroIndex + 1) % count)
         }
     }
 
@@ -828,52 +893,20 @@ struct HomeView: View {
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // MARK: – Hero Helpers
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    private func heroSubtitle(_ r: Restaurant) -> String {
-        let parts = [r.city, r.address?.components(separatedBy: ",").first, r.cuisine].compactMap { $0 }
-        return parts.joined(separator: " · ")
-    }
-
-    private func heroStats(_ r: Restaurant) -> some View {
-        let stats: [(icon: String, label: String, value: String)] = [
-            ("fork.knife", "Cuisine", r.cuisine ?? "Fine Dining"),
-            ("clock",      "Open",    r.availableTonight == true ? "Tonight" : "See hours"),
-            ("mappin",     "City",    r.city),
-        ]
-        return HStack(spacing: 0) {
-            ForEach(Array(stats.enumerated()), id: \.offset) { index, stat in
-                if index > 0 {
-                    Rectangle()
-                        .fill(.white.opacity(0.14))
-                        .frame(width: 0.5, height: 14)
-                }
-                HStack(spacing: 4) {
-                    Image(systemName: stat.icon)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.white.opacity(0.48))
-                    Text(stat.label)
-                        .font(.outfit(11.5, weight: .light))
-                        .foregroundStyle(.white.opacity(0.40))
-                    Text(stat.value)
-                        .font(.outfit(11.5, weight: .semibold))
-                        .foregroundStyle(.white)
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
-    }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // MARK: – Category Strip
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     private var categoryStrip: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    ForEach(hvCategories) { cat in
+                    ForEach(Array(hvCategories.enumerated()), id: \.element.id) { index, cat in
+                        let isActive = selectedCategoryIdx == index
                         Button {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            withAnimation(.spring(response: 0.2, dampingFraction: 0.7)) {
-                                selectedCategoryId = cat.id
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                selectedCategoryIdx = index
                             }
                             openBrowse(cat.browseKey)
                         } label: {
@@ -882,21 +915,26 @@ struct HomeView: View {
                                     .font(.system(size: 18))
                                     .frame(width: 28, height: 28)
                                 Text(cat.label)
-                                    .font(.outfit(13, weight: .regular))
-                                    .foregroundStyle(HV.s4)
+                                    .font(.outfit(13, weight: isActive ? .semibold : .regular))
+                                    .foregroundStyle(isActive ? HV.s1 : HV.s4)
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 12)
-                            .background(HV.elevated)
+                            .background(isActive ? HV.s1.opacity(0.1) : HV.elevated)
                             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .strokeBorder(HV.border, lineWidth: 0.5)
+                                    .strokeBorder(isActive ? HV.s1.opacity(0.3) : HV.border, lineWidth: isActive ? 1 : 0.5)
                             )
                         }
                         .buttonStyle(CategoryPressStyle())
+                        .tint(.clear)
+                        .id(index)
                     }
                 }
+            }
+            .onChange(of: selectedCategoryIdx) { _, idx in
+                withAnimation { proxy.scrollTo(idx, anchor: .center) }
             }
         }
     }
@@ -1055,7 +1093,6 @@ struct HomeView: View {
     // MARK: – Data Loading
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     private func reloadData() {
-        featuredRestaurants = []
         diningVenues = []
         nightlifeVenues = []
         wellnessVenues = []
@@ -1063,7 +1100,6 @@ struct HomeView: View {
         carVenues = []
         yachtVenues = []
         jetVenues = []
-        featuredLoading = true
         heroIndex = 0
         loadData()
     }
@@ -1076,11 +1112,7 @@ struct HomeView: View {
             }
             let c = city
 
-            // Featured first
-            do { featuredRestaurants = try await RestaurantService().getFeaturedRestaurants(city: c) } catch { featuredRestaurants = [] }
-            featuredLoading = false
-
-            // All categories — simple sequential to avoid async let issues
+            // All categories — sequential to avoid async let issues
             do { diningVenues = try await RestaurantService().getRestaurants(city: c) } catch { diningVenues = [] }
             do { nightlifeVenues = try await NightclubService().getNightclubs(city: c) } catch { nightlifeVenues = [] }
             do { wellnessVenues = try await WellnessService().getWellness(city: c) } catch { wellnessVenues = [] }

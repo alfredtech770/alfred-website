@@ -503,7 +503,7 @@ struct AlfredSectionHeader: View {
             }
         }
         .padding(.horizontal, 22)
-        .padding(.top, 20)
+        .padding(.top, 32)
         .padding(.bottom, 12)
         .background(cBG)
     }
@@ -564,7 +564,7 @@ extension AlfredBigCard {
 
 // ── Accommodation ───────────────────────────────────────────
 extension AlfredBigCard {
-    init(stay s: Accommodation, onTap: (() -> Void)? = nil) {
+    init(stay s: Accommodation, fullWidth: Bool = false, onTap: (() -> Void)? = nil) {
         self.init(
             imageURL: s.heroImageURL ?? "",
             badge:    s.accommodationType,
@@ -576,6 +576,8 @@ extension AlfredBigCard {
                 CardStat(icon: "star.fill",  label: "Rating:", value: s.rating.map { String(format: "%.1f", $0) } ?? "\u{2014}"),
                 CardStat(icon: "calendar",   label: "",        value: "Per night"),
             ],
+            cardWidth:  fullWidth ? UIScreen.main.bounds.width - 44 : 280,
+            cardHeight: fullWidth ? 420 : 380,
             onTap: onTap
         )
     }
@@ -583,7 +585,7 @@ extension AlfredBigCard {
 
 // ── Cars (Big) ─────────────────────────────────────────────
 extension AlfredBigCard {
-    init(car c: Car, onTap: (() -> Void)? = nil) {
+    init(car c: Car, fullWidth: Bool = false, onTap: (() -> Void)? = nil) {
         self.init(
             imageURL: c.heroImageURL ?? "",
             badge:    "Available",
@@ -595,6 +597,71 @@ extension AlfredBigCard {
                 CardStat(icon: "clock",     label: "Duration:", value: "Full day"),
                 CardStat(icon: "house",     label: "Delivery:", value: "Included"),
             ],
+            cardWidth:  fullWidth ? UIScreen.main.bounds.width - 44 : 280,
+            cardHeight: fullWidth ? 420 : 380,
+            onTap: onTap
+        )
+    }
+}
+
+// ── Nightclub (Big fullWidth) ───────────────────────────────
+extension AlfredBigCard {
+    init(nightclub nc: Nightclub, fullWidth: Bool = false, onTap: (() -> Void)? = nil) {
+        self.init(
+            imageURL: nc.heroImageURL ?? "",
+            badge:    nc.vibe,
+            name:     nc.name,
+            subtitle: [nc.music, nc.city].compactMap { $0 }.joined(separator: " \u{00B7} "),
+            price:    HomeCards.priceLabel(nc.priceLevel),
+            stats: [
+                CardStat(icon: "music.note",   label: "", value: nc.music  ?? "\u{2014}"),
+                CardStat(icon: "heart",        label: "", value: nc.vibe   ?? "\u{2014}"),
+                CardStat(icon: "star.fill",    label: "", value: nc.rating.map { String(format: "%.1f", $0) } ?? "\u{2014}"),
+            ],
+            cardWidth:  fullWidth ? UIScreen.main.bounds.width - 44 : 280,
+            cardHeight: fullWidth ? 420 : 380,
+            onTap: onTap
+        )
+    }
+}
+
+// ── Wellness (Big fullWidth) ─────────────────────────────────
+extension AlfredBigCard {
+    init(wellnessBig w: Wellness, fullWidth: Bool = false, onTap: (() -> Void)? = nil) {
+        self.init(
+            imageURL: w.heroImageURL ?? "",
+            badge:    w.type ?? w.category,
+            name:     w.name,
+            subtitle: [w.type ?? w.category, w.city].compactMap { $0 }.joined(separator: " \u{00B7} "),
+            price:    HomeCards.priceLabel(w.priceLevel),
+            stats: [
+                CardStat(icon: "sparkles",  label: "", value: w.type     ?? w.category),
+                CardStat(icon: "clock",     label: "", value: w.duration ?? "\u{2014}"),
+                CardStat(icon: "star.fill", label: "", value: w.rating.map { String(format: "%.1f", $0) } ?? "\u{2014}"),
+            ],
+            cardWidth:  fullWidth ? UIScreen.main.bounds.width - 44 : 280,
+            cardHeight: fullWidth ? 420 : 380,
+            onTap: onTap
+        )
+    }
+}
+
+// ── Yacht (Big fullWidth) ────────────────────────────────────
+extension AlfredBigCard {
+    init(yachtBig y: Yacht, fullWidth: Bool = false, onTap: (() -> Void)? = nil) {
+        self.init(
+            imageURL: y.heroImageURL ?? "",
+            badge:    y.yachtType,
+            name:     y.name,
+            subtitle: [y.yachtType, y.city].compactMap { $0 }.joined(separator: " \u{00B7} "),
+            price:    HomeCards.priceLabel(y.priceLevel),
+            stats: [
+                CardStat(icon: "sailboat",  label: "", value: y.yachtType ?? "\u{2014}"),
+                CardStat(icon: "person.2",  label: "", value: y.capacity.map { "\($0) guests" } ?? "\u{2014}"),
+                CardStat(icon: "star.fill", label: "", value: y.rating.map { String(format: "%.1f", $0) } ?? "\u{2014}"),
+            ],
+            cardWidth:  fullWidth ? UIScreen.main.bounds.width - 44 : 280,
+            cardHeight: fullWidth ? 420 : 380,
             onTap: onTap
         )
     }
@@ -621,7 +688,7 @@ extension AlfredLandscapeCard {
 
 // ── Jets ────────────────────────────────────────────────────
 extension AlfredBigCard {
-    init(jet j: Jet, onTap: (() -> Void)? = nil) {
+    init(jet j: Jet, fullWidth: Bool = false, onTap: (() -> Void)? = nil) {
         self.init(
             imageURL: j.heroImageURL ?? "",
             badge:    j.jetType,
@@ -633,6 +700,8 @@ extension AlfredBigCard {
                 CardStat(icon: "airplane", label: "Range:",  value: j.range ?? "\u{2014}"),
                 CardStat(icon: "clock",    label: "Depart:", value: "Anytime"),
             ],
+            cardWidth:  fullWidth ? UIScreen.main.bounds.width - 44 : 280,
+            cardHeight: fullWidth ? 420 : 380,
             onTap: onTap
         )
     }
