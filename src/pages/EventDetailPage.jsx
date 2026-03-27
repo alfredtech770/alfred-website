@@ -19,7 +19,7 @@ var EVENTS={
   "monaco-grand-prix":{
     name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 5 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",color:"#E11D48",spots:12,
     hero:SB+"Monaco-Race-Page-MAIN.webp",
-    imgs:[SB+"Monaco-Race-Page-MAIN.webp",SB+"Monaco%20grand%20prix.jpeg",SB+"DPPI_00124009_1978.jpg"],
+    imgs:[SB+"Monaco-Race-Page-MAIN.webp",SB+"Monaco-Race-Page-MAIN.webp",SB+"Monaco-Race-Page-MAIN.webp"],
     tagline:"Private hospitality on the most famous corner in motorsport",
     desc:"Experience the Monaco Grand Prix from the Swimming Pool chicane — the most iconic corner in Formula 1. Alfred secures a private venue overlooking the chicane with unobstructed views of the action. Caviar and champagne service all weekend, private chef, premium catering, and after-party VIP access. No lanyards, no crowds, no compromises.",
     venue:"The Alfred Lounge · Swimming Pool Chicane",
@@ -37,7 +37,7 @@ var EVENTS={
   "miami-grand-prix":{
     name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",color:"#F97316",spots:8,
     hero:SB+"Screenshot%202026-03-25%20at%2022.36.44.png",
-    imgs:[SB+"Screenshot%202026-03-25%20at%2022.36.44.png",SB+"DPPI_00124009_1978.jpg",SB+"Monaco%20grand%20prix.jpeg"],
+    imgs:[SB+"Screenshot%202026-03-25%20at%2022.36.44.png",SB+"Screenshot%202026-03-25%20at%2022.36.44.png",SB+"Screenshot%202026-03-25%20at%2022.36.44.png"],
     tagline:"Track-side luxury with direct paddock access at Turn 1",
     desc:"Our Miami Grand Prix package puts you in a private luxury suite overlooking Turn 1 — the most dramatic braking zone on the circuit. Direct paddock access means you'll walk where the drivers walk. After the race, we take over LIV, Story, and E11even for exclusive after-parties. This is Miami at its most electric.",
     venue:"Track-Side Luxury Suite · Turn 1",
@@ -55,7 +55,7 @@ var EVENTS={
   "ibiza-opening":{
     name:"Ibiza Opening",slug:"ibiza-opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",color:"#8B5CF6",spots:15,
     hero:SB+"slideshow-1740920048.jpg",
-    imgs:[SB+"slideshow-1740920048.jpg",SB+"Keinmusik.jpeg",SB+"image.jpg"],
+    imgs:[SB+"slideshow-1740920048.jpg",SB+"slideshow-1740920048.jpg",SB+"slideshow-1740920048.jpg"],
     tagline:"Season opening week across all four superclubs",
     desc:"The Ibiza season opening is the most anticipated week in nightlife. Alfred secures front-row access at Ushuaïa, VIP tables at Hï Ibiza, Pacha, and Amnesia across four incredible nights. Add a private villa with a personal chef, yacht day parties, and exclusive artist meet & greets. This is how Ibiza was meant to be experienced.",
     venue:"Hï Ibiza · Ushuaïa · Pacha · Amnesia",
@@ -74,7 +74,7 @@ var EVENTS={
   "roland-garros":{
     name:"Roland Garros",slug:"roland-garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",color:"#D97706",spots:6,
     hero:SB+"aEGghrh8WN-LVqbY_LEC06847-2RichardGasquetRG2025.avif",
-    imgs:[SB+"aEGghrh8WN-LVqbY_LEC06847-2RichardGasquetRG2025.avif",SB+"AlfedHotelCrillionParis.jpeg",SB+"DPPI_00124009_1978.jpg"],
+    imgs:[SB+"aEGghrh8WN-LVqbY_LEC06847-2RichardGasquetRG2025.avif",SB+"aEGghrh8WN-LVqbY_LEC06847-2RichardGasquetRG2025.avif",SB+"aEGghrh8WN-LVqbY_LEC06847-2RichardGasquetRG2025.avif"],
     tagline:"Courtside hospitality at the French Open",
     desc:"Experience Roland Garros from a private box in Philippe Chatrier — the cathedral of clay-court tennis. Champagne terraces between sets, a Michelin dining experience for lunch, player lounge access, and chauffeur transfers from your hotel. Alfred handles every detail so you can focus on the tennis.",
     venue:"Philippe Chatrier · Private Box",
@@ -90,7 +90,7 @@ var EVENTS={
   "royal-ascot":{
     name:"Royal Ascot",slug:"royal-ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",color:"#0EA5E9",spots:4,
     hero:SB+"coverprocessionroyalascot.webp",
-    imgs:[SB+"coverprocessionroyalascot.webp",SB+"AlfedHotelCrillionParis.jpeg",SB+"DPPI_00124009_1978.jpg"],
+    imgs:[SB+"coverprocessionroyalascot.webp",SB+"coverprocessionroyalascot.webp",SB+"coverprocessionroyalascot.webp"],
     tagline:"The Royal Enclosure experience — elevated",
     desc:"Royal Ascot is the pinnacle of British racing and social elegance. Alfred secures Royal Enclosure badges, a private box for 12 guests, Michelin chefs on-site, helicopter transfer from central London, and a Savile Row styling consultation so you arrive impeccably dressed. This is tradition, perfected.",
     venue:"Royal Enclosure · Private Box for 12",
