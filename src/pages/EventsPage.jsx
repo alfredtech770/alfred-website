@@ -13,21 +13,21 @@ function spotsShadow(s){return s<=6?"rgba(255,69,58,0.5)":s<=10?"rgba(255,214,10
 var SB="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/";
 
 var EVENTS=[
-  {name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 4 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",color:"#E11D48",spots:12,
+  {name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 5 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",color:"#E11D48",spots:12,
    desc:"Two private venues on the Swimming Pool chicane. Private chef, champagne, Nobu catering.",
-   img:SB+"DPPI_00124009_1978.jpg"},
+   img:SB+"Monaco-Race-Page-MAIN.webp"},
   {name:"Miami Grand Prix",slug:"miami-grand-prix",date:"May 1 – 3, 2026",location:"Miami Gardens, Florida",tag:"F1",color:"#F97316",spots:8,
    desc:"Track-side luxury suite at Turn 1 with paddock access. Celebrity after-parties at LIV & E11even.",
-   img:SB+"Keinmusik.jpeg"},
+   img:SB+"Screenshot%202026-03-25%20at%2022.36.44.png"},
   {name:"Ibiza Opening",slug:"ibiza-opening",date:"May – June 2026",location:"Ibiza, Spain",tag:"Nightlife",color:"#8B5CF6",spots:15,
    desc:"Season opening across all four superclubs. Private villa, yacht parties, artist access.",
-   img:SB+"image.jpg"},
+   img:SB+"slideshow-1740920048.jpg"},
   {name:"Roland Garros",slug:"roland-garros",date:"May 18 – Jun 7, 2026",location:"Paris, France",tag:"Tennis",color:"#D97706",spots:6,
    desc:"Private box in Philippe Chatrier. Michelin dining, champagne terraces, chauffeur transfers.",
-   img:SB+"AlfedHotelCrillionParis.jpeg"},
+   img:SB+"aEGghrh8WN-LVqbY_LEC06847-2RichardGasquetRG2025.avif"},
   {name:"Royal Ascot",slug:"royal-ascot",date:"June 16 – 20, 2026",location:"Ascot, England",tag:"Racing",color:"#0EA5E9",spots:4,
    desc:"Royal Enclosure badges, private box for 12, Michelin chef, helicopter from London.",
-   img:SB+"Bulgari-Resort-Bali-Exterior.webp"},
+   img:SB+"coverprocessionroyalascot.webp"},
 ];
 
 var TAGS=["All","F1","Nightlife","Tennis","Racing"];
