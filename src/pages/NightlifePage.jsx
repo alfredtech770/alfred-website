@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
+import { supabase } from "../lib/supabase";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -8,18 +9,25 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var VENUES=[
-  {name:"LIV",type:"Nightclub",loc:"Miami",vibe:"High Energy",music:"Hip Hop · EDM",door:"Table Required",rating:4.8,reviews:94,tableMin:"$2,000+",img:"https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=600&h=400&fit=crop&q=80",tagline:"Miami Beach's legendary main room",slug:"liv",available:true,hours:"Thu–Sun · 11 PM – 5 AM",capacity:"1,200"},
-  {name:"E11even",type:"Nightclub",loc:"Miami",vibe:"High Energy",music:"EDM · Hip Hop",door:"Guestlist",rating:4.7,reviews:78,tableMin:"$1,500+",img:"https://images.unsplash.com/photo-1571266028243-d220c6a8b0e7?w=600&h=400&fit=crop&q=80",tagline:"24/7. The club that never closes.",slug:"e11even",available:true,hours:"Open 24/7",capacity:"2,000"},
-  {name:"Raspoutine",type:"Nightclub",loc:"Paris",vibe:"Exclusive",music:"Hip Hop · House",door:"Members Only",rating:4.8,reviews:52,tableMin:"€3,000+",img:"https://images.unsplash.com/photo-1598387993441-a364f854c3e1?w=600&h=400&fit=crop&q=80",tagline:"The Champs-Élysées institution",slug:"raspoutine",available:true,hours:"Thu–Sat · 11:30 PM – 6 AM",capacity:"400"},
-  {name:"CoCo Club",type:"Lounge",loc:"Paris",vibe:"Exclusive",music:"House · Afrobeats",door:"Members Only",rating:4.7,reviews:41,tableMin:"€2,000+",img:"https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=600&h=400&fit=crop&q=80",tagline:"Paris's most selective door",slug:"coco-club",available:true,hours:"Fri–Sat · Midnight – 6 AM",capacity:"300"},
-  {name:"Story",type:"Nightclub",loc:"Miami",vibe:"High Energy",music:"EDM · Live Acts",door:"Table Required",rating:4.6,reviews:67,tableMin:"$2,500+",img:"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&h=400&fit=crop&q=80",tagline:"South Beach's production powerhouse",slug:"story",available:true,hours:"Fri–Sat · 11 PM – 5 AM",capacity:"1,500"},
-  {name:"L'Arc",type:"Lounge",loc:"Paris",vibe:"Sophisticated",music:"Deep House · Lounge",door:"Table Required",rating:4.7,reviews:45,tableMin:"€1,500+",img:"https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&h=400&fit=crop&q=80",tagline:"Arc de Triomphe views. Private dining to dancing.",slug:"larc",available:true,hours:"Wed–Sat · 8 PM – 4 AM",capacity:"500"},
-  {name:"Club Space",type:"Nightclub",loc:"Miami",vibe:"Underground",music:"Techno · House",door:"Guestlist",rating:4.5,reviews:53,tableMin:"$800+",img:"https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?w=600&h=400&fit=crop&q=80",tagline:"The terrace at sunrise. Nothing else compares.",slug:"club-space",available:true,hours:"Sat–Sun · 11 PM – Noon",capacity:"3,000"},
-  {name:"Castel",type:"Members Club",loc:"Paris",vibe:"Exclusive",music:"Eclectic · Jazz",door:"Members Only",rating:4.8,reviews:36,tableMin:"€2,500+",img:"https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600&h=400&fit=crop&q=80",tagline:"Since 1962. Paris's original private club.",slug:"castel",available:false,hours:"Tue–Sat · 8 PM – 5 AM",capacity:"250"},
-  {name:"Hyde Beach",type:"Day Club",loc:"Miami",vibe:"Pool Party",music:"House · Pop",door:"Guestlist",rating:4.5,reviews:48,tableMin:"$1,000+",img:"https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=600&h=400&fit=crop&q=80",tagline:"SLS pool deck. Day into night.",slug:"hyde-beach",available:true,hours:"Fri–Sun · 12 PM – 8 PM",capacity:"800"},
-  {name:"Le Carmen",type:"Lounge",loc:"Paris",vibe:"Sophisticated",music:"House · Live Sets",door:"Guestlist",rating:4.6,reviews:33,tableMin:"€1,000+",img:"https://images.unsplash.com/photo-1541532713592-79a0317b6b77?w=600&h=400&fit=crop&q=80",tagline:"19th-century hôtel particulier turned dance floor",slug:"le-carmen",available:true,hours:"Thu–Sat · 11 PM – 5 AM",capacity:"350"},
-];
+function mapNightclub(row){
+  return{
+    name:row.name||"",
+    type:row.category||"Nightclub",
+    loc:row.city||"Miami",
+    vibe:row.vibe||"",
+    music:row.music||"",
+    door:row.reservation||row.entry_type||"Table Required",
+    rating:row.rating||4.5,
+    reviews:row.review_count||50,
+    tableMin:row.price_level||"$$$$",
+    img:row.hero_image_url||"",
+    tagline:row.crowd_type||row.best_night||"",
+    slug:String(row.id),
+    available:row.is_active!==false,
+    hours:row.opening_hours||"",
+    capacity:String(row.capacity||""),
+  }
+}
 
 var CITIES=["All Cities","Miami","Paris"];
 var SORT_OPTIONS=["Featured","Rating","Table Min: Low","Table Min: High","Most Reviewed"];
@@ -133,16 +141,40 @@ export default function NightlifePage(){
   var [date,setDate]=useState("2026-03-20");
   var [guests,setGuests]=useState("4");
 
+  var [venues,setVenues]=useState([]);
+  var [fetching,setFetching]=useState(true);
+  var [fetchError,setFetchError]=useState(null);
+
   var gridRef=useRef(null);var gridVis=useVis(gridRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
+  useEffect(function(){
+    async function load(){
+      try{
+        var {data,error:err}=await supabase
+          .from("nightclubs")
+          .select("id,name,city,category,hero_image_url,rating,vibe,music,reservation,entry_type,price_level,crowd_type,best_night,opening_hours,capacity,is_active,is_featured")
+          .eq("is_active",true)
+          .order("is_featured",{ascending:false})
+          .order("name",{ascending:true});
+        if(err) throw err;
+        setVenues((data||[]).map(mapNightclub));
+      }catch(e){
+        console.error("Nightlife fetch error:",e);
+        setFetchError("Could not load venues.");
+      }finally{
+        setFetching(false);
+      }
+    }
+    load();
+  },[]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
-  var filtered=VENUES.filter(function(v){
+  var filtered=venues.filter(function(v){
     if(city!=="All Cities"){if(city==="Paris"&&v.loc!=="Paris")return false;if(city==="Miami"&&v.loc==="Paris")return false;}
     if(type!=="Type"&&v.type!==type)return false;
     if(vibe!=="Vibe"&&v.vibe!==vibe)return false;
@@ -251,14 +283,22 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 
       {/* Grid */}
       <div ref={gridRef} className="n-grid" style={{paddingBottom:80}}>
-        {filtered.length===0?(
+        {fetching?(
+          <div style={{gridColumn:"1 / -1",textAlign:"center",padding:"80px 20px"}}>
+            <div style={{...sf(14),color:C.s6}}>Loading venues…</div>
+          </div>
+        ):fetchError?(
+          <div style={{gridColumn:"1 / -1",textAlign:"center",padding:"60px 20px"}}>
+            <p style={{...sf(14),color:"#FF453A"}}>{fetchError}</p>
+          </div>
+        ):filtered.length===0?(
           <div style={{gridColumn:"1 / -1",textAlign:"center",padding:"60px 20px"}}>
             <div style={{fontSize:40,marginBottom:16}}>🌙</div>
             <h3 style={{...sf(20,600),color:C.s3,marginBottom:8}}>No venues match</h3>
             <p style={{...sf(14),color:C.s5,marginBottom:24}}>Try adjusting your filters or location.</p>
             <div onClick={clearAll} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,cursor:"pointer",...sf(13,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>Clear all filters</div>
           </div>
-        ):filtered.map(function(v,i){return <VenueCard key={v.name} v={v} i={i} vis={gridVis}/>})}
+        ):filtered.map(function(v,i){return <VenueCard key={v.slug} v={v} i={i} vis={gridVis}/>})}
       </div>
 
       {/* CTA */}
