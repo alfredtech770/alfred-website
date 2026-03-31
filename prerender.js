@@ -9,9 +9,10 @@
 
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
+let puppeteer, handler;
+try { puppeteer = require('puppeteer'); } catch(e) { console.log('⚠ Puppeteer not available — skipping prerender (CI/Vercel build). Site will work fine as a SPA.'); process.exit(0); }
+try { handler = require('serve-handler'); } catch(e) { console.log('⚠ serve-handler not available — skipping prerender.'); process.exit(0); }
 const http = require('http');
-const handler = require('serve-handler');
 const https = require('https');
 
 // Supabase config
