@@ -7,10 +7,16 @@
  * Run after vite build: node prerender.js
  */
 
+// Skip prerender in CI/Vercel — Puppeteer can't launch Chrome there
+if (process.env.CI || process.env.VERCEL || process.env.NOW_BUILDER) {
+  console.log('⚠ CI/Vercel detected — skipping prerender. Site works fine as a SPA.');
+  process.exit(0);
+}
+
 const fs = require('fs');
 const path = require('path');
 let puppeteer, handler;
-try { puppeteer = require('puppeteer'); } catch(e) { console.log('⚠ Puppeteer not available — skipping prerender (CI/Vercel build). Site will work fine as a SPA.'); process.exit(0); }
+try { puppeteer = require('puppeteer'); } catch(e) { console.log('⚠ Puppeteer not available — skipping prerender.'); process.exit(0); }
 try { handler = require('serve-handler'); } catch(e) { console.log('⚠ serve-handler not available — skipping prerender.'); process.exit(0); }
 const http = require('http');
 const https = require('https');
