@@ -321,7 +321,7 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
 .filter-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:1;min-width:0}
 @media(max-width:1200px){.ec-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
-  .ec-grid{grid-template-columns:1fr;padding:0 16px!important;max-width:100%}
+  .ec-grid{grid-template-columns:1fr!important;padding:0 24px!important;max-width:480px}
   .ec-hero{height:340px!important}
   .ec-title{font-size:32px!important}
   .search-bar{grid-template-columns:1fr 1fr!important;gap:8px!important}
