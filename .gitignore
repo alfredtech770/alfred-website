@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Claude workspace
+.claude/
+
+# Xcode user data (machine-specific, not shared)
+*.xcuserdata
+xcuserdata/
+*.xcuserdatad/
+
+# Xcode build
+build/
+DerivedData/
+*.xcworkspace/xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# CocoaPods (if used)
+Pods/
+
+# One-off scripts & docs (not needed in production)
+PRERENDER_SETUP.md
+yachts_schema_upgrade.py
