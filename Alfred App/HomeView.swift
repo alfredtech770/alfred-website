@@ -7,8 +7,8 @@
 //
 import SwiftUI
 import Combine
-import SuperwallKit
-import Auth
+// SuperwallKit and Auth provided by local stubs (Stubs/ folder)
+// Replace with real SPM imports once packages are added
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MARK: – Constants
@@ -34,11 +34,7 @@ private enum HV {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MARK: – Local Models
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-private struct CityItem: Identifiable {
-    let id, name, code: String
-    let color: Color
-    let available: Bool
-}
+// CityItem is defined in Components/CitySheet.swift
 
 private struct CarDetailDestination: Identifiable {
     let car: CDCar

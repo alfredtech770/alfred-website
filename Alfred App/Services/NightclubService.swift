@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PostgREST
+// PostgREST provided by local stub (Stubs/ folder)
 
 enum NightclubServiceError: LocalizedError {
     case databaseError(String)

@@ -7,7 +7,7 @@
 
 import SwiftUI
 import MapKit
-import PostgREST
+// PostgREST provided by local stub (Stubs/ folder)
 import Combine
 
 // MARK: - MapVenueModel

@@ -8,7 +8,7 @@
 //  AlfredMembershipCard→ full-width  (Membership)
 //
 import SwiftUI
-import SuperwallKit
+// SuperwallKit provided by local stub (Stubs/ folder)
 
 // ─────────────────────────────────────────────────────────────
 // MARK: – Brand Tokens (file-private)
