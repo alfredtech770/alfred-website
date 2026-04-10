@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
-import { useProposal } from "../components/ProposalContext";
+
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -119,12 +119,6 @@ function WellCard(p){
             <div style={{...sf(11,500),color:hover&&v.available?C.s1:C.s5,transition:"color 0.3s"}}>
               {v.available?"View →":"Join waitlist"}
             </div>
-            {p.onProposal&&<div onClick={function(e){e.stopPropagation();p.onProposal(v)}} style={{width:42,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:12,border:"1px solid "+(p.inProposal?C.gn:C.bd),background:p.inProposal?"rgba(52,199,89,0.1)":"transparent",cursor:"pointer",transition:"all 0.3s"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!p.inProposal)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!p.inProposal)e.currentTarget.style.borderColor=C.bd}}>
-              {p.inProposal
-                ?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                :<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
-              }
-            </div>}
           </div>
         </div>
       </div>
@@ -133,7 +127,6 @@ function WellCard(p){
 }
 
 export default function WellnessPage(){
-  var proposal=useProposal();
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [searchParams,setSearchParams]=useSearchParams();
@@ -204,6 +197,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div style={{display:"flex",alignItems:"center",gap:20}}>
           <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
+          <a href="/proposal" title="Create Client Proposal" style={{display:"flex",alignItems:"center",justifyContent:"center",width:28,height:28,borderRadius:8,border:"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.background=C.srf}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.background="transparent"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg></a>
           <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>Wellness</div>
         </div>
       </nav>
@@ -265,7 +259,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             <p style={{...sf(14),color:C.s5,marginBottom:24}}>Try adjusting your filters or location.</p>
             <div onClick={clearAll} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,cursor:"pointer",...sf(13,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>Clear all filters</div>
           </div>
-        ):filtered.map(function(v,i){return <WellCard key={v.name} v={v} i={i} vis={gridVis} inProposal={proposal.isInProposal("wellness",v.slug)} onProposal={function(vv){proposal.addItem({category:"wellness",id:vv.slug||vv.id,name:vv.name,image:vv.img||vv.hero_image_url,subtitle:(vv.type||"")+" · "+(vv.loc||vv.location||vv.city||"Miami"),price:vv.price||null,priceLabel:vv.from||"per session",details:(vv.treatment||"")+(vv.duration?" · "+vv.duration:"")})}}/>})}
+        ):filtered.map(function(v,i){return <WellCard key={v.name} v={v} i={i} vis={gridVis}/>})}
       </div>
 
       <section ref={ctaRef} style={{padding:"100px 0 120px",position:"relative"}}><div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>

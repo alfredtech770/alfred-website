@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SEOHead, { SEO } from "./components/SEOHead";
-import { ProposalProvider } from "./components/ProposalContext";
-import ProposalDrawer from "./components/ProposalDrawer";
-import ProposalPage from "./pages/ProposalPage";
+import ProposalBuilderPage from "./pages/ProposalBuilderPage";
 
 /* ═══ CATEGORY PAGE IMPORTS ═══ */
 /* Place each file in src/pages/ and uncomment these imports: */
@@ -414,7 +412,6 @@ function NotFoundPage(){
 export default function App(){
   return (
     <BrowserRouter>
-      <ProposalProvider>
         <Routes>
           <Route path="/" element={<HomePage/>}/>
           <Route path="/business" element={<AlfredPartners/>}/>
@@ -431,7 +428,7 @@ export default function App(){
           <Route path="/catalog/jets/:slug" element={<JetDetailPage/>}/>
           <Route path="/catalog/yachts" element={<YachtsPage/>}/>
           <Route path="/catalog/yachts/:id" element={<YachtDetailPage/>}/>
-          <Route path="/proposal" element={<ProposalPage/>}/>
+          <Route path="/proposal" element={<ProposalBuilderPage/>}/>
           <Route path="/events" element={<EventsPage/>}/>
           <Route path="/events/:slug" element={<EventDetailPage/>}/>
           <Route path="/blog" element={<BlogPage/>}/>
@@ -439,8 +436,6 @@ export default function App(){
           <Route path="/city/:slug" element={<CityPage/>}/>
           <Route path="*" element={<NotFoundPage/>}/>
         </Routes>
-        <ProposalDrawer/>
-      </ProposalProvider>
     </BrowserRouter>
   );
 }
