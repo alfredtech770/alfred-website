@@ -62,7 +62,7 @@ function ProposalBuilderPage(){
 
   /* ─── Canvas-based page renderer for pixel-perfect dark PDF ─── */
   var PW=210;var PH=297;// A4 portrait mm
-  var DPI=3;// canvas scale factor
+  var DPI=6;// canvas scale factor — HD quality
   var CW=PW*DPI;var CH=PH*DPI;
 
   function createPage(){
@@ -220,12 +220,12 @@ function ProposalBuilderPage(){
     ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";
     while(ctx.measureText(String(car.name)).width>contentW&&nameSize>9){nameSize-=0.5;ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";}
     drawText(ctx,String(car.name),pad,y,{size:nameSize,weight:700,color:"#F4F4F5"});
-    y+=mm(nameSize*0.5+3);
+    y+=mm(nameSize*0.45+6);
 
-    // Location + rating row
+    // Location row
     var locText=String((car.locs||[]).join(", ")||"Miami");
     drawText(ctx,locText,pad,y,{size:4.5,weight:400,color:"#71717A"});
-    y+=mm(7);
+    y+=mm(9);
 
     // Price (if enabled, show big; otherwise skip)
     if(showPrice){
@@ -233,18 +233,18 @@ function ProposalBuilderPage(){
       ctx.font="700 "+mm(14)+"px -apple-system,Helvetica,Arial,sans-serif";
       var pw=ctx.measureText("$"+car.price.toLocaleString()).width;
       drawText(ctx,"/day",pad+pw+mm(1.5),y+mm(3),{size:5,weight:400,color:"#52525B"});
-      y+=mm(12);
+      y+=mm(16);
     }
 
     // ═══ 4. DIVIDER ═══
     var divGrad=ctx.createLinearGradient(pad,0,CW-pad,0);
     divGrad.addColorStop(0,"transparent");divGrad.addColorStop(0.2,"#2C2C31");divGrad.addColorStop(0.8,"#2C2C31");divGrad.addColorStop(1,"transparent");
     ctx.strokeStyle=divGrad;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(CW-pad,y);ctx.stroke();
-    y+=mm(5);
+    y+=mm(7);
 
     // ═══ 5. PERFORMANCE — 3 spec boxes ═══
     drawText(ctx,"PERFORMANCE",pad,y,{size:3.5,weight:500,color:"#3F3F46"});
-    y+=mm(5);
+    y+=mm(6);
     var specBoxW=(contentW-mm(4))/3;var specBoxH=mm(22);var specGap=mm(2);
     var perfSpecs=[
       {emoji:"\u26A1",val:String(car.hp||"—"),unit:"hp",label:"Power"},
@@ -259,7 +259,7 @@ function ProposalBuilderPage(){
       drawText(ctx,perfSpecs[si].val+(perfSpecs[si].unit?" "+perfSpecs[si].unit:""),bx+specBoxW/2,y+mm(10),{size:8,weight:700,color:"#F4F4F5",align:"center"});
       drawText(ctx,perfSpecs[si].label,bx+specBoxW/2,y+mm(17),{size:3.5,weight:500,color:"#71717A",align:"center"});
     }
-    y+=specBoxH+mm(3);
+    y+=specBoxH+mm(5);
 
     // ═══ 6. DETAILS — 3x2 grid ═══
     var details=[
@@ -279,10 +279,10 @@ function ProposalBuilderPage(){
       drawText(ctx,details[di].l,dx+mm(3),dy+mm(2.5),{size:3,weight:500,color:"#71717A"});
       drawText(ctx,details[di].v,dx+mm(3),dy+mm(7),{size:5,weight:500,color:"#F4F4F5",maxWidth:dColW-mm(6)});
     }
-    y+=2*(dRowH+dGap)+mm(3);
+    y+=2*(dRowH+dGap)+mm(5);
 
     // ═══ 7. WHAT'S INCLUDED ═══
-    var features=[(car.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"];
+    var features=[(car.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","24/7 roadside assistance"];
     var featRowH=mm(7.5);
     ctx.save();roundRect(ctx,pad,y,contentW,features.length*featRowH+mm(3),mm(3));
     ctx.fillStyle="#18181B";ctx.fill();ctx.strokeStyle="#2C2C31";ctx.lineWidth=1;ctx.stroke();ctx.restore();
@@ -388,7 +388,7 @@ function ProposalBuilderPage(){
         var thumbs=[allImages[imgIdx+1],allImages[imgIdx+2],allImages[imgIdx+3],allImages[imgIdx+4]];
         if(i>0){doc.addPage()}
         var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages);
-        doc.addImage(carCanvas.toDataURL("image/jpeg",0.95),"JPEG",0,0,PW,PH);
+        doc.addImage(carCanvas.toDataURL("image/jpeg",1.0),"JPEG",0,0,PW,PH);
       }
 
       doc.save("Alfred_Proposal_"+clientName.replace(/\s+/g,"_")+".pdf");
