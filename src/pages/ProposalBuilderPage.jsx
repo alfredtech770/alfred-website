@@ -318,8 +318,14 @@ function ProposalBuilderPage(){
       var pDays=days||1;
       var pRate;
       var pDisc=0;
-      if(pDays===0&&customPrice){
+      if(customPrice!==null&&customPrice!==undefined){
+        // Custom price override — used regardless of tier
         pRate=customPrice;
+        pDisc=0;
+        pDays=pDays===0?1:pDays;// show as per-day
+      }else if(pDays===0){
+        // Custom mode but no price entered — use base price
+        pRate=car.price;
       }else{
         var pTier=[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}].filter(function(t){return t.d===pDays})[0]||{d:1,disc:0};
         pRate=Math.round(car.price*(1-pTier.disc/100));
@@ -506,7 +512,7 @@ function ProposalBuilderPage(){
         var hero=allImages[imgIdx];
         var thumbs=[allImages[imgIdx+1],allImages[imgIdx+2],allImages[imgIdx+3],allImages[imgIdx+4]];
         if(i>0){doc.addPage()}
-        var cp=pricingDays===0?customPrices[selectedIndices[i]]||c.price:null;
+        var cp=typeof customPrices[selectedIndices[i]]==="number"?customPrices[selectedIndices[i]]:null;
         var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages,pricingDays,cp,showBranding);
         doc.addImage(carCanvas.toDataURL("image/png"),"PNG",0,0,PW,PH);
       }
@@ -703,11 +709,29 @@ function ProposalBuilderPage(){
                 ):(
                   <div>
                     <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                      <span style={{...sf(16,700),color:C.gn}}>${displayRate.toLocaleString()}</span>
+                      <span style={{...sf(16,700),color:typeof customPrices[idx]==="number"?C.gold:C.gn}}>${typeof customPrices[idx]==="number"?customPrices[idx].toLocaleString():displayRate.toLocaleString()}</span>
                       <span style={{...sf(12),color:C.s5}}>/{pricingDays===1?"day":pricingDays+"d"}</span>
-                      {activeTier.disc>0&&<span style={{...sf(11,600),color:C.gn,padding:"2px 6px",borderRadius:4,background:"rgba(52,199,89,0.1)"}}>-{activeTier.disc}%</span>}
+                      {typeof customPrices[idx]!=="number"&&activeTier.disc>0&&<span style={{...sf(11,600),color:C.gn,padding:"2px 6px",borderRadius:4,background:"rgba(52,199,89,0.1)"}}>-{activeTier.disc}%</span>}
+                      {typeof customPrices[idx]==="number"&&<span style={{...sf(11,600),color:C.gold,padding:"2px 6px",borderRadius:4,background:"rgba(255,214,10,0.1)"}}>custom</span>}
                     </div>
-                    {pricingDays>1&&<div style={{...sf(11),color:C.s5,marginTop:4}}>${(displayRate*pricingDays).toLocaleString()} total</div>}
+                    {typeof customPrices[idx]==="number"&&customPrices[idx]!==displayRate&&<div style={{...sf(11),color:C.s5,marginTop:2,textDecoration:"line-through"}}>${displayRate.toLocaleString()}/day tier price</div>}
+                    {typeof customPrices[idx]!=="number"&&pricingDays>1&&<div style={{...sf(11),color:C.s5,marginTop:4}}>${(displayRate*pricingDays).toLocaleString()} total</div>}
+                    {/* Custom price override input */}
+                    <div style={{display:"flex",alignItems:"center",gap:6,marginTop:8,paddingTop:8,borderTop:"1px solid "+C.bd}}>
+                      <span style={{...sf(11),color:C.s5}}>Custom $</span>
+                      <input
+                        type="number"
+                        value={customPrices[idx]||""}
+                        onClick={function(e){e.stopPropagation()}}
+                        onChange={function(e){e.stopPropagation();var v=Object.assign({},customPrices);v[idx]=e.target.value?parseInt(e.target.value):"";setCustomPrices(v)}}
+                        placeholder={String(displayRate)}
+                        style={{width:80,padding:"4px 8px",backgroundColor:C.bg,border:"1px solid "+C.bd,borderRadius:5,...sf(12,600),color:C.gold,outline:"none",boxSizing:"border-box"}}
+                        onFocus={function(e){e.target.style.borderColor=C.gold}}
+                        onBlur={function(e){e.target.style.borderColor=C.bd}}
+                      />
+                      <span style={{...sf(11),color:C.s5}}>/day</span>
+                      {typeof customPrices[idx]==="number"&&<span onClick={function(e){e.stopPropagation();var v=Object.assign({},customPrices);delete v[idx];setCustomPrices(v)}} style={{...sf(11),color:C.s5,cursor:"pointer",marginLeft:2}}>✕</span>}
+                    </div>
                   </div>
                 )}
               </div>
