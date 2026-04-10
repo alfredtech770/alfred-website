@@ -32,18 +32,10 @@ var sf = function(size, weight){
 var C = {bg:"#0A0A0B",el:"#18181B",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gd:"#FFD60A"};
 
 function DrawMark(p){
-  var sw = Math.max(p.size * 0.06, 1.5);
-  var lines=[
-    {x1:20,y1:80,x2:40,y2:18,l:65},
-    {x1:80,y1:80,x2:60,y2:18,l:65},
-    {x1:40,y1:18,x2:60,y2:18,l:20},
-    {x1:32,y1:56,x2:68,y2:56,l:36},
-  ];
   return (
     <svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}>
-      {lines.map(function(ln,i){
-        return <line key={i} x1={ln.x1} y1={ln.y1} x2={ln.x2} y2={ln.y2} stroke={p.color} strokeWidth={sw} strokeLinecap="round" strokeDasharray={ln.l} strokeDashoffset={p.active?0:ln.l} style={{transition:"stroke-dashoffset 0.8s cubic-bezier(0.65,0,0.35,1) "+(p.delay+i*0.12)+"s"}}/>;
-      })}
+      <path d="M42 18 C42 30 34 38 22 38 C34 38 42 46 42 58 C42 46 50 38 62 38 C50 38 42 30 42 18Z" fill={p.color} style={{opacity:p.active?1:0,transition:"opacity 0.6s cubic-bezier(0.65,0,0.35,1) "+(p.delay||0)+"s"}}/>
+      <path d="M58 42 C58 54 50 62 38 62 C50 62 58 70 58 82 C58 70 66 62 78 62 C66 62 58 54 58 42Z" fill={p.color} style={{opacity:p.active?1:0,transition:"opacity 0.6s cubic-bezier(0.65,0,0.35,1) "+((p.delay||0)+0.15)+"s"}}/>
     </svg>
   );
 }
@@ -1737,8 +1729,7 @@ textarea{resize:vertical;min-height:100px}
    ═══════════════════════════════════════ */
 
 function CDrawMark(p){
-  var sw = Math.max(p.size * 0.06, 1.5);
-  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none"><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>);
+  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none"><path d="M42 18 C42 30 34 38 22 38 C34 38 42 46 42 58 C42 46 50 38 62 38 C50 38 42 30 42 18Z" fill={p.color||C.s1}/><path d="M58 42 C58 54 50 62 38 62 C50 62 58 70 58 82 C58 70 66 62 78 62 C66 62 58 54 58 42Z" fill={p.color||C.s1}/></svg>);
 }
 
 /* ═══ CATEGORY DATA ═══ */

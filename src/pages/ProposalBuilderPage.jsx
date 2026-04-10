@@ -7,8 +7,7 @@ var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetic
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
 
 function Mark(p){
-  var sw=Math.max(p.size*0.06,1.5);
-  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>);
+  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><path d="M42 18 C42 30 34 38 22 38 C34 38 42 46 42 58 C42 46 50 38 62 38 C50 38 42 30 42 18Z" fill={p.color||C.s1}/><path d="M58 42 C58 54 50 62 38 62 C50 62 58 70 58 82 C58 70 66 62 78 62 C66 62 58 54 58 42Z" fill={p.color||C.s1}/></svg>);
 }
 
 function CheckBox(p){
@@ -166,11 +165,25 @@ function ProposalBuilderPage(){
 
   function drawMark(ctx,cx,cy,size,color){
     var s=mm(size);
-    ctx.strokeStyle=color||"#F4F4F5";ctx.lineWidth=Math.max(s*0.055,1);ctx.lineCap="round";
-    ctx.beginPath();ctx.moveTo(cx-s*0.3,cy+s*0.3);ctx.lineTo(cx-s*0.1,cy-s*0.3);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx+s*0.3,cy+s*0.3);ctx.lineTo(cx+s*0.1,cy-s*0.3);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx-s*0.1,cy-s*0.3);ctx.lineTo(cx+s*0.1,cy-s*0.3);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx-s*0.18,cy+s*0.06);ctx.lineTo(cx+s*0.18,cy+s*0.06);ctx.stroke();
+    ctx.fillStyle=color||"#F4F4F5";
+    // Top star (offset upper-left)
+    var tx=cx-s*0.16;var ty=cy-s*0.32;
+    ctx.beginPath();
+    ctx.moveTo(tx,ty-s*0.4);
+    ctx.bezierCurveTo(tx,ty-s*0.16,tx-s*0.24,ty,tx-s*0.4,ty);
+    ctx.bezierCurveTo(tx-s*0.16,ty,tx,ty+s*0.16,tx,ty+s*0.4);
+    ctx.bezierCurveTo(tx,ty+s*0.16,tx+s*0.24,ty,tx+s*0.4,ty);
+    ctx.bezierCurveTo(tx+s*0.16,ty,tx,ty-s*0.16,tx,ty-s*0.4);
+    ctx.fill();
+    // Bottom star (offset lower-right)
+    var bx=cx+s*0.16;var by=cy+s*0.32;
+    ctx.beginPath();
+    ctx.moveTo(bx,by-s*0.4);
+    ctx.bezierCurveTo(bx,by-s*0.16,bx-s*0.24,by,bx-s*0.4,by);
+    ctx.bezierCurveTo(bx-s*0.16,by,bx,by+s*0.16,bx,by+s*0.4);
+    ctx.bezierCurveTo(bx,by+s*0.16,bx+s*0.24,by,bx+s*0.4,by);
+    ctx.bezierCurveTo(bx+s*0.16,by,bx,by-s*0.16,bx,by-s*0.4);
+    ctx.fill();
   }
 
   function roundRect(ctx,x,y,w,h,r){
