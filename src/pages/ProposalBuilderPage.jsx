@@ -215,7 +215,7 @@ function ProposalBuilderPage(){
     ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";
     while(ctx.measureText(String(car.name)).width>contentW&&nameSize>7){nameSize-=0.5;ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";}
     drawText(ctx,String(car.name),pad,y,{size:nameSize,weight:700,color:"#F4F4F5"});
-    y+=mm(nameSize*0.42+5);
+    y+=mm(nameSize*0.42+8);
 
     // ═══ 5. LOCATION ═══
     var locText=String((car.locs||[]).join(", ")||"Miami");
