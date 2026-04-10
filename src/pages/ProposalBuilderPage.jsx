@@ -542,7 +542,7 @@ function ProposalBuilderPage(){
     {/* Nav Bar */}
     <div style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(10,10,11,0.95)",backdropFilter:"blur(30px) saturate(1.3)",borderBottom:"1px solid rgba(44,44,49,0.8)",transition:"all 0.3s"}}>
       <a href="/" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}>
-        <Mark size={22} color={C.s1}/>
+        <Mark size={28} color={C.s1}/>
       </a>
       <div style={{display:"flex",alignItems:"center",gap:28}}>
         <a href="/" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,textDecoration:"none",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
@@ -762,7 +762,7 @@ function ProposalBuilderPage(){
     {/* Loading Overlay */}
     {generating&&<div style={{position:"fixed",top:0,left:0,right:0,bottom:0,backgroundColor:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}>
       <div style={{backgroundColor:C.el,padding:32,borderRadius:12,textAlign:"center"}}>
-        <div style={{width:40,height:40,margin:"0 auto 16px",border:`3px solid ${C.bd}`,borderTop:`3px solid ${C.gn}`,borderRadius:"50%",animation:"spin 0.8s linear infinite"}}/>
+        <div style={{width:40,height:40,margin:"0 auto 16px",animation:"spin 2s ease-in-out infinite"}}><svg width="40" height="40" viewBox="0 0 100 100" fill="none"><path d="M42 18 C42 30 34 38 22 38 C34 38 42 46 42 58 C42 46 50 38 62 38 C50 38 42 30 42 18Z" fill={C.s1} opacity="0.9"/><path d="M58 42 C58 54 50 62 38 62 C50 62 58 70 58 82 C58 70 66 62 78 62 C66 62 58 54 58 42Z" fill={C.s1} opacity="0.5"/></svg></div>
         <p style={{...sf(16),color:C.s1,margin:0}}>Generating PDF...</p>
         <p style={{...sf(12),color:C.s5,margin:"8px 0 0 0"}}>Processing images and formatting</p>
       </div>

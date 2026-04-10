@@ -200,56 +200,104 @@ function MarkCanvas(props){
     if (!c) return;
     var ctx = c.getContext("2d");
     c.width = 380; c.height = 380;
-    var W = 380, cx = W/2, cy = W/2, sc = 2.1;
-    var ox = cx - 50*sc, oy = cy - 52*sc;
-    var segs = [
-      {x1:20,y1:82,x2:38,y2:22},{x1:38,y1:22,x2:62,y2:22},
-      {x1:62,y1:22,x2:80,y2:82},{x1:30,y1:62,x2:70,y2:62},
-    ];
-    var pts = [];
-    for (var si=0;si<segs.length;si++){
-      var s=segs[si],dx=s.x2-s.x1,dy=s.y2-s.y1;
-      var len=Math.sqrt(dx*dx+dy*dy),steps=Math.max(Math.floor(len*3),10);
-      for(var i=0;i<=steps;i++){var t=i/steps;pts.push({x:ox+(s.x1+dx*t)*sc,y:oy+(s.y1+dy*t)*sc,s:si})}
-      if(si===2){
-        var gsx=ox+80*sc,gsy=oy+82*sc,gex=ox+30*sc,gey=oy+62*sc;
-        var gdx=gex-gsx,gdy=gey-gsy,gl=Math.sqrt(gdx*gdx+gdy*gdy),gn=Math.max(Math.floor(gl*0.8),8);
-        for(var gi=1;gi<=gn;gi++)pts.push({x:gsx+gdx*(gi/gn),y:gsy+gdy*(gi/gn),s:-1})
+    var W = 380, cx = W/2, cy = W/2;
+    // Dual-star params
+    var starR = 60;
+    var s1x = cx - 18, s1y = cy - 22; // top star
+    var s2x = cx + 18, s2y = cy + 22; // bottom star
+    // Generate outline points along star edges for particle trail
+    function starOutlinePts(sx, sy, r, n) {
+      var pts = [];
+      for (var i = 0; i < n; i++) {
+        var t = i / n, a = t * Math.PI * 2;
+        // 4-pointed star parametric: r varies with angle
+        var cos4 = Math.cos(2 * a), factor = 0.35 + 0.65 * Math.abs(cos4);
+        pts.push({ x: sx + Math.cos(a) * r * factor, y: sy + Math.sin(a) * r * factor });
       }
+      return pts;
     }
-    var total=pts.length,particles=[],time=0,pulse=0,lightT=0,flashT=0,burstDone=false,id;
-    var drawMark=function(op,lw){
-      ctx.strokeStyle="rgba(244,244,245,"+op+")";ctx.lineWidth=lw;ctx.lineCap="round";
-      for(var mi=0;mi<segs.length;mi++){var sg=segs[mi];ctx.beginPath();ctx.moveTo(ox+sg.x1*sc,oy+sg.y1*sc);ctx.lineTo(ox+sg.x2*sc,oy+sg.y2*sc);ctx.stroke()}
+    var pts1 = starOutlinePts(s1x, s1y, starR, 120);
+    var pts2 = starOutlinePts(s2x, s2y, starR, 120);
+    var allPts = pts1.concat(pts2);
+    var total = allPts.length;
+    // Draw a 4-pointed star shape via bezier
+    function drawStarShape(ctx2, sx, sy, r) {
+      ctx2.beginPath();
+      ctx2.moveTo(sx, sy - r);
+      ctx2.bezierCurveTo(sx, sy - r * 0.35, sx - r * 0.65, sy, sx - r, sy);
+      ctx2.bezierCurveTo(sx - r * 0.35, sy, sx, sy + r * 0.35, sx, sy + r);
+      ctx2.bezierCurveTo(sx, sy + r * 0.35, sx + r * 0.65, sy, sx + r, sy);
+      ctx2.bezierCurveTo(sx + r * 0.35, sy, sx, sy - r * 0.35, sx, sy - r);
+      ctx2.closePath();
+    }
+    var particles = [], time = 0, pulse = 0, lightT = 0, flashT = 0, burstDone = false, id;
+    var drawMark = function(op) {
+      ctx.fillStyle = "rgba(244,244,245," + op + ")";
+      drawStarShape(ctx, s1x, s1y, starR); ctx.fill();
+      drawStarShape(ctx, s2x, s2y, starR); ctx.fill();
     };
-    var frame=function(){
-      time+=1.0;pulse+=0.015;ctx.clearRect(0,0,W,W);
-      var isLit=litRef.current;
-      if(isLit){lightT=Math.min(lightT+0.018,1);flashT=Math.min(flashT+0.022,1)}
-      var breathe=0.5+0.5*Math.sin(pulse*0.6);
-      var gr=100+lightT*50,gs=0.006+breathe*0.006+lightT*0.025;
-      var ag=ctx.createRadialGradient(cx,cy,0,cx,cy,gr);ag.addColorStop(0,"rgba(244,244,245,"+gs+")");ag.addColorStop(1,"transparent");ctx.fillStyle=ag;ctx.fillRect(0,0,W,W);
-      if(isLit&&flashT<1){var fa=(1-flashT)*0.06,fr=40+flashT*120;var fg=ctx.createRadialGradient(cx,cy-8,0,cx,cy-8,fr);fg.addColorStop(0,"rgba(244,244,245,"+fa+")");fg.addColorStop(0.3,"rgba(244,244,245,"+(fa*0.15)+")");fg.addColorStop(1,"transparent");ctx.fillStyle=fg;ctx.fillRect(0,0,W,W)}
-      var el=1-Math.pow(1-lightT,3);drawMark(0.035+breathe*0.015+el*0.55,sc*0.25+el*0.5);
-      if(lightT<0.9){var tm=1-lightT,head=Math.floor(time)%(total+65);
-        for(var ti=0;ti<60;ti++){var idx=head-ti;if(idx<0||idx>=total)continue;var pt=pts[idx];if(pt.s===-1)continue;
-          var prog=1-ti/60,alpha=prog*prog*prog*tm,w=(sc*0.28)*(0.2+prog*0.8);
-          if(idx>0&&pts[idx-1].s===pt.s){var pv=pts[idx-1];ctx.beginPath();ctx.moveTo(pv.x,pv.y);ctx.lineTo(pt.x,pt.y);ctx.strokeStyle="rgba(244,244,245,"+(alpha*0.85)+")";ctx.lineWidth=w;ctx.lineCap="round";ctx.stroke()}}
-        if(head>=0&&head<total&&pts[head].s!==-1){var hp=pts[head],ha=tm;
-          var hg=ctx.createRadialGradient(hp.x,hp.y,0,hp.x,hp.y,18);hg.addColorStop(0,"rgba(244,244,245,"+(0.12*ha)+")");hg.addColorStop(0.5,"rgba(244,244,245,"+(0.03*ha)+")");hg.addColorStop(1,"transparent");ctx.fillStyle=hg;ctx.fillRect(hp.x-18,hp.y-18,36,36);
-          ctx.beginPath();ctx.arc(hp.x,hp.y,1.8,0,Math.PI*2);ctx.fillStyle="rgba(244,244,245,"+(0.9*ha)+")";ctx.fill();
-          if(Math.random()>0.7){var a=Math.random()*Math.PI*2,sp=0.08+Math.random()*0.25;
-            particles.push({x:hp.x+(Math.random()-0.5)*3,y:hp.y+(Math.random()-0.5)*3,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-0.08,life:1,decay:0.015+Math.random()*0.02,sz:0.3+Math.random()*0.8})}}}
-      if(isLit&&!burstDone&&flashT<0.08){for(var b=0;b<3;b++){var bs=segs[Math.floor(Math.random()*4)],bt=Math.random();
-        var bx=ox+(bs.x1+(bs.x2-bs.x1)*bt)*sc,by=oy+(bs.y1+(bs.y2-bs.y1)*bt)*sc,ba=Math.random()*Math.PI*2,bsp=0.15+Math.random()*0.3;
-        particles.push({x:bx,y:by,vx:Math.cos(ba)*bsp,vy:Math.sin(ba)*bsp-0.15,life:1,decay:0.015+Math.random()*0.02,sz:0.3+Math.random()*0.8})}}
-      if(isLit&&flashT>=0.1)burstDone=true;
-      for(var pi=particles.length-1;pi>=0;pi--){var p=particles[pi];p.x+=p.vx;p.y+=p.vy;p.vy-=0.002;p.vx*=0.997;p.life-=p.decay;
-        if(p.life<=0){particles.splice(pi,1);continue}var pa=p.life*p.life*0.35;
-        ctx.beginPath();ctx.arc(p.x,p.y,p.sz*p.life,0,Math.PI*2);ctx.fillStyle="rgba(244,244,245,"+pa+")";ctx.fill()}
-      id=requestAnimationFrame(frame)};
-    id=requestAnimationFrame(frame);
-    return function(){cancelAnimationFrame(id)};
+    var frame = function() {
+      time += 1.0; pulse += 0.015; ctx.clearRect(0, 0, W, W);
+      var isLit = litRef.current;
+      if (isLit) { lightT = Math.min(lightT + 0.018, 1); flashT = Math.min(flashT + 0.022, 1) }
+      var breathe = 0.5 + 0.5 * Math.sin(pulse * 0.6);
+      // Ambient glow
+      var gr = 100 + lightT * 60, gs = 0.006 + breathe * 0.006 + lightT * 0.03;
+      var ag = ctx.createRadialGradient(cx, cy, 0, cx, cy, gr);
+      ag.addColorStop(0, "rgba(244,244,245," + gs + ")"); ag.addColorStop(1, "transparent");
+      ctx.fillStyle = ag; ctx.fillRect(0, 0, W, W);
+      // Flash on lit
+      if (isLit && flashT < 1) {
+        var fa = (1 - flashT) * 0.08, fr = 50 + flashT * 130;
+        var fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, fr);
+        fg.addColorStop(0, "rgba(244,244,245," + fa + ")"); fg.addColorStop(0.3, "rgba(244,244,245," + (fa * 0.15) + ")"); fg.addColorStop(1, "transparent");
+        ctx.fillStyle = fg; ctx.fillRect(0, 0, W, W);
+      }
+      // Draw stars
+      var el = 1 - Math.pow(1 - lightT, 3);
+      drawMark(0.035 + breathe * 0.015 + el * 0.6);
+      // Particle trail along outline
+      if (lightT < 0.9) {
+        var tm = 1 - lightT, head = Math.floor(time * 1.2) % (total + 40);
+        for (var ti = 0; ti < 40; ti++) {
+          var idx = head - ti; if (idx < 0 || idx >= total) continue;
+          var pt = allPts[idx];
+          var prog = 1 - ti / 40, alpha = prog * prog * prog * tm * 0.7;
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.2 + prog * 1.5, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(244,244,245," + alpha + ")"; ctx.fill();
+        }
+        if (head >= 0 && head < total) {
+          var hp = allPts[head];
+          var hg = ctx.createRadialGradient(hp.x, hp.y, 0, hp.x, hp.y, 20);
+          hg.addColorStop(0, "rgba(244,244,245," + (0.15 * tm) + ")"); hg.addColorStop(1, "transparent");
+          ctx.fillStyle = hg; ctx.fillRect(hp.x - 20, hp.y - 20, 40, 40);
+          if (Math.random() > 0.65) {
+            var a = Math.random() * Math.PI * 2, sp = 0.1 + Math.random() * 0.3;
+            particles.push({ x: hp.x, y: hp.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 0.1, life: 1, decay: 0.015 + Math.random() * 0.02, sz: 0.3 + Math.random() * 0.9 });
+          }
+        }
+      }
+      // Burst particles on light
+      if (isLit && !burstDone && flashT < 0.08) {
+        for (var b = 0; b < 5; b++) {
+          var bp = allPts[Math.floor(Math.random() * total)];
+          var ba = Math.random() * Math.PI * 2, bsp = 0.2 + Math.random() * 0.4;
+          particles.push({ x: bp.x, y: bp.y, vx: Math.cos(ba) * bsp, vy: Math.sin(ba) * bsp - 0.15, life: 1, decay: 0.012 + Math.random() * 0.02, sz: 0.3 + Math.random() * 1 });
+        }
+      }
+      if (isLit && flashT >= 0.1) burstDone = true;
+      // Update particles
+      for (var pi = particles.length - 1; pi >= 0; pi--) {
+        var p = particles[pi]; p.x += p.vx; p.y += p.vy; p.vy -= 0.002; p.vx *= 0.997; p.life -= p.decay;
+        if (p.life <= 0) { particles.splice(pi, 1); continue }
+        var pa = p.life * p.life * 0.4;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.sz * p.life, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(244,244,245," + pa + ")"; ctx.fill();
+      }
+      id = requestAnimationFrame(frame);
+    };
+    id = requestAnimationFrame(frame);
+    return function() { cancelAnimationFrame(id) };
   }, []);
   return <canvas ref={canvasRef} style={{width:380,height:380}} />;
 }
@@ -469,7 +517,7 @@ function WaitlistModal(p){
         </div>
         {!formSent?(
           <div style={{padding:"40px 32px 36px"}}>
-            <div style={{marginBottom:24}}><DrawMark size={20} color={C.s5} active={true} delay={0} id="wl"/></div>
+            <div style={{marginBottom:24}}><DrawMark size={26} color={C.s5} active={true} delay={0} id="wl"/></div>
             <h3 style={{...sf(24,700),letterSpacing:-0.5,marginBottom:6}}>Join the waitlist</h3>
             <p style={{...sf(13,400),color:C.s5,lineHeight:1.6,marginBottom:32}}>Get early access to Alfred. We'll reach out on WhatsApp when it's your turn.</p>
             <div style={{marginBottom:16}}>
@@ -850,7 +898,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",left:(mouse.x*100)+"%",top:(mouse.y*100)+"%",width:600,height:600,marginLeft:-300,marginTop:-300,borderRadius:"50%",background:"radial-gradient(circle,rgba(244,244,245,0.025) 0%,transparent 60%)",pointerEvents:"none",transition:"left 0.8s cubic-bezier(0.16,1,0.3,1),top 0.8s cubic-bezier(0.16,1,0.3,1)",zIndex:1}}/>
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:-80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.8s both":"none",zIndex:2}}/>
-        <div style={{position:"absolute",top:32,left:40,zIndex:10,animation:loaded?"slideFromLeft 1s cubic-bezier(0.16,1,0.3,1) 0.3s both":"none"}}><DrawMark size={22} color={C.s1} active={loaded} delay={0.5} id="mg1"/></div>
+        <div style={{position:"absolute",top:32,left:40,zIndex:10,animation:loaded?"slideFromLeft 1s cubic-bezier(0.16,1,0.3,1) 0.3s both":"none"}}><DrawMark size={28} color={C.s1} active={loaded} delay={0.5} id="mg1"/></div>
         <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Events","Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Events"?"/events":item==="Contact"?"https://wa.me/447449562204":"#"+item.toLowerCase();return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
         {/* Mobile hamburger button */}
         <div className="mob-menu-btn" onClick={function(){setMobileMenu(true)}} style={{position:"absolute",top:32,right:20,zIndex:110,display:"none",alignItems:"center",justifyContent:"center",width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer",animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>
@@ -887,7 +935,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         `}</style>
         {/* Top bar */}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 24px"}}>
-          <PMark size={22} color={C.s1} style={{opacity:0,animation:"menuFadeUp 0.5s ease 0.2s forwards"}}/>
+          <PMark size={28} color={C.s1} style={{opacity:0,animation:"menuFadeUp 0.5s ease 0.2s forwards"}}/>
           <div onClick={function(){setMobileMenu(false)}} style={{width:44,height:44,borderRadius:14,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </div>
@@ -1213,8 +1261,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 var pDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
 function PMark(p){
-  var sw=Math.max(p.size*0.06,1.5);
-  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>);
+  return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><path d="M42 18 C42 30 34 38 22 38 C34 38 42 46 42 58 C42 46 50 38 62 38 C50 38 42 30 42 18Z" fill={p.color||C.s1}/><path d="M58 42 C58 54 50 62 38 62 C50 62 58 70 58 82 C58 70 66 62 78 62 C66 62 58 54 58 42Z" fill={p.color||C.s1}/></svg>);
 }
 
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
@@ -1370,7 +1417,7 @@ textarea{resize:vertical;min-height:100px}
 
       {/* ═══ NAV ═══ */}
       <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
-        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><PMark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
+        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><PMark size={28} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div className="biz-nav-links" style={{display:"flex",alignItems:"center",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
           <a href="#apply" style={{padding:"10px 20px",borderRadius:12,...sf(11,600),color:C.bg,background:C.s1,transition:"transform 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)"}}>Apply Now</a>
@@ -1388,7 +1435,7 @@ textarea{resize:vertical;min-height:100px}
 @keyframes menuFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
         `}</style>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 24px"}}>
-          <PMark size={22} color={C.s1}/>
+          <PMark size={28} color={C.s1}/>
           <div onClick={function(){setMobileMenu(false)}} style={{width:44,height:44,borderRadius:14,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </div>
@@ -1701,7 +1748,7 @@ textarea{resize:vertical;min-height:100px}
       {/* ═══ FINAL CTA ═══ */}
       <section style={{padding:"140px 0 120px",position:"relative"}}><div style={pDiv}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
-          <PMark size={32} color={C.s5}/>
+          <PMark size={38} color={C.s5}/>
           <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,marginTop:24,marginBottom:16}}>Let's build<br/>something together.</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>The world's best businesses. The world's most discerning clients. No ads, no algorithms — real concierge, real bookings.</p>
           <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
@@ -1713,7 +1760,7 @@ textarea{resize:vertical;min-height:100px}
 
       {/* ═══ FOOTER ═══ */}
       <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}><PMark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:10}}><PMark size={20} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
         <div style={{display:"flex",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
           <a href="/catalog" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
@@ -1934,7 +1981,7 @@ body::-webkit-scrollbar{width:0}
       {/* ═══ NAV ═══ */}
       <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur("+Math.min(navOp*30,30)+"px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")",transition:"all 0.3s"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10}}>
-          <CDrawMark size={22} color={C.s1}/>
+          <CDrawMark size={28} color={C.s1}/>
         </a>
         <div className="cat-nav-links" style={{display:"flex",alignItems:"center",gap:28}}>
           <a href="/" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
@@ -1949,7 +1996,7 @@ body::-webkit-scrollbar{width:0}
       {/* ═══ MOBILE MENU ═══ */}
       {mobileMenu&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(5,5,6,0.98)",backdropFilter:"blur(60px) saturate(1.5)",display:"flex",flexDirection:"column",animation:"menuSlideIn 0.4s cubic-bezier(0.16,1,0.3,1)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"28px 24px"}}>
-          <CDrawMark size={22} color={C.s1}/>
+          <CDrawMark size={28} color={C.s1}/>
           <div onClick={function(){setMobileMenu(false)}} style={{width:44,height:44,borderRadius:14,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </div>
@@ -2079,7 +2126,7 @@ body::-webkit-scrollbar{width:0}
       {/* ═══ BOTTOM CTA ═══ */}
       <section style={{padding:"80px 40px 120px",textAlign:"center",borderTop:"1px solid "+C.bd}}>
         <div style={{maxWidth:480,margin:"0 auto"}}>
-          <CDrawMark size={32} color={C.s5}/>
+          <CDrawMark size={38} color={C.s5}/>
           <h2 style={{...sf(32,600),letterSpacing:-1,marginTop:24,marginBottom:14}}>Ready to experience it all?</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Download Alfred and get access to every venue, every service, every experience — through one concierge.</p>
           <a href="/" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,...sf(14,500),color:C.s1,transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg;e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1;e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
@@ -2092,7 +2139,7 @@ body::-webkit-scrollbar{width:0}
       {/* ═══ FOOTER ═══ */}
       <footer style={{borderTop:"1px solid "+C.bd,padding:"40px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <CDrawMark size={16} color={C.s7}/>
+          <CDrawMark size={20} color={C.s7}/>
           <span style={{...sf(10,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span>
         </div>
         <div style={{display:"flex",gap:24}}>

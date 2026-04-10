@@ -189,7 +189,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
 
       {/* Nav */}
       <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"16px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(10,10,11,"+Math.max(navOp*0.95,0.55)+")",backdropFilter:"blur(24px) saturate(1.3)",borderBottom:"1px solid rgba(44,44,49,"+Math.max(navOp*0.8,0.3)+")"}}>
-        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
+        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={28} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
           <a href="/catalog/yachts" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>← All Yachts</a>
           <div style={{...sf(12,500),color:C.s1,opacity:Math.min(navOp*2,1),transition:"opacity 0.3s"}}>{YACHT.name}</div>
@@ -276,7 +276,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
               <div style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"clamp(20px,4vw,36px) clamp(16px,3vw,32px)",position:"relative",overflow:"hidden",wordBreak:"break-word"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
                 <div style={{position:"absolute",bottom:20,right:24,opacity:0.025}}><Mark size={100} color={C.s1}/></div>
-                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}><Mark size={18} color={C.s5}/><span style={{...sf(11,500),color:C.s5,letterSpacing:1}}>From your concierge</span><div style={{marginLeft:"auto",width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px rgba(52,199,89,0.4)"}}/></div>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}><Mark size={24} color={C.s5}/><span style={{...sf(11,500),color:C.s5,letterSpacing:1}}>From your concierge</span><div style={{marginLeft:"auto",width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px rgba(52,199,89,0.4)"}}/></div>
                 <p style={{...sf(15,400),color:C.s3,lineHeight:1.8,fontStyle:"italic",marginBottom:22,position:"relative",zIndex:1}}>"{YACHT.alfredNote}"</p>
                 <div style={{height:0.5,background:C.bd,marginBottom:18}}/>
                 <div style={{display:"flex",gap:8,alignItems:"flex-start"}}><span style={{...sf(13),color:C.s6,marginTop:1}}>✨</span><span style={{...sf(13),color:C.s5,lineHeight:1.6}}>{YACHT.alfredTip}</span></div>
@@ -497,7 +497,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
       </section>
 
       <footer style={{borderTop:"1px solid "+C.bd,padding:"36px clamp(16px,4vw,40px)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}><Mark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
         <div style={{display:"flex",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
           <a href="/catalog/yachts" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Yachts</a>
