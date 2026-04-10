@@ -378,28 +378,18 @@ function ProposalBuilderPage(){
       }
       var allImages=await Promise.all(imagePromises);
 
-      // ─ Build PDF
+      // ─ Build PDF — car pages only, no cover/closing
       var doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
 
-      // Cover
-      var coverCanvas=renderCover(clientName);
-      doc.addImage(coverCanvas.toDataURL("image/jpeg",0.95),"JPEG",0,0,PW,PH);
-
-      // Car pages
       for(var i=0;i<selectedCars.length;i++){
         var c=selectedCars[i];
         var imgIdx=i*5;
         var hero=allImages[imgIdx];
         var thumbs=[allImages[imgIdx+1],allImages[imgIdx+2],allImages[imgIdx+3],allImages[imgIdx+4]];
-        doc.addPage();
+        if(i>0){doc.addPage()}
         var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages);
         doc.addImage(carCanvas.toDataURL("image/jpeg",0.95),"JPEG",0,0,PW,PH);
       }
-
-      // Closing
-      doc.addPage();
-      var closeCanvas=renderClosing(clientName);
-      doc.addImage(closeCanvas.toDataURL("image/jpeg",0.95),"JPEG",0,0,PW,PH);
 
       doc.save("Alfred_Proposal_"+clientName.replace(/\s+/g,"_")+".pdf");
       setGenerating(false);
