@@ -185,7 +185,7 @@ function ProposalBuilderPage(){
     // ═══ 2. THREE GALLERY THUMBNAILS ═══
     var availThumbs=galleryImgs.filter(function(g){return g!==null});
     var numThumbs=Math.min(availThumbs.length,3);
-    var thumbH=mm(28);var thumbGap=mm(2);
+    var thumbH=mm(36);var thumbGap=mm(2);
     if(numThumbs>0){
       var thumbW=(contentW-(numThumbs-1)*thumbGap)/numThumbs;
       for(var t=0;t<numThumbs;t++){
@@ -215,12 +215,12 @@ function ProposalBuilderPage(){
     ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";
     while(ctx.measureText(String(car.name)).width>contentW&&nameSize>7){nameSize-=0.5;ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";}
     drawText(ctx,String(car.name),pad,y,{size:nameSize,weight:700,color:"#F4F4F5"});
-    y+=mm(nameSize*0.42+4);
+    y+=mm(nameSize*0.42+5);
 
     // ═══ 5. LOCATION ═══
     var locText=String((car.locs||[]).join(", ")||"Miami");
     drawText(ctx,locText,pad,y,{size:3.5,weight:400,color:"#71717A"});
-    y+=mm(7);
+    y+=mm(8);
 
     // ═══ 6. PRICE ═══
     if(showPrice){
@@ -238,9 +238,9 @@ function ProposalBuilderPage(){
     y+=mm(6);
 
     // ═══ 8. PERFORMANCE — 3 spec cards ═══
-    drawText(ctx,"PERFORMANCE",pad,y,{size:2.5,weight:600,color:"#52525B",letterSpacing:1});
+    drawText(ctx,"PERFORMANCE",pad,y,{size:2.5,weight:600,color:"#52525B"});
     y+=mm(5);
-    var specBoxW=(contentW-mm(3))/3;var specBoxH=mm(18);var specGap=mm(1.5);
+    var specBoxW=(contentW-mm(3))/3;var specBoxH=mm(24);var specGap=mm(1.5);
     var perfSpecs=[
       {emoji:"⚡",val:String(car.hp||"—"),unit:" hp",label:"Power"},
       {emoji:"⏱",val:String(car.accel||"—"),unit:"s",label:"0-100 km/h"},
@@ -248,11 +248,11 @@ function ProposalBuilderPage(){
     ];
     for(var si=0;si<3;si++){
       var bx=pad+si*(specBoxW+specGap);
-      ctx.save();roundRect(ctx,bx,y,specBoxW,specBoxH,mm(2));
+      ctx.save();roundRect(ctx,bx,y,specBoxW,specBoxH,mm(2.5));
       ctx.fillStyle="#141416";ctx.fill();ctx.strokeStyle="#232328";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
-      drawText(ctx,perfSpecs[si].emoji,bx+specBoxW/2,y+mm(2.5),{size:3.5,align:"center"});
-      drawText(ctx,perfSpecs[si].val+perfSpecs[si].unit,bx+specBoxW/2,y+mm(7.5),{size:5.5,weight:700,color:"#F4F4F5",align:"center"});
-      drawText(ctx,perfSpecs[si].label,bx+specBoxW/2,y+mm(13.5),{size:2.5,weight:500,color:"#71717A",align:"center"});
+      drawText(ctx,perfSpecs[si].emoji,bx+specBoxW/2,y+mm(3.5),{size:3.5,align:"center"});
+      drawText(ctx,perfSpecs[si].val+perfSpecs[si].unit,bx+specBoxW/2,y+mm(9),{size:5.5,weight:700,color:"#F4F4F5",align:"center"});
+      drawText(ctx,perfSpecs[si].label,bx+specBoxW/2,y+mm(17),{size:2.5,weight:500,color:"#71717A",align:"center"});
     }
     y+=specBoxH+mm(4);
 
@@ -265,14 +265,14 @@ function ProposalBuilderPage(){
       {l:"Body",v:String(car.body||"—")},
       {l:"Location",v:String((car.locs||[]).join(", ")||"Miami")}
     ];
-    var dColW=(contentW-mm(3))/3;var dRowH=mm(11);var dGap=mm(1.5);
+    var dColW=(contentW-mm(3))/3;var dRowH=mm(14);var dGap=mm(1.5);
     for(var di=0;di<details.length;di++){
       var col=di%3;var row=Math.floor(di/3);
       var dx=pad+col*(dColW+dGap);var dy=y+row*(dRowH+dGap);
-      ctx.save();roundRect(ctx,dx,dy,dColW,dRowH,mm(2));
+      ctx.save();roundRect(ctx,dx,dy,dColW,dRowH,mm(2.5));
       ctx.fillStyle="#141416";ctx.fill();ctx.strokeStyle="#232328";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
-      drawText(ctx,details[di].l,dx+mm(3),dy+mm(2.5),{size:2.3,weight:500,color:"#71717A"});
-      drawText(ctx,details[di].v,dx+mm(3),dy+mm(6.5),{size:3.8,weight:600,color:"#E4E4E7",maxWidth:dColW-mm(6)});
+      drawText(ctx,details[di].l,dx+mm(3.5),dy+mm(3),{size:2.3,weight:500,color:"#71717A"});
+      drawText(ctx,details[di].v,dx+mm(3.5),dy+mm(8),{size:3.8,weight:600,color:"#E4E4E7",maxWidth:dColW-mm(7)});
     }
     y+=2*(dRowH+dGap)+mm(5);
 
