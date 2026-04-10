@@ -64,6 +64,7 @@ export default function NightlifeDetailPage(){
       <SEOHead
         title={V.name+" Miami — Book VIP Table | Alfred Concierge"}
         description={"Reserve a VIP table at "+V.name+" Miami. "+V.music+". Bottle service, guestlist & guaranteed entry through Alfred Concierge."}
+        image={V.imgs&&V.imgs[0]?V.imgs[0]:"/og-nightlife.jpg"}
         path={"/catalog/nightlife/"+V.slug}
         jsonLd={[
           {

@@ -259,7 +259,7 @@ export default function YachtsPage(){
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      <SEOHead {...SEO.yachts}/>
+      <SEOHead {...SEO.yachts} image="/og-yachts.jpg"/>
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}
 ::selection{background:${C.s7};color:${C.s1}}

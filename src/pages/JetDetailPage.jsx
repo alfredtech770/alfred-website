@@ -698,6 +698,7 @@ export default function JetDetailPage(){
       <SEOHead
         title={J.name+" — Charter a Private Jet | Alfred Concierge"}
         description={"Charter the "+J.name+" for your next flight. "+J.range+" range, "+J.pax+" passengers. Worldwide flights, empty legs available."}
+        image={J.imgs&&J.imgs[0]?J.imgs[0]:"/og-jets.jpg"}
         path={"/catalog/jets/"+slug}
         jsonLd={[
           {

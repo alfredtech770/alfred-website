@@ -65,6 +65,7 @@ export default function WellnessDetailPage(){
       <SEOHead
         title={V.name+" Paris — Book a Treatment | Alfred Concierge"}
         description={"Book "+V.name+". "+V.type+" with premium treatments in Paris. "+V.priceLevel+" pricing. Full relaxation and rejuvenation."}
+        image={V.imgs&&V.imgs[0]?V.imgs[0]:"/og-wellness.jpg"}
         path={"/catalog/wellness/"+V.name.toLowerCase().replace(/\s+/g,"-")}
         jsonLd={[
           {
