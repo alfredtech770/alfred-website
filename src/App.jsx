@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Analytics } from '@vercel/analytics/react';
 import SEOHead, { SEO } from "./components/SEOHead";
 import ProposalBuilderPage from "./pages/ProposalBuilderPage";
 
@@ -436,6 +437,7 @@ export default function App(){
           <Route path="/city/:slug" element={<CityPage/>}/>
           <Route path="*" element={<NotFoundPage/>}/>
         </Routes>
+        <Analytics />
     </BrowserRouter>
   );
 }
