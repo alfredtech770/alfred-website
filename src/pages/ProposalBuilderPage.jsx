@@ -71,6 +71,7 @@ function ProposalBuilderPage(){
   var containerRef=useRef(null);
 
   /* ── Filter state ── */
+  var [city,setCity]=useState("All Cities");
   var [brand,setBrand]=useState("Brand");
   var [bodyType,setBodyType]=useState("Type");
   var [priceRange,setPriceRange]=useState("Price");
@@ -84,6 +85,7 @@ function ProposalBuilderPage(){
   /* ── Filter logic ── */
   var filteredWithIdx=CARS.map(function(c,i){return{car:c,idx:i}}).filter(function(o){
     var c=o.car;
+    if(city!=="All Cities"&&c.locs.indexOf(city)===-1) return false;
     if(brand!=="Brand"&&c.brand!==brand) return false;
     if(bodyType!=="Type"&&c.body!==bodyType) return false;
     if(driveType!=="Drive"&&c.drive!==driveType) return false;
@@ -104,8 +106,8 @@ function ProposalBuilderPage(){
   else if(sort==="Most Powerful") filteredWithIdx=filteredWithIdx.slice().sort(function(a,b){return b.car.hp-a.car.hp});
   else if(sort==="Fastest") filteredWithIdx=filteredWithIdx.slice().sort(function(a,b){return parseFloat(a.car.accel)-parseFloat(b.car.accel)});
 
-  var activeFilters=[brand!=="Brand"?brand:null,bodyType!=="Type"?bodyType:null,seats!=="Seats"?seats:null,hpRange!=="Power"?hpRange:null,priceRange!=="Price"?priceRange:null,driveType!=="Drive"?driveType:null].filter(Boolean);
-  var clearAll=function(){setBrand("Brand");setBodyType("Type");setSeats("Seats");setHpRange("Power");setPriceRange("Price");setDriveType("Drive")};
+  var activeFilters=[city!=="All Cities"?city:null,brand!=="Brand"?brand:null,bodyType!=="Type"?bodyType:null,seats!=="Seats"?seats:null,hpRange!=="Power"?hpRange:null,priceRange!=="Price"?priceRange:null,driveType!=="Drive"?driveType:null].filter(Boolean);
+  var clearAll=function(){setCity("All Cities");setBrand("Brand");setBodyType("Type");setSeats("Seats");setHpRange("Power");setPriceRange("Price");setDriveType("Drive")};
 
   /* Filter icons */
   var iconBody=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>;
@@ -114,6 +116,7 @@ function ProposalBuilderPage(){
   var iconPrice=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>;
   var iconDrive=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg>;
   var iconBrand=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+  var iconCity=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>;
   var iconSort=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>;
 
   function toggleCar(id){
@@ -541,6 +544,7 @@ function ProposalBuilderPage(){
       {/* ═══ FILTERS ═══ */}
       <div style={{paddingLeft:24,paddingRight:24,marginBottom:24}}>
         <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",position:"relative",zIndex:50}}>
+          <FilterDrop value={city} options={["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"]} onChange={setCity} icon={iconCity}/>
           <FilterDrop value={brand} options={brands} onChange={setBrand} icon={iconBrand}/>
           <FilterDrop value={bodyType} options={["Type","Coupe","Convertible","SUV","Sedan","Hatchback","Van"]} onChange={setBodyType} icon={iconBody}/>
           <FilterDrop value={priceRange} options={["Price","Under $1,500","$1,500–$3,000","$3,000+"]} onChange={setPriceRange} icon={iconPrice}/>
