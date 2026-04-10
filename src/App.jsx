@@ -304,65 +304,87 @@ function MarkCanvas(props){
 
 /* ═══ LOADER ═══ */
 function AlfredLoader(p){
-  var [phase,setPhase] = useState(0);// 0=initial, 1=letters visible, 2=shimmer, 3=expand, 4=done
+  var [opacity,setOpacity] = useState(0.04);// starts barely visible
+  var [phase,setPhase] = useState(0);// 0=breathing, 1=brightening, 2=full, 3=exit
 
   useEffect(function(){
-    setTimeout(function(){setPhase(1)},200);   // letters start appearing
-    setTimeout(function(){setPhase(2)},1800);  // shimmer across title
-    setTimeout(function(){setPhase(3)},2800);  // scale up + fade out
-    setTimeout(function(){setPhase(4)},3600);  // fully done
-    setTimeout(function(){p.onComplete()},3800);
-    return function(){};
+    // Immediately show at very low opacity
+    var t1=setTimeout(function(){setOpacity(0.08)},100);
+    // Slowly build opacity as site loads
+    var t2=setTimeout(function(){setOpacity(0.15)},600);
+    var t3=setTimeout(function(){setPhase(1);setOpacity(0.35)},1200);
+    var t4=setTimeout(function(){setOpacity(0.6)},1800);
+    var t5=setTimeout(function(){setPhase(2);setOpacity(1)},2400);// full brightness
+    // Exit — title scales up and fades, revealing hero
+    var t6=setTimeout(function(){setPhase(3)},3200);
+    var t7=setTimeout(function(){p.onComplete()},4000);
+    return function(){clearTimeout(t1);clearTimeout(t2);clearTimeout(t3);clearTimeout(t4);clearTimeout(t5);clearTimeout(t6);clearTimeout(t7)};
   },[]);
 
   var TITLE="ALFRED";
+  // Ambient glow intensity follows opacity
+  var glowOp=Math.min(opacity*0.06,0.04);
+
   return (
-    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",overflow:"hidden",opacity:phase>=4?0:1,transition:"opacity 0.8s cubic-bezier(0.4,0,0.2,1)"}}>
+    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",overflow:"hidden",opacity:phase>=3?0:1,transition:phase>=3?"opacity 1s cubic-bezier(0.4,0,0.2,1)":"none",pointerEvents:phase>=3?"none":"auto"}}>
       <style>{`
         @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
+        @keyframes ldBreathe{0%,100%{opacity:0.7}50%{opacity:1}}
         @keyframes ldShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-        @keyframes ldPulse{0%,100%{opacity:0.3}50%{opacity:0.6}}
         @keyframes ldCityScroll{from{transform:translateX(0)}to{transform:translateX(-33.333%)}}
         @keyframes ldLineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
       `}</style>
 
-      {/* Grain */}
-      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:100,opacity:0.15,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"ldGrain 4s steps(5) infinite"}} />
+      {/* Grain overlay */}
+      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:100,opacity:0.12,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"ldGrain 4s steps(5) infinite"}} />
 
-      {/* Subtle ambient glow */}
-      <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(244,244,245,0.025) 0%,transparent 70%)",top:"50%",left:"50%",transform:"translate(-50%,-55%)",zIndex:1,opacity:phase>=1?1:0,transition:"opacity 2s ease"}} />
+      {/* Ambient glow that grows with opacity */}
+      <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(244,244,245,"+glowOp+") 0%,transparent 70%)",top:"50%",left:"50%",transform:"translate(-50%,-55%)",zIndex:1,transition:"all 2s ease"}} />
 
-      {/* Top line */}
-      <div style={{position:"absolute",top:"30%",left:"10%",right:"10%",height:1,zIndex:2}}>
-        <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.4) 30%,rgba(44,44,49,0.4) 70%,transparent)",transformOrigin:"center",animation:phase>=1?"ldLineGrow 1.5s cubic-bezier(0.16,1,0.3,1) forwards":"none",transform:"scaleX(0)"}} />
+      {/* Top accent line */}
+      <div style={{position:"absolute",top:"30%",left:"10%",right:"10%",height:1,zIndex:2,opacity:Math.min(opacity*2,0.5),transition:"opacity 1.5s ease"}}>
+        <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.5) 30%,rgba(44,44,49,0.5) 70%,transparent)",transformOrigin:"center",animation:"ldLineGrow 2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards",transform:"scaleX(0)"}} />
       </div>
 
-      {/* ALFRED title — letter by letter entrance */}
-      <div style={{zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",transform:phase>=3?"scale(1.15)":"scale(1)",opacity:phase>=3?0:1,transition:phase>=3?"transform 1.2s cubic-bezier(0.16,1,0.3,1), opacity 0.8s ease 0.2s":"none"}}>
+      {/* ALFRED — starts ghostly, opacity builds */}
+      <div style={{zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",transform:phase>=3?"scale(1.12)":"scale(1)",transition:phase>=3?"transform 1.2s cubic-bezier(0.16,1,0.3,1)":"transform 0.3s ease"}}>
         {TITLE.split("").map(function(ch,i){
-          var delay=0.15+i*0.1;
-          var visible=phase>=1;
-          return <span key={i} style={{display:"inline-block",...sf(140,700),letterSpacing:10,color:"#F4F4F5",opacity:visible?1:0,transform:visible?"translateY(0) scale(1)":"translateY(60px) scale(0.85)",transition:"transform 1s cubic-bezier(0.16,1,0.3,1) "+delay+"s, opacity 0.5s ease "+delay+"s",WebkitBackgroundClip:phase>=2?"text":"unset",WebkitTextFillColor:phase>=2?"transparent":"#F4F4F5",backgroundImage:phase>=2?"linear-gradient(90deg,#F4F4F5 0%,#F4F4F5 35%,rgba(255,255,255,1) 50%,#F4F4F5 65%,#F4F4F5 100%)":"none",backgroundSize:"200% 100%",animation:phase>=2?"ldShimmer 1.2s ease-in-out 1":"none"}}>{ch}</span>
+          // Each letter gets the current opacity with a slight stagger
+          var letterOp=Math.min(opacity+i*0.01,1);
+          var isShimmer=phase>=2;
+          return <span key={i} style={{
+            display:"inline-block",
+            ...sf(140,700),
+            letterSpacing:10,
+            color:"#F4F4F5",
+            opacity:letterOp,
+            transition:"opacity 1.2s cubic-bezier(0.4,0,0.2,1)",
+            animation:isShimmer?"ldBreathe 2s ease-in-out infinite "+i*0.08+"s, ldShimmer 1.5s ease-in-out 1":"none",
+            WebkitBackgroundClip:isShimmer?"text":"unset",
+            WebkitTextFillColor:isShimmer?"transparent":"unset",
+            backgroundImage:isShimmer?"linear-gradient(90deg,#F4F4F5 0%,#F4F4F5 35%,rgba(255,255,255,1) 50%,#F4F4F5 65%,#F4F4F5 100%)":"none",
+            backgroundSize:"200% 100%"
+          }}>{ch}</span>
         })}
       </div>
 
-      {/* Concierge subtitle */}
-      <div style={{zIndex:3,marginTop:16,overflow:"hidden"}}>
-        <p style={{...sf(11,400),color:"#52525B",letterSpacing:6,textTransform:"uppercase",opacity:phase>=1?0.6:0,transform:phase>=1?"translateY(0)":"translateY(15px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.9s",textAlign:"center"}}>Luxury Concierge</p>
+      {/* Subtle tagline — appears as opacity builds */}
+      <div style={{zIndex:3,marginTop:20,textAlign:"center"}}>
+        <p style={{...sf(11,400),color:"#52525B",letterSpacing:6,textTransform:"uppercase",opacity:phase>=1?Math.min(opacity*1.5,0.5):0,transition:"opacity 1.5s ease"}}>Luxury Concierge</p>
       </div>
 
-      {/* Progress bar */}
-      <div style={{zIndex:3,marginTop:40,width:120,height:1,background:"rgba(63,63,70,0.3)",borderRadius:1,overflow:"hidden",opacity:phase>=1&&phase<3?0.5:0,transition:"opacity 0.8s ease"}}>
-        <div style={{height:"100%",width:phase>=2?"100%":"0%",background:"linear-gradient(90deg,#3F3F46,#71717A,#3F3F46)",borderRadius:1,transition:"width 2s cubic-bezier(0.4,0,0.2,1)"}} />
+      {/* Minimal loading line — thin, elegant */}
+      <div style={{zIndex:3,marginTop:36,width:80,height:1,background:"rgba(63,63,70,0.2)",borderRadius:1,overflow:"hidden",opacity:phase<3?0.4:0,transition:"opacity 0.8s ease"}}>
+        <div style={{height:"100%",width:phase>=2?"100%":phase>=1?"60%":"15%",background:"linear-gradient(90deg,rgba(63,63,70,0.3),rgba(113,113,122,0.5),rgba(63,63,70,0.3))",borderRadius:1,transition:"width 1.8s cubic-bezier(0.4,0,0.2,1)"}} />
       </div>
 
-      {/* Bottom line */}
-      <div style={{position:"absolute",bottom:"28%",left:"10%",right:"10%",height:1,zIndex:2}}>
-        <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.4) 30%,rgba(44,44,49,0.4) 70%,transparent)",transformOrigin:"center",animation:phase>=1?"ldLineGrow 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards":"none",transform:"scaleX(0)"}} />
+      {/* Bottom accent line */}
+      <div style={{position:"absolute",bottom:"28%",left:"10%",right:"10%",height:1,zIndex:2,opacity:Math.min(opacity*2,0.5),transition:"opacity 1.5s ease"}}>
+        <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.5) 30%,rgba(44,44,49,0.5) 70%,transparent)",transformOrigin:"center",animation:"ldLineGrow 2s cubic-bezier(0.16,1,0.3,1) 0.6s forwards",transform:"scaleX(0)"}} />
       </div>
 
-      {/* City carousel */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2,opacity:phase>=3?0:1,transition:"opacity 0.6s ease"}}>
+      {/* City carousel at bottom */}
+      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2,opacity:phase>=3?0:Math.min(opacity*3,1),transition:"opacity 0.8s ease"}}>
         <div style={{position:"absolute",left:0,top:0,bottom:0,width:120,background:"linear-gradient(to right,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
         <div style={{position:"absolute",right:0,top:0,bottom:0,width:120,background:"linear-gradient(to left,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
         <div style={{height:1,margin:"0 48px",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.35) 20%,rgba(44,44,49,0.35) 80%,transparent)"}} />
