@@ -304,29 +304,41 @@ function MarkCanvas(props){
 
 /* ═══ LOADER ═══ */
 function AlfredLoader(p){
-  var [opacity,setOpacity] = useState(0.04);// starts barely visible
-  var [phase,setPhase] = useState(0);// 0=breathing, 1=brightening, 2=full, 3=exit
+  var [pct,setPct] = useState(0);// 0-100 percentage drives everything
+  var [phase,setPhase] = useState(0);// 0=loading, 1=complete, 2=exit
+  var rafRef = useRef(null);
+  var startRef = useRef(null);
 
   useEffect(function(){
-    // Immediately show at very low opacity
-    var t1=setTimeout(function(){setOpacity(0.08)},100);
-    // Slowly build opacity as site loads
-    var t2=setTimeout(function(){setOpacity(0.15)},600);
-    var t3=setTimeout(function(){setPhase(1);setOpacity(0.35)},1200);
-    var t4=setTimeout(function(){setOpacity(0.6)},1800);
-    var t5=setTimeout(function(){setPhase(2);setOpacity(1)},2400);// full brightness
-    // Exit — title scales up and fades, revealing hero
-    var t6=setTimeout(function(){setPhase(3)},3200);
-    var t7=setTimeout(function(){p.onComplete()},4000);
-    return function(){clearTimeout(t1);clearTimeout(t2);clearTimeout(t3);clearTimeout(t4);clearTimeout(t5);clearTimeout(t6);clearTimeout(t7)};
+    var DURATION=3000;// 3s to reach 100%
+    function tick(ts){
+      if(!startRef.current) startRef.current=ts;
+      var elapsed=ts-startRef.current;
+      // Ease-out cubic for smooth deceleration
+      var raw=Math.min(elapsed/DURATION,1);
+      var eased=1-Math.pow(1-raw,3);
+      var val=Math.round(eased*100);
+      setPct(val);
+      if(val<100){
+        rafRef.current=requestAnimationFrame(tick);
+      }else{
+        // Hit 100 — hold briefly, then exit
+        setTimeout(function(){setPhase(1)},400);// shimmer at 100
+        setTimeout(function(){setPhase(2)},1200);// begin exit
+        setTimeout(function(){p.onComplete()},2000);// hand off to hero
+      }
+    }
+    rafRef.current=requestAnimationFrame(tick);
+    return function(){if(rafRef.current) cancelAnimationFrame(rafRef.current)};
   },[]);
 
   var TITLE="ALFRED";
-  // Ambient glow intensity follows opacity
+  // Opacity directly tied to percentage: 0% → 0.03, 100% → 1.0
+  var opacity=0.03+pct*0.97/100;
   var glowOp=Math.min(opacity*0.06,0.04);
 
   return (
-    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",overflow:"hidden",opacity:phase>=3?0:1,transition:phase>=3?"opacity 1s cubic-bezier(0.4,0,0.2,1)":"none",pointerEvents:phase>=3?"none":"auto"}}>
+    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",overflow:"hidden",opacity:phase>=2?0:1,transition:phase>=2?"opacity 0.8s cubic-bezier(0.4,0,0.2,1)":"none",pointerEvents:phase>=2?"none":"auto"}}>
       <style>{`
         @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
         @keyframes ldBreathe{0%,100%{opacity:0.7}50%{opacity:1}}
@@ -339,26 +351,25 @@ function AlfredLoader(p){
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:100,opacity:0.12,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"ldGrain 4s steps(5) infinite"}} />
 
       {/* Ambient glow that grows with opacity */}
-      <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(244,244,245,"+glowOp+") 0%,transparent 70%)",top:"50%",left:"50%",transform:"translate(-50%,-55%)",zIndex:1,transition:"all 2s ease"}} />
+      <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(244,244,245,"+glowOp+") 0%,transparent 70%)",top:"50%",left:"50%",transform:"translate(-50%,-55%)",zIndex:1,transition:"all 0.5s ease"}} />
 
       {/* Top accent line */}
-      <div style={{position:"absolute",top:"30%",left:"10%",right:"10%",height:1,zIndex:2,opacity:Math.min(opacity*2,0.5),transition:"opacity 1.5s ease"}}>
+      <div style={{position:"absolute",top:"30%",left:"10%",right:"10%",height:1,zIndex:2,opacity:Math.min(opacity*2,0.5),transition:"opacity 0.5s ease"}}>
         <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.5) 30%,rgba(44,44,49,0.5) 70%,transparent)",transformOrigin:"center",animation:"ldLineGrow 2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards",transform:"scaleX(0)"}} />
       </div>
 
-      {/* ALFRED — starts ghostly, opacity builds */}
-      <div style={{zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",transform:phase>=3?"scale(1.12)":"scale(1)",transition:phase>=3?"transform 1.2s cubic-bezier(0.16,1,0.3,1)":"transform 0.3s ease"}}>
+      {/* ALFRED — opacity driven by percentage */}
+      <div style={{zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",transform:phase>=2?"scale(1.12)":"scale(1)",transition:phase>=2?"transform 1.2s cubic-bezier(0.16,1,0.3,1)":"transform 0.3s ease"}}>
         {TITLE.split("").map(function(ch,i){
-          // Each letter gets the current opacity with a slight stagger
-          var letterOp=Math.min(opacity+i*0.01,1);
-          var isShimmer=phase>=2;
+          var letterOp=Math.min(opacity+i*0.008,1);
+          var isShimmer=phase>=1;
           return <span key={i} style={{
             display:"inline-block",
             ...sf(140,700),
             letterSpacing:10,
             color:"#F4F4F5",
             opacity:letterOp,
-            transition:"opacity 1.2s cubic-bezier(0.4,0,0.2,1)",
+            transition:"opacity 0.15s linear",
             animation:isShimmer?"ldBreathe 2s ease-in-out infinite "+i*0.08+"s, ldShimmer 1.5s ease-in-out 1":"none",
             WebkitBackgroundClip:isShimmer?"text":"unset",
             WebkitTextFillColor:isShimmer?"transparent":"unset",
@@ -368,23 +379,28 @@ function AlfredLoader(p){
         })}
       </div>
 
-      {/* Subtle tagline — appears as opacity builds */}
-      <div style={{zIndex:3,marginTop:20,textAlign:"center"}}>
-        <p style={{...sf(11,400),color:"#52525B",letterSpacing:6,textTransform:"uppercase",opacity:phase>=1?Math.min(opacity*1.5,0.5):0,transition:"opacity 1.5s ease"}}>Luxury Concierge</p>
+      {/* Percentage counter — subtle, below the title */}
+      <div style={{zIndex:3,marginTop:28,textAlign:"center",opacity:phase>=2?0:Math.max(opacity*0.4,0.08),transition:"opacity 0.8s ease"}}>
+        <span style={{...sf(13,300),color:"#52525B",letterSpacing:8,fontVariantNumeric:"tabular-nums"}}>{pct}</span>
       </div>
 
-      {/* Minimal loading line — thin, elegant */}
-      <div style={{zIndex:3,marginTop:36,width:80,height:1,background:"rgba(63,63,70,0.2)",borderRadius:1,overflow:"hidden",opacity:phase<3?0.4:0,transition:"opacity 0.8s ease"}}>
-        <div style={{height:"100%",width:phase>=2?"100%":phase>=1?"60%":"15%",background:"linear-gradient(90deg,rgba(63,63,70,0.3),rgba(113,113,122,0.5),rgba(63,63,70,0.3))",borderRadius:1,transition:"width 1.8s cubic-bezier(0.4,0,0.2,1)"}} />
+      {/* Subtle tagline — appears as percentage builds */}
+      <div style={{zIndex:3,marginTop:14,textAlign:"center"}}>
+        <p style={{...sf(11,400),color:"#52525B",letterSpacing:6,textTransform:"uppercase",opacity:pct>30?Math.min((pct-30)/140,0.5):0,transition:"opacity 0.5s ease"}}>Luxury Concierge</p>
+      </div>
+
+      {/* Progress line — width matches percentage */}
+      <div style={{zIndex:3,marginTop:30,width:80,height:1,background:"rgba(63,63,70,0.2)",borderRadius:1,overflow:"hidden",opacity:phase<2?0.4:0,transition:"opacity 0.8s ease"}}>
+        <div style={{height:"100%",width:pct+"%",background:"linear-gradient(90deg,rgba(63,63,70,0.3),rgba(113,113,122,0.5),rgba(63,63,70,0.3))",borderRadius:1,transition:"width 0.15s linear"}} />
       </div>
 
       {/* Bottom accent line */}
-      <div style={{position:"absolute",bottom:"28%",left:"10%",right:"10%",height:1,zIndex:2,opacity:Math.min(opacity*2,0.5),transition:"opacity 1.5s ease"}}>
+      <div style={{position:"absolute",bottom:"28%",left:"10%",right:"10%",height:1,zIndex:2,opacity:Math.min(opacity*2,0.5),transition:"opacity 0.5s ease"}}>
         <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.5) 30%,rgba(44,44,49,0.5) 70%,transparent)",transformOrigin:"center",animation:"ldLineGrow 2s cubic-bezier(0.16,1,0.3,1) 0.6s forwards",transform:"scaleX(0)"}} />
       </div>
 
       {/* City carousel at bottom */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2,opacity:phase>=3?0:Math.min(opacity*3,1),transition:"opacity 0.8s ease"}}>
+      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2,opacity:phase>=2?0:Math.min(opacity*3,1),transition:"opacity 0.8s ease"}}>
         <div style={{position:"absolute",left:0,top:0,bottom:0,width:120,background:"linear-gradient(to right,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
         <div style={{position:"absolute",right:0,top:0,bottom:0,width:120,background:"linear-gradient(to left,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
         <div style={{height:1,margin:"0 48px",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.35) 20%,rgba(44,44,49,0.35) 80%,transparent)"}} />
