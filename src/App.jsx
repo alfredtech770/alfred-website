@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SEOHead, { SEO } from "./components/SEOHead";
+import { ProposalProvider } from "./components/ProposalContext";
+import ProposalDrawer from "./components/ProposalDrawer";
+import ProposalPage from "./pages/ProposalPage";
 
 /* ═══ CATEGORY PAGE IMPORTS ═══ */
 /* Place each file in src/pages/ and uncomment these imports: */
@@ -411,29 +414,33 @@ function NotFoundPage(){
 export default function App(){
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage/>}/>
-        <Route path="/business" element={<AlfredPartners/>}/>
-        <Route path="/catalog" element={<AlfredCatalog/>}/>
-        <Route path="/catalog/exotic-cars" element={<ExoticCarsPage/>}/>
-        <Route path="/catalog/exotic-cars/:slug" element={<CarDetailPage/>}/>
-        <Route path="/catalog/dining" element={<DiningPage/>}/>
-        <Route path="/catalog/dining/:slug" element={<DiningDetailPage/>}/>
-        <Route path="/catalog/nightlife" element={<NightlifePage/>}/>
-        <Route path="/catalog/nightlife/:slug" element={<NightlifeDetailPage/>}/>
-        <Route path="/catalog/wellness" element={<WellnessPage/>}/>
-        <Route path="/catalog/wellness/:slug" element={<WellnessDetailPage/>}/>
-        <Route path="/catalog/jets" element={<JetsPage/>}/>
-        <Route path="/catalog/jets/:slug" element={<JetDetailPage/>}/>
-        <Route path="/catalog/yachts" element={<YachtsPage/>}/>
-        <Route path="/catalog/yachts/:id" element={<YachtDetailPage/>}/>
-        <Route path="/events" element={<EventsPage/>}/>
-        <Route path="/events/:slug" element={<EventDetailPage/>}/>
-        <Route path="/blog" element={<BlogPage/>}/>
-        <Route path="/blog/:slug" element={<BlogPost/>}/>
-        <Route path="/city/:slug" element={<CityPage/>}/>
-        <Route path="*" element={<NotFoundPage/>}/>
-      </Routes>
+      <ProposalProvider>
+        <Routes>
+          <Route path="/" element={<HomePage/>}/>
+          <Route path="/business" element={<AlfredPartners/>}/>
+          <Route path="/catalog" element={<AlfredCatalog/>}/>
+          <Route path="/catalog/exotic-cars" element={<ExoticCarsPage/>}/>
+          <Route path="/catalog/exotic-cars/:slug" element={<CarDetailPage/>}/>
+          <Route path="/catalog/dining" element={<DiningPage/>}/>
+          <Route path="/catalog/dining/:slug" element={<DiningDetailPage/>}/>
+          <Route path="/catalog/nightlife" element={<NightlifePage/>}/>
+          <Route path="/catalog/nightlife/:slug" element={<NightlifeDetailPage/>}/>
+          <Route path="/catalog/wellness" element={<WellnessPage/>}/>
+          <Route path="/catalog/wellness/:slug" element={<WellnessDetailPage/>}/>
+          <Route path="/catalog/jets" element={<JetsPage/>}/>
+          <Route path="/catalog/jets/:slug" element={<JetDetailPage/>}/>
+          <Route path="/catalog/yachts" element={<YachtsPage/>}/>
+          <Route path="/catalog/yachts/:id" element={<YachtDetailPage/>}/>
+          <Route path="/proposal" element={<ProposalPage/>}/>
+          <Route path="/events" element={<EventsPage/>}/>
+          <Route path="/events/:slug" element={<EventDetailPage/>}/>
+          <Route path="/blog" element={<BlogPage/>}/>
+          <Route path="/blog/:slug" element={<BlogPost/>}/>
+          <Route path="/city/:slug" element={<CityPage/>}/>
+          <Route path="*" element={<NotFoundPage/>}/>
+        </Routes>
+        <ProposalDrawer/>
+      </ProposalProvider>
     </BrowserRouter>
   );
 }

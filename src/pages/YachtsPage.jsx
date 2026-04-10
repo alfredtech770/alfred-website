@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
+import { useProposal } from "../components/ProposalContext";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -130,9 +131,17 @@ function YachtCard(p){
           </div>
         }
 
-        <div style={{marginTop:14,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:hover?C.s1:"transparent",border:"1px solid "+(hover?C.s1:C.bd),...sf(13,600),color:hover?C.bg:C.s4,transition:"all 0.4s"}}>
-          View Details
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+        <div style={{marginTop:14,display:"flex",gap:8}}>
+          <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"12px 0",borderRadius:12,background:hover?C.s1:"transparent",border:"1px solid "+(hover?C.s1:C.bd),...sf(13,600),color:hover?C.bg:C.s4,transition:"all 0.4s"}}>
+            View Details
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
+          </div>
+          {p.onProposal&&<div onClick={function(e){e.stopPropagation();p.onProposal(y)}} style={{width:42,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:12,border:"1px solid "+(p.inProposal?C.gn:C.bd),background:p.inProposal?"rgba(52,199,89,0.1)":"transparent",cursor:"pointer",transition:"all 0.3s"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!p.inProposal)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!p.inProposal)e.currentTarget.style.borderColor=C.bd}}>
+            {p.inProposal
+              ?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              :<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+            }
+          </div>}
         </div>
       </div>
     </div>
@@ -155,6 +164,7 @@ function SkeletonCard(){
 }
 
 export default function YachtsPage(){
+  var proposal=useProposal();
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [yachts,setYachts]=useState([]);
@@ -373,7 +383,7 @@ body::-webkit-scrollbar{width:0}
         {!error&&!fetching&&filtered.length>0&&
           <div className="yc-grid">
             {filtered.map(function(y,i){
-              return <YachtCard key={y.id} yacht={y} i={i} vis={gridVis}/>;
+              return <YachtCard key={y.id} yacht={y} i={i} vis={gridVis} inProposal={proposal.isInProposal("yacht",y.id)} onProposal={function(yy){proposal.addItem({category:"yacht",id:yy.id,name:yy.name,image:yy.hero_image_url,subtitle:(yy.brand||"")+" \u2022 "+(yy.size_ft?yy.size_ft+"ft":"")+" \u2022 "+(yy.city||yy.location||"Miami"),price:yy.price_4hr||yy.price_weekday_4hr||null,priceLabel:"from / 4hr",details:(yy.max_passengers?yy.max_passengers+" passengers":"")+(yy.tags&&yy.tags.length>0?" \u2022 "+yy.tags.slice(0,2).join(", "):"")})}}/>;
             })}
           </div>
         }
