@@ -618,9 +618,16 @@ function ProposalBuilderPage(){
                   </div>
                 </div>
 
-                {/* Price */}
-                <div style={{...sf(14,600),color:C.gn}}>
-                  ${car.price.toLocaleString()}/day
+                {/* Pricing Tiers */}
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr",gap:4}}>
+                  {[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}].map(function(t){
+                    var rate=Math.round(car.price*(1-t.disc/100));
+                    return <div key={t.d} style={{textAlign:"center",padding:"6px 0",borderRadius:6,background:t.disc>0?"rgba(52,199,89,0.04)":"transparent"}}>
+                      <div style={{...sf(9,500),color:C.s5,marginBottom:2}}>{t.d}d</div>
+                      <div style={{...sf(11,600),color:t.disc>0?C.gn:C.s1}}>${rate.toLocaleString()}</div>
+                      {t.disc>0&&<div style={{...sf(8,500),color:C.gn,opacity:0.7}}>-{t.disc}%</div>}
+                    </div>
+                  })}
                 </div>
               </div>
             </div>);
