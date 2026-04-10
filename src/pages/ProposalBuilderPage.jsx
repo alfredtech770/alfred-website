@@ -67,6 +67,7 @@ function ProposalBuilderPage(){
   var [showPricing,setShowPricing]=useState(false);
   var [selected,setSelected]=useState(new Set());
   var [pricingDays,setPricingDays]=useState(1);
+  var [customPrices,setCustomPrices]=useState({});// {carIdx: customDailyRate}
   var [generating,setGenerating]=useState(false);
   var [error,setError]=useState("");
   var containerRef=useRef(null);
@@ -228,7 +229,7 @@ function ProposalBuilderPage(){
   }
 
   /* ── Car detail page — A4 portrait, luxury layout ── */
-  function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages,days){
+  function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages,days,customPrice){
     var p=createPage();var ctx=p.ctx;
     var pad=mm(16);var contentW=CW-pad*2;
     var y=0;
@@ -312,8 +313,16 @@ function ProposalBuilderPage(){
     // ═══ 6. PRICE ═══
     if(showPrice){
       var pDays=days||1;
-      var pTier=[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}].filter(function(t){return t.d===pDays})[0]||{d:1,disc:0};
-      var pRate=Math.round(car.price*(1-pTier.disc/100));
+      var pRate;
+      var pDisc=0;
+      if(pDays===0&&customPrice){
+        // Custom price mode
+        pRate=customPrice;
+      }else{
+        var pTier=[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}].filter(function(t){return t.d===pDays})[0]||{d:1,disc:0};
+        pRate=Math.round(car.price*(1-pTier.disc/100));
+        pDisc=pTier.disc;
+      }
       drawText(ctx,"$"+pRate.toLocaleString(),pad,y,{size:10,weight:700,color:"#F4F4F5"});
       ctx.font="700 "+mm(10)+"px -apple-system,Helvetica,Arial,sans-serif";
       var pw=ctx.measureText("$"+pRate.toLocaleString()).width;
@@ -321,9 +330,8 @@ function ProposalBuilderPage(){
       if(pDays>1){
         drawText(ctx,pDays+" days · $"+(pRate*pDays).toLocaleString()+" total",pad+pw+mm(12),y+mm(2.5),{size:3.5,weight:500,color:"#71717A"});
       }
-      if(pTier.disc>0){
-        var origPw=ctx.measureText("$"+pRate.toLocaleString()).width;
-        drawText(ctx,"-"+pTier.disc+"%",pad+pw+mm(2),y+mm(0.5),{size:3,weight:600,color:C.gn});
+      if(pDisc>0){
+        drawText(ctx,"-"+pDisc+"%",pad+pw+mm(2),y+mm(0.5),{size:3,weight:600,color:C.gn});
       }
       y+=mm(14);
     }
@@ -447,7 +455,8 @@ function ProposalBuilderPage(){
     setError("");setGenerating(true);
 
     try{
-      var selectedCars=CARS.filter(function(_,idx){return selected.has(idx)});
+      var selectedIndices=[];CARS.forEach(function(_,idx){if(selected.has(idx))selectedIndices.push(idx)});
+      var selectedCars=selectedIndices.map(function(idx){return CARS[idx]});
       var totalPages=selectedCars.length;
 
       // ─ Preload all images
@@ -481,7 +490,8 @@ function ProposalBuilderPage(){
         var hero=allImages[imgIdx];
         var thumbs=[allImages[imgIdx+1],allImages[imgIdx+2],allImages[imgIdx+3],allImages[imgIdx+4]];
         if(i>0){doc.addPage()}
-        var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages,pricingDays);
+        var cp=pricingDays===0?customPrices[selectedIndices[i]]||c.price:null;
+        var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages,pricingDays,cp);
         doc.addImage(carCanvas.toDataURL("image/png"),"PNG",0,0,PW,PH);
       }
 
@@ -554,7 +564,14 @@ function ProposalBuilderPage(){
                   {t.disc>0&&<div style={{...sf(11,500),color:C.gn,marginTop:2}}>-{t.disc}%</div>}
                 </div>
               })}
+              <div onClick={function(){setPricingDays(0)}} style={{flex:1,textAlign:"center",padding:"10px 0",borderRadius:10,cursor:"pointer",transition:"all 0.2s",background:pricingDays===0?"rgba(255,214,10,0.1)":C.el,border:"1.5px solid "+(pricingDays===0?C.gold:C.bd)}}>
+                <div style={{...sf(13,600),color:pricingDays===0?C.s1:C.s4}}>Custom</div>
+                <div style={{...sf(11,500),color:C.gold,marginTop:2}}>per car</div>
+              </div>
             </div>
+            {pricingDays===0&&<div style={{marginTop:10,padding:"10px 14px",backgroundColor:C.el,borderRadius:8,border:"1px solid "+C.bd}}>
+              <span style={{...sf(12),color:C.s5}}>Enter a custom price on each car card below</span>
+            </div>}
           </div>}
         </div>
       </div>
@@ -644,12 +661,34 @@ function ProposalBuilderPage(){
                 </div>
 
                 {/* Price */}
-                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                  <span style={{...sf(16,700),color:C.gn}}>${displayRate.toLocaleString()}</span>
-                  <span style={{...sf(12),color:C.s5}}>/{pricingDays===1?"day":pricingDays+"d"}</span>
-                  {activeTier.disc>0&&<span style={{...sf(11,600),color:C.gn,padding:"2px 6px",borderRadius:4,background:"rgba(52,199,89,0.1)"}}>-{activeTier.disc}%</span>}
-                </div>
-                {pricingDays>1&&<div style={{...sf(11),color:C.s5,marginTop:4}}>${(displayRate*pricingDays).toLocaleString()} total</div>}
+                {pricingDays===0?(
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{...sf(14,500),color:C.s5}}>$</span>
+                      <input
+                        type="number"
+                        value={customPrices[idx]||""}
+                        onClick={function(e){e.stopPropagation()}}
+                        onChange={function(e){e.stopPropagation();var v=Object.assign({},customPrices);v[idx]=e.target.value?parseInt(e.target.value):"";setCustomPrices(v)}}
+                        placeholder={String(car.price)}
+                        style={{width:100,padding:"6px 10px",backgroundColor:C.bg,border:"1px solid "+C.bd,borderRadius:6,...sf(14,600),color:C.gold,outline:"none",boxSizing:"border-box"}}
+                        onFocus={function(e){e.target.style.borderColor=C.gold}}
+                        onBlur={function(e){e.target.style.borderColor=C.bd}}
+                      />
+                      <span style={{...sf(12),color:C.s5}}>/day</span>
+                    </div>
+                    {typeof customPrices[idx]==="number"&&customPrices[idx]!==car.price&&<div style={{...sf(11),color:C.s5,marginTop:4,textDecoration:"line-through"}}>${car.price.toLocaleString()}/day original</div>}
+                  </div>
+                ):(
+                  <div>
+                    <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                      <span style={{...sf(16,700),color:C.gn}}>${displayRate.toLocaleString()}</span>
+                      <span style={{...sf(12),color:C.s5}}>/{pricingDays===1?"day":pricingDays+"d"}</span>
+                      {activeTier.disc>0&&<span style={{...sf(11,600),color:C.gn,padding:"2px 6px",borderRadius:4,background:"rgba(52,199,89,0.1)"}}>-{activeTier.disc}%</span>}
+                    </div>
+                    {pricingDays>1&&<div style={{...sf(11),color:C.s5,marginTop:4}}>${(displayRate*pricingDays).toLocaleString()} total</div>}
+                  </div>
+                )}
               </div>
             </div>);
           })}
