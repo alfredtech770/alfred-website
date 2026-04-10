@@ -304,77 +304,65 @@ function MarkCanvas(props){
 
 /* ═══ LOADER ═══ */
 function AlfredLoader(p){
-  var [percent,setPercent] = useState(0);
-  var [lit,setLit] = useState(false);
-  var [ready,setReady] = useState(false);
-  var [loaderDone,setLoaderDone] = useState(false);
+  var [phase,setPhase] = useState(0);// 0=initial, 1=letters visible, 2=shimmer, 3=expand, 4=done
 
   useEffect(function(){
-    var start=null,raf;
-    var duration=3000;
-    var ease=function(t){
-      if(t<0.5)return(t/0.5)*0.75;
-      if(t<0.8)return 0.75+((t-0.5)/0.3)*0.17;
-      return 0.92+((t-0.8)/0.2)*0.08;
-    };
-    var tick=function(ts){
-      if(!start)start=ts;
-      var t=Math.min((ts-start)/duration,1);
-      setPercent(Math.floor(ease(t)*100));
-      if(t<1){raf=requestAnimationFrame(tick)}
-      else{setPercent(100);
-        setTimeout(function(){setLit(true)},300);
-        setTimeout(function(){setReady(true)},1000);
-        setTimeout(function(){setLoaderDone(true)},2400);
-        setTimeout(function(){p.onComplete()},3600);
-      }
-    };
-    raf=requestAnimationFrame(tick);
-    return function(){cancelAnimationFrame(raf)};
+    setTimeout(function(){setPhase(1)},200);   // letters start appearing
+    setTimeout(function(){setPhase(2)},1800);  // shimmer across title
+    setTimeout(function(){setPhase(3)},2800);  // scale up + fade out
+    setTimeout(function(){setPhase(4)},3600);  // fully done
+    setTimeout(function(){p.onComplete()},3800);
+    return function(){};
   },[]);
 
+  var TITLE="ALFRED";
   return (
-    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontWeight:300,overflow:"hidden",opacity:loaderDone?0:1,transition:"opacity 1.6s cubic-bezier(0.4,0,0.2,1)"}}>
+    <div style={{position:"fixed",inset:0,zIndex:99999,background:"#0A0A0B",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",overflow:"hidden",opacity:phase>=4?0:1,transition:"opacity 0.8s cubic-bezier(0.4,0,0.2,1)"}}>
       <style>{`
         @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
-        @keyframes ldFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes ldWordIn{from{opacity:0;letter-spacing:20px}to{opacity:0.4;letter-spacing:10px}}
-        @keyframes ldDotPulse{0%,100%{opacity:0.12}50%{opacity:0.4}}
+        @keyframes ldShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+        @keyframes ldPulse{0%,100%{opacity:0.3}50%{opacity:0.6}}
         @keyframes ldCityScroll{from{transform:translateX(0)}to{transform:translateX(-33.333%)}}
+        @keyframes ldLineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
       `}</style>
 
       {/* Grain */}
-      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:100,opacity:0.2,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"ldGrain 4s steps(5) infinite"}} />
+      <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:100,opacity:0.15,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"ldGrain 4s steps(5) infinite"}} />
 
-      {/* Canvas */}
-      <div style={{zIndex:2}}><MarkCanvas lit={lit}/></div>
+      {/* Subtle ambient glow */}
+      <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(244,244,245,0.025) 0%,transparent 70%)",top:"50%",left:"50%",transform:"translate(-50%,-55%)",zIndex:1,opacity:phase>=1?1:0,transition:"opacity 2s ease"}} />
 
-      {/* Wordmark */}
-      <p style={{...sf(11,300),color:"#F4F4F5",letterSpacing:10,textTransform:"uppercase",marginTop:-20,zIndex:2,animation:"ldWordIn 3s ease 0.8s both",opacity:lit?0.85:undefined,transition:"opacity 2s"}}>Alfred</p>
-
-      {/* Percentage / Ready — crossfade */}
-      <div style={{marginTop:32,zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:12,animation:"ldFadeUp 1.5s ease 1s both",minHeight:60,position:"relative"}}>
-        {/* Percentage counter — fades out */}
-        <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:14,opacity:ready?0:1,transform:ready?"translateY(-8px) scale(0.96)":"translateY(0) scale(1)",transition:"opacity 1.2s ease, transform 1.2s ease",position:ready?"absolute":"relative"}}>
-          <div style={{display:"flex",alignItems:"baseline",gap:2}}>
-            <span style={{...sf(22,300),color:"#F4F4F5",letterSpacing:2,minWidth:40,textAlign:"right",display:"inline-block"}}>{percent}</span>
-            <span style={{...sf(13,300),color:"#52525B"}}>%</span>
-          </div>
-          <div style={{width:100,height:1,background:"rgba(63,63,70,0.4)",borderRadius:1,overflow:"hidden",opacity:lit?0:0.5,transition:"opacity 0.8s"}}>
-            <div style={{height:"100%",width:percent+"%",background:"linear-gradient(90deg,#3F3F46,#71717A)",borderRadius:1,transition:"width 0.1s linear"}} />
-          </div>
-        </div>
-        {/* "Your concierge is ready" — fades in */}
-        <p style={{...sf(13,300),color:"#A1A1AA",letterSpacing:1,opacity:ready?1:0,transform:ready?"translateY(0)":"translateY(10px)",transition:"opacity 1.4s ease 0.3s, transform 1.4s ease 0.3s",position:ready?"relative":"absolute"}}>Your concierge is ready</p>
+      {/* Top line */}
+      <div style={{position:"absolute",top:"30%",left:"10%",right:"10%",height:1,zIndex:2}}>
+        <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.4) 30%,rgba(44,44,49,0.4) 70%,transparent)",transformOrigin:"center",animation:phase>=1?"ldLineGrow 1.5s cubic-bezier(0.16,1,0.3,1) forwards":"none",transform:"scaleX(0)"}} />
       </div>
 
-      {/* Dots */}
-      <div style={{display:"flex",gap:5,marginTop:20,zIndex:2,animation:"ldFadeUp 1s ease 2s both",opacity:ready?0:1,transform:ready?"scale(0.8)":"scale(1)",transition:"opacity 1s ease, transform 1s ease"}}>
-        {[0,1,2].map(function(i){return <div key={i} style={{width:2,height:2,borderRadius:"50%",background:"#3F3F46",animation:"ldDotPulse 1.6s ease infinite "+i*0.3+"s"}} />})}
+      {/* ALFRED title — letter by letter entrance */}
+      <div style={{zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",transform:phase>=3?"scale(1.15)":"scale(1)",opacity:phase>=3?0:1,transition:phase>=3?"transform 1.2s cubic-bezier(0.16,1,0.3,1), opacity 0.8s ease 0.2s":"none"}}>
+        {TITLE.split("").map(function(ch,i){
+          var delay=0.15+i*0.1;
+          var visible=phase>=1;
+          return <span key={i} style={{display:"inline-block",...sf(140,700),letterSpacing:10,color:"#F4F4F5",opacity:visible?1:0,transform:visible?"translateY(0) scale(1)":"translateY(60px) scale(0.85)",transition:"transform 1s cubic-bezier(0.16,1,0.3,1) "+delay+"s, opacity 0.5s ease "+delay+"s",WebkitBackgroundClip:phase>=2?"text":"unset",WebkitTextFillColor:phase>=2?"transparent":"#F4F4F5",backgroundImage:phase>=2?"linear-gradient(90deg,#F4F4F5 0%,#F4F4F5 35%,rgba(255,255,255,1) 50%,#F4F4F5 65%,#F4F4F5 100%)":"none",backgroundSize:"200% 100%",animation:phase>=2?"ldShimmer 1.2s ease-in-out 1":"none"}}>{ch}</span>
+        })}
+      </div>
+
+      {/* Concierge subtitle */}
+      <div style={{zIndex:3,marginTop:16,overflow:"hidden"}}>
+        <p style={{...sf(11,400),color:"#52525B",letterSpacing:6,textTransform:"uppercase",opacity:phase>=1?0.6:0,transform:phase>=1?"translateY(0)":"translateY(15px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.9s",textAlign:"center"}}>Luxury Concierge</p>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{zIndex:3,marginTop:40,width:120,height:1,background:"rgba(63,63,70,0.3)",borderRadius:1,overflow:"hidden",opacity:phase>=1&&phase<3?0.5:0,transition:"opacity 0.8s ease"}}>
+        <div style={{height:"100%",width:phase>=2?"100%":"0%",background:"linear-gradient(90deg,#3F3F46,#71717A,#3F3F46)",borderRadius:1,transition:"width 2s cubic-bezier(0.4,0,0.2,1)"}} />
+      </div>
+
+      {/* Bottom line */}
+      <div style={{position:"absolute",bottom:"28%",left:"10%",right:"10%",height:1,zIndex:2}}>
+        <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.4) 30%,rgba(44,44,49,0.4) 70%,transparent)",transformOrigin:"center",animation:phase>=1?"ldLineGrow 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards":"none",transform:"scaleX(0)"}} />
       </div>
 
       {/* City carousel */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2}}>
+      <div style={{position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",zIndex:2,opacity:phase>=3?0:1,transition:"opacity 0.6s ease"}}>
         <div style={{position:"absolute",left:0,top:0,bottom:0,width:120,background:"linear-gradient(to right,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
         <div style={{position:"absolute",right:0,top:0,bottom:0,width:120,background:"linear-gradient(to left,#0A0A0B,transparent)",zIndex:3,pointerEvents:"none"}} />
         <div style={{height:1,margin:"0 48px",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.35) 20%,rgba(44,44,49,0.35) 80%,transparent)"}} />
@@ -403,15 +391,15 @@ function HomePage(){
   var [siteVisible, setSiteVisible] = useState(false);
 
   function handleLoaderComplete(){
-    setShowLoader(false);
-    setTimeout(function(){ setSiteVisible(true); }, 100);
+    setSiteVisible(true);
+    setTimeout(function(){ setShowLoader(false); }, 1200);
   }
 
   return (
     <div>
       <SEOHead {...SEO.home}/>
       {showLoader && <AlfredLoader onComplete={handleLoaderComplete}/>}
-      <div style={{opacity:siteVisible?1:0,transition:"opacity 1.2s ease"}}>
+      <div style={{opacity:siteVisible?1:0,transform:siteVisible?"translateY(0)":"translateY(12px)",transition:"opacity 1s cubic-bezier(0.16,1,0.3,1), transform 1.2s cubic-bezier(0.16,1,0.3,1)"}}>
         <AlfredSite/>
       </div>
     </div>
