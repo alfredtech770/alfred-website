@@ -23,6 +23,45 @@ function Toggle(p){
   </div>);
 }
 
+function FilterDrop(p){
+  var [open,setOpen]=useState(false);
+  var [pos,setPos]=useState(null);
+  var ref=useRef(null);
+  var btnRef=useRef(null);
+  var isMobile=typeof window!=="undefined"&&window.innerWidth<=768;
+  useEffect(function(){
+    if(!open) return;
+    if(isMobile&&btnRef.current){var r=btnRef.current.getBoundingClientRect();setPos({top:r.bottom+6,left:Math.max(8,Math.min(r.left,window.innerWidth-220))})}
+    var timer=setTimeout(function(){
+      function h(e){if(ref.current&&!ref.current.contains(e.target)&&!(isMobile&&e.target.closest&&e.target.closest("[data-filter-drop]")))setOpen(false)}
+      document.addEventListener("pointerdown",h);
+      document.addEventListener("touchstart",h,{passive:true});
+      ref.current._cleanup=function(){document.removeEventListener("pointerdown",h);document.removeEventListener("touchstart",h)}
+    },10);
+    return function(){clearTimeout(timer);if(ref.current&&ref.current._cleanup){ref.current._cleanup();ref.current._cleanup=null};setPos(null)}
+  },[open]);
+  var hasActive=p.value!==p.options[0];
+  var dropStyle=isMobile&&pos?{position:"fixed",top:pos.top,left:pos.left,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:99999,minWidth:200,maxWidth:"calc(100vw - 16px)",maxHeight:"min(320px, calc(100vh - "+(pos.top+16)+"px))",boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"}:{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:9999,minWidth:180,maxWidth:"min(280px, calc(100vw - 32px))",maxHeight:320,boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"};
+  return(
+    <div ref={ref} style={{position:"relative",WebkitTapHighlightColor:"transparent"}} data-filter-drop="true">
+      <div ref={btnRef} onClick={function(e){e.stopPropagation();setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!open)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+        {p.icon}
+        <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      {open&&<div style={dropStyle}>
+        {p.options.map(function(opt){
+          var active=p.value===opt;
+          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+            {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
+            {opt}
+          </div>
+        })}
+      </div>}
+    </div>
+  );
+}
+
 function ProposalBuilderPage(){
   var [clientName,setClientName]=useState("");
   var [showPricing,setShowPricing]=useState(false);
@@ -30,6 +69,52 @@ function ProposalBuilderPage(){
   var [generating,setGenerating]=useState(false);
   var [error,setError]=useState("");
   var containerRef=useRef(null);
+
+  /* ── Filter state ── */
+  var [brand,setBrand]=useState("Brand");
+  var [bodyType,setBodyType]=useState("Type");
+  var [priceRange,setPriceRange]=useState("Price");
+  var [seats,setSeats]=useState("Seats");
+  var [hpRange,setHpRange]=useState("Power");
+  var [driveType,setDriveType]=useState("Drive");
+  var [sort,setSort]=useState("Featured");
+
+  var brands=["Brand"].concat(CARS.map(function(c){return c.brand}).filter(function(v,i,a){return a.indexOf(v)===i}).sort());
+
+  /* ── Filter logic ── */
+  var filteredWithIdx=CARS.map(function(c,i){return{car:c,idx:i}}).filter(function(o){
+    var c=o.car;
+    if(brand!=="Brand"&&c.brand!==brand) return false;
+    if(bodyType!=="Type"&&c.body!==bodyType) return false;
+    if(driveType!=="Drive"&&c.drive!==driveType) return false;
+    if(seats==="2 Seats"&&c.seats!==2) return false;
+    if(seats==="4 Seats"&&c.seats!==4) return false;
+    if(seats==="5+ Seats"&&c.seats<5) return false;
+    if(hpRange==="Under 600hp"&&c.hp>=600) return false;
+    if(hpRange==="600-800hp"&&(c.hp<600||c.hp>800)) return false;
+    if(hpRange==="800hp+"&&c.hp<800) return false;
+    if(priceRange==="Under $1,500"&&c.price>=1500) return false;
+    if(priceRange==="$1,500–$3,000"&&(c.price<1500||c.price>3000)) return false;
+    if(priceRange==="$3,000+"&&c.price<3000) return false;
+    return true;
+  });
+
+  if(sort==="Price: Low") filteredWithIdx=filteredWithIdx.slice().sort(function(a,b){return a.car.price-b.car.price});
+  else if(sort==="Price: High") filteredWithIdx=filteredWithIdx.slice().sort(function(a,b){return b.car.price-a.car.price});
+  else if(sort==="Most Powerful") filteredWithIdx=filteredWithIdx.slice().sort(function(a,b){return b.car.hp-a.car.hp});
+  else if(sort==="Fastest") filteredWithIdx=filteredWithIdx.slice().sort(function(a,b){return parseFloat(a.car.accel)-parseFloat(b.car.accel)});
+
+  var activeFilters=[brand!=="Brand"?brand:null,bodyType!=="Type"?bodyType:null,seats!=="Seats"?seats:null,hpRange!=="Power"?hpRange:null,priceRange!=="Price"?priceRange:null,driveType!=="Drive"?driveType:null].filter(Boolean);
+  var clearAll=function(){setBrand("Brand");setBodyType("Type");setSeats("Seats");setHpRange("Power");setPriceRange("Price");setDriveType("Drive")};
+
+  /* Filter icons */
+  var iconBody=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>;
+  var iconSeat=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>;
+  var iconHP=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
+  var iconPrice=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>;
+  var iconDrive=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg>;
+  var iconBrand=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+  var iconSort=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>;
 
   function toggleCar(id){
     var newSet=new Set(selected);
@@ -453,15 +538,45 @@ function ProposalBuilderPage(){
         {error}
       </div>}
 
+      {/* ═══ FILTERS ═══ */}
+      <div style={{paddingLeft:24,paddingRight:24,marginBottom:24}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",position:"relative",zIndex:50}}>
+          <FilterDrop value={brand} options={brands} onChange={setBrand} icon={iconBrand}/>
+          <FilterDrop value={bodyType} options={["Type","Coupe","Convertible","SUV","Sedan","Hatchback","Van"]} onChange={setBodyType} icon={iconBody}/>
+          <FilterDrop value={priceRange} options={["Price","Under $1,500","$1,500–$3,000","$3,000+"]} onChange={setPriceRange} icon={iconPrice}/>
+          <FilterDrop value={seats} options={["Seats","2 Seats","4 Seats","5+ Seats"]} onChange={setSeats} icon={iconSeat}/>
+          <FilterDrop value={hpRange} options={["Power","Under 600hp","600-800hp","800hp+"]} onChange={setHpRange} icon={iconHP}/>
+          <FilterDrop value={driveType} options={["Drive","AWD","RWD"]} onChange={setDriveType} icon={iconDrive}/>
+          <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
+          <FilterDrop value={sort} options={["Featured","Price: Low","Price: High","Most Powerful","Fastest"]} onChange={setSort} icon={iconSort}/>
+        </div>
+        {/* Active filter tags */}
+        {activeFilters.length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginTop:16}}>
+          {activeFilters.map(function(f){
+            return <span key={f} style={{...sf(11,500),color:C.s1,padding:"5px 12px",borderRadius:8,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.1)"}}>{f}</span>
+          })}
+          {activeFilters.length>1&&<span onClick={clearAll} style={{...sf(11,500),color:C.s5,padding:"5px 12px",borderRadius:8,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Clear all</span>}
+        </div>}
+      </div>
+
       {/* Car Selection Grid */}
       <div style={{paddingLeft:24,paddingRight:24}}>
+        {filteredWithIdx.length===0?(
+          <div style={{textAlign:"center",padding:"60px 20px"}}>
+            <div style={{fontSize:40,marginBottom:16}}>🏎️</div>
+            <h3 style={{...sf(20,600),color:C.s3,marginBottom:8}}>No cars match your filters</h3>
+            <p style={{...sf(14),color:C.s5,marginBottom:24}}>Try adjusting your filters.</p>
+            <div onClick={clearAll} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,cursor:"pointer",...sf(13,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>Clear all filters</div>
+          </div>
+        ):(
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:20}}>
-          {CARS.map(function(car,idx){
+          {filteredWithIdx.map(function(o){
+            var car=o.car;var idx=o.idx;
             var isSelected=selected.has(idx);
             return(<div
               key={idx}
               onClick={function(){toggleCar(idx)}}
-              style={{position:"relative",backgroundColor:C.el,border:`2px solid ${isSelected?C.gn:C.bd}`,borderRadius:12,overflow:"hidden",cursor:"pointer",transition:"all 0.2s ease",transform:isSelected?"scale(0.98)":"scale(1)"}}>
+              style={{position:"relative",backgroundColor:C.el,border:"2px solid "+(isSelected?C.gn:C.bd),borderRadius:12,overflow:"hidden",cursor:"pointer",transition:"all 0.2s ease",transform:isSelected?"scale(0.98)":"scale(1)"}}>
 
               {/* Checkbox */}
               <div style={{position:"absolute",top:12,right:12,zIndex:10}}>
@@ -484,7 +599,7 @@ function ProposalBuilderPage(){
                 <p style={{...sf(12),color:C.s4,margin:"0 0 12px 0"}}>{car.brand}</p>
 
                 {/* Quick Specs */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12,paddingBottom:12,borderBottom:`1px solid ${C.bd}`}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12,paddingBottom:12,borderBottom:"1px solid "+C.bd}}>
                   <div style={{textAlign:"center"}}>
                     <div style={{...sf(11),color:C.s5,marginBottom:4}}>HP</div>
                     <div style={{...sf(13,600),color:C.s1}}>{car.hp}</div>
@@ -506,7 +621,7 @@ function ProposalBuilderPage(){
               </div>
             </div>);
           })}
-        </div>
+        </div>)}
       </div>
     </div>
 
