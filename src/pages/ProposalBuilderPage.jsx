@@ -94,7 +94,7 @@ function ProposalBuilderPage(){
 
       drawAMark(doc,pageWidth/2-8,40,16);
 
-      doc.setFont("-apple-system,'SF Pro Display','Helvetica Neue',sans-serif","bold");
+      doc.setFont("helvetica","bold");
       doc.setFontSize(36);
       doc.setTextColor(244,244,245);
       doc.text("ALFRED CONCIERGE",pageWidth/2,80,{align:"center"});
@@ -125,7 +125,7 @@ function ProposalBuilderPage(){
         var imgY=30;
 
         // Car title
-        doc.setFont("-apple-system,'SF Pro Display','Helvetica Neue',sans-serif","bold");
+        doc.setFont("helvetica","bold");
         doc.setFontSize(32);
         doc.setTextColor(244,244,245);
         doc.text(car.name,titleX,titleY);
@@ -157,13 +157,13 @@ function ProposalBuilderPage(){
         var specRowH=10;
 
         var specs=[
-          {label:"HP",value:car.hp+" hp"},
-          {label:"0-60",value:car.accel},
-          {label:"Top Speed",value:car.top+" mph"},
-          {label:"Engine",value:car.engine||""},
-          {label:"Transmission",value:car.trans||""},
-          {label:"Drive",value:car.drive||""},
-          {label:"Seats",value:car.seats||2}
+          {label:"HP",value:String(car.hp||"—")+" hp"},
+          {label:"0-60",value:String(car.accel||"—")},
+          {label:"Top Speed",value:String(car.top||"—")+" mph"},
+          {label:"Engine",value:String(car.engine||"—")},
+          {label:"Transmission",value:String(car.trans||"—")},
+          {label:"Drive",value:String(car.drive||"—")},
+          {label:"Seats",value:String(car.seats||2)}
         ];
 
         doc.setFontSize(10);
@@ -185,12 +185,12 @@ function ProposalBuilderPage(){
 
           doc.setFontSize(12);
           doc.setTextColor(52,199,89);
-          doc.setFont("-apple-system,'SF Pro Display','Helvetica Neue',sans-serif","bold");
+          doc.setFont("helvetica","bold");
           doc.text("$"+car.price.toLocaleString()+"/day",specStartX+specColW/2,priceY,{align:"center"});
 
           doc.setFontSize(10);
           doc.setTextColor(161,161,170);
-          doc.setFont("-apple-system,'SF Pro Display','Helvetica Neue',sans-serif","normal");
+          doc.setFont("helvetica","normal");
           doc.text("Deposit: $"+(car.deposit||car.price).toLocaleString(),specStartX+specColW/2,priceY+10,{align:"center"});
         }
       }
@@ -200,14 +200,14 @@ function ProposalBuilderPage(){
       doc.setFillColor(10,10,11);
       doc.rect(0,0,pageWidth,pageHeight,"F");
 
-      doc.setFont("-apple-system,'SF Pro Display','Helvetica Neue',sans-serif","bold");
+      doc.setFont("helvetica","bold");
       doc.setFontSize(40);
       doc.setTextColor(244,244,245);
       doc.text("Thank You",pageWidth/2,90,{align:"center"});
 
       doc.setFontSize(14);
       doc.setTextColor(161,161,170);
-      doc.setFont("-apple-system,'SF Pro Display','Helvetica Neue',sans-serif","normal");
+      doc.setFont("helvetica","normal");
       doc.text("ALFRED CONCIERGE",pageWidth/2,130,{align:"center"});
       doc.text("Premium Luxury Transportation",pageWidth/2,140,{align:"center"});
       doc.text("alfredconcierge.app",pageWidth/2,150,{align:"center"});
