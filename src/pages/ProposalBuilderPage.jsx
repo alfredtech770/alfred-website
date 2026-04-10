@@ -65,7 +65,7 @@ function FilterDrop(p){
 function ProposalBuilderPage(){
   var [clientName,setClientName]=useState("");
   var [showPricing,setShowPricing]=useState(false);
-  var [selected,setSelected]=useState(new Set());
+  var [selected,setSelected]=useState({});// {carIdx: days}
   var [generating,setGenerating]=useState(false);
   var [error,setError]=useState("");
   var containerRef=useRef(null);
@@ -119,14 +119,27 @@ function ProposalBuilderPage(){
   var iconCity=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>;
   var iconSort=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>;
 
-  function toggleCar(id){
-    var newSet=new Set(selected);
-    if(newSet.has(id)){
-      newSet.delete(id);
+  var TIERS=[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}];
+  var selectedCount=Object.keys(selected).length;
+
+  function selectCarTier(id,days){
+    var next=Object.assign({},selected);
+    if(next[id]===days){
+      delete next[id];// deselect if same tier clicked again
     }else{
-      newSet.add(id);
+      next[id]=days;
     }
-    setSelected(newSet);
+    setSelected(next);
+  }
+
+  function toggleCar(id){
+    var next=Object.assign({},selected);
+    if(next[id]!==undefined){
+      delete next[id];
+    }else{
+      next[id]=1;// default to 1 day
+    }
+    setSelected(next);
   }
 
   function imageToBase64(url){
@@ -229,7 +242,7 @@ function ProposalBuilderPage(){
   }
 
   /* ── Car detail page — A4 portrait, luxury layout ── */
-  function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages){
+  function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages,days){
     var p=createPage();var ctx=p.ctx;
     var pad=mm(16);var contentW=CW-pad*2;
     var y=0;
@@ -312,10 +325,20 @@ function ProposalBuilderPage(){
 
     // ═══ 6. PRICE ═══
     if(showPrice){
-      drawText(ctx,"$"+car.price.toLocaleString(),pad,y,{size:10,weight:700,color:"#F4F4F5"});
+      var pDays=days||1;
+      var pTier=[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}].filter(function(t){return t.d===pDays})[0]||{d:1,disc:0};
+      var pRate=Math.round(car.price*(1-pTier.disc/100));
+      drawText(ctx,"$"+pRate.toLocaleString(),pad,y,{size:10,weight:700,color:"#F4F4F5"});
       ctx.font="700 "+mm(10)+"px -apple-system,Helvetica,Arial,sans-serif";
-      var pw=ctx.measureText("$"+car.price.toLocaleString()).width;
+      var pw=ctx.measureText("$"+pRate.toLocaleString()).width;
       drawText(ctx," /day",pad+pw+mm(0.5),y+mm(2.5),{size:3.5,weight:400,color:"#52525B"});
+      if(pDays>1){
+        drawText(ctx,pDays+" days · $"+(pRate*pDays).toLocaleString()+" total",pad+pw+mm(12),y+mm(2.5),{size:3.5,weight:500,color:"#71717A"});
+      }
+      if(pTier.disc>0){
+        var origPw=ctx.measureText("$"+pRate.toLocaleString()).width;
+        drawText(ctx,"-"+pTier.disc+"%",pad+pw+mm(2),y+mm(0.5),{size:3,weight:600,color:C.gn});
+      }
       y+=mm(14);
     }
 
@@ -434,12 +457,12 @@ function ProposalBuilderPage(){
   /* ── Main generate function ── */
   async function generatePDF(){
     if(!clientName.trim()){setError("Please enter a client name");return}
-    if(selected.size===0){setError("Please select at least one car");return}
+    if(selectedCount===0){setError("Please select at least one car");return}
     setError("");setGenerating(true);
 
     try{
-      var selectedCars=CARS.filter(function(_,idx){return selected.has(idx)});
-      var totalPages=selectedCars.length;
+      var selectedEntries=Object.keys(selected).map(function(k){return{car:CARS[parseInt(k)],days:selected[k]}});
+      var totalPages=selectedEntries.length;
 
       // ─ Preload all images
       var loadImg=function(url){
@@ -453,8 +476,8 @@ function ProposalBuilderPage(){
       };
       // load hero + up to 4 gallery for each car
       var imagePromises=[];
-      for(var ci=0;ci<selectedCars.length;ci++){
-        var car=selectedCars[ci];
+      for(var ci=0;ci<selectedEntries.length;ci++){
+        var car=selectedEntries[ci].car;
         imagePromises.push(loadImg(car.img));
         var gallery=(car.imgs||[]).filter(function(u){return u!==car.img}).slice(0,4);
         for(var gi=0;gi<4;gi++){
@@ -466,13 +489,14 @@ function ProposalBuilderPage(){
       // ─ Build PDF — car pages only, no cover/closing
       var doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
 
-      for(var i=0;i<selectedCars.length;i++){
-        var c=selectedCars[i];
+      for(var i=0;i<selectedEntries.length;i++){
+        var c=selectedEntries[i].car;
+        var days=selectedEntries[i].days;
         var imgIdx=i*5;
         var hero=allImages[imgIdx];
         var thumbs=[allImages[imgIdx+1],allImages[imgIdx+2],allImages[imgIdx+3],allImages[imgIdx+4]];
         if(i>0){doc.addPage()}
-        var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages);
+        var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages,days);
         doc.addImage(carCanvas.toDataURL("image/png"),"PNG",0,0,PW,PH);
       }
 
@@ -576,26 +600,28 @@ function ProposalBuilderPage(){
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))",gap:20}}>
           {filteredWithIdx.map(function(o){
             var car=o.car;var idx=o.idx;
-            var isSelected=selected.has(idx);
+            var isSelected=selected[idx]!==undefined;
+            var selDays=selected[idx]||0;
             return(<div
               key={idx}
-              onClick={function(){toggleCar(idx)}}
-              style={{position:"relative",backgroundColor:C.el,border:"2px solid "+(isSelected?C.gn:C.bd),borderRadius:12,overflow:"hidden",cursor:"pointer",transition:"all 0.2s ease",transform:isSelected?"scale(0.98)":"scale(1)"}}>
+              style={{position:"relative",backgroundColor:C.el,border:"2px solid "+(isSelected?C.gn:C.bd),borderRadius:12,overflow:"hidden",transition:"all 0.2s ease",transform:isSelected?"scale(0.98)":"scale(1)"}}>
 
               {/* Checkbox */}
-              <div style={{position:"absolute",top:12,right:12,zIndex:10}}>
+              <div style={{position:"absolute",top:12,right:12,zIndex:10}} onClick={function(){toggleCar(idx)}}>
                 <CheckBox size={24} checked={isSelected}/>
               </div>
 
               {/* Car Image */}
-              {car.img&&<img
-                src={car.img}
-                alt={car.name}
-                style={{width:"100%",height:200,objectFit:"cover",display:"block"}}
-              />}
-              {!car.img&&<div style={{width:"100%",height:200,backgroundColor:C.srf,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <span style={{...sf(12),color:C.s5}}>No image</span>
-              </div>}
+              <div onClick={function(){toggleCar(idx)}} style={{cursor:"pointer"}}>
+                {car.img&&<img
+                  src={car.img}
+                  alt={car.name}
+                  style={{width:"100%",height:200,objectFit:"cover",display:"block"}}
+                />}
+                {!car.img&&<div style={{width:"100%",height:200,backgroundColor:C.srf,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <span style={{...sf(12),color:C.s5}}>No image</span>
+                </div>}
+              </div>
 
               {/* Car Info */}
               <div style={{padding:16}}>
@@ -618,14 +644,16 @@ function ProposalBuilderPage(){
                   </div>
                 </div>
 
-                {/* Pricing Tiers */}
+                {/* Pricing Tiers — clickable to select duration */}
+                <div style={{...sf(9,500),color:C.s5,marginBottom:6}}>Select duration:</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr",gap:4}}>
-                  {[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}].map(function(t){
+                  {TIERS.map(function(t){
                     var rate=Math.round(car.price*(1-t.disc/100));
-                    return <div key={t.d} style={{textAlign:"center",padding:"6px 0",borderRadius:6,background:t.disc>0?"rgba(52,199,89,0.04)":"transparent"}}>
-                      <div style={{...sf(9,500),color:C.s5,marginBottom:2}}>{t.d}d</div>
-                      <div style={{...sf(11,600),color:t.disc>0?C.gn:C.s1}}>${rate.toLocaleString()}</div>
-                      {t.disc>0&&<div style={{...sf(8,500),color:C.gn,opacity:0.7}}>-{t.disc}%</div>}
+                    var isActive=selDays===t.d;
+                    return <div key={t.d} onClick={function(e){e.stopPropagation();selectCarTier(idx,t.d)}} style={{textAlign:"center",padding:"8px 0",borderRadius:8,cursor:"pointer",transition:"all 0.2s",background:isActive?"rgba(52,199,89,0.12)":t.disc>0?"rgba(52,199,89,0.03)":"rgba(244,244,245,0.03)",border:"1.5px solid "+(isActive?C.gn:"transparent")}}>
+                      <div style={{...sf(10,600),color:isActive?C.gn:C.s5,marginBottom:2}}>{t.d} {t.d===1?"day":"days"}</div>
+                      <div style={{...sf(12,700),color:isActive?C.s1:t.disc>0?C.gn:C.s1}}>${rate.toLocaleString()}</div>
+                      {t.disc>0&&<div style={{...sf(8,600),color:C.gn,opacity:isActive?1:0.6}}>-{t.disc}%</div>}
                     </div>
                   })}
                 </div>
@@ -637,9 +665,9 @@ function ProposalBuilderPage(){
     </div>
 
     {/* Bottom Bar */}
-    {selected.size>0&&<div style={{position:"fixed",bottom:0,left:0,right:0,height:80,backgroundColor:C.el,borderTop:`1px solid ${C.bd}`,display:"flex",alignItems:"center",justifyContent:"space-between",paddingLeft:24,paddingRight:24,zIndex:50}}>
+    {selectedCount>0&&<div style={{position:"fixed",bottom:0,left:0,right:0,height:80,backgroundColor:C.el,borderTop:`1px solid ${C.bd}`,display:"flex",alignItems:"center",justifyContent:"space-between",paddingLeft:24,paddingRight:24,zIndex:50}}>
       <div style={{...sf(16,500),color:C.s4}}>
-        {selected.size} car{selected.size!==1?"s":""} selected
+        {selectedCount} car{selectedCount!==1?"s":""} selected
       </div>
       <button
         onClick={generatePDF}
