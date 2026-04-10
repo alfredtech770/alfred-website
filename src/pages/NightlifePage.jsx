@@ -30,7 +30,8 @@ function mapNightclub(row){
   }
 }
 
-var CITIES=["All Cities","Miami","Paris"];
+var CITIES=["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"];
+var COMING_SOON_CITIES=["Paris","Ibiza","Monaco","New York","London"];
 var SORT_OPTIONS=["Featured","Rating","Table Min: Low","Table Min: High","Most Reviewed"];
 
 function FilterDrop(p){
@@ -62,9 +63,13 @@ function FilterDrop(p){
       {open&&<div style={dropStyle}>
         {p.options.map(function(opt){
           var active=p.value===opt;
-          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
-            {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
-            {opt}
+          var soon=p.comingSoon&&p.comingSoon.indexOf(opt)!==-1;
+          return <div key={opt} onClick={function(e){e.stopPropagation();if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",justifyContent:"space-between"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
+              {opt}
+            </div>
+            {soon&&<span style={{...sf(8,600),color:"rgba(255,255,255,0.25)",letterSpacing:1,textTransform:"uppercase",padding:"2px 6px",borderRadius:4,border:"1px solid rgba(255,255,255,0.08)"}}>Soon</span>}
           </div>
         })}
       </div>}
@@ -188,7 +193,7 @@ export default function NightlifePage(){
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
   var filtered=venues.filter(function(v){
-    if(city!=="All Cities"){if(city==="Paris"&&v.loc!=="Paris")return false;if(city==="Miami"&&v.loc==="Paris")return false;}
+    if(city!=="All Cities"&&city==="Miami"){var vLoc=(v.loc||"").toLowerCase();if(vLoc&&vLoc!=="miami")return false;}
     if(type!=="Type"&&v.type!==type)return false;
     if(vibe!=="Vibe"&&v.vibe!==vibe)return false;
     if(door!=="Door"&&v.door!==door)return false;
@@ -257,7 +262,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           <div className="search-bar">
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Location</label>
-              <FilterDrop value={city} options={CITIES} onChange={setCity} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
+              <FilterDrop value={city} options={CITIES} comingSoon={COMING_SOON_CITIES} onChange={setCity} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Date</label>

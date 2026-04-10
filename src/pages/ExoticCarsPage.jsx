@@ -123,7 +123,8 @@ var ECARS=[
   {name:"Land Rover Range Rover Velar",brand:"Land Rover",price:130,hp:400,accel:"4.5s",top:"250",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/1.avif",imgs:["https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/1.avif", "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/2.avif", "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/3.avif", "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/4.avif", "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/5.avif", "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/6.avif", "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/car-photos/miami/land-rover-range-rover-velar/7.avif"],locs:["Miami"],available:true,body:"SUV",seats:5,trans:"Auto",drive:"AWD",category:"Luxury SUV",deposit:500,engine:"3.0L I6 Mild Hybrid"},
 ];
 
-var CITIES=["All Cities","Miami","Paris"];
+var CITIES=["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"];
+var COMING_SOON_CITIES=["Paris","Ibiza","Monaco","New York","London"];
 var SORT_OPTIONS=["Featured","Price: Low","Price: High","Most Powerful","Fastest"];
 
 /* ═══ Dropdown component ═══ */
@@ -156,9 +157,13 @@ function FilterDrop(p){
       {open&&<div style={dropStyle}>
         {p.options.map(function(opt){
           var active=p.value===opt;
-          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
-            {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
-            {opt}
+          var soon=p.comingSoon&&p.comingSoon.indexOf(opt)!==-1;
+          return <div key={opt} onClick={function(e){e.stopPropagation();if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",justifyContent:"space-between"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
+              {opt}
+            </div>
+            {soon&&<span style={{...sf(8,600),color:"rgba(255,255,255,0.25)",letterSpacing:1,textTransform:"uppercase",padding:"2px 6px",borderRadius:4,border:"1px solid rgba(255,255,255,0.08)"}}>Soon</span>}
           </div>
         })}
       </div>}
@@ -372,7 +377,7 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
           <div className="search-bar">
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Location</label>
-              <FilterDrop value={city} options={CITIES} onChange={setCity} icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
+              <FilterDrop value={city} options={CITIES} comingSoon={COMING_SOON_CITIES} onChange={setCity} icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Pickup</label>

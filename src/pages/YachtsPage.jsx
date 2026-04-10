@@ -42,9 +42,13 @@ function FilterDrop(p){
       {open&&<div style={dropStyle}>
         {p.options.map(function(opt){
           var active=p.value===opt;
-          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
-            {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
-            {opt}
+          var soon=p.comingSoon&&p.comingSoon.indexOf(opt)!==-1;
+          return <div key={opt} onClick={function(e){e.stopPropagation();if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",justifyContent:"space-between"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
+              {opt}
+            </div>
+            {soon&&<span style={{...sf(8,600),color:"rgba(255,255,255,0.25)",letterSpacing:1,textTransform:"uppercase",padding:"2px 6px",borderRadius:4,border:"1px solid rgba(255,255,255,0.08)"}}>Soon</span>}
           </div>
         })}
       </div>}
@@ -218,12 +222,13 @@ export default function YachtsPage(){
 
   /* Dynamic filter options from data */
   var brands=["Brand"].concat([...new Set(yachts.map(function(y){return y.brand}).filter(Boolean))].sort());
-  var locations=["Location","Miami","Paris"];
+  var locations=["Location","Miami","Paris","Ibiza","Monaco","New York","London"];
+  var comingSoonCities=["Paris","Ibiza","Monaco","New York","London"];
 
   /* Filter logic */
   var filtered=yachts.filter(function(y){
     if(brand!=="Brand"&&y.brand!==brand) return false;
-    if(location!=="Location"){if(location==="Paris"&&(y.city||y.location)!=="Paris")return false;if(location==="Miami"&&(y.city||y.location)==="Paris")return false;}
+    if(location!=="Location"&&location==="Miami"){var yLoc=(y.city||y.location||"").toLowerCase();if(yLoc&&yLoc!=="miami")return false;}
     if(sizeRange==="Under 40 ft"&&(y.size_ft===null||y.size_ft>=40)) return false;
     if(sizeRange==="40–60 ft"&&(y.size_ft===null||y.size_ft<40||y.size_ft>60)) return false;
     if(sizeRange==="60–80 ft"&&(y.size_ft===null||y.size_ft<60||y.size_ft>80)) return false;
@@ -303,7 +308,7 @@ body::-webkit-scrollbar{width:0}
           <div className="search-bar">
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Location</label>
-              <FilterDrop value={location} options={locations} onChange={setLocation} icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
+              <FilterDrop value={location} options={locations} comingSoon={comingSoonCities} onChange={setLocation} icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Charter Date</label>
@@ -331,7 +336,7 @@ body::-webkit-scrollbar{width:0}
             <FilterDrop icon={iconBrand} value={brand} options={brands} onChange={setBrand}/>
             <FilterDrop icon={iconSize} value={sizeRange} options={["Size","Under 40 ft","40–60 ft","60–80 ft","80 ft+"]} onChange={setSizeRange}/>
             <FilterDrop icon={iconPrice} value={priceRange} options={["Price","Under $1,000","$1,000–$3,000","$3,000–$6,000","$6,000+"]} onChange={setPriceRange}/>
-            <FilterDrop icon={iconLoc} value={location} options={locations} onChange={setLocation}/>
+            <FilterDrop icon={iconLoc} value={location} options={locations} comingSoon={comingSoonCities} onChange={setLocation}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
             <FilterDrop value={sort} options={["Featured","Price: Low","Price: High","Largest","Most Passengers"]} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>

@@ -43,9 +43,13 @@ function FilterDrop(p){
       {open&&<div style={dropStyle}>
         {p.options.map(function(opt){
           var active=p.value===opt;
-          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
-            {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
-            {opt}
+          var soon=p.comingSoon&&p.comingSoon.indexOf(opt)!==-1;
+          return <div key={opt} onClick={function(e){e.stopPropagation();if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",justifyContent:"space-between"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
+              {opt}
+            </div>
+            {soon&&<span style={{...sf(8,600),color:"rgba(255,255,255,0.25)",letterSpacing:1,textTransform:"uppercase",padding:"2px 6px",borderRadius:4,border:"1px solid rgba(255,255,255,0.08)"}}>Soon</span>}
           </div>
         })}
       </div>}
@@ -179,7 +183,8 @@ export default function DiningPage(){
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
   /* Dynamic filter options from data — group cuisines into broad categories */
-  var cities=["All Cities","Miami","Paris"];
+  var cities=["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"];
+  var comingSoonCities=["Paris","Ibiza","Monaco","New York","London"];
   var CUISINE_MAP={
     "French":["French","French Fine Dining","French Bistro","French Brasserie","French Cafe","French Café","French Classic","French Contemporary","French Gastronomic","French Mediterranean","French Seafood","French Steakhouse","French, Bar Lounge","French, Bistro","French, Brasserie","French, Cafe","French, Contemporary","French, Fine Dining","French, Wine Bar","French-American","French-American Fusion","French-Mediterranean","Contemporary French","Modern French","Franco-Japanese Fusion","Pastries, French","Cafe, French"],
     "Italian":["Italian","Italian Fine Dining","Italian Casual","Italian Pasta","Italian Pasta Bar","Italian Pizza","Italian Wine Bar","Italian, Contemporary","Italian, Seafood","Italian, Trattoria","Italian-American","Italian-Ligurian","Italian-Mediterranean","Italian-Mediterranean Cafe","Italian-Piedmont","Italian-Roman","Italian-Sicilian","Italian-Venetian","Italian Bakery","Mediterranean-Italian","Roman Italian","Southern Italian","Sicilian Pizza","Modern Italian"],
@@ -202,7 +207,7 @@ export default function DiningPage(){
   var vibes=["Vibe"].concat([...new Set(restaurants.map(function(r){return r.vibe}).filter(Boolean))].sort());
   var prices=["Price","$","$$","$$$","$$$$"];
 
-  function cityMatch(loc,filter){if(filter==="Paris")return loc==="Paris";return loc!=="Paris"}
+  function cityMatch(loc,filter){if(filter==="Miami"){var l=(loc||"").toLowerCase();return !l||l==="miami"||l.indexOf("miami")!==-1}return loc===filter}
 
   var filtered=restaurants.filter(function(r){
     if(city!=="All Cities"&&!cityMatch(r.loc,city))return false;
@@ -272,7 +277,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           <div className="search-bar">
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Location</label>
-              <FilterDrop value={city} options={cities} onChange={setCity} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
+              <FilterDrop value={city} options={cities} comingSoon={comingSoonCities} onChange={setCity} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>}/>
             </div>
             <div>
               <label style={{display:"block",...sf(9,600),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>Date</label>
