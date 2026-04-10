@@ -95,7 +95,13 @@ function ProposalBuilderPage(){
     ctx.fillStyle=o.color||"#F4F4F5";
     ctx.font=(o.weight||400)+" "+mm(o.size||10)+"px -apple-system,Helvetica,Arial,sans-serif";
     ctx.textAlign=o.align||"left";ctx.textBaseline=o.baseline||"top";
-    ctx.fillText(String(txt),x,y);
+    var s=String(txt);
+    if(o.maxWidth){
+      // truncate with ellipsis if too wide
+      while(ctx.measureText(s).width>o.maxWidth&&s.length>1){s=s.slice(0,-1)}
+      if(s.length<String(txt).length)s=s.slice(0,-1)+"…";
+    }
+    ctx.fillText(s,x,y);
   }
 
   function drawLine(ctx,x1,y1,x2,y2,color,w){
@@ -115,97 +121,103 @@ function ProposalBuilderPage(){
     lg.addColorStop(0,"transparent");lg.addColorStop(0.5,"rgba(244,244,245,0.08)");lg.addColorStop(1,"transparent");
     ctx.strokeStyle=lg;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(CW*0.2,mm(40));ctx.lineTo(CW*0.8,mm(40));ctx.stroke();
     // A mark
-    drawMark(ctx,CW/2,mm(65),18,"#F4F4F5");
+    drawMark(ctx,CW/2,mm(60),14,"#F4F4F5");
     // ALFRED CONCIERGE
-    drawText(ctx,"A L F R E D   C O N C I E R G E",CW/2,mm(82),{size:8,weight:500,color:"#71717A",align:"center"});
+    drawText(ctx,"A L F R E D   C O N C I E R G E",CW/2,mm(74),{size:6,weight:500,color:"#71717A",align:"center"});
     // divider
-    drawLine(ctx,CW/2-mm(20),mm(92),CW/2+mm(20),mm(92),"#2C2C31",1);
+    drawLine(ctx,CW/2-mm(16),mm(82),CW/2+mm(16),mm(82),"#2C2C31",1);
     // Curated Selection
-    drawText(ctx,"Curated Selection",CW/2,mm(100),{size:28,weight:700,color:"#F4F4F5",align:"center"});
-    drawText(ctx,"for "+clientName,CW/2,mm(112),{size:20,weight:400,color:"#A1A1AA",align:"center"});
-    // date
+    drawText(ctx,"Curated Selection",CW/2,mm(90),{size:16,weight:700,color:"#F4F4F5",align:"center"});
+    drawText(ctx,"for "+clientName,CW/2,mm(100),{size:12,weight:400,color:"#A1A1AA",align:"center"});
+    // car count
     var today=new Date();
     var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
-    drawText(ctx,months[today.getMonth()]+" "+today.getDate()+", "+today.getFullYear(),CW/2,mm(PH-25),{size:9,weight:400,color:"#52525B",align:"center"});
+    // divider
+    drawLine(ctx,CW/2-mm(16),mm(112),CW/2+mm(16),mm(112),"#2C2C31",1);
+    // date
+    drawText(ctx,months[today.getMonth()]+" "+today.getDate()+", "+today.getFullYear(),CW/2,mm(120),{size:7,weight:400,color:"#52525B",align:"center"});
     // bottom accent
     var lg2=ctx.createLinearGradient(CW*0.2,0,CW*0.8,0);
     lg2.addColorStop(0,"transparent");lg2.addColorStop(0.5,"rgba(244,244,245,0.06)");lg2.addColorStop(1,"transparent");
     ctx.strokeStyle=lg2;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(CW*0.2,mm(PH-20));ctx.lineTo(CW*0.8,mm(PH-20));ctx.stroke();
-    // watermark mark
-    ctx.globalAlpha=0.015;drawMark(ctx,CW/2,mm(145),60,"#F4F4F5");ctx.globalAlpha=1;
+    // bottom branding
+    drawMark(ctx,CW/2,mm(PH-30),6,"#3F3F46");
+    drawText(ctx,"alfredconcierge.app",CW/2,mm(PH-22),{size:5,weight:400,color:"#3F3F46",align:"center"});
     return p.canvas;
   }
 
   /* ── Car detail page (main) ── */
   function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages){
     var p=createPage();var ctx=p.ctx;
-    var pad=mm(14);var rightX=mm(170);
+    var pad=mm(12);
+    var rightPanelW=mm(122);// right panel width
+    var rightX=CW-pad-rightPanelW;
+    var imgW=rightX-pad-mm(4);// image fills left side up to right panel
+    var imgH=mm(128);var imgX=pad;var imgY=pad;
 
-    // ─ Hero image area (left 55%)
-    var imgW=mm(152);var imgH=mm(130);var imgX=pad;var imgY=pad;
+    // ─ Hero image (left side)
     if(heroImg){
-      // draw with rounded corners
-      ctx.save();roundRect(ctx,imgX,imgY,imgW,imgH,mm(4));ctx.clip();
+      ctx.save();roundRect(ctx,imgX,imgY,imgW,imgH,mm(3));ctx.clip();
       var iw=heroImg.width;var ih=heroImg.height;
       var scale=Math.max(imgW/iw,imgH/ih);
       var sw=iw*scale;var sh=ih*scale;
       ctx.drawImage(heroImg,imgX+(imgW-sw)/2,imgY+(imgH-sh)/2,sw,sh);
-      // dark gradient at bottom of image
-      var imgGrad=ctx.createLinearGradient(0,imgY+imgH*0.6,0,imgY+imgH);
-      imgGrad.addColorStop(0,"rgba(10,10,11,0)");imgGrad.addColorStop(1,"rgba(10,10,11,0.7)");
+      // gradient overlay at bottom
+      var imgGrad=ctx.createLinearGradient(0,imgY+imgH*0.65,0,imgY+imgH);
+      imgGrad.addColorStop(0,"rgba(10,10,11,0)");imgGrad.addColorStop(1,"rgba(10,10,11,0.6)");
       ctx.fillStyle=imgGrad;ctx.fillRect(imgX,imgY,imgW,imgH);
       ctx.restore();
     }else{
-      ctx.save();roundRect(ctx,imgX,imgY,imgW,imgH,mm(4));ctx.clip();
+      ctx.save();roundRect(ctx,imgX,imgY,imgW,imgH,mm(3));ctx.clip();
       ctx.fillStyle="#1F1F23";ctx.fillRect(imgX,imgY,imgW,imgH);
-      drawText(ctx,"Image unavailable",imgX+imgW/2,imgY+imgH/2-mm(4),{size:11,color:"#52525B",align:"center"});
+      drawText(ctx,"Image unavailable",imgX+imgW/2,imgY+imgH/2-mm(3),{size:8,color:"#52525B",align:"center"});
       ctx.restore();
     }
-    // brand badge on image
-    ctx.save();
-    roundRect(ctx,imgX+mm(4),imgY+mm(4),mm(6)+ctx.measureText(String(car.body||"")).width*0.4,mm(6),mm(2));
-    ctx.fillStyle="rgba(0,0,0,0.55)";ctx.fill();
-    drawText(ctx,String(car.body||""),imgX+mm(7),imgY+mm(5.2),{size:3.5,weight:600,color:"#D4D4D8"});
-    ctx.restore();
-    // page number on image bottom right
-    drawText(ctx,String(pageNum)+" / "+String(totalPages),imgX+imgW-mm(6),imgY+imgH-mm(5),{size:3.5,weight:500,color:"rgba(255,255,255,0.4)",align:"right"});
+    // body badge top-left on image
+    var bodyTxt=String(car.body||"");
+    ctx.font="600 "+mm(3.2)+"px -apple-system,Helvetica,Arial,sans-serif";
+    var badgeW=ctx.measureText(bodyTxt).width+mm(5);
+    ctx.save();roundRect(ctx,imgX+mm(3),imgY+mm(3),badgeW,mm(5),mm(1.5));
+    ctx.fillStyle="rgba(0,0,0,0.6)";ctx.fill();ctx.restore();
+    drawText(ctx,bodyTxt,imgX+mm(5.5),imgY+mm(4),{size:3.2,weight:600,color:"#D4D4D8"});
+    // page counter bottom-right on image
+    drawText(ctx,String(pageNum)+" / "+String(totalPages),imgX+imgW-mm(5),imgY+imgH-mm(5),{size:3.2,weight:500,color:"rgba(255,255,255,0.5)",align:"right"});
 
     // ─ Gallery thumbnails below hero
-    var thumbY=imgY+imgH+mm(3);var thumbH=mm(48);var thumbGap=mm(2);
-    var maxThumbs=4;
+    var thumbY=imgY+imgH+mm(2.5);var thumbH=mm(PH-12-2.5)-imgY-imgH-mm(12);// fill remaining height above footer
+    var thumbGap=mm(2);
     var availThumbs=galleryImgs.filter(function(g){return g!==null});
-    var numThumbs=Math.min(availThumbs.length,maxThumbs);
+    var numThumbs=Math.min(availThumbs.length,4);
     if(numThumbs>0){
       var thumbW=(imgW-(numThumbs-1)*thumbGap)/numThumbs;
       for(var t=0;t<numThumbs;t++){
         var tx=imgX+t*(thumbW+thumbGap);
-        ctx.save();roundRect(ctx,tx,thumbY,thumbW,thumbH,mm(3));ctx.clip();
-        if(availThumbs[t]){
-          var tw=availThumbs[t].width;var th=availThumbs[t].height;
-          var ts=Math.max(thumbW/tw,thumbH/th);
-          ctx.drawImage(availThumbs[t],tx+(thumbW-tw*ts)/2,thumbY+(thumbH-th*ts)/2,tw*ts,th*ts);
-        }else{
-          ctx.fillStyle="#1F1F23";ctx.fillRect(tx,thumbY,thumbW,thumbH);
-        }
+        ctx.save();roundRect(ctx,tx,thumbY,thumbW,thumbH,mm(2));ctx.clip();
+        var tw=availThumbs[t].width;var th=availThumbs[t].height;
+        var ts=Math.max(thumbW/tw,thumbH/th);
+        ctx.drawImage(availThumbs[t],tx+(thumbW-tw*ts)/2,thumbY+(thumbH-th*ts)/2,tw*ts,th*ts);
         ctx.restore();
       }
     }
 
-    // ─ Right side: Car info
-    var ry=pad;
+    // ─ Right panel: Car info
+    var ry=pad;var rpW=rightPanelW;
 
-    // Car name
-    drawText(ctx,String(car.name),rightX,ry,{size:22,weight:700,color:"#F4F4F5"});
-    ry+=mm(10);
+    // Car name — auto-size to fit
+    var nameSize=14;
+    ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";
+    while(ctx.measureText(String(car.name)).width>rpW&&nameSize>7){nameSize-=0.5;ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";}
+    drawText(ctx,String(car.name),rightX,ry,{size:nameSize,weight:700,color:"#F4F4F5"});
+    ry+=mm(nameSize*0.55+3);
+
     // Brand + location
-    drawText(ctx,String(car.brand||"")+"  ·  "+String((car.locs||[]).join(" · ")||"Miami"),rightX,ry,{size:8,weight:400,color:"#71717A"});
-    ry+=mm(10);
+    drawText(ctx,String(car.brand||"")+"  ·  "+String((car.locs||[]).join(", ")||"Miami"),rightX,ry,{size:5,weight:400,color:"#71717A",maxWidth:rpW});
+    ry+=mm(8);
 
-    // ─ Performance section
-    drawText(ctx,"PERFORMANCE",rightX,ry,{size:4,weight:600,color:"#3F3F46"});
-    ry+=mm(6);
-    // 3 spec boxes
-    var specBoxW=mm(38);var specBoxH=mm(22);var specGap=mm(3);
+    // ─ Performance: 3 spec boxes
+    drawText(ctx,"PERFORMANCE",rightX,ry,{size:3.2,weight:600,color:"#3F3F46"});
+    ry+=mm(4.5);
+    var specBoxW=(rpW-mm(4))/3;var specBoxH=mm(18);var specGap=mm(2);
     var perfSpecs=[
       {emoji:"\u26A1",val:String(car.hp||"—"),unit:"hp",label:"Power"},
       {emoji:"\u23F1",val:String(car.accel||"—"),unit:"",label:"0-100"},
@@ -213,17 +225,17 @@ function ProposalBuilderPage(){
     ];
     for(var si=0;si<3;si++){
       var bx=rightX+si*(specBoxW+specGap);
-      ctx.save();roundRect(ctx,bx,ry,specBoxW,specBoxH,mm(3));
+      ctx.save();roundRect(ctx,bx,ry,specBoxW,specBoxH,mm(2.5));
       ctx.fillStyle="#18181B";ctx.fill();ctx.strokeStyle="#2C2C31";ctx.lineWidth=1;ctx.stroke();ctx.restore();
-      drawText(ctx,perfSpecs[si].emoji,bx+specBoxW/2,ry+mm(3),{size:5,align:"center"});
-      drawText(ctx,perfSpecs[si].val+(perfSpecs[si].unit?" "+perfSpecs[si].unit:""),bx+specBoxW/2,ry+mm(9),{size:8,weight:700,color:"#F4F4F5",align:"center"});
-      drawText(ctx,perfSpecs[si].label,bx+specBoxW/2,ry+mm(16),{size:3.5,weight:500,color:"#71717A",align:"center"});
+      drawText(ctx,perfSpecs[si].emoji,bx+specBoxW/2,ry+mm(2.5),{size:4,align:"center"});
+      drawText(ctx,perfSpecs[si].val+(perfSpecs[si].unit?" "+perfSpecs[si].unit:""),bx+specBoxW/2,ry+mm(7.5),{size:6,weight:700,color:"#F4F4F5",align:"center"});
+      drawText(ctx,perfSpecs[si].label,bx+specBoxW/2,ry+mm(13.5),{size:3,weight:500,color:"#71717A",align:"center"});
     }
-    ry+=specBoxH+mm(5);
+    ry+=specBoxH+mm(4);
 
-    // ─ Details section
-    drawText(ctx,"DETAILS",rightX,ry,{size:4,weight:600,color:"#3F3F46"});
-    ry+=mm(6);
+    // ─ Details: 3x2 grid
+    drawText(ctx,"DETAILS",rightX,ry,{size:3.2,weight:600,color:"#3F3F46"});
+    ry+=mm(4.5);
     var details=[
       {l:"Engine",v:String(car.engine||"—")},
       {l:"Transmission",v:String(car.trans||"—")},
@@ -232,60 +244,59 @@ function ProposalBuilderPage(){
       {l:"Body",v:String(car.body||"—")},
       {l:"Category",v:String(car.category||"—")}
     ];
-    var dColW=mm(38);var dRowH=mm(11);var dGap=mm(3);
+    var dColW=(rpW-mm(4))/3;var dRowH=mm(10);var dGap=mm(2);
     for(var di=0;di<details.length;di++){
       var col=di%3;var row=Math.floor(di/3);
       var dx=rightX+col*(dColW+dGap);var dy=ry+row*(dRowH+dGap);
-      ctx.save();roundRect(ctx,dx,dy,dColW,dRowH,mm(2.5));
+      ctx.save();roundRect(ctx,dx,dy,dColW,dRowH,mm(2));
       ctx.fillStyle="#18181B";ctx.fill();ctx.strokeStyle="#2C2C31";ctx.lineWidth=1;ctx.stroke();ctx.restore();
-      drawText(ctx,details[di].l,dx+mm(3),dy+mm(2),{size:3,weight:500,color:"#71717A"});
-      drawText(ctx,details[di].v,dx+mm(3),dy+mm(6),{size:5,weight:500,color:"#F4F4F5"});
+      drawText(ctx,details[di].l,dx+mm(2.5),dy+mm(2),{size:2.5,weight:500,color:"#71717A"});
+      drawText(ctx,details[di].v,dx+mm(2.5),dy+mm(5.5),{size:4,weight:500,color:"#F4F4F5",maxWidth:dColW-mm(5)});
     }
-    ry+=2*(dRowH+dGap)+mm(4);
+    ry+=2*(dRowH+dGap)+mm(3);
 
     // ─ What's Included
-    drawText(ctx,"WHAT'S INCLUDED",rightX,ry,{size:4,weight:600,color:"#3F3F46"});
-    ry+=mm(6);
+    drawText(ctx,"WHAT'S INCLUDED",rightX,ry,{size:3.2,weight:600,color:"#3F3F46"});
+    ry+=mm(4.5);
     var features=[(car.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"];
-    var featBoxW=mm(120);var featRowH=mm(7);
-    ctx.save();roundRect(ctx,rightX,ry,featBoxW,features.length*featRowH+mm(2),mm(3));
+    var featRowH=mm(6);
+    ctx.save();roundRect(ctx,rightX,ry,rpW,features.length*featRowH+mm(2),mm(2.5));
     ctx.fillStyle="#18181B";ctx.fill();ctx.strokeStyle="#2C2C31";ctx.lineWidth=1;ctx.stroke();ctx.restore();
     for(var fi=0;fi<features.length;fi++){
-      var fy=ry+mm(2)+fi*featRowH;
-      if(fi>0){drawLine(ctx,rightX+mm(3),fy,rightX+featBoxW-mm(3),fy,"#2C2C31",0.5);}
-      // green check
-      ctx.save();roundRect(ctx,rightX+mm(3),fy+mm(1.5),mm(4),mm(4),mm(1));ctx.fillStyle="#1F1F23";ctx.fill();ctx.restore();
-      ctx.strokeStyle="#34C759";ctx.lineWidth=mm(0.4);ctx.lineCap="round";ctx.lineJoin="round";
+      var fy=ry+mm(1.5)+fi*featRowH;
+      if(fi>0){drawLine(ctx,rightX+mm(2.5),fy,rightX+rpW-mm(2.5),fy,"#2C2C31",0.5);}
+      // green check icon
+      ctx.save();roundRect(ctx,rightX+mm(2.5),fy+mm(1),mm(3.5),mm(3.5),mm(0.8));ctx.fillStyle="#1F1F23";ctx.fill();ctx.restore();
+      ctx.strokeStyle="#34C759";ctx.lineWidth=mm(0.35);ctx.lineCap="round";ctx.lineJoin="round";
       ctx.beginPath();
-      var ckx=rightX+mm(4);var cky=fy+mm(3.5);
-      ctx.moveTo(ckx,cky);ctx.lineTo(ckx+mm(0.8),cky+mm(0.8));ctx.lineTo(ckx+mm(2),cky-mm(0.6));ctx.stroke();
-      drawText(ctx,features[fi],rightX+mm(9),fy+mm(1.8),{size:4.5,weight:400,color:"#D4D4D8"});
+      var ckx=rightX+mm(3.2);var cky=fy+mm(2.8);
+      ctx.moveTo(ckx,cky);ctx.lineTo(ckx+mm(0.7),cky+mm(0.7));ctx.lineTo(ckx+mm(1.8),cky-mm(0.5));ctx.stroke();
+      drawText(ctx,features[fi],rightX+mm(7.5),fy+mm(1.3),{size:3.8,weight:400,color:"#D4D4D8"});
     }
-    ry+=features.length*featRowH+mm(6);
+    ry+=features.length*featRowH+mm(5);
 
-    // ─ Pricing section (if enabled)
+    // ─ Pricing (if enabled)
     if(showPrice){
-      drawText(ctx,"PRICING",rightX,ry,{size:4,weight:600,color:"#3F3F46"});
-      ry+=mm(6);
-      // price card
-      var priceW=featBoxW;var priceH=mm(18);
-      ctx.save();roundRect(ctx,rightX,ry,priceW,priceH,mm(3));
+      drawText(ctx,"PRICING",rightX,ry,{size:3.2,weight:600,color:"#3F3F46"});
+      ry+=mm(4.5);
+      var priceH=mm(14);
+      ctx.save();roundRect(ctx,rightX,ry,rpW,priceH,mm(2.5));
       ctx.fillStyle="#18181B";ctx.fill();ctx.strokeStyle="#2C2C31";ctx.lineWidth=1;ctx.stroke();ctx.restore();
-      drawText(ctx,"$"+car.price.toLocaleString(),rightX+mm(6),ry+mm(3),{size:12,weight:700,color:"#F4F4F5"});
-      drawText(ctx,"/day",rightX+mm(6)+ctx.measureText("$"+car.price.toLocaleString()).width*0.55,ry+mm(5.5),{size:5,weight:400,color:"#52525B"});
-      // deposit
-      drawText(ctx,"Security deposit",rightX+priceW-mm(6),ry+mm(3),{size:4,weight:400,color:"#71717A",align:"right"});
-      drawText(ctx,"$"+String(car.deposit||car.price).toLocaleString(),rightX+priceW-mm(6),ry+mm(8),{size:7,weight:600,color:"#F4F4F5",align:"right"});
-      drawText(ctx,"Pre-authorised · fully refundable",rightX+priceW-mm(6),ry+mm(13),{size:3.5,weight:400,color:"#52525B",align:"right"});
+      // price left
+      drawText(ctx,"$"+car.price.toLocaleString(),rightX+mm(5),ry+mm(3),{size:9,weight:700,color:"#F4F4F5"});
+      ctx.font="700 "+mm(9)+"px -apple-system,Helvetica,Arial,sans-serif";
+      var priceTextW=ctx.measureText("$"+car.price.toLocaleString()).width;
+      drawText(ctx,"/day",rightX+mm(5)+priceTextW+mm(1),ry+mm(5),{size:4,weight:400,color:"#52525B"});
+      // deposit right
+      drawText(ctx,"Deposit: $"+String(car.deposit||car.price).toLocaleString(),rightX+rpW-mm(5),ry+mm(4),{size:4.5,weight:500,color:"#A1A1AA",align:"right"});
+      drawText(ctx,"Fully refundable",rightX+rpW-mm(5),ry+mm(9),{size:3,weight:400,color:"#52525B",align:"right"});
     }
 
-    // ─ Alfred watermark bottom right
-    ctx.globalAlpha=0.02;drawMark(ctx,CW-mm(30),CH-mm(25),30,"#F4F4F5");ctx.globalAlpha=1;
-    // ─ Bottom bar: Alfred branding
-    drawLine(ctx,pad,CH-mm(10),CW-pad,CH-mm(10),"#2C2C31",0.5);
-    drawMark(ctx,pad+mm(3),CH-mm(6),4,"#3F3F46");
-    drawText(ctx,"ALFRED CONCIERGE",pad+mm(8),CH-mm(7.5),{size:3.5,weight:500,color:"#3F3F46"});
-    drawText(ctx,"alfredconcierge.app",CW-pad,CH-mm(7.5),{size:3.5,weight:400,color:"#3F3F46",align:"right"});
+    // ─ Footer
+    drawLine(ctx,pad,CH-mm(9),CW-pad,CH-mm(9),"#2C2C31",0.5);
+    drawMark(ctx,pad+mm(3),CH-mm(5.5),3.5,"#3F3F46");
+    drawText(ctx,"ALFRED CONCIERGE",pad+mm(7),CH-mm(7),{size:3,weight:500,color:"#3F3F46"});
+    drawText(ctx,"alfredconcierge.app",CW-pad,CH-mm(7),{size:3,weight:400,color:"#3F3F46",align:"right"});
 
     return p.canvas;
   }
