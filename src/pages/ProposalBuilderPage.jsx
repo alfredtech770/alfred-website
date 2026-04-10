@@ -232,22 +232,22 @@ function ProposalBuilderPage(){
   /* ── Car detail page — A4 portrait, luxury layout ── */
   function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages,days,customPrice,branding){
     var p=createPage();var ctx=p.ctx;
-    var pad=mm(16);var contentW=CW-pad*2;
+    var pad=mm(14);var contentW=CW-pad*2;
     var y=0;
 
     // ═══ 1. HERO IMAGE ═══
-    var heroH=mm(105);
+    var heroH=mm(88);
     if(heroImg){
       ctx.save();ctx.beginPath();ctx.rect(0,0,CW,heroH);ctx.clip();
       var iw=heroImg.width;var ih=heroImg.height;
       var scale=Math.max(CW/iw,heroH/ih);
       ctx.drawImage(heroImg,(CW-iw*scale)/2,(heroH-ih*scale)/2,iw*scale,ih*scale);
-      var topGrad=ctx.createLinearGradient(0,0,0,mm(25));
+      var topGrad=ctx.createLinearGradient(0,0,0,mm(20));
       topGrad.addColorStop(0,"rgba(10,10,11,0.45)");topGrad.addColorStop(1,"rgba(10,10,11,0)");
-      ctx.fillStyle=topGrad;ctx.fillRect(0,0,CW,mm(25));
-      var botGrad=ctx.createLinearGradient(0,heroH-mm(30),0,heroH);
+      ctx.fillStyle=topGrad;ctx.fillRect(0,0,CW,mm(20));
+      var botGrad=ctx.createLinearGradient(0,heroH-mm(25),0,heroH);
       botGrad.addColorStop(0,"rgba(10,10,11,0)");botGrad.addColorStop(1,"#0A0A0B");
-      ctx.fillStyle=botGrad;ctx.fillRect(0,heroH-mm(30),CW,mm(30));
+      ctx.fillStyle=botGrad;ctx.fillRect(0,heroH-mm(25),CW,mm(25));
       ctx.restore();
     }else{
       ctx.fillStyle="#18181B";ctx.fillRect(0,0,CW,heroH);
@@ -269,12 +269,12 @@ function ProposalBuilderPage(){
     // page counter — top right
     drawText(ctx,String(pageNum)+" / "+String(totalPages),CW-pad,mm(9),{size:2.8,weight:500,color:"rgba(255,255,255,0.4)",align:"right"});
 
-    y=heroH+mm(3);
+    y=heroH+mm(2);
 
     // ═══ 2. THREE GALLERY THUMBNAILS ═══
     var availThumbs=galleryImgs.filter(function(g){return g!==null});
     var numThumbs=Math.min(availThumbs.length,3);
-    var thumbH=mm(36);var thumbGap=mm(2);
+    var thumbH=mm(30);var thumbGap=mm(2);
     if(numThumbs>0){
       var thumbW=(contentW-(numThumbs-1)*thumbGap)/numThumbs;
       for(var t=0;t<numThumbs;t++){
@@ -285,9 +285,9 @@ function ProposalBuilderPage(){
         ctx.drawImage(availThumbs[t],tx+(thumbW-tw*ts)/2,y+(thumbH-th*ts)/2,tw*ts,th*ts);
         ctx.restore();
       }
-      y+=thumbH+mm(6);
+      y+=thumbH+mm(4);
     }else{
-      y+=mm(4);
+      y+=mm(3);
     }
 
     // ═══ 3. VERIFIED BADGE ═══
@@ -298,20 +298,20 @@ function ProposalBuilderPage(){
       ctx.save();roundRect(ctx,pad,y,verW,mm(4.5),mm(1.5));
       ctx.fillStyle="rgba(52,199,89,0.05)";ctx.fill();ctx.strokeStyle="rgba(52,199,89,0.12)";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
       drawText(ctx,verBadge,pad+mm(2),y+mm(1),{size:2.5,weight:600,color:"rgba(52,199,89,0.8)"});
-      y+=mm(8);
+      y+=mm(7);
     }
 
     // ═══ 4. CAR NAME ═══
-    var nameSize=12;
+    var nameSize=11;
     ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";
     while(ctx.measureText(String(car.name)).width>contentW&&nameSize>7){nameSize-=0.5;ctx.font="700 "+mm(nameSize)+"px -apple-system,Helvetica,Arial,sans-serif";}
     drawText(ctx,String(car.name),pad,y,{size:nameSize,weight:700,color:"#F4F4F5"});
-    y+=mm(nameSize*0.42+8);
+    y+=mm(nameSize*0.42+5);
 
     // ═══ 5. LOCATION ═══
     var locText=String((car.locs||[]).join(", ")||"Miami");
-    drawText(ctx,locText,pad,y,{size:3.5,weight:400,color:"#71717A"});
-    y+=mm(8);
+    drawText(ctx,locText,pad,y,{size:3.2,weight:400,color:"#71717A"});
+    y+=mm(6);
 
     // ═══ 6. PRICE ═══
     if(showPrice){
@@ -319,36 +319,48 @@ function ProposalBuilderPage(){
       var pRate;
       var pDisc=0;
       if(pDays===0&&customPrice){
-        // Custom price mode
         pRate=customPrice;
       }else{
         var pTier=[{d:1,disc:0},{d:3,disc:5},{d:7,disc:10},{d:14,disc:15},{d:30,disc:20}].filter(function(t){return t.d===pDays})[0]||{d:1,disc:0};
         pRate=Math.round(car.price*(1-pTier.disc/100));
         pDisc=pTier.disc;
       }
-      drawText(ctx,"$"+pRate.toLocaleString(),pad,y,{size:10,weight:700,color:"#F4F4F5"});
-      ctx.font="700 "+mm(10)+"px -apple-system,Helvetica,Arial,sans-serif";
+      // Price amount
+      drawText(ctx,"$"+pRate.toLocaleString(),pad,y,{size:9,weight:700,color:"#F4F4F5"});
+      ctx.font="700 "+mm(9)+"px -apple-system,Helvetica,Arial,sans-serif";
       var pw=ctx.measureText("$"+pRate.toLocaleString()).width;
-      drawText(ctx," /day",pad+pw+mm(0.5),y+mm(2.5),{size:3.5,weight:400,color:"#52525B"});
-      if(pDays>1){
-        drawText(ctx,pDays+" days · $"+(pRate*pDays).toLocaleString()+" total",pad+pw+mm(12),y+mm(2.5),{size:3.5,weight:500,color:"#71717A"});
-      }
+      // /day right after price
+      drawText(ctx," /day",pad+pw+mm(1),y+mm(2),{size:3.2,weight:400,color:"#52525B"});
+      ctx.font="400 "+mm(3.2)+"px -apple-system,Helvetica,Arial,sans-serif";
+      var dayW=ctx.measureText(" /day").width;
+      // discount badge after /day with proper gap
       if(pDisc>0){
-        drawText(ctx,"-"+pDisc+"%",pad+pw+mm(2),y+mm(0.5),{size:3,weight:600,color:C.gn});
+        var discX=pad+pw+mm(1)+dayW+mm(3);
+        // pill background
+        var discTxt="-"+pDisc+"%";
+        ctx.font="600 "+mm(2.8)+"px -apple-system,Helvetica,Arial,sans-serif";
+        var discW=ctx.measureText(discTxt).width+mm(3);
+        ctx.save();roundRect(ctx,discX,y+mm(1.2),discW,mm(4.5),mm(1.5));
+        ctx.fillStyle="rgba(52,199,89,0.1)";ctx.fill();ctx.restore();
+        drawText(ctx,discTxt,discX+mm(1.5),y+mm(1.8),{size:2.8,weight:600,color:C.gn});
       }
-      y+=mm(14);
+      // Multi-day total on second line
+      if(pDays>1){
+        drawText(ctx,pDays+" days · $"+(pRate*pDays).toLocaleString()+" total",pad,y+mm(10),{size:3,weight:500,color:"#71717A"});
+      }
+      y+=mm(pDays>1?15:12);
     }
 
     // ═══ 7. DIVIDER ═══
     var divGrad=ctx.createLinearGradient(pad,0,CW-pad,0);
     divGrad.addColorStop(0,"transparent");divGrad.addColorStop(0.15,"#2C2C31");divGrad.addColorStop(0.85,"#2C2C31");divGrad.addColorStop(1,"transparent");
     ctx.strokeStyle=divGrad;ctx.lineWidth=mm(0.15);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(CW-pad,y);ctx.stroke();
-    y+=mm(6);
+    y+=mm(4);
 
     // ═══ 8. PERFORMANCE — 3 spec cards ═══
-    drawText(ctx,"PERFORMANCE",pad,y,{size:2.5,weight:600,color:"#52525B"});
-    y+=mm(5);
-    var specBoxW=(contentW-mm(3))/3;var specBoxH=mm(24);var specGap=mm(1.5);
+    drawText(ctx,"PERFORMANCE",pad,y,{size:2.3,weight:600,color:"#52525B"});
+    y+=mm(4);
+    var specBoxW=(contentW-mm(3))/3;var specBoxH=mm(20);var specGap=mm(1.5);
     var perfSpecs=[
       {emoji:"⚡",val:String(car.hp||"—"),unit:" hp",label:"Power"},
       {emoji:"⏱",val:String(car.accel||"—"),unit:"s",label:"0-100 km/h"},
@@ -358,11 +370,11 @@ function ProposalBuilderPage(){
       var bx=pad+si*(specBoxW+specGap);
       ctx.save();roundRect(ctx,bx,y,specBoxW,specBoxH,mm(2.5));
       ctx.fillStyle="#141416";ctx.fill();ctx.strokeStyle="#232328";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
-      drawText(ctx,perfSpecs[si].emoji,bx+specBoxW/2,y+mm(3.5),{size:3.5,align:"center"});
-      drawText(ctx,perfSpecs[si].val+perfSpecs[si].unit,bx+specBoxW/2,y+mm(9),{size:5.5,weight:700,color:"#F4F4F5",align:"center"});
-      drawText(ctx,perfSpecs[si].label,bx+specBoxW/2,y+mm(17),{size:2.5,weight:500,color:"#71717A",align:"center"});
+      drawText(ctx,perfSpecs[si].emoji,bx+specBoxW/2,y+mm(2.5),{size:3,align:"center"});
+      drawText(ctx,perfSpecs[si].val+perfSpecs[si].unit,bx+specBoxW/2,y+mm(7.5),{size:5,weight:700,color:"#F4F4F5",align:"center"});
+      drawText(ctx,perfSpecs[si].label,bx+specBoxW/2,y+mm(14.5),{size:2.3,weight:500,color:"#71717A",align:"center"});
     }
-    y+=specBoxH+mm(4);
+    y+=specBoxH+mm(3);
 
     // ═══ 9. DETAILS — 3x2 grid ═══
     var details=[
@@ -373,52 +385,51 @@ function ProposalBuilderPage(){
       {l:"Body",v:String(car.body||"—")},
       {l:"Location",v:String((car.locs||[]).join(", ")||"Miami")}
     ];
-    var dColW=(contentW-mm(3))/3;var dRowH=mm(14);var dGap=mm(1.5);
+    var dColW=(contentW-mm(3))/3;var dRowH=mm(12);var dGap=mm(1.5);
     for(var di=0;di<details.length;di++){
       var col=di%3;var row=Math.floor(di/3);
       var dx=pad+col*(dColW+dGap);var dy=y+row*(dRowH+dGap);
-      ctx.save();roundRect(ctx,dx,dy,dColW,dRowH,mm(2.5));
+      ctx.save();roundRect(ctx,dx,dy,dColW,dRowH,mm(2));
       ctx.fillStyle="#141416";ctx.fill();ctx.strokeStyle="#232328";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
-      drawText(ctx,details[di].l,dx+mm(3.5),dy+mm(3),{size:2.3,weight:500,color:"#71717A"});
-      drawText(ctx,details[di].v,dx+mm(3.5),dy+mm(8),{size:3.8,weight:600,color:"#E4E4E7",maxWidth:dColW-mm(7)});
+      drawText(ctx,details[di].l,dx+mm(3),dy+mm(2.5),{size:2.1,weight:500,color:"#71717A"});
+      drawText(ctx,details[di].v,dx+mm(3),dy+mm(6.8),{size:3.5,weight:600,color:"#E4E4E7",maxWidth:dColW-mm(6)});
     }
-    y+=2*(dRowH+dGap)+mm(5);
+    y+=2*(dRowH+dGap)+mm(3);
 
     // ═══ 10. WHAT'S INCLUDED ═══
     var features=[(car.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","24/7 roadside assistance"];
-    var featRowH=mm(7);
-    ctx.save();roundRect(ctx,pad,y,contentW,features.length*featRowH+mm(2.5),mm(2));
+    var featRowH=mm(6.5);
+    ctx.save();roundRect(ctx,pad,y,contentW,features.length*featRowH+mm(2),mm(2));
     ctx.fillStyle="#141416";ctx.fill();ctx.strokeStyle="#232328";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
     for(var fi=0;fi<features.length;fi++){
-      var fy=y+mm(1.5)+fi*featRowH;
+      var fy=y+mm(1)+fi*featRowH;
       if(fi>0){drawLine(ctx,pad+mm(3),fy,pad+contentW-mm(3),fy,"#232328",mm(0.15));}
-      // green check circle
       ctx.save();
-      ctx.beginPath();ctx.arc(pad+mm(5.5),fy+mm(3.5),mm(2),0,Math.PI*2);
+      ctx.beginPath();ctx.arc(pad+mm(5),fy+mm(3.2),mm(1.8),0,Math.PI*2);
       ctx.fillStyle="rgba(52,199,89,0.08)";ctx.fill();ctx.restore();
       ctx.strokeStyle="#34C759";ctx.lineWidth=mm(0.35);ctx.lineCap="round";ctx.lineJoin="round";
       ctx.beginPath();
-      var ckx=pad+mm(4.3);var cky=fy+mm(3.5);
+      var ckx=pad+mm(3.8);var cky=fy+mm(3.2);
       ctx.moveTo(ckx,cky);ctx.lineTo(ckx+mm(1),cky+mm(1));ctx.lineTo(ckx+mm(2.4),cky-mm(0.7));ctx.stroke();
-      drawText(ctx,features[fi],pad+mm(10),fy+mm(1.8),{size:3.5,weight:400,color:"#D4D4D8"});
+      drawText(ctx,features[fi],pad+mm(9),fy+mm(1.5),{size:3.2,weight:400,color:"#D4D4D8"});
     }
-    y+=features.length*featRowH+mm(6);
+    y+=features.length*featRowH+mm(4);
 
     // ═══ 11. DEPOSIT (if pricing shown) ═══
     if(showPrice){
-      ctx.save();roundRect(ctx,pad,y,contentW,mm(12),mm(2));
+      ctx.save();roundRect(ctx,pad,y,contentW,mm(11),mm(2));
       ctx.fillStyle="rgba(244,244,245,0.015)";ctx.fill();ctx.strokeStyle="#232328";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
-      drawText(ctx,"Security deposit",pad+mm(5),y+mm(2.5),{size:3.8,weight:500,color:"#E4E4E7"});
-      drawText(ctx,"Pre-authorised · fully refundable",pad+mm(5),y+mm(7.5),{size:2.5,weight:400,color:"#52525B"});
-      drawText(ctx,"$"+String(car.deposit||car.price).toLocaleString(),CW-pad-mm(5),y+mm(3.5),{size:7,weight:700,color:"#F4F4F5",align:"right"});
+      drawText(ctx,"Security deposit",pad+mm(4),y+mm(2.2),{size:3.5,weight:500,color:"#E4E4E7"});
+      drawText(ctx,"Pre-authorised · fully refundable",pad+mm(4),y+mm(6.8),{size:2.3,weight:400,color:"#52525B"});
+      drawText(ctx,"$"+String(car.deposit||car.price).toLocaleString(),CW-pad-mm(4),y+mm(3),{size:6,weight:700,color:"#F4F4F5",align:"right"});
     }
 
     // ═══ FOOTER ═══
     if(branding){
-      drawLine(ctx,pad,CH-mm(9),CW-pad,CH-mm(9),"#232328",mm(0.15));
-      drawMark(ctx,pad+mm(3),CH-mm(5.5),3,"#3F3F46");
-      drawText(ctx,"ALFRED CONCIERGE",pad+mm(7),CH-mm(6.8),{size:2.5,weight:500,color:"#3F3F46"});
-      drawText(ctx,"alfredconcierge.app",CW-pad,CH-mm(6.8),{size:2.5,weight:400,color:"#3F3F46",align:"right"});
+      drawLine(ctx,pad,CH-mm(8),CW-pad,CH-mm(8),"#232328",mm(0.15));
+      drawMark(ctx,pad+mm(3),CH-mm(5),3,"#3F3F46");
+      drawText(ctx,"ALFRED CONCIERGE",pad+mm(7),CH-mm(6),{size:2.3,weight:500,color:"#3F3F46"});
+      drawText(ctx,"alfredconcierge.app",CW-pad,CH-mm(6),{size:2.3,weight:400,color:"#3F3F46",align:"right"});
     }
 
     return p.canvas;
