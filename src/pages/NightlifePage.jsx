@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
 import { supabase } from "../lib/supabase";
@@ -132,14 +133,26 @@ function VenueCard(p){
 export default function NightlifePage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
-  var [city,setCity]=useState("All Cities");
-  var [type,setType]=useState("Type");
-  var [vibe,setVibe]=useState("Vibe");
-  var [door,setDoor]=useState("Door");
-  var [music,setMusic]=useState("Music");
-  var [sort,setSort]=useState("Featured");
+  var [searchParams,setSearchParams]=useSearchParams();
+  var [city,setCity]=useState(searchParams.get("city")||"All Cities");
+  var [type,setType]=useState(searchParams.get("type")||"Type");
+  var [vibe,setVibe]=useState(searchParams.get("vibe")||"Vibe");
+  var [door,setDoor]=useState(searchParams.get("door")||"Door");
+  var [music,setMusic]=useState(searchParams.get("music")||"Music");
+  var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
   var [date,setDate]=useState("2026-03-20");
-  var [guests,setGuests]=useState("4");
+  var [guests,setGuests]=useState(searchParams.get("guests")||"4");
+  useEffect(function(){
+    var p={};
+    if(city!=="All Cities")p.city=city;
+    if(type!=="Type")p.type=type;
+    if(vibe!=="Vibe")p.vibe=vibe;
+    if(door!=="Door")p.door=door;
+    if(music!=="Music")p.music=music;
+    if(sort!=="Featured")p.sort=sort;
+    if(guests!=="4")p.guests=guests;
+    setSearchParams(p,{replace:true});
+  },[city,type,vibe,door,music,sort,guests]);
 
   var [venues,setVenues]=useState([]);
   var [fetching,setFetching]=useState(true);

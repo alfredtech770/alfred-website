@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
@@ -156,14 +157,24 @@ export default function YachtsPage(){
   var [fetching,setFetching]=useState(true);
   var [error,setError]=useState(null);
 
-  /* Filters */
-  var [brand,setBrand]=useState("Brand");
-  var [sizeRange,setSizeRange]=useState("Size");
-  var [priceRange,setPriceRange]=useState("Price");
-  var [location,setLocation]=useState("Location");
-  var [sort,setSort]=useState("Featured");
-  var [charter,setCharter]=useState("2026-03-20");
-  var [returnD,setReturnD]=useState("2026-03-23");
+  /* Filters — init from URL params */
+  var [searchParams,setSearchParams]=useSearchParams();
+  var [brand,setBrand]=useState(searchParams.get("brand")||"Brand");
+  var [sizeRange,setSizeRange]=useState(searchParams.get("size")||"Size");
+  var [priceRange,setPriceRange]=useState(searchParams.get("price")||"Price");
+  var [location,setLocation]=useState(searchParams.get("location")||"Location");
+  var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
+  var [charter,setCharter]=useState(searchParams.get("from")||"2026-03-20");
+  var [returnD,setReturnD]=useState(searchParams.get("to")||"2026-03-23");
+  useEffect(function(){
+    var p={};
+    if(location!=="Location")p.location=location;
+    if(brand!=="Brand")p.brand=brand;
+    if(sizeRange!=="Size")p.size=sizeRange;
+    if(priceRange!=="Price")p.price=priceRange;
+    if(sort!=="Featured")p.sort=sort;
+    setSearchParams(p,{replace:true});
+  },[location,brand,sizeRange,priceRange,sort]);
   var d1=new Date(charter);var d2=new Date(returnD);
   var days=Math.max(1,Math.round((d2-d1)/86400000));
 

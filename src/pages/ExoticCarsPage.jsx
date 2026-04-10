@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
 
@@ -241,16 +242,29 @@ function CarCard(p){
 export default function ExoticCarsPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
-  var [city,setCity]=useState("All Cities");
-  var [bodyType,setBodyType]=useState("Type");
-  var [seats,setSeats]=useState("Seats");
-  var [hpRange,setHpRange]=useState("Power");
-  var [priceRange,setPriceRange]=useState("Price");
-  var [driveType,setDriveType]=useState("Drive");
-  var [brand,setBrand]=useState("Brand");
-  var [sort,setSort]=useState("Featured");
+  var [searchParams,setSearchParams]=useSearchParams();
+  var [city,setCity]=useState(searchParams.get("city")||"All Cities");
+  var [bodyType,setBodyType]=useState(searchParams.get("type")||"Type");
+  var [seats,setSeats]=useState(searchParams.get("seats")||"Seats");
+  var [hpRange,setHpRange]=useState(searchParams.get("power")||"Power");
+  var [priceRange,setPriceRange]=useState(searchParams.get("price")||"Price");
+  var [driveType,setDriveType]=useState(searchParams.get("drive")||"Drive");
+  var [brand,setBrand]=useState(searchParams.get("brand")||"Brand");
+  var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
   var [pickup,setPickup]=useState("2026-03-20");
   var [returnD,setReturnD]=useState("2026-03-23");
+  useEffect(function(){
+    var p={};
+    if(city!=="All Cities")p.city=city;
+    if(bodyType!=="Type")p.type=bodyType;
+    if(seats!=="Seats")p.seats=seats;
+    if(hpRange!=="Power")p.power=hpRange;
+    if(priceRange!=="Price")p.price=priceRange;
+    if(driveType!=="Drive")p.drive=driveType;
+    if(brand!=="Brand")p.brand=brand;
+    if(sort!=="Featured")p.sort=sort;
+    setSearchParams(p,{replace:true});
+  },[city,bodyType,seats,hpRange,priceRange,driveType,brand,sort]);
 
   var gridRef=useRef(null); var gridVis=useVis(gridRef);
   var ctaRef=useRef(null); var ctaVis=useVis(ctaRef);

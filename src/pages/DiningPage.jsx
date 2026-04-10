@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
@@ -115,17 +116,28 @@ export default function DiningPage(){
   var [scrollY,setScrollY]=useState(0);
   var [restaurants,setRestaurants]=useState([]);
   var [fetching,setFetching]=useState(true);
-  var [city,setCity]=useState("All Cities");
-  var [cuisine,setCuisine]=useState("Cuisine");
-  var [price,setPrice]=useState("Price");
-  var [vibe,setVibe]=useState("Vibe");
-  var [sort,setSort]=useState("Featured");
-  var [guests,setGuests]=useState("2");
+  var [searchParams,setSearchParams]=useSearchParams();
+  var [city,setCity]=useState(searchParams.get("city")||"All Cities");
+  var [cuisine,setCuisine]=useState(searchParams.get("cuisine")||"Cuisine");
+  var [price,setPrice]=useState(searchParams.get("price")||"Price");
+  var [vibe,setVibe]=useState(searchParams.get("vibe")||"Vibe");
+  var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
+  var [guests,setGuests]=useState(searchParams.get("guests")||"2");
   var [date,setDate]=useState("2026-03-20");
 
   var gridRef=useRef(null);var gridVis=useVis(gridRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
+  useEffect(function(){
+    var p={};
+    if(city!=="All Cities")p.city=city;
+    if(cuisine!=="Cuisine")p.cuisine=cuisine;
+    if(price!=="Price")p.price=price;
+    if(vibe!=="Vibe")p.vibe=vibe;
+    if(sort!=="Featured")p.sort=sort;
+    if(guests!=="2")p.guests=guests;
+    setSearchParams(p,{replace:true});
+  },[city,cuisine,price,vibe,sort,guests]);
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
   useEffect(function(){

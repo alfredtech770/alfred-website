@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
 
@@ -120,13 +121,24 @@ function WellCard(p){
 export default function WellnessPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
-  var [city,setCity]=useState("All Cities");
-  var [type,setType]=useState("Type");
-  var [treatment,setTreatment]=useState("Treatment");
-  var [price,setPrice]=useState("Price");
-  var [sort,setSort]=useState("Featured");
+  var [searchParams,setSearchParams]=useSearchParams();
+  var [city,setCity]=useState(searchParams.get("city")||"All Cities");
+  var [type,setType]=useState(searchParams.get("type")||"Type");
+  var [treatment,setTreatment]=useState(searchParams.get("treatment")||"Treatment");
+  var [price,setPrice]=useState(searchParams.get("price")||"Price");
+  var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
   var [date,setDate]=useState("2026-03-20");
-  var [time,setTime]=useState("Morning");
+  var [time,setTime]=useState(searchParams.get("time")||"Morning");
+  useEffect(function(){
+    var p={};
+    if(city!=="All Cities")p.city=city;
+    if(type!=="Type")p.type=type;
+    if(treatment!=="Treatment")p.treatment=treatment;
+    if(price!=="Price")p.price=price;
+    if(sort!=="Featured")p.sort=sort;
+    if(time!=="Morning")p.time=time;
+    setSearchParams(p,{replace:true});
+  },[city,type,treatment,price,sort,time]);
 
   var gridRef=useRef(null);var gridVis=useVis(gridRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);

@@ -1,5 +1,6 @@
 /* Jets catalog — grouped by category */
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
 
@@ -360,14 +361,26 @@ function JetCard(p){
 export default function JetsPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
-  var [type,setType]=useState("Class");
-  var [pax,setPax]=useState("Passengers");
-  var [rangeF,setRangeF]=useState("Range");
-  var [sort,setSort]=useState("Featured");
-  var [from,setFrom]=useState("Miami (MIA)");
-  var [to,setTo]=useState("Paris (CDG)");
+  var [searchParams,setSearchParams]=useSearchParams();
+  var [type,setType]=useState(searchParams.get("class")||"Class");
+  var [pax,setPax]=useState(searchParams.get("pax")||"Passengers");
+  var [rangeF,setRangeF]=useState(searchParams.get("range")||"Range");
+  var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
+  var [from,setFrom]=useState(searchParams.get("from")||"Miami (MIA)");
+  var [to,setTo]=useState(searchParams.get("to")||"Paris (CDG)");
   var [date,setDate]=useState("2026-03-25");
-  var [tripType,setTripType]=useState("One Way");
+  var [tripType,setTripType]=useState(searchParams.get("trip")||"One Way");
+  useEffect(function(){
+    var p={};
+    if(type!=="Class")p.class=type;
+    if(pax!=="Passengers")p.pax=pax;
+    if(rangeF!=="Range")p.range=rangeF;
+    if(sort!=="Featured")p.sort=sort;
+    if(from!=="Miami (MIA)")p.from=from;
+    if(to!=="Paris (CDG)")p.to=to;
+    if(tripType!=="One Way")p.trip=tripType;
+    setSearchParams(p,{replace:true});
+  },[type,pax,rangeF,sort,from,to,tripType]);
 
   var gridRef=useRef(null);var gridVis=useVis(gridRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
