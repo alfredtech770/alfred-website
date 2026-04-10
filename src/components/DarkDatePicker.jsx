@@ -85,8 +85,8 @@ export default function DarkDatePicker(props){
       {/* Dropdown calendar */}
       {open&&<div style={{
         position:"absolute",top:"calc(100% + 6px)",left:align==="right"?"auto":align==="center"?"50%":0,right:align==="right"?0:"auto",transform:align==="center"?"translateX(-50%)":"none",minWidth:280,width:280,
-        zIndex:50,borderRadius:16,background:C.el,border:"1px solid "+C.bd,
-        boxShadow:"0 16px 48px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.03)",
+        zIndex:9999,borderRadius:16,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",
+        boxShadow:"0 16px 48px rgba(0,0,0,0.85),0 0 0 1px rgba(255,255,255,0.08)",
         padding:"16px 14px 12px",overflow:"hidden"
       }}>
         {/* Month/Year header */}
