@@ -527,19 +527,14 @@ function ProposalBuilderPage(){
     <SEOHead title="Proposal Builder - Alfred Concierge" description="Build custom proposals for luxury car selections"/>
 
     {/* Nav Bar */}
-    <div style={{position:"fixed",top:0,left:0,right:0,height:64,backgroundColor:C.bg,backdropFilter:"blur(10px)",borderBottom:`1px solid ${C.bd}`,zIndex:100,display:"flex",alignItems:"center",justifyContent:"space-between",paddingLeft:24,paddingRight:24}}>
-      <div style={{display:"flex",alignItems:"center",gap:12}}>
-        <Mark size={32} color={C.s1}/>
-        <span style={{...sf(18,600),color:C.s1}}>Alfred</span>
-      </div>
-      <div style={{display:"flex",alignItems:"center",gap:24}}>
-        <a href="/catalog" style={{...sf(14),color:C.s4,textDecoration:"none",cursor:"pointer"}}>Catalog</a>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <div style={{width:20,height:20,borderRadius:4,backgroundColor:C.gn,display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <svg width={12} height={12} viewBox="0 0 12 12" fill="none"><path d="M1 7L4 10L11 1" stroke={C.bg} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </div>
-          <span style={{...sf(14),color:C.s1}}>Proposal</span>
-        </div>
+    <div style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(10,10,11,0.95)",backdropFilter:"blur(30px) saturate(1.3)",borderBottom:"1px solid rgba(44,44,49,0.8)",transition:"all 0.3s"}}>
+      <a href="/" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}>
+        <Mark size={22} color={C.s1}/>
+      </a>
+      <div style={{display:"flex",alignItems:"center",gap:28}}>
+        <a href="/" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,textDecoration:"none",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Home</a>
+        <a href="/catalog" style={{...sf(11,400),color:C.s5,letterSpacing:0.3,textDecoration:"none",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
+        <div style={{...sf(11,400),color:C.s1,letterSpacing:0.3}}>Proposal</div>
       </div>
     </div>
 
