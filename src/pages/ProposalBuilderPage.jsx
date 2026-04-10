@@ -68,6 +68,7 @@ function ProposalBuilderPage(){
   var [selected,setSelected]=useState(new Set());
   var [pricingDays,setPricingDays]=useState(1);
   var [customPrices,setCustomPrices]=useState({});// {carIdx: customDailyRate}
+  var [showBranding,setShowBranding]=useState(true);
   var [generating,setGenerating]=useState(false);
   var [error,setError]=useState("");
   var containerRef=useRef(null);
@@ -229,7 +230,7 @@ function ProposalBuilderPage(){
   }
 
   /* ── Car detail page — A4 portrait, luxury layout ── */
-  function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages,days,customPrice){
+  function renderCarPage(car,heroImg,galleryImgs,showPrice,pageNum,totalPages,days,customPrice,branding){
     var p=createPage();var ctx=p.ctx;
     var pad=mm(16);var contentW=CW-pad*2;
     var y=0;
@@ -290,13 +291,15 @@ function ProposalBuilderPage(){
     }
 
     // ═══ 3. VERIFIED BADGE ═══
-    var verBadge="✦  ALFRED VERIFIED";
-    ctx.font="600 "+mm(2.5)+"px -apple-system,Helvetica,Arial,sans-serif";
-    var verW=ctx.measureText(verBadge).width+mm(4);
-    ctx.save();roundRect(ctx,pad,y,verW,mm(4.5),mm(1.5));
-    ctx.fillStyle="rgba(52,199,89,0.05)";ctx.fill();ctx.strokeStyle="rgba(52,199,89,0.12)";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
-    drawText(ctx,verBadge,pad+mm(2),y+mm(1),{size:2.5,weight:600,color:"rgba(52,199,89,0.8)"});
-    y+=mm(8);
+    if(branding){
+      var verBadge="✦  ALFRED VERIFIED";
+      ctx.font="600 "+mm(2.5)+"px -apple-system,Helvetica,Arial,sans-serif";
+      var verW=ctx.measureText(verBadge).width+mm(4);
+      ctx.save();roundRect(ctx,pad,y,verW,mm(4.5),mm(1.5));
+      ctx.fillStyle="rgba(52,199,89,0.05)";ctx.fill();ctx.strokeStyle="rgba(52,199,89,0.12)";ctx.lineWidth=mm(0.15);ctx.stroke();ctx.restore();
+      drawText(ctx,verBadge,pad+mm(2),y+mm(1),{size:2.5,weight:600,color:"rgba(52,199,89,0.8)"});
+      y+=mm(8);
+    }
 
     // ═══ 4. CAR NAME ═══
     var nameSize=12;
@@ -411,10 +414,12 @@ function ProposalBuilderPage(){
     }
 
     // ═══ FOOTER ═══
-    drawLine(ctx,pad,CH-mm(9),CW-pad,CH-mm(9),"#232328",mm(0.15));
-    drawMark(ctx,pad+mm(3),CH-mm(5.5),3,"#3F3F46");
-    drawText(ctx,"ALFRED CONCIERGE",pad+mm(7),CH-mm(6.8),{size:2.5,weight:500,color:"#3F3F46"});
-    drawText(ctx,"alfredconcierge.app",CW-pad,CH-mm(6.8),{size:2.5,weight:400,color:"#3F3F46",align:"right"});
+    if(branding){
+      drawLine(ctx,pad,CH-mm(9),CW-pad,CH-mm(9),"#232328",mm(0.15));
+      drawMark(ctx,pad+mm(3),CH-mm(5.5),3,"#3F3F46");
+      drawText(ctx,"ALFRED CONCIERGE",pad+mm(7),CH-mm(6.8),{size:2.5,weight:500,color:"#3F3F46"});
+      drawText(ctx,"alfredconcierge.app",CW-pad,CH-mm(6.8),{size:2.5,weight:400,color:"#3F3F46",align:"right"});
+    }
 
     return p.canvas;
   }
@@ -491,7 +496,7 @@ function ProposalBuilderPage(){
         var thumbs=[allImages[imgIdx+1],allImages[imgIdx+2],allImages[imgIdx+3],allImages[imgIdx+4]];
         if(i>0){doc.addPage()}
         var cp=pricingDays===0?customPrices[selectedIndices[i]]||c.price:null;
-        var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages,pricingDays,cp);
+        var carCanvas=renderCarPage(c,hero,thumbs,showPricing,i+1,totalPages,pricingDays,cp,showBranding);
         doc.addImage(carCanvas.toDataURL("image/png"),"PNG",0,0,PW,PH);
       }
 
@@ -551,6 +556,11 @@ function ProposalBuilderPage(){
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px",backgroundColor:C.srf,borderRadius:8}}>
             <span style={{...sf(14,500),color:C.s1}}>Show Pricing</span>
             <Toggle on={showPricing} onChange={function(){setShowPricing(!showPricing)}}/>
+          </div>
+
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"16px",backgroundColor:C.srf,borderRadius:8,marginTop:8}}>
+            <span style={{...sf(14,500),color:C.s1}}>Show Branding</span>
+            <Toggle on={showBranding} onChange={function(){setShowBranding(!showBranding)}}/>
           </div>
 
           {/* Pricing Duration Selector */}
