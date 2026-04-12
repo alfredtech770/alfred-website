@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import DarkDatePicker from "../components/DarkDatePicker";
+import SEOHead from "../components/SEOHead";
+import { supabase } from "../lib/supabase";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -39,12 +42,14 @@ var courseCol=function(c){return c==="Starter"?"#60A5FA":c==="Dessert"?"#F472B6"
 export default function DiningDetailPage(){
   var {slug}=useParams();
   var [idx,setIdx]=useState(0);
-  var [liked,setLiked]=useState(false);
+  var [lightbox,setLightbox]=useState(false);
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [guests,setGuests]=useState("2");
   var [date,setDate]=useState("2026-03-20");
   var [time,setTime]=useState("20:00");
+  var [dbRestaurant,setDbRestaurant]=useState(null);
+  var [dbLoading,setDbLoading]=useState(false);
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var factsRef=useRef(null);var factsVis=useVis(factsRef);
@@ -56,37 +61,79 @@ export default function DiningDetailPage(){
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
+
+  /* Fetch from Supabase if sessionStorage is empty — needed for Google indexing */
+  useEffect(function(){
+    var hasSess=false;
+    try{hasSess=!!JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
+    if(hasSess)return;
+    setDbLoading(true);
+    supabase.from("restaurants").select("*").eq("slug",slug).single().then(function(res){
+      if(res.data){
+        var r=res.data;
+        var pl=r.price_level||0;
+        setDbRestaurant({
+          name:r.name||"",cuisine:r.cuisine||"",
+          price:pl===1?"$":pl===2?"$$":pl===3?"$$$":pl===4?"$$$$":"$$$$",
+          loc:r.city||r.location||r.loc||"",
+          vibe:r.vibe||"",rating:r.rating||0,reviews:r.review_count||r.reviews||0,
+          michelin:r.michelin_stars||r.michelin||0,
+          img:r.hero_image_url||r.image_url||r.img||"",tagline:r.tagline||"",
+          slug:r.slug||(r.id?String(r.id):""),
+          imgs:r.photos_order||r.gallery_photos||[r.hero_image_url||r.image_url||r.img].filter(Boolean),
+          available:r.available!==false,avg:r.avg_spend||r.avg||"",
+          chefName:r.chef_name||"",chefTitle:r.chef_title||"",chefNote:r.chef_note||"",
+          wineNote:r.wine_note||"",alfredNote:r.alfred_note||"",alfredTip:r.alfred_tip||"",
+          address:r.address||r.city||"",dressCode:r.dress_code||"",
+          hoursLunch:r.hours_lunch||"",hoursDinner:r.hours_dinner||"",hoursClosed:r.hours_closed||"",
+          atmNoise:r.atm_noise||0,atmIntimacy:r.atm_intimacy||0,atmFormality:r.atm_formality||0,atmScene:r.atm_scene||0,
+          bestFor:r.best_for||[],
+        });
+      }
+      setDbLoading(false);
+    });
+  },[slug]);
+
   var _sess=null;try{_sess=JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
-  var V=_sess?{
-    name:_sess.name,
-    tagline:_sess.tagline||("Fine dining · "+_sess.cuisine),
-    cuisine:_sess.cuisine,
-    address:_sess.loc,
-    rating:_sess.rating,
-    reviewCount:_sess.reviews,
-    priceLevel:_sess.price,
-    avgSpend:_sess.avg,
-    imgs:[_sess.img],
-    hours:{lunch:_sess.meal==="Dinner"?"Not served":"12:00 – 2:30 PM",dinner:"7:00 – 10:30 PM",closed:"Check availability"},
-    dressCode:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual",
-    michelin:_sess.michelin||0,
-    alfredNote:"Contact Alfred to arrange your table at "+_sess.name+". We handle the reservation, seating preference, and any special occasions.",
-    alfredTip:"Mention Alfred at arrival for preferred treatment and the best available table.",
-    chef:{name:"Executive Chef",title:"Head of Kitchen",note:_sess.loc+" · "+_sess.cuisine},
+  var _src=_sess||dbRestaurant;
+
+  /* Show loading state while Supabase fetches (only when sessionStorage empty) */
+  if(dbLoading&&!_src){
+    return(<div style={{width:"100%",minHeight:"100vh",background:"#0A0A0B",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <span style={{color:"#71717A",fontFamily:"system-ui",fontSize:14}}>Loading…</span>
+    </div>);
+  }
+
+  var V=_src?{
+    name:_src.name,
+    tagline:_src.tagline||("Fine dining · "+_src.cuisine),
+    cuisine:_src.cuisine,
+    address:_src.address||_src.loc,
+    rating:_src.rating,
+    reviewCount:_src.reviews,
+    priceLevel:_src.price,
+    avgSpend:_src.avg,
+    imgs:_src.imgs||[_src.img].filter(Boolean),
+    hours:{lunch:_src.hoursLunch||"Check availability",dinner:_src.hoursDinner||"Check availability",closed:_src.hoursClosed||"Check availability"},
+    dressCode:_src.dressCode==="formal"?"Smart Elegant":_src.dressCode==="smart casual"?"Smart Casual":_src.dressCode||"Smart Casual",
+    michelin:_src.michelin||0,
+    alfredNote:_src.alfredNote||("Contact Alfred to arrange your table at "+_src.name+". We handle the reservation, seating preference, and any special occasions."),
+    alfredTip:_src.alfredTip||"Mention Alfred at arrival for preferred treatment and the best available table.",
+    chef:_src.chefName?{name:_src.chefName,title:_src.chefTitle||"Executive Chef",note:_src.chefNote||""}:null,
     dishes:[],
-    wineNote:"Our sommelier will guide you through a thoughtful selection paired to your meal.",
+    wineNote:_src.wineNote||"",
     atmosphere:[
-      {label:"Noise",value:_sess.vibe==="Scene"?72:_sess.vibe==="Casual"?55:30},
-      {label:"Intimacy",value:_sess.vibe==="Romantic"?92:_sess.vibe==="Formal"?75:55},
-      {label:"Formality",value:_sess.vibe==="Formal"?85:_sess.vibe==="Casual"?20:50},
-      {label:"Scene",value:_sess.vibe==="Scene"?88:40},
+      {label:"Noise",value:_src.atmNoise||(_src.vibe==="Scene"?72:_src.vibe==="Casual"?55:30)},
+      {label:"Intimacy",value:_src.atmIntimacy||(_src.vibe==="Romantic"?92:_src.vibe==="Formal"?75:55)},
+      {label:"Formality",value:_src.atmFormality||(_src.vibe==="Formal"?85:_src.vibe==="Casual"?20:50)},
+      {label:"Scene",value:_src.atmScene||(_src.vibe==="Scene"?88:40)},
     ],
-    bestFor:_sess.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_sess.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
+    bestFor:(_src.bestFor&&_src.bestFor.length>0)?_src.bestFor:_src.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_src.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
     reviews:[],
     facts:[
-      {icon:"€",label:"Avg. spend",value:_sess.avg+" / person"},
-      {icon:"🕐",label:"Best time",value:_sess.meal==="Both"?"Lunch or dinner":_sess.meal+" service"},
-      {icon:"👔",label:"Dress code",value:_sess.vibe==="Formal"?"Smart Elegant":"Smart Casual"},
+      {icon:"💰",label:"Avg. spend",value:(_src.avg||"N/A")+" / person"},
+      {icon:"🕐",label:"Best time",value:_src.hoursDinner?"Dinner service":"Check availability"},
+      {icon:"👔",label:"Dress code",value:_src.dressCode==="formal"?"Smart Elegant":"Smart Casual"},
       {icon:"👥",label:"Party size",value:"2 – 8 guests"},
     ],
   }:LE_CINQ;
@@ -98,20 +145,48 @@ export default function DiningDetailPage(){
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
+      <SEOHead
+        title={V.name+" "+((V.address||"").toLowerCase().includes("paris")?"Paris":"Miami")+" — Book a Table | Alfred Concierge"}
+        description={"Book a table at "+V.name+" in "+((V.address||"").toLowerCase().includes("paris")?"Paris":"Miami")+". "+V.cuisine+" restaurant. "+(V.michelin>0?V.michelin+" Michelin star"+(V.michelin>1?"s":"")+". ":"")+"Reserve through Alfred Concierge — instant confirmation, best table."}
+        image={V.imgs&&V.imgs[0]?V.imgs[0]:undefined}
+        path={"/catalog/dining/"+slug}
+        jsonLd={[
+          {
+            "@context":"https://schema.org",
+            "@type":"Restaurant",
+            "name":V.name,
+            "description":V.tagline||("Fine dining at "+V.name),
+            "image":V.imgs[0],
+            "cuisine":V.cuisine,
+            "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":"Paris","addressCountry":"FR"},
+            "servesCuisine":V.cuisine
+          },
+          {
+            "@context":"https://schema.org",
+            "@type":"BreadcrumbList",
+            "itemListElement":[
+              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+              {"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},
+              {"@type":"ListItem","position":3,"name":"Dining","item":"https://alfredconcierge.app/catalog/dining"},
+              {"@type":"ListItem","position":4,"name":V.name,"item":"https://alfredconcierge.app/catalog/dining/"+slug}
+            ]
+          }
+        ]}
+      />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
 .page-wrap{max-width:1060px;margin:0 auto;padding:0 40px}
 .two-col{display:flex;gap:40px;align-items:flex-start}
 .left-col{flex:1;min-width:0}
-.right-col{width:320px;flex-shrink:0;position:sticky;top:80px}
+.right-col{width:300px;flex-shrink:0;position:sticky;top:80px;overflow:hidden}
 .dish-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .dish-row::-webkit-scrollbar{display:none}
 .rev-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .rev-row::-webkit-scrollbar{display:none}
 @media(max-width:900px){
   .two-col{flex-direction:column!important}
-  .right-col{width:100%!important;position:relative!important;top:auto!important}
+  .right-col{width:100%!important;position:relative!important;top:auto!important;overflow:hidden!important}
 }
 @media(max-width:768px){
   .page-wrap{padding:0 24px!important}
@@ -132,16 +207,39 @@ export default function DiningDetailPage(){
         </div>
       </nav>
 
+      {/* Fullscreen Lightbox */}
+      {lightbox&&<div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.95)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={function(){setLightbox(false)}}>
+        <img src={V.imgs[idx]} alt="" style={{maxWidth:"92vw",maxHeight:"88vh",objectFit:"contain",borderRadius:8}}/>
+        <div onClick={function(e){e.stopPropagation();setLightbox(false)}} style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:201}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </div>
+        <div onClick={function(e){e.stopPropagation();setIdx(function(c){return c===0?V.imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <div onClick={function(e){e.stopPropagation();setIdx(function(c){return(c+1)%V.imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div style={{position:"absolute",bottom:24,left:"50%",transform:"translateX(-50%)",...sf(13,500),color:"rgba(255,255,255,0.7)"}}>{idx+1} / {V.imgs.length}</div>
+        <div style={{position:"absolute",bottom:56,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5}}>
+          {V.imgs.map(function(_,i){return <div key={i} onClick={function(e){e.stopPropagation();setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.25")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
+        </div>
+      </div>}
+
       {/* Hero */}
       <section className="dd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease"}}/>})}
+          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>})}
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
-        <div style={{position:"absolute",top:56,right:40,display:"flex",gap:8,zIndex:10}}>
-          <div onClick={function(){setLiked(!liked)}} style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.4)"}}><svg width="13" height="13" viewBox="0 0 24 24" fill={liked?C.red:"none"} stroke={liked?C.red:"rgba(255,255,255,0.5)"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
-          <div style={{width:36,height:36,borderRadius:12,background:"rgba(0,0,0,0.4)",border:"0.5px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg></div>
+        {/* Left/Right arrows */}
+        <div onClick={function(){setIdx(function(c){return c===0?V.imgs.length-1:c-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
         </div>
+        <div onClick={function(){setIdx(function(c){return(c+1)%V.imgs.length})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:44,height:44,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",zIndex:10,backdropFilter:"blur(8px)",transition:"background 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(255,255,255,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(0,0,0,0.5)"}}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        {/* Image counter */}
+        <div style={{position:"absolute",top:64,right:16,zIndex:10,...sf(11,500),color:"rgba(255,255,255,0.6)",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)"}}>{idx+1} / {V.imgs.length}</div>
         <div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
           {V.imgs.map(function(_,i){return <div key={i} onClick={function(){setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
         </div>
@@ -195,16 +293,15 @@ export default function DiningDetailPage(){
 
           {/* RIGHT — Sticky Booking */}
           <div className="right-col">
-            <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden"}}>
-              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
+            <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"visible"}}>
+              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)",borderRadius:"20px 20px 0 0"}}/>
               <div style={{padding:"24px 22px"}}>
-                <div style={{...sf(18,700),color:C.s1,marginBottom:4}}>Arrange a Table</div>
-                <div style={{...sf(12),color:C.s5,marginBottom:20}}>Avg. {V.avgSpend} / person · {V.priceLevel}</div>
+                <div style={{...sf(18,700),color:C.s1,marginBottom:20}}>Arrange a Table</div>
 
                 {/* Date */}
                 <div style={{marginBottom:14}}>
                   <div style={{...sf(9,600),letterSpacing:1.5,color:C.s7,textTransform:"uppercase",marginBottom:6}}>Date</div>
-                  <input type="date" value={date} onChange={function(e){setDate(e.target.value)}} style={{padding:"12px 16px",borderRadius:12,background:C.srf,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"}}/>
+                  <DarkDatePicker value={date} onChange={function(v){setDate(v)}} label="Date" align="center"/>
                 </div>
 
                 {/* Time */}
@@ -224,7 +321,7 @@ export default function DiningDetailPage(){
                 </div>
 
                 {/* Book */}
-                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+                <div onClick={function(){window.open("https://wa.me/447449562204?text="+encodeURIComponent("Hi Alfred, I'd like to arrange a table at "+V.name+". Could you help with availability?"),"_blank")}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
                   Arrange a Table
                 </div>
 
@@ -244,7 +341,7 @@ export default function DiningDetailPage(){
             </div>
 
             {/* WhatsApp */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+            <div onClick={function(){window.open("https://wa.me/447449562204?text="+encodeURIComponent("Hi Alfred, I'd like to arrange a table at "+V.name+". Could you help with availability?"),"_blank")}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
               Ask about this restaurant
             </div>
@@ -263,8 +360,8 @@ export default function DiningDetailPage(){
         </div>
       </div>
 
-      {/* Signature Dishes */}
-      <div ref={dishRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+      {/* Signature Dishes — only show if dishes exist */}
+      {V.dishes&&V.dishes.length>0&&<div ref={dishRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:dishVis?1:0,transition:"all 0.8s ease"}}>Signature Dishes</p>
@@ -288,7 +385,7 @@ export default function DiningDetailPage(){
             </div>
           )})}
         </div>
-      </div>
+      </div>}
 
       {/* Atmosphere + Wine + Chef */}
       <div ref={atmoRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
@@ -305,18 +402,19 @@ export default function DiningDetailPage(){
             </div>
           )})}
         </div>
-        <div style={{display:"flex",gap:14,marginTop:14}}>
-          <div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.4s"}}>
+        {/* Wine Cellar + Chef — only show cards that have data */}
+        {(V.wineNote||V.chef)&&<div style={{display:"flex",gap:14,marginTop:14}}>
+          {V.wineNote&&<div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.4s"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:14}}>🍷</span><span style={{...sf(10,500),letterSpacing:1.5,color:"#A78BFA80",textTransform:"uppercase"}}>Wine Cellar</span></div>
             <p style={{...sf(13),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{V.wineNote}"</p>
-          </div>
-          <div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
+          </div>}
+          {V.chef&&<div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:14}}>🔥</span><span style={{...sf(10,500),letterSpacing:1.5,color:C.s6,textTransform:"uppercase"}}>The Kitchen</span></div>
             <div style={{...sf(16,600),color:C.s1,marginBottom:4}}>{V.chef.name}</div>
             <div style={{...sf(13),color:C.s5,marginBottom:2}}>{V.chef.title}</div>
             <div style={{...sf(12),color:C.s6}}>{V.chef.note}</div>
-          </div>
-        </div>
+          </div>}
+        </div>}
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>
           {V.bestFor.map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
         </div>
