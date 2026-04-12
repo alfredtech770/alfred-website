@@ -74,7 +74,7 @@ export default function DiningDetailPage(){
         var pl=r.price_level||0;
         setDbRestaurant({
           name:r.name||"",cuisine:r.cuisine||"",
-          price:pl===1?"$":pl===2?"$$":pl===3?"$$$":pl===4?"$$$$":"$$$$",
+          price:pl===1?"€":pl===2?"€€":pl===3?"€€€":pl===4?"€€€€":"€€€€",
           loc:r.city||r.location||r.loc||"",
           vibe:r.vibe||"",rating:r.rating||0,reviews:r.review_count||r.reviews||0,
           michelin:r.michelin_stars||r.michelin||0,

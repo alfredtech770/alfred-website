@@ -34,7 +34,7 @@ function FilterDrop(p){
   var dropStyle=isMobile&&pos?{position:"fixed",top:pos.top,left:pos.left,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:99999,minWidth:200,maxWidth:"calc(100vw - 16px)",maxHeight:"min(320px, calc(100vh - "+(pos.top+16)+"px))",boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"}:{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:9999,minWidth:180,maxWidth:"min(280px, calc(100vw - 32px))",maxHeight:320,boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"};
   return(
     <div ref={ref} style={{position:"relative",WebkitTapHighlightColor:"transparent"}} data-filter-drop="true">
-      <div ref={btnRef} onClick={function(e){e.stopPropagation();setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!open)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+      <div ref={btnRef} onClick={function(e){e.stopPropagation();setOpen(function(o){return !o})}} onTouchStart={function(e){e.stopPropagation()}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation",userSelect:"none"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!open)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
         {p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
@@ -42,7 +42,7 @@ function FilterDrop(p){
       {open&&<div style={dropStyle}>
         {p.options.map(function(opt){
           var active=p.value===opt;
-          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+          return <div key={opt} onClick={function(e){e.stopPropagation();p.onChange(opt);setOpen(false)}} onTouchEnd={function(e){e.preventDefault();e.stopPropagation();p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",userSelect:"none"}} onPointerEnter={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
             {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
             {opt}
           </div>
@@ -137,7 +137,7 @@ export default function DiningPage(){
           var pl=r.price_level||0;
           return{
           name:r.name||"",cuisine:r.cuisine||"",
-          price:pl===1?"$":pl===2?"$$":pl===3?"$$$":pl===4?"$$$$":"$$$$",
+          price:pl===1?"€":pl===2?"€€":pl===3?"€€€":pl===4?"€€€€":"€€€€",
           priceLevel:pl,
           loc:r.city||r.location||r.loc||"",
           vibe:capitalize(r.vibe)||"",
@@ -167,33 +167,32 @@ export default function DiningPage(){
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
   /* Dynamic filter options from data — group cuisines into broad categories */
-  var cities=["All Cities","Miami","Paris"];
+  var cities=["All Cities"].concat([...new Set(restaurants.map(function(r){return r.loc}).filter(Boolean))].sort());
   var CUISINE_MAP={
     "French":["French","French Fine Dining","French Bistro","French Brasserie","French Cafe","French Café","French Classic","French Contemporary","French Gastronomic","French Mediterranean","French Seafood","French Steakhouse","French, Bar Lounge","French, Bistro","French, Brasserie","French, Cafe","French, Contemporary","French, Fine Dining","French, Wine Bar","French-American","French-American Fusion","French-Mediterranean","Contemporary French","Modern French","Franco-Japanese Fusion","Pastries, French","Cafe, French"],
     "Italian":["Italian","Italian Fine Dining","Italian Casual","Italian Pasta","Italian Pasta Bar","Italian Pizza","Italian Wine Bar","Italian, Contemporary","Italian, Seafood","Italian, Trattoria","Italian-American","Italian-Ligurian","Italian-Mediterranean","Italian-Mediterranean Cafe","Italian-Piedmont","Italian-Roman","Italian-Sicilian","Italian-Venetian","Italian Bakery","Mediterranean-Italian","Roman Italian","Southern Italian","Sicilian Pizza","Modern Italian"],
-    "Japanese":["Japanese","Japanese Omakase","Japanese Sushi","Japanese Kaiseki","Japanese Ramen","Japanese Robata","Japanese Modern","Japanese Hand Rolls","Japanese Steakhouse","Japanese Tea Cafe","Japanese, Cafe","Japanese, Sushi","Japanese-Inspired Café","Japanese-Korean Fusion","Japanese-Kosher","Japanese-Kosher Fusion","Japanese-Peruvian","Japanese-Peruvian Fusion","Nikkei Fusion"],
-    "Mediterranean":["Mediterranean","Mediterranean Bakery","Mediterranean-Asian Fusion","Mediterranean-Kosher Fusion","Mediterranean-Middle Eastern","MediterrAsian","Latin-Asian-Mediterranean","Israeli, Mediterranean","Israeli-Mediterranean","Israeli Farm-to-Table","Israeli-Middle Eastern","Greek","Greek Mediterranean"],
+    "Japanese":["Japanese","Japanese Omakase","Japanese Sushi","Japanese Kaiseki","Japanese Ramen","Japanese Robata","Japanese Modern","Japanese Hand Rolls","Japanese Steakhouse","Japanese Tea Cafe","Japanese, Cafe","Japanese, Sushi","Japanese-Inspired Café","Japanese-Korean Fusion","Japanese-Peruvian","Japanese-Peruvian Fusion","Nikkei Fusion"],
+    "Mediterranean":["Mediterranean","Mediterranean Bakery","Mediterranean-Asian Fusion","Mediterranean-Middle Eastern","MediterrAsian","Latin-Asian-Mediterranean","Israeli, Mediterranean","Israeli-Mediterranean","Israeli Farm-to-Table","Israeli-Middle Eastern","Greek","Greek Mediterranean"],
+    "Kosher":["Kosher","Kosher Steakhouse","Mediterranean-Kosher","Mediterranean-Kosher Fusion","Italian-Kosher","Japanese-Kosher","Japanese-Kosher Fusion"],
     "American":["American","American, Bistro","American-Mediterranean","New American","New American / Mediterranean-Asian Fusion","New York-Contemporary","Farm-to-Table"],
-    "Steakhouse":["Steakhouse","Argentine Steakhouse","Korean Steakhouse","Kosher Steakhouse"],
+    "Steakhouse":["Steakhouse","Argentine Steakhouse","Korean Steakhouse"],
     "Seafood":["Seafood","Seafood Fine Dining"],
     "Asian":["Asian Fusion","Asian-Latin Fusion","Korean-Contemporary","Vietnamese Modern","Chinese"],
     "Latin & Mexican":["Mexican","Mexican Fine Dining","Cuban Cafe","Latin American","Latin American Brunch","Brazilian","Vegetarian-Latin"],
     "Spanish":["Spanish","Spanish, Cafe","Basque","Basque, Spanish","Portuguese, Bistro","Croatian"],
     "Middle Eastern":["Lebanese","Middle Eastern","Modern Middle Eastern","Egyptian","Moroccan, North African"],
     "Cafe & Bakery":["Cafe","Cafe & Market","Cafe, Coffee","Cafe, Contemporary","Cafe, Nordic","Cafe, Pastries","Café","Coffee & Juice","Coffee & Pastries","Specialty Coffee","Bakery, Pastries","Artisan Bakery","European Bakery","Patisserie","Cookies & Desserts","Dessert & Ice Cream","Bagels & Breakfast","Brunch & Coffee","Breakfast & Brunch","Healthy Brunch","Health & Juice Bar","Pastries, Contemporary"],
-    "Contemporary":["Contemporary","Contemporary Global","International Bistro","International Modern","Modern Bistro","Modern European","Nordic-Contemporary","Scandinavian","Austrian Modern","Russian-Fine Dining","Cocktail Bar & Bites","Multi-Cuisine","Jewish","Kosher"]
+    "Contemporary":["Contemporary","Contemporary Global","International Bistro","International Modern","Modern Bistro","Modern European","Nordic-Contemporary","Scandinavian","Austrian Modern","Russian-Fine Dining","Cocktail Bar & Bites","Multi-Cuisine","Jewish"]
   };
   var cuisineGroupLookup={};Object.keys(CUISINE_MAP).forEach(function(group){CUISINE_MAP[group].forEach(function(c){cuisineGroupLookup[c]=group})});
   /* Add grouped cuisine to each restaurant */
   restaurants.forEach(function(r){r.cuisineGroup=cuisineGroupLookup[r.cuisine]||"Other"});
   var cuisineGroups=["Cuisine"].concat(Object.keys(CUISINE_MAP).filter(function(g){return restaurants.some(function(r){return r.cuisineGroup===g})}));
   var vibes=["Vibe"].concat([...new Set(restaurants.map(function(r){return r.vibe}).filter(Boolean))].sort());
-  var prices=["Price","$","$$","$$$","$$$$"];
-
-  function cityMatch(loc,filter){if(filter==="Paris")return loc==="Paris";return loc!=="Paris"}
+  var prices=["Price","€","€€","€€€","€€€€"];
 
   var filtered=restaurants.filter(function(r){
-    if(city!=="All Cities"&&!cityMatch(r.loc,city))return false;
+    if(city!=="All Cities"&&r.loc!==city)return false;
     if(cuisine!=="Cuisine"&&r.cuisineGroup!==cuisine)return false;
     if(price!=="Price"&&r.price!==price)return false;
     if(vibe!=="Vibe"&&r.vibe!==vibe)return false;
@@ -230,7 +229,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
   .d-hero{height:340px!important}
   .d-title{font-size:36px!important}
   .search-bar{grid-template-columns:1fr 1fr!important}
-  .filter-row{flex-wrap:nowrap!important;overflow:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .filter-row{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
   .filter-row::-webkit-scrollbar{display:none}
 }
 @media(max-width:390px){.d-hero{height:280px!important}.d-title{font-size:28px!important}.search-bar{grid-template-columns:1fr!important}}
