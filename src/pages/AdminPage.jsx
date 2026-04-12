@@ -126,14 +126,18 @@ var CATS = [
       {k:"website_url",l:"Website",t:"text"},
       {k:"instagram_url",l:"Instagram",t:"text"},
       {k:"booking_platform",l:"Booking Platform",t:"text"},
-      {k:"hours_lunch",l:"Lunch Hours",t:"text"},
-      {k:"hours_dinner",l:"Dinner Hours",t:"text"},
+      {k:"opening_hours",l:"Available Time Slots",t:"timeslots",wide:true},
+      {k:"hours_lunch",l:"Lunch Hours (text)",t:"text"},
+      {k:"hours_dinner",l:"Dinner Hours (text)",t:"text"},
       {k:"hours_closed",l:"Closed Days",t:"text"},
+      {k:"peak_price_per_person",l:"Peak Price / Person",t:"number"},
+      {k:"peak_perks",l:"Peak Perks",t:"textarea",wide:true},
       {k:"chef_name",l:"Chef Name",t:"text"},
       {k:"alfred_note",l:"Alfred Note",t:"textarea",wide:true},
       {k:"alfred_tip",l:"Alfred Tip",t:"textarea",wide:true},
       {k:"is_active",l:"Active",t:"bool"},
       {k:"is_featured",l:"Featured",t:"bool"},
+      {k:"available_tonight",l:"Available Tonight",t:"bool"},
       {k:"instant_booking_available",l:"Instant Booking",t:"bool"},
     ]
   },
@@ -578,6 +582,58 @@ function FieldInput({field,value,onChange}){
       style={{...inputStyle,resize:"vertical"}}
       onFocus={function(e){e.target.style.borderColor=C.gd;}}
       onBlur={function(e){e.target.style.borderColor=C.bd;}}/>;
+  }
+  if(field.t==="timeslots"){
+    var slots=value||[];
+    if(typeof slots==="string")try{slots=JSON.parse(slots)}catch(e){slots=[];}
+    var LUNCH=["11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00"];
+    var DINNER=["18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00","22:30","23:00","23:30"];
+    function toggleSlot(s){
+      var arr=slots.slice();
+      var idx=arr.indexOf(s);
+      if(idx>=0)arr.splice(idx,1);else arr.push(s);
+      arr.sort();
+      onChange(arr);
+    }
+    function toggleAll(group){
+      var arr=slots.slice();
+      var allIn=group.every(function(s){return arr.indexOf(s)>=0;});
+      if(allIn){arr=arr.filter(function(s){return group.indexOf(s)<0;});}
+      else{group.forEach(function(s){if(arr.indexOf(s)<0)arr.push(s);});}
+      arr.sort();onChange(arr);
+    }
+    function renderGroup(label,group){
+      var allIn=group.every(function(s){return slots.indexOf(s)>=0;});
+      return(
+        <div style={{marginBottom:14}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+            <span style={{...sf(12,600),color:C.s3,letterSpacing:0.5}}>{label}</span>
+            <button type="button" onClick={function(){toggleAll(group);}}
+              style={{...sf(10,500),color:allIn?C.rd:C.gn,background:"none",border:"1px solid "+(allIn?C.rd+"40":C.gn+"40"),borderRadius:6,padding:"2px 8px",cursor:"pointer"}}>
+              {allIn?"Clear All":"Select All"}
+            </button>
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {group.map(function(s){
+              var active=slots.indexOf(s)>=0;
+              return <button key={s} type="button" onClick={function(){toggleSlot(s);}}
+                style={{padding:"6px 12px",borderRadius:8,border:"1px solid "+(active?C.gn+"60":C.bd),
+                  background:active?"rgba(52,199,89,0.12)":C.srf,...sf(12,active?600:400),
+                  color:active?C.gn:C.s5,cursor:"pointer",transition:"all 0.15s",minWidth:52,textAlign:"center"}}>
+                {s}
+              </button>;
+            })}
+          </div>
+        </div>
+      );
+    }
+    return(
+      <div>
+        {renderGroup("Lunch",LUNCH)}
+        {renderGroup("Dinner",DINNER)}
+        <p style={{...sf(11),color:C.s5,marginTop:4}}>{slots.length} slot{slots.length!==1?"s":""} selected</p>
+      </div>
+    );
   }
   return(
     <input type={field.t==="number"?"number":"text"} value={value===undefined||value===null?"":value}
