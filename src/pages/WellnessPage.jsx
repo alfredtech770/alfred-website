@@ -32,32 +32,35 @@ function FilterDrop(p){
   var [pos,setPos]=useState(null);
   var ref=useRef(null);
   var btnRef=useRef(null);
+  var openRef=useRef(false);
   var isMobile=typeof window!=="undefined"&&window.innerWidth<=768;
+  useEffect(function(){openRef.current=open},[open]);
   useEffect(function(){
     if(!open) return;
     if(isMobile&&btnRef.current){var r=btnRef.current.getBoundingClientRect();setPos({top:r.bottom+6,left:Math.max(8,Math.min(r.left,window.innerWidth-220))})}
     var timer=setTimeout(function(){
-      function h(e){if(ref.current&&!ref.current.contains(e.target)&&!(isMobile&&e.target.closest&&e.target.closest("[data-filter-drop]")))setOpen(false)}
-      document.addEventListener("pointerdown",h);
-      document.addEventListener("touchstart",h,{passive:true});
-      ref.current._cleanup=function(){document.removeEventListener("pointerdown",h);document.removeEventListener("touchstart",h)}
-    },10);
+      function h(e){if(!openRef.current)return;if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
+      document.addEventListener("mousedown",h);
+      document.addEventListener("touchend",h,{passive:true});
+      ref.current._cleanup=function(){document.removeEventListener("mousedown",h);document.removeEventListener("touchend",h)}
+    },50);
     return function(){clearTimeout(timer);if(ref.current&&ref.current._cleanup){ref.current._cleanup();ref.current._cleanup=null};setPos(null)}
   },[open]);
   var hasActive=p.value!==p.options[0];
   var dropStyle=isMobile&&pos?{position:"fixed",top:pos.top,left:pos.left,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:99999,minWidth:200,maxWidth:"calc(100vw - 16px)",maxHeight:"min(320px, calc(100vh - "+(pos.top+16)+"px))",boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"}:{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:9999,minWidth:180,maxWidth:"min(280px, calc(100vw - 32px))",maxHeight:320,boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"};
+  function toggleDrop(e){e.preventDefault();e.stopPropagation();setOpen(function(v){return !v})}
   return(
-    <div ref={ref} style={{position:"relative",WebkitTapHighlightColor:"transparent"}} data-filter-drop="true">
-      <div ref={btnRef} onClick={function(e){e.stopPropagation();setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!open)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+    <div ref={ref} style={{position:"relative",WebkitTapHighlightColor:"transparent",flexShrink:0}} data-filter-drop="true">
+      <div ref={btnRef} onTouchEnd={toggleDrop} onClick={function(e){if(!isMobile)toggleDrop(e)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"border-color 0.3s, background 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation",userSelect:"none"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!open)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
         {p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform 0.2s"}}><path d="M6 9l6 6 6-6"/></svg>
       </div>
       {open&&<div style={dropStyle}>
         {p.options.map(function(opt){
           var active=p.value===opt;
           var soon=p.comingSoon&&p.comingSoon.indexOf(opt)!==-1;
-          return <div key={opt} onClick={function(e){e.stopPropagation();if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",justifyContent:"space-between"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+          return <div key={opt} onTouchEnd={function(e){if(soon)return;p.onChange(opt);setOpen(false)}} onClick={function(e){e.stopPropagation();if(isMobile)return;if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",justifyContent:"space-between",userSelect:"none"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
               {opt}
@@ -188,7 +191,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 .search-bar{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px}
 .filter-row{display:flex;gap:6px;align-items:center;overflow:visible;flex-wrap:wrap;flex:1;min-width:0}
 @media(max-width:1024px){.w-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:768px){.w-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}.w-hero{height:340px!important}.w-title{font-size:36px!important}.search-bar{grid-template-columns:1fr 1fr!important}.filter-row{flex-wrap:nowrap!important;overflow:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}.filter-row::-webkit-scrollbar{display:none}}
+@media(max-width:768px){.w-grid{grid-template-columns:1fr;padding:0 24px!important;max-width:480px}.w-hero{height:340px!important}.w-title{font-size:36px!important}.search-bar{grid-template-columns:1fr 1fr!important}.filter-row{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}.filter-row::-webkit-scrollbar{display:none}}
 @media(max-width:390px){.w-hero{height:280px!important}.w-title{font-size:28px!important}.search-bar{grid-template-columns:1fr!important}}
       `}</style>
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>

@@ -20,32 +20,35 @@ function FilterDrop(p){
   var [pos,setPos]=useState(null);
   var ref=useRef(null);
   var btnRef=useRef(null);
+  var openRef=useRef(false);
   var isMobile=typeof window!=="undefined"&&window.innerWidth<=768;
+  useEffect(function(){openRef.current=open},[open]);
   useEffect(function(){
     if(!open) return;
     if(isMobile&&btnRef.current){var r=btnRef.current.getBoundingClientRect();setPos({top:r.bottom+6,left:Math.max(8,Math.min(r.left,window.innerWidth-220))})}
     var timer=setTimeout(function(){
-      function h(e){if(ref.current&&!ref.current.contains(e.target)&&!(isMobile&&e.target.closest&&e.target.closest("[data-filter-drop]")))setOpen(false)}
-      document.addEventListener("pointerdown",h);
-      document.addEventListener("touchstart",h,{passive:true});
-      ref.current._cleanup=function(){document.removeEventListener("pointerdown",h);document.removeEventListener("touchstart",h)}
-    },10);
+      function h(e){if(!openRef.current)return;if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
+      document.addEventListener("mousedown",h);
+      document.addEventListener("touchend",h,{passive:true});
+      ref.current._cleanup=function(){document.removeEventListener("mousedown",h);document.removeEventListener("touchend",h)}
+    },50);
     return function(){clearTimeout(timer);if(ref.current&&ref.current._cleanup){ref.current._cleanup();ref.current._cleanup=null};setPos(null)}
   },[open]);
   var hasActive=p.value!==p.options[0];
   var dropStyle=isMobile&&pos?{position:"fixed",top:pos.top,left:pos.left,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:99999,minWidth:200,maxWidth:"calc(100vw - 16px)",maxHeight:"min(320px, calc(100vh - "+(pos.top+16)+"px))",boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"}:{position:"absolute",top:"100%",left:0,marginTop:6,borderRadius:14,background:"#111113",border:"1px solid rgba(255,255,255,0.12)",overflowY:"auto",overflowX:"hidden",zIndex:9999,minWidth:180,maxWidth:"min(280px, calc(100vw - 32px))",maxHeight:320,boxShadow:"0 16px 48px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08)",WebkitOverflowScrolling:"touch"};
+  function toggleDrop(e){e.preventDefault();e.stopPropagation();setOpen(function(v){return !v})}
   return(
-    <div ref={ref} style={{position:"relative",WebkitTapHighlightColor:"transparent"}} data-filter-drop="true">
-      <div ref={btnRef} onClick={function(e){e.stopPropagation();setOpen(!open)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"all 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!open)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
+    <div ref={ref} style={{position:"relative",flexShrink:0,WebkitTapHighlightColor:"transparent"}} data-filter-drop="true">
+      <div ref={btnRef} onTouchEnd={toggleDrop} onClick={function(e){if(!isMobile)toggleDrop(e)}} style={{display:"flex",alignItems:"center",gap:6,padding:"0 16px",height:40,borderRadius:12,background:hasActive?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(hasActive?"rgba(244,244,245,0.15)":open?C.s7:C.bd),cursor:"pointer",transition:"border-color 0.3s, background 0.3s",whiteSpace:"nowrap",boxSizing:"border-box",WebkitTapHighlightColor:"transparent",touchAction:"manipulation",userSelect:"none"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!open)e.currentTarget.style.borderColor=C.s7}} onPointerLeave={function(e){if(e.pointerType==="mouse"&&!open&&!hasActive)e.currentTarget.style.borderColor=C.bd}}>
         {p.icon}
         <span style={{...sf(11,hasActive?600:400),color:hasActive?C.s1:C.s5}}>{p.value}</span>
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2}}><path d="M6 9l6 6 6-6"/></svg>
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2.5" strokeLinecap="round" style={{marginLeft:2,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform 0.2s"}}><path d="M6 9l6 6 6-6"/></svg>
       </div>
       {open&&<div style={dropStyle}>
         {p.options.map(function(opt){
           var active=p.value===opt;
           var soon=p.comingSoon&&p.comingSoon.indexOf(opt)!==-1;
-          return <div key={opt} onClick={function(e){e.stopPropagation();if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",justifyContent:"space-between"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
+          return <div key={opt} onTouchEnd={function(e){e.preventDefault();e.stopPropagation();if(soon)return;p.onChange(opt);setOpen(false)}} onClick={function(e){e.stopPropagation();if(isMobile)return;if(soon)return;p.onChange(opt);setOpen(false)}} style={{padding:"13px 16px",cursor:soon?"default":"pointer",background:active?"rgba(244,244,245,0.04)":"transparent",borderBottom:"1px solid rgba(44,44,49,0.5)",display:"flex",alignItems:"center",gap:8,...sf(13,active?600:400),color:soon?"rgba(255,255,255,0.2)":active?C.s1:C.s4,WebkitTapHighlightColor:"transparent",touchAction:"manipulation",userSelect:"none",justifyContent:"space-between"}} onPointerEnter={function(e){if(e.pointerType==="mouse"&&!soon)e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onPointerLeave={function(e){if(e.pointerType==="mouse")e.currentTarget.style.background=active?"rgba(244,244,245,0.04)":"transparent"}}>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
               {active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.gn}}/>}
               {opt}
@@ -126,6 +129,8 @@ export default function DiningPage(){
   var [searchParams,setSearchParams]=useSearchParams();
   var [city,setCity]=useState(searchParams.get("city")||"All Cities");
   var [cuisine,setCuisine]=useState(searchParams.get("cuisine")||"Cuisine");
+  var [meal,setMeal]=useState(searchParams.get("meal")||"Meal");
+  var [dressCode,setDressCode]=useState(searchParams.get("dress")||"Dress Code");
   var [price,setPrice]=useState(searchParams.get("price")||"Price");
   var [vibe,setVibe]=useState(searchParams.get("vibe")||"Vibe");
   var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
@@ -139,12 +144,14 @@ export default function DiningPage(){
     var p={};
     if(city!=="All Cities")p.city=city;
     if(cuisine!=="Cuisine")p.cuisine=cuisine;
+    if(meal!=="Meal")p.meal=meal;
+    if(dressCode!=="Dress Code")p.dress=dressCode;
     if(price!=="Price")p.price=price;
     if(vibe!=="Vibe")p.vibe=vibe;
     if(sort!=="Featured")p.sort=sort;
     if(guests!=="2")p.guests=guests;
     setSearchParams(p,{replace:true});
-  },[city,cuisine,price,vibe,sort,guests]);
+  },[city,cuisine,meal,dressCode,price,vibe,sort,guests]);
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
   useEffect(function(){
@@ -201,7 +208,8 @@ export default function DiningPage(){
     "Spanish":["Spanish","Spanish, Cafe","Basque","Basque, Spanish","Portuguese, Bistro","Croatian"],
     "Middle Eastern":["Lebanese","Middle Eastern","Modern Middle Eastern","Egyptian","Moroccan, North African"],
     "Cafe & Bakery":["Cafe","Cafe & Market","Cafe, Coffee","Cafe, Contemporary","Cafe, Nordic","Cafe, Pastries","Café","Coffee & Juice","Coffee & Pastries","Specialty Coffee","Bakery, Pastries","Artisan Bakery","European Bakery","Patisserie","Cookies & Desserts","Dessert & Ice Cream","Bagels & Breakfast","Brunch & Coffee","Breakfast & Brunch","Healthy Brunch","Health & Juice Bar","Pastries, Contemporary"],
-    "Contemporary":["Contemporary","Contemporary Global","International Bistro","International Modern","Modern Bistro","Modern European","Nordic-Contemporary","Scandinavian","Austrian Modern","Russian-Fine Dining","Cocktail Bar & Bites","Multi-Cuisine","Jewish","Kosher"]
+    "Kosher":["Kosher","Kosher Steakhouse","Japanese-Kosher","Japanese-Kosher Fusion","Mediterranean-Kosher Fusion","Jewish"],
+    "Contemporary":["Contemporary","Contemporary Global","International Bistro","International Modern","Modern Bistro","Modern European","Nordic-Contemporary","Scandinavian","Austrian Modern","Russian-Fine Dining","Cocktail Bar & Bites","Multi-Cuisine"]
   };
   var cuisineGroupLookup={};Object.keys(CUISINE_MAP).forEach(function(group){CUISINE_MAP[group].forEach(function(c){cuisineGroupLookup[c]=group})});
   /* Add grouped cuisine to each restaurant */
@@ -209,6 +217,9 @@ export default function DiningPage(){
   var cuisineGroups=["Cuisine"].concat(Object.keys(CUISINE_MAP).filter(function(g){return restaurants.some(function(r){return r.cuisineGroup===g})}));
   var vibes=["Vibe"].concat([...new Set(restaurants.map(function(r){return r.vibe}).filter(Boolean))].sort());
   var prices=["Price","$","$$","$$$","$$$$"];
+  var meals=["Meal","Breakfast","Brunch","Lunch","Dinner","Late Night"];
+  var dressCodes=["Dress Code"].concat([...new Set(restaurants.map(function(r){return r.dressCode}).filter(Boolean))].sort());
+  if(dressCodes.length<2) dressCodes=["Dress Code","Casual","Smart Casual","Business Casual","Formal","Black Tie"];
 
   function cityMatch(loc,filter){if(filter==="Miami"){var l=(loc||"").toLowerCase();return !l||l==="miami"||l.indexOf("miami")!==-1}return loc===filter}
 
@@ -217,6 +228,7 @@ export default function DiningPage(){
     if(cuisine!=="Cuisine"&&r.cuisineGroup!==cuisine)return false;
     if(price!=="Price"&&r.price!==price)return false;
     if(vibe!=="Vibe"&&r.vibe!==vibe)return false;
+    if(dressCode!=="Dress Code"&&r.dressCode!==dressCode)return false;
     return true;
   });
 
@@ -225,13 +237,15 @@ export default function DiningPage(){
   else if(sort==="Price: High")filtered=filtered.slice().sort(function(a,b){return b.priceLevel-a.priceLevel});
   else if(sort==="Most Reviewed")filtered=filtered.slice().sort(function(a,b){return b.reviews-a.reviews});
 
-  var activeFilters=[city!=="All Cities"?city:null,cuisine!=="Cuisine"?cuisine:null,price!=="Price"?price:null,vibe!=="Vibe"?vibe:null].filter(Boolean);
-  var clearAll=function(){setCity("All Cities");setCuisine("Cuisine");setPrice("Price");setVibe("Vibe")};
+  var activeFilters=[city!=="All Cities"?city:null,cuisine!=="Cuisine"?cuisine:null,meal!=="Meal"?meal:null,dressCode!=="Dress Code"?dressCode:null,price!=="Price"?price:null,vibe!=="Vibe"?vibe:null].filter(Boolean);
+  var clearAll=function(){setCity("All Cities");setCuisine("Cuisine");setMeal("Meal");setDressCode("Dress Code");setPrice("Price");setVibe("Vibe")};
 
   var inputS={padding:"12px 16px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"};
   var iconCuisine=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>;
+  var iconMeal=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>;
+  var iconDress=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M6 2l3 6-3 10h12l-3-10 3-6"/><path d="M9 2h6"/></svg>;
   var iconPrice=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>;
-  var iconVibe=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/><circle cx="12" cy="12" r="4"/></svg>;
+  var iconVibe=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>;
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
@@ -250,7 +264,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
   .d-hero{height:340px!important}
   .d-title{font-size:36px!important}
   .search-bar{grid-template-columns:1fr 1fr!important}
-  .filter-row{flex-wrap:nowrap!important;overflow:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .filter-row{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:visible!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
   .filter-row::-webkit-scrollbar{display:none}
 }
 @media(max-width:390px){.d-hero{height:280px!important}.d-title{font-size:28px!important}.search-bar{grid-template-columns:1fr!important}}
@@ -307,9 +321,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
       <div style={{maxWidth:1060,margin:"0 auto",padding:"28px 40px 0",position:"relative",zIndex:50}}>
         <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:24,position:"relative",zIndex:50}}>
           <div className="filter-row">
-            <FilterDrop value={cuisine} options={cuisineGroups} onChange={setCuisine} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>}/>
-            <FilterDrop value={price} options={prices} onChange={setPrice} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>}/>
-            <FilterDrop value={vibe} options={vibes} onChange={setVibe} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>}/>
+            <FilterDrop value={meal} options={meals} onChange={setMeal} icon={iconMeal}/>
+            <FilterDrop value={cuisine} options={cuisineGroups} onChange={setCuisine} icon={iconCuisine}/>
+            <FilterDrop value={dressCode} options={dressCodes} onChange={setDressCode} icon={iconDress}/>
+            <FilterDrop value={vibe} options={vibes} onChange={setVibe} icon={iconVibe}/>
+            <FilterDrop value={price} options={prices} onChange={setPrice} icon={iconPrice}/>
             <div style={{width:1,height:20,background:C.bd,flexShrink:0}}/>
             <FilterDrop value={sort} options={SORT_OPTIONS} onChange={setSort} icon={<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M3 6h18M6 12h12M9 18h6"/></svg>}/>
           </div>
