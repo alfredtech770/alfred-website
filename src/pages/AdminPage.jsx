@@ -13,6 +13,43 @@ var C = {
   gdGrad:"linear-gradient(135deg,#D4A853 0%,#F5E6B8 50%,#D4A853 100%)"
 };
 
+/* ═══ Slack Integration ═══ */
+var SLACK_WEBHOOK = import.meta.env.VITE_SLACK_WEBHOOK || "";
+
+async function notifySlack(action, category, name, details){
+  var emoji = {
+    created:":white_check_mark:",updated:":pencil2:",deleted:":wastebasket:",
+    status:":arrows_counterclockwise:",image:":frame_with_picture:",
+    booking:":calendar:",bulk:":package:"
+  }[action]||":bell:";
+  var color = {
+    created:"#34C759",updated:"#007AFF",deleted:"#FF3B30",
+    status:"#FF9500",image:"#D4A853",booking:"#D4A853",bulk:"#FF9500"
+  }[action]||"#A1A1AA";
+  var actionLabel = {
+    created:"New Record Added",updated:"Record Updated",deleted:"Record Deleted",
+    status:"Status Changed",image:"Images Updated",booking:"Booking Updated",bulk:"Bulk Action"
+  }[action]||action;
+  if(!SLACK_WEBHOOK)return;
+  try{
+    await fetch(SLACK_WEBHOOK,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        blocks:[
+          {type:"header",text:{type:"plain_text",text:emoji+" "+actionLabel}},
+          {type:"section",fields:[
+            {type:"mrkdwn",text:"*Category:*\n"+category},
+            {type:"mrkdwn",text:"*Name:*\n"+(name||"-")}
+          ]},
+          ...(details?[{type:"section",text:{type:"mrkdwn",text:details}}]:[]),
+          {type:"context",elements:[{type:"mrkdwn",text:":clock1: "+new Date().toLocaleString("en-US",{dateStyle:"medium",timeStyle:"short"})+" | Alfred Admin"}]}
+        ]
+      })
+    });
+  }catch(e){console.log("Slack notify error:",e);}
+}
+
 /* ═══ Icons (inline SVG) ═══ */
 function Icon({name,size,color}){
   var s=size||18, c=color||C.s4;
@@ -326,6 +363,7 @@ function ImageGalleryManager({record,cat,onUpdate}){
     var newGallery=gallery.concat(urls);
     up[cat.galleryField||cat.orderField]=newGallery;
     if(!hero&&urls.length>0)up[cat.imgField]=urls[0];
+    notifySlack("image",cat.label,record.name||"Unknown","*"+urls.length+" image"+(urls.length!==1?"s":"")+"* uploaded to gallery");
     onUpdate(up);
   }
 
@@ -437,6 +475,8 @@ function EditModal({cat,record,onClose,onSave}){
     }
     setSaving(false);
     if(result.error){setSaveErr(result.error.message);return;}
+    var action=record&&record.id?"updated":"created";
+    notifySlack(action,cat.label,form.name||"Unnamed","*Fields:* "+(cat.fields.filter(function(f){return form[f.k]!==undefined&&form[f.k]!==null&&form[f.k]!==""}).map(function(f){return f.l}).join(", ")));
     onSave();
   }
 
@@ -510,6 +550,7 @@ function DeleteModal({table,id,name,onCancel,onDone}){
   async function confirm(){
     setDeleting(true);
     await supabase.from(table).delete().eq("id",id);
+    notifySlack("deleted",table,name,"Record permanently deleted from "+table);
     onDone();
   }
   return(
@@ -609,11 +650,13 @@ function CategoryView({cat}){
   async function bulkDelete(){
     if(!selected.length)return;
     await supabase.from(cat.table).delete().in("id",selected);
+    notifySlack("bulk",cat.label,selected.length+" records","*Action:* Bulk delete — "+selected.length+" records removed");
     setSelected([]);load();
   }
   async function bulkToggle(val){
     if(!selected.length)return;
     await supabase.from(cat.table).update({is_active:val}).in("id",selected);
+    notifySlack("bulk",cat.label,selected.length+" records","*Action:* Bulk "+(val?"activate":"deactivate")+" — "+selected.length+" records");
     setSelected([]);load();
   }
 
@@ -777,7 +820,9 @@ function BookingsView(){
   });
 
   async function updateStatus(id,status){
+    var booking=bookings.find(function(b){return b.id===id;});
     await supabase.from("bookings").update({status:status}).eq("id",id);
+    notifySlack("booking","Bookings",booking?booking.client_name:"Unknown","*Status:* Changed to _"+status+"_"+(booking?" | *Item:* "+booking.item_name:""));
     load();
   }
 
