@@ -8,7 +8,7 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 export var BLOG_POSTS=[
   {
     slug:"best-restaurants-miami-2026",
-    title:"The 15 Best Restaurants in Miami for 2026 — A Concierge's Guide",
+    title:"The 25 Best Restaurants in Miami 2026 — A Concierge's Guide",
     excerpt:"Discover the finest dining establishments in Miami, from Michelin-starred fine dining to exclusive private clubs. Our expert concierge picks.",
     date:"2026-03-15",
     readingTime:8,
@@ -643,6 +643,238 @@ export var BLOG_POSTS=[
 <p>Our relationships with Formula 1's hospitality partners, Miami's luxury venue operators, and private event promoters enable access otherwise unavailable. We transform a Miami Grand Prix visit from enjoyable to absolutely unforgettable.</p>
 
 <p><strong>Contact Alfred Concierge</strong> to begin planning your Miami Grand Prix 2026 experience. Our 24/7 team arranges hospitality, accommodations, dining, transportation, and all details creating a Formula 1 weekend you'll treasure forever.</p>`
+  },
+  {
+    slug:"how-to-get-into-liv-miami",
+    title:"How to Get Into LIV Miami — Guestlist, Tables & VIP Access Guide",
+    excerpt:"The definitive guide to entering LIV Miami at the Fontainebleau. Guestlist tips, VIP table pricing, dress code, and how Alfred secures access to the world's top-grossing nightclub.",
+    date:"2026-04-05",
+    readingTime:7,
+    category:"Nightlife",
+    keywords:"LIV Miami, LIV Miami guestlist, LIV Miami tables, how to get into LIV Miami, LIV Miami VIP, Fontainebleau nightclub Miami",
+    image:"https://images.unsplash.com/photo-1571204829887-3b8d69e4094d?w=1200&h=630&fit=crop",
+    content:`<h1>How to Get Into LIV Miami — Guestlist, Tables & VIP Access Guide</h1>
+
+<p>LIV Miami at the Fontainebleau Hotel is the world's highest-grossing nightclub, consistently generating over $1 million in revenue on peak weekend nights. On any given Friday or Saturday, the venue hosts international celebrities, NBA stars, musicians, and thousands of guests from around the globe. Getting inside isn't simply a matter of showing up — it requires strategy, connections, or a reservation. This guide from Alfred Concierge covers every way to access LIV Miami in 2026.</p>
+
+<h2>What Makes LIV Different</h2>
+
+<p>LIV isn't just a nightclub — it's a cultural institution. The venue spans three levels inside the iconic Fontainebleau Hotel in Miami Beach, featuring a world-class sound system, elaborate LED production, and one of the most sophisticated entertainment programming schedules in the nightlife industry. Resident DJs include household names like Tiësto, DJ Khaled, and Marshmello. The venue's integration with the Fontainebleau — one of Miami's most legendary luxury hotels — creates a seamless experience from lobby to dance floor.</p>
+
+<p>What sets LIV apart from other Miami clubs is its combination of celebrity culture, production quality, and meticulous guest curation. The venue genuinely controls who enters and when, maintaining an atmosphere that justifies its premium pricing and global reputation.</p>
+
+<h2>The Three Ways to Enter LIV</h2>
+
+<p>There are three primary pathways into LIV Miami: the guestlist, walk-in, and VIP table reservation. Each carries different costs, certainties, and experiences. Understanding how each works helps you choose the right approach for your group and expectations.</p>
+
+<p>Walk-in is the least reliable method. The door team is selective, and on peak nights (Fridays, Saturdays, holiday weekends), walk-ins without prior arrangement face unpredictable wait times, potential rejection, and elevated cover charges — often $50–$100 per person. This approach is only practical for small groups on slower nights earlier in the week.</p>
+
+<h2>Getting on the LIV Guestlist</h2>
+
+<p>The guestlist offers complimentary entry but comes with significant restrictions. Standard guestlist access typically requires arriving before midnight, maintaining certain gender ratios in your group (venues typically prefer balanced or female-skewed groups), and is subject to capacity limitations. On sold-out nights, even legitimate guestlist placement is no guarantee of entry.</p>
+
+<p>Guestlist access is typically arranged through nightlife promoters, hotel concierges with venue relationships, or directly through the Fontainebleau's concierge team. Alfred Concierge maintains direct relationships with LIV's guest relations team, allowing our members to be placed on the preferred guestlist — which carries significantly more weight than a standard promoter list and includes priority entry processing.</p>
+
+<h2>VIP Table Reservations — Guaranteed Access</h2>
+
+<p>The most reliable way to enter LIV Miami is through a VIP table reservation. Tables guarantee entry for your entire party regardless of the queue, provide dedicated server service, and position you in the best locations within the venue. Table minimums at LIV range from €3,000 for standard placements to €15,000+ for premium tables during major events.</p>
+
+<p>Bottle pricing at LIV reflects its premium status. Premium vodkas (Grey Goose, Belvedere, Ketel One) run €400–€700 per bottle. Premium champagne selections including Dom Pérignon and Cristal start at €600 and climb considerably for magnums and special editions. Alfred Concierge negotiates table placements and manages all reservation logistics, often securing locations not available through standard booking channels — including the coveted main floor tables directly adjacent to the DJ booth.</p>
+
+<h2>LIV Miami Dress Code</h2>
+
+<p>LIV maintains a strict dress code that is consistently enforced. For men: no athletic wear, no sneakers (on most nights), no shorts, no oversized clothing, no backward caps. Smart casual to upscale is the baseline expectation, with premium brands and tailored clothing strongly preferred. Women have more flexibility but should dress in line with the elevated atmosphere — the Fontainebleau setting implies a certain standard.</p>
+
+<p>Dress code compliance isn't merely about looking good — it signals to the door team that you understand the venue's culture. Groups that arrive appropriately dressed and present themselves confidently fare significantly better at the door than those who arrive improperly attired regardless of other arrangements.</p>
+
+<h2>Best Nights at LIV Miami</h2>
+
+<p>LIV operates Thursday through Sunday, with Friday and Saturday being peak nights featuring the venue's biggest DJ residencies and celebrity appearances. Thursday nights offer a slightly more accessible atmosphere while still featuring quality programming — a smart choice for first-time visitors or smaller groups. Sundays carry a different energy, often featuring special programming tied to major Miami events.</p>
+
+<p>During major Miami events — Ultra Music Festival, Art Basel, the Miami Grand Prix, New Year's Eve — LIV enters another tier entirely. These nights command substantially higher table minimums, feature globally headlining performers, and attract the highest concentration of celebrities and VIPs. Alfred members are always prioritized for access during these sold-out special event weekends.</p>
+
+<h2>Timing, Transportation & Insider Tips</h2>
+
+<p>LIV reaches peak energy between 12:30 AM and 3 AM. Arriving before midnight on guestlist is wise, but table holders can arrive anytime. The Fontainebleau is located on Collins Avenue in Miami Beach — valet parking is available but expect significant queues on peak nights. Many guests opt for private car service or ride-share, dropping off at the hotel entrance.</p>
+
+<p>Pre-party dining at the Fontainebleau's own restaurants or nearby establishments sets the right tone. Alfred coordinates complete nights out combining dinner, LIV access, and post-party arrangements — ensuring seamless transitions between each element of your evening.</p>
+
+<h2>Book LIV Miami with Alfred</h2>
+
+<p>Alfred Concierge handles LIV Miami access at every level — from guestlist placement to premium VIP table reservations during the venue's most exclusive nights. Our team coordinates with LIV's guest relations team directly, handles all logistical details, and ensures your experience meets the standards Alfred clients expect.</p>
+
+<p><strong>Contact Alfred today</strong> to arrange your LIV Miami experience. Explore our full range of <a href="/catalog/nightlife" style="color:#34C759;text-decoration:none;font-weight:500">nightlife experiences in Miami</a> — VIP table reservations, exclusive after-parties, and bespoke nightlife itineraries, all managed by Alfred Concierge.</p>`
+  },
+  {
+    slug:"miami-yacht-charter-guide-2026",
+    title:"Miami Yacht Charter Guide 2026 — Boats, Pricing & What to Expect",
+    excerpt:"Everything you need to know about chartering a yacht in Miami in 2026. Vessel types, pricing breakdowns, popular routes, and how Alfred curates unforgettable on-water experiences.",
+    date:"2026-04-03",
+    readingTime:9,
+    category:"Yachts",
+    keywords:"miami yacht charter 2026, yacht rental miami, boat charter miami, luxury yacht miami, superyacht charter miami, miami yacht experience",
+    image:"https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=1200&h=630&fit=crop",
+    content:`<h1>Miami Yacht Charter Guide 2026 — Boats, Pricing & What to Expect</h1>
+
+<p>Miami's sparkling turquoise waters, year-round sunshine, and proximity to the Bahamas make it one of the world's premier destinations for yacht chartering. Whether you're planning a sunset cruise with a small group, an all-day excursion to secluded sandbars, or a multi-day voyage to the Florida Keys, Miami offers the vessels, crew, and conditions to deliver an extraordinary maritime experience. This comprehensive guide from Alfred Concierge covers everything you need to know about chartering a yacht in Miami in 2026.</p>
+
+<h2>Types of Vessels Available in Miami</h2>
+
+<p>Miami's charter market offers a diverse range of vessels suited to different group sizes and experiences. Luxury motor yachts (60–100 ft) are the most popular choice for day charters — they combine speed, stability, and onboard amenities including sun decks, swim platforms, air-conditioned salons, and professional crews. These vessels typically accommodate 10–20 guests comfortably.</p>
+
+<p>Superyachts (100 ft and above) represent the pinnacle of Miami charter experiences. These vessels offer full-service amenities including private chef catering, multiple cabin suites, water toys (jet skis, paddle boards, sea bobs), and entertainment systems. For groups seeking maximum privacy, space, and service quality, superyachts deliver an experience unmatched by smaller vessels. Alfred Concierge accesses a curated fleet of verified superyachts across Miami's premier marinas.</p>
+
+<h2>Charter Duration Options & Pricing</h2>
+
+<p>Miami yacht charters are typically offered in half-day (4 hours), full-day (6–8 hours), and multi-day formats. Half-day charters typically run $1,500–$6,000 depending on vessel size and season, making them ideal for sunset cruises, corporate events, or intimate celebrations. Full-day charters range from $3,500 to $15,000+ and allow time to explore destinations like the Biscayne National Park, Stiltsville, or Elliot Key.</p>
+
+<p>Multi-day charters unlock the full potential of Miami's maritime geography. A 3-day voyage can take you through the Florida Keys to Key West, a 5-day trip can reach the Exumas in the Bahamas — crystal-clear waters, swimming pigs, and pristine beaches that few tourists ever experience. These voyages are priced based on vessel, crew, fuel, and provisioning. Alfred coordinates all aspects of multi-day itinerary planning.</p>
+
+<h2>What's Included in Your Charter</h2>
+
+<p>Standard yacht charter packages in Miami include the vessel, licensed captain, and deckhand(s). Most charter companies provide basic safety equipment and a cooler with ice. Premium charters — especially those arranged through Alfred — include significantly more: catering from top Miami restaurants or an onboard private chef, premium beverages and cocktail service, water toys and watersports equipment, and curated music playlists or entertainment systems.</p>
+
+<p>Fuel, provisioning, and gratuity are sometimes listed separately from base charter fees. Alfred Concierge provides fully transparent all-inclusive pricing, ensuring you understand the total cost before departure and face no unexpected charges upon return.</p>
+
+<h2>Popular Miami Charter Destinations</h2>
+
+<p>Biscayne Bay is the natural starting point for most Miami charters — a sheltered bay offering beautiful views of the Miami skyline, passing under the MacArthur Causeway and past the exclusive Star Island and Hibiscus Island communities. Stiltsville, a collection of colorful houses built on stilts in Biscayne Bay, is a must-see landmark accessible only by water.</p>
+
+<p>Heading south, the Florida Keys offer some of the most spectacular snorkeling and diving in the continental United States. John Pennekamp Coral Reef State Park in Key Largo features the only living coral reef system in the US, with visibility exceeding 60 feet on clear days. Further south, Islamorada and Marathon offer excellent fishing and the famous Bahia Honda State Park beach — accessible only by vessel or dedicated bridge access.</p>
+
+<h2>Sandbar Parties & Nightlife on Water</h2>
+
+<p>Miami's sandbar culture is unique in the world. Shallow sandbars in Biscayne Bay — particularly the famous "Boca Chita" and the sandbars off Miami Beach — transform into floating social scenes on weekend afternoons, with dozens of vessels anchoring in close proximity. Alfred can arrange charter packages specifically designed for sandbar experiences, complete with catering, cocktails, and water toys.</p>
+
+<p>Evening charters around Miami Beach are increasingly popular for corporate entertainment, VIP celebrations, and milestone events. Watching the Miami skyline illuminate at dusk from the water is genuinely spectacular. Alfred can arrange custom sunset charter packages that conclude back at the marina in time for dinner at a Michelin-starred restaurant.</p>
+
+<h2>Seasonal Considerations for 2026</h2>
+
+<p>Miami's peak charter season runs from December through April, when weather is mild, seas are calm, and demand is highest. Pricing premiums of 15–30% apply during this period, and vessels book weeks or months in advance. The shoulder season (May and November) offers excellent conditions with slightly better availability and pricing. Summer months feature warmer water temperatures but higher humidity and afternoon thunderstorms — always plan charters for morning departures during summer.</p>
+
+<p>The Miami Grand Prix weekend in May, Art Basel in December, and New Year's Eve create exceptional demand for premium charter vessels — Alfred recommends booking 2–3 months in advance for these periods, as the finest vessels are secured by repeat clients early.</p>
+
+<h2>Charter Your Miami Yacht with Alfred</h2>
+
+<p>Alfred Concierge simplifies the yacht charter process from vessel selection to departure day. Our team handles all logistics — vessel inspection, captain briefing, catering coordination, water toy procurement, and onboard service standards — ensuring your charter exceeds expectations at every moment.</p>
+
+<p><strong>Explore our fleet</strong> and arrange your Miami yacht charter today. Browse <a href="/catalog/yachts" style="color:#34C759;text-decoration:none;font-weight:500">available vessels in our yacht catalog</a>, or contact Alfred directly for a bespoke charter package tailored to your dates, group size, and vision.</p>`
+  },
+  {
+    slug:"exotic-car-rental-miami",
+    title:"Exotic Car Rental Miami 2026 — The Complete Guide",
+    excerpt:"Your complete guide to renting exotic and luxury cars in Miami. What's available, how pricing works, the best driving routes, and why Alfred makes the whole experience seamless.",
+    date:"2026-04-01",
+    readingTime:7,
+    category:"Lifestyle",
+    keywords:"exotic car rental miami 2026, supercar rental miami, ferrari rental miami, lamborghini rental miami, luxury car rental miami, exotic cars miami",
+    image:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&h=630&fit=crop",
+    content:`<h1>Exotic Car Rental Miami 2026 — The Complete Guide</h1>
+
+<p>Miami and exotic cars are a natural pairing. The city's wide boulevards, iconic coastal drives, and culture of visible luxury create the perfect environment for supercar experiences. In 2026, Miami's exotic rental market has matured into one of the world's most sophisticated — with access to Ferraris, Lamborghinis, Rolls-Royces, McLarens, Bugattis, and more. This guide from Alfred Concierge covers everything you need to know to rent an exotic car in Miami and make the most of the experience.</p>
+
+<h2>The Miami Exotic Car Fleet in 2026</h2>
+
+<p>Miami's top-tier exotic rental fleet has expanded significantly in recent years. Italian supercars remain the most popular — Ferrari SF90 Stradales, Lamborghini Huracán Steratos, and McLaren 750S models top the request lists. Rolls-Royces (Ghost, Wraith, Cullinan) dominate the luxury sedan and SUV category, favored for special occasions, corporate arrivals, and guests who prefer presence over performance.</p>
+
+<p>The upper tier includes increasingly rare machines: Bugatti Chirons, Koenigsegg Jesko track editions, and limited-production hypercars that rarely appear on standard rental platforms. Alfred Concierge accesses this ultra-premium tier through curated partnerships with Miami's most reputable exotic fleet operators — vehicles you simply cannot find by searching standard rental websites.</p>
+
+<h2>Understanding Rental Pricing</h2>
+
+<p>Exotic car rental pricing in Miami varies dramatically by vehicle tier, season, and rental duration. Entry-level supercars (Porsche 911 GT3, Audi R8) start around €800–€1,000 per day. Mid-tier supercars (Ferrari F8, Lamborghini Huracán) range from €1,200–€1,800 daily. Premium supercars (Ferrari SF90, Lamborghini Revuelto, McLaren 720S) typically cost €2,000–€3,500 per day. Ultra-premium machines (Bugatti, Pagani, Koenigsegg) command €5,000–€15,000+ daily.</p>
+
+<p>Weekly and multi-day rentals offer meaningful discounts. Renting for a full week reduces the effective daily rate by 15–25%. Monthly rates can be negotiated for 30–40% below daily pricing. Peak periods — New Year's, Spring Break, Grand Prix weekend, Art Basel — add 20–40% premium surcharges. Alfred negotiates directly with fleet operators to secure the best available rates for our clients.</p>
+
+<h2>Delivery, Pickup & Logistics</h2>
+
+<p>Standard rental companies require you to visit their location for pickup. Alfred Concierge arranges vehicle delivery directly to your hotel, private residence, or airport. Cars arrive fully fueled, documented, and briefed by a fleet representative who walks you through the vehicle's systems. Return is equally flexible — Alfred coordinates pickup at your location of choice.</p>
+
+<p>Documentation requirements are standard: valid driver's license (minimum age 25, some vehicles require 30+), passport, major credit card with sufficient credit limit (exotic car deposits range €5,000–€50,000 depending on vehicle value). International visitors need their home country license plus an International Driving Permit for Florida. Alfred handles pre-confirmation of documentation requirements so there are no surprises on pickup day.</p>
+
+<h2>Insurance — What You Actually Need</h2>
+
+<p>Every exotic rental includes basic Collision Damage Waiver (CDW) with a deductible ranging from €2,500 to €10,000 depending on vehicle value. For a multi-million-euro Bugatti, even "basic" coverage represents significant financial exposure. Supplemental zero-deductible coverage eliminates this liability and costs €200–€600 per day — worthwhile for most clients.</p>
+
+<p>Premium credit cards (American Express Centurion, Visa Infinite) sometimes cover exotic car rentals, but policies vary and most exclude vehicles above certain values. Verify your coverage before assuming card protection applies. Alfred's operations team reviews your coverage scenario and recommends the appropriate insurance tier for each rental.</p>
+
+<h2>Miami's Best Driving Routes</h2>
+
+<p>The MacArthur Causeway connecting Downtown Miami to Miami Beach offers spectacular bay views and iconic skyline backdrops — a 10-minute drive that showcases both the city and the vehicle. Ocean Drive through South Beach passes the Art Deco Historic District at low speed, drawing attention from sidewalk cafés and pedestrians in the best possible way.</p>
+
+<p>For drivers seeking open road, the Rickenbacker Causeway to Key Biscayne offers Miami's best driving conditions — a sweeping 4-mile causeway with bay views on both sides. For longer expeditions, the drive south through Coral Gables and Coconut Grove leads eventually to the Overseas Highway — 113 miles of bridges and islands stretching to Key West, offering the most photogenic driving experience in Florida.</p>
+
+<h2>Etiquette & Practical Considerations</h2>
+
+<p>Exotic cars attract constant attention in Miami — photography, conversation, and crowds at stoplights are inevitable. In South Beach and Wynwood, valet parking is strongly recommended; street parking exposes the vehicle to door dings, scratches, and potential break-ins. Most top restaurants and hotels offer complimentary valet for exotic vehicles.</p>
+
+<p>Miami traffic can be aggressive. Familiarize yourself with the vehicle's throttle sensitivity and braking performance in a controlled environment before navigating downtown rush hour. Many supercars have distinct character — a Lamborghini Revuelto behaves nothing like a Rolls-Royce Cullinan. Alfred's representatives brief clients on vehicle-specific handling characteristics during handover.</p>
+
+<h2>Book Your Miami Supercar with Alfred</h2>
+
+<p>Alfred Concierge takes the friction out of exotic car rentals. Our team handles vehicle selection, delivery scheduling, documentation, insurance, and return logistics — you simply arrive and enjoy. Whether you need a Ferrari for a day or a Rolls-Royce for a week-long stay, Alfred curates the perfect exotic car experience for your Miami visit.</p>
+
+<p>Browse our <a href="/catalog/exotic-cars" style="color:#34C759;text-decoration:none;font-weight:500">full exotic car catalog</a> to see available vehicles. Contact Alfred's 24/7 team to arrange delivery, discuss vehicle options, and confirm your booking.</p>`
+  },
+  {
+    slug:"best-nightclubs-paris-2026",
+    title:"Best Nightclubs in Paris 2026 — The VIP Guide to Parisian Nightlife",
+    excerpt:"The definitive guide to Paris nightlife in 2026. Top clubs, VIP table access, the right neighborhoods, dress codes, and how Alfred unlocks the city's most exclusive after-dark experiences.",
+    date:"2026-04-01",
+    readingTime:8,
+    category:"Nightlife",
+    keywords:"best nightclubs paris 2026, Paris nightlife, Paris clubs VIP, Raspoutine Paris, Silencio Paris, Club 79 Paris, Paris nightlife guide",
+    image:"https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&h=630&fit=crop",
+    content:`<h1>Best Nightclubs in Paris 2026 — The VIP Guide to Parisian Nightlife</h1>
+
+<p>Paris after midnight is a different city entirely. Behind Haussmann facades and guarded entrances, the French capital harbors some of the world's most discerning and sophisticated nightlife. Unlike Miami or Ibiza, Parisian clubs prize exclusivity over spectacle — doors are harder to cross, aesthetics are higher, and the experience rewards those who understand the culture. Alfred Concierge, operating extensively across Paris, has assembled the definitive guide to the city's finest nightclubs in 2026.</p>
+
+<h2>Understanding Parisian Club Culture</h2>
+
+<p>Paris does not operate on the same logic as major American nightlife cities. Velvet ropes here are genuine — not theater. French clubs maintain strict door policies based on guest composition, appearance, and energy rather than simply willingness to spend. Being well-dressed, arriving in a balanced group, and demonstrating confidence and cultural awareness are the actual entry criteria. Money helps, but it is not sufficient on its own.</p>
+
+<p>Operating hours differ significantly from American norms. Parisian clubs rarely reach peak energy before 1 AM, and the real atmosphere often builds between 2 and 5 AM. Unlike Miami where clubs wind down at 5, Paris venues can continue until 7 or 8 AM. This is a culture that takes nightlife seriously as a social and artistic experience — not merely entertainment.</p>
+
+<h2>Raspoutine — The Most Iconic Parisian Club</h2>
+
+<p>Raspoutine on Rue de Bassano in the 16th arrondissement is the closest thing Paris has to a legendary institution. Opened by the Dupré family, Raspoutine is at once a restaurant, bar, and nightclub — the evening evolving naturally from dinner service through dancing. The décor channels Russian Imperial excess: deep reds, velvet, gilded mirrors, and dim candlelight create an atmosphere unlike anything in modern clubbing.</p>
+
+<p>The crowd at Raspoutine is impeccably curated — regulars include Paris's social elite, international celebrities, fashion figures, and prominent finance professionals. Table reservations are essential and require introduction through an established channel. Alfred Concierge maintains relationships with Raspoutine's management, securing tables for members on even the most competitive weekend nights.</p>
+
+<h2>Silencio — David Lynch's Underground Theatre</h2>
+
+<p>Designed by David Lynch himself, Silencio is unlike any other club in the world. Located below street level near the Centre Pompidou, the space was inspired by Lynch's film Mulholland Drive — surrealist, cinematic, and intentionally unsettling. The architecture features a 1950s-style theatre, a bar designed as a movie set, and multiple atmospheric rooms each with distinct visual identities.</p>
+
+<p>Silencio operates as a members club from midnight to 3 AM, after which doors open to non-members on a selective basis. The crowd skews toward Paris's creative industries — film, music, art, fashion — with a genuinely cosmopolitan mix. Entrance is not guaranteed without advance arrangement. Alfred Concierge navigates Silencio's selective entry for members seeking Paris's most cerebral nightlife experience.</p>
+
+<h2>Club 79 — The Champs-Élysées Power Scene</h2>
+
+<p>Club 79 on the Champs-Élysées has positioned itself as Paris's preeminent power nightclub in recent years. The venue attracts an international business elite, footballers, and high-profile tourists willing to commit to significant table spends. Production quality is high — first-class sound, sophisticated lighting, and a layout that creates genuine energy without compromising the VIP table experience.</p>
+
+<p>Table minimums at Club 79 are substantial: expect €4,000–€10,000+ for prime Saturday night placements. However, the return on this investment is considerable — the venue's guarantee of entry, exclusive section placement, and service quality justify the spend for groups seeking Paris's most commercially polished nightlife experience. Alfred arranges Club 79 tables with preferred positioning and priority entry protocols.</p>
+
+<h2>Manko Paris — Latin Pulse on the Champs-Élysées</h2>
+
+<p>Manko brought something genuinely different to the Paris scene: a Latin-infused supper club and nightclub hybrid that marries exceptional Peruvian-inspired cuisine with world-class live entertainment and dancing. Located on the Avenue Franklin D. Roosevelt, the venue features regular live performances including salsa bands, DJs, and theatrical shows before transitioning to a full club format.</p>
+
+<p>Manko's energy is warmer and more participatory than Silencio's cerebral cool or Raspoutine's velvet intimacy — making it ideal for guests who want to dance and engage rather than simply observe. The food, from the kitchen of acclaimed chef Pedro Miguel Schiaffino, is genuinely excellent. Alfred arranges dinner-and-nightlife packages at Manko that create a complete evening experience.</p>
+
+<h2>Rex Club — The Techno Underground</h2>
+
+<p>For those with serious electronic music credentials, Rex Club on Boulevard Poissonnière is a Paris institution with global recognition. Its sound system — regarded as among the finest in the world — has hosted virtually every significant figure in electronic music over three decades. Rex doesn't trade on celebrity or luxury; it trades on music, darkness, and the collective experience of serious dancers.</p>
+
+<p>Rex represents Paris nightlife at its most genuine. There are no VIP tables, no bottle service, and no guest management hierarchy. The door team assesses musical alignment rather than fashion — being a serious music enthusiast is the entry requirement. Alfred can place clients on Rex's guestlist for special events and headline nights featuring global electronic music figures.</p>
+
+<h2>Wanderlust & Outdoor Summer Venues</h2>
+
+<p>Paris's nightlife extends beyond indoor clubs during summer months. Wanderlust on the Left Bank — a multi-space venue featuring terrace views of the Seine — operates a club night program attracting some of Paris's most interesting bookings in an open-air environment. La Machine du Moulin Rouge, in the shadow of the iconic cabaret, combines underground club programming with the extraordinary visual context of Montmartre.</p>
+
+<p>Rooftop and terrace experiences multiply in summer, with hotel bars and dedicated venues offering cocktails and DJ sets against the backdrop of Paris's illuminated skyline. Alfred coordinates complete Parisian summer evenings combining fine dining, terrace aperitifs, and exclusive nightlife access.</p>
+
+<h2>Navigating Paris Nightlife with Alfred</h2>
+
+<p>Paris nightlife rewards cultural fluency and punishes tourists who arrive without context. Getting the right table at Raspoutine, arranging Silencio access, or knowing which Club 79 promoter to contact — this knowledge is the actual product Alfred provides. Our Paris concierge team is embedded in the city's nightlife culture and maintains genuine relationships with every venue listed here.</p>
+
+<p><strong>Contact Alfred</strong> to plan your Paris nightlife experience. Whether you're visiting for a weekend or based in the city, our team secures tables, guestlist placements, and complete evening itineraries at <a href="/catalog/nightlife" style="color:#34C759;text-decoration:none;font-weight:500">Paris's most exclusive venues</a>. Available 24/7, Alfred transforms Paris nights from unpredictable to unforgettable.</p>`
   }
 ];
 
