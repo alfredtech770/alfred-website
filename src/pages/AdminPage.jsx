@@ -14,8 +14,8 @@ var C = {
   bg:"#09090B", bg2:"#0F0F12", el:"#18181B", srf:"#1F1F23", bd:"#2C2C31", bd2:"#3F3F46",
   s1:"#F4F4F5", s2:"#E4E4E7", s3:"#D4D4D8", s4:"#A1A1AA",
   s5:"#71717A", s6:"#52525B", s7:"#3F3F46",
-  gn:"#34C759", rd:"#FF3B30", gd:"#D4A853", bl:"#007AFF", or:"#FF9500",
-  gdGrad:"linear-gradient(135deg,#D4A853 0%,#F5E6B8 50%,#D4A853 100%)"
+  gn:"#34C759", rd:"#FF3B30", gd:"#FFD60A", bl:"#007AFF", or:"#FF9500",
+  gdGrad:"linear-gradient(135deg,#FFD60A 0%,#FFF1A8 50%,#FFD60A 100%)"
 };
 
 /* ═══ Slack Integration ═══ */
@@ -284,17 +284,129 @@ function StatCard({label,value,icon,color}){
 
 /* ═══ Dashboard View ═══ */
 function DashboardView({counts,onNav}){
+  var [analytics,setAnalytics]=useState({users:0,bookings:[],recentBookings:[],revenue:0,confirmedBookings:0,cancelledBookings:0,avgPartySize:0,topRestaurants:[],citySplit:{}});
+
+  useEffect(function(){
+    async function load(){
+      var {data:bookings}=await supabase.from("bookings").select("*").order("created_at",{ascending:false});
+      var {data:users}=await supabase.from("users").select("*").order("created_at",{ascending:false});
+      bookings=bookings||[];users=users||[];
+
+      var revenue=bookings.reduce(function(s,b){return s+(Number(b.payment_amount)||0);},0);
+      var confirmed=bookings.filter(function(b){return b.status==="confirmed";}).length;
+      var cancelled=bookings.filter(function(b){return b.status==="cancelled";}).length;
+      var avgParty=bookings.length?Math.round(bookings.reduce(function(s,b){return s+(b.party_size||0);},0)/bookings.length*10)/10:0;
+
+      var restCount={};
+      bookings.forEach(function(b){if(b.restaurant_name){restCount[b.restaurant_name]=(restCount[b.restaurant_name]||0)+1;}});
+      var topRestaurants=Object.entries(restCount).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
+
+      var citySplit={};
+      bookings.forEach(function(b){if(b.city){citySplit[b.city]=(citySplit[b.city]||0)+1;}});
+
+      setAnalytics({users:users.length,bookings:bookings,recentBookings:bookings.slice(0,5),revenue:revenue,confirmedBookings:confirmed,cancelledBookings:cancelled,avgPartySize:avgParty,topRestaurants:topRestaurants,citySplit:citySplit,usersList:users});
+    }
+    load();
+  },[]);
+
+  var a=analytics;
+
   return(
     <div>
       <h2 style={{...sf(24,600),color:C.s1,marginBottom:8,marginTop:0}}>Dashboard</h2>
-      <p style={{...sf(14),color:C.s5,marginBottom:28}}>Welcome to the Alfred Admin. Manage your entire platform from here.</p>
+      <p style={{...sf(14),color:C.s5,marginBottom:28}}>Alfred Admin — real-time platform overview</p>
+
+      {/* Top Stats Row */}
+      <div style={{display:"flex",flexWrap:"wrap",gap:16,marginBottom:24}}>
+        <StatCard label="Total Users" value={a.users} icon="clients" color={C.gd}/>
+        <StatCard label="Bookings" value={a.bookings.length} icon="bookings" color={C.bl}/>
+        <StatCard label="Confirmed" value={a.confirmedBookings} icon="check" color={C.gn}/>
+        <StatCard label="Cancelled" value={a.cancelledBookings} icon="close" color={C.rd}/>
+        <StatCard label="Avg Party" value={a.avgPartySize} icon="clients" color={C.or}/>
+      </div>
+
+      {/* Inventory Stats */}
       <div style={{display:"flex",flexWrap:"wrap",gap:16,marginBottom:32}}>
         <StatCard label="Restaurants" value={counts.restaurants||0} icon="restaurant" color={C.gn}/>
         <StatCard label="Yachts" value={counts.yachts||0} icon="yacht" color={C.bl}/>
         <StatCard label="Wellness" value={counts.wellness||0} icon="wellness" color={C.or}/>
         <StatCard label="Cars" value={counts.cars||0} icon="car" color={C.rd}/>
-        <StatCard label="Bookings" value={counts.bookings||0} icon="bookings" color={C.gd}/>
       </div>
+
+      {/* Two Column Layout */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:32}}>
+        {/* Recent Bookings */}
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px",gridColumn:window.innerWidth<=768?"1/-1":"auto"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <h3 style={{...sf(15,600),color:C.s2,margin:0}}>Recent Bookings</h3>
+            <button onClick={function(){onNav("bookings");}} style={{...sf(12,500),color:C.gd,background:"none",border:"none",cursor:"pointer"}}>View All</button>
+          </div>
+          {a.recentBookings.length===0?<p style={{...sf(13),color:C.s5}}>No bookings yet</p>:
+          a.recentBookings.map(function(b,i){
+            var sc={confirmed:C.gn,cancelled:C.rd,pending:C.or}[b.status]||C.s5;
+            return(
+              <div key={b.id||i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:i<a.recentBookings.length-1?"1px solid "+C.bd:"none"}}>
+                <div>
+                  <p style={{...sf(13,500),color:C.s2,margin:0}}>{b.restaurant_name}</p>
+                  <p style={{...sf(11),color:C.s5,margin:"2px 0 0"}}>{b.reservation_date} · {b.party_size} guests · {b.city}</p>
+                </div>
+                <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:sc+"15",color:sc,textTransform:"capitalize"}}>{b.status}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Top Venues & City Split */}
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px",gridColumn:window.innerWidth<=768?"1/-1":"auto"}}>
+          <h3 style={{...sf(15,600),color:C.s2,margin:"0 0 16px"}}>Top Booked Venues</h3>
+          {a.topRestaurants.length===0?<p style={{...sf(13),color:C.s5}}>No data yet</p>:
+          a.topRestaurants.map(function(t,i){
+            var maxCount=a.topRestaurants[0][1];
+            return(
+              <div key={t[0]} style={{marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{...sf(13,500),color:C.s2}}>{t[0]}</span>
+                  <span style={{...sf(12,600),color:C.gd}}>{t[1]} booking{t[1]!==1?"s":""}</span>
+                </div>
+                <div style={{height:6,background:C.srf,borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:(t[1]/maxCount*100)+"%",background:C.gd,borderRadius:3,transition:"width 0.5s"}}/>
+                </div>
+              </div>
+            );
+          })}
+
+          <h3 style={{...sf(15,600),color:C.s2,margin:"24px 0 12px"}}>Bookings by City</h3>
+          <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+            {Object.entries(a.citySplit).map(function(e){
+              return <div key={e[0]} style={{background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"8px 16px",textAlign:"center"}}>
+                <p style={{...sf(18,700),color:C.s1,margin:0}}>{e[1]}</p>
+                <p style={{...sf(11),color:C.s5,margin:"2px 0 0"}}>{e[0]}</p>
+              </div>;
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Users */}
+      {a.usersList&&a.usersList.length>0&&(
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px",marginBottom:32}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+            <h3 style={{...sf(15,600),color:C.s2,margin:0}}>Members</h3>
+            <button onClick={function(){onNav("clients");}} style={{...sf(12,500),color:C.gd,background:"none",border:"none",cursor:"pointer"}}>View All</button>
+          </div>
+          <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+            {a.usersList.slice(0,6).map(function(u){
+              return <div key={u.id} style={{background:C.srf,border:"1px solid "+C.bd,borderRadius:12,padding:"12px 16px",minWidth:160,flex:"1 1 160px"}}>
+                <p style={{...sf(13,600),color:C.s1,margin:0}}>{(u.first_name||"")+" "+(u.last_name||"")}</p>
+                <p style={{...sf(11),color:C.s5,margin:"4px 0 0"}}>{u.email}</p>
+                <p style={{...sf(11),color:C.s4,margin:"2px 0 0"}}>{u.preferred_city||"No city"}{u.instagram_handle?" · @"+u.instagram_handle:""}</p>
+              </div>;
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Quick Actions */}
       <h3 style={{...sf(16,600),color:C.s2,marginBottom:16}}>Quick Actions</h3>
       <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
         {CATS.map(function(c){
@@ -880,7 +992,7 @@ function BookingsView(){
             <table style={{width:"100%",borderCollapse:"collapse",minWidth:600}}>
               <thead>
                 <tr style={{borderBottom:"1px solid "+C.bd}}>
-                  {["Client","Category","Item","Date","Status","Amount"].map(function(h){
+                  {["Venue","Guests","Date","Time","City","Occasion","Seating","Status"].map(function(h){
                     return <th key={h} style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>{h}</th>;
                   })}
                 </tr>
@@ -889,11 +1001,16 @@ function BookingsView(){
                 {filtered.map(function(b){
                   var sc=statusColors[b.status]||C.s5;
                   return(
-                    <tr key={b.id} style={{borderBottom:"1px solid "+C.bd}}>
-                      <td style={{...sf(13),color:C.s2,padding:"12px 14px"}}>{b.client_name||"-"}</td>
-                      <td style={{...sf(13),color:C.s4,padding:"12px 14px",textTransform:"capitalize"}}>{b.category||"-"}</td>
-                      <td style={{...sf(13),color:C.s3,padding:"12px 14px"}}>{b.item_name||"-"}</td>
-                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{b.booking_date||"-"}</td>
+                    <tr key={b.id} style={{borderBottom:"1px solid "+C.bd}}
+                      onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
+                      onMouseLeave={function(e){e.currentTarget.style.background="transparent";}}>
+                      <td style={{...sf(13,500),color:C.s1,padding:"12px 14px"}}>{b.restaurant_name||"-"}</td>
+                      <td style={{...sf(13),color:C.s3,padding:"12px 14px"}}>{b.party_size||"-"}</td>
+                      <td style={{...sf(13),color:C.s3,padding:"12px 14px"}}>{b.reservation_date||"-"}</td>
+                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{b.reservation_time?b.reservation_time.slice(0,5):"-"}</td>
+                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{b.city||"-"}</td>
+                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{b.occasion||"-"}</td>
+                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{b.seating_preference||"-"}</td>
                       <td style={{padding:"12px 14px"}}>
                         <select value={b.status||"pending"} onChange={function(e){updateStatus(b.id,e.target.value);}}
                           style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:8,padding:"4px 10px",...sf(12,600),color:sc,outline:"none",appearance:"auto"}}>
@@ -915,46 +1032,47 @@ function BookingsView(){
   );
 }
 
-/* ═══ Clients View ═══ */
+/* ═══ Clients/Users View ═══ */
 function ClientsView(){
-  var [clients,setClients]=useState([]);
+  var [users,setUsers]=useState([]);
   var [loading,setLoading]=useState(true);
-  var [hasTable,setHasTable]=useState(true);
+  var [search,setSearch]=useState("");
 
   async function load(){
     setLoading(true);
-    var {data,error}=await supabase.from("clients").select("*").order("name");
-    if(error&&error.code==="42P01"){setHasTable(false);setLoading(false);return;}
-    setClients(data||[]);
+    var {data}=await supabase.from("users").select("*").order("created_at",{ascending:false});
+    setUsers(data||[]);
     setLoading(false);
   }
   useEffect(function(){load();},[]);
 
-  if(!hasTable){
-    return(
-      <div>
-        <h2 style={{...sf(24,600),color:C.s1,margin:"0 0 24px"}}>Clients</h2>
-        <div style={{textAlign:"center",padding:"60px 20px",background:C.el,borderRadius:16,border:"1px solid "+C.bd}}>
-          <Icon name="clients" size={40} color={C.s6}/>
-          <p style={{...sf(16,500),color:C.s3,margin:"16px 0 8px"}}>Clients table not set up yet</p>
-          <p style={{...sf(13),color:C.s5,maxWidth:400,margin:"0 auto"}}>
-            Create a "clients" table in Supabase with columns: name, email, phone, city, preferences, vip_status, notes.
-            The admin will automatically connect once the table exists.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  var filtered=users.filter(function(u){
+    if(!search)return true;
+    var s=search.toLowerCase();
+    return (u.first_name||"").toLowerCase().includes(s)||(u.last_name||"").toLowerCase().includes(s)||(u.email||"").toLowerCase().includes(s)||(u.preferred_city||"").toLowerCase().includes(s);
+  });
 
   return(
     <div>
-      <h2 style={{...sf(24,600),color:C.s1,margin:"0 0 24px"}}>Clients</h2>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:24}}>
+        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Members ({users.length})</h2>
+      </div>
+
+      <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:20,alignItems:"center"}}>
+        <div style={{position:"relative",flex:"1 1 200px",maxWidth:320}}>
+          <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)"}}><Icon name="search" size={16} color={C.s5}/></div>
+          <input placeholder="Search members..." value={search} onChange={function(e){setSearch(e.target.value);}}
+            style={{width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px 10px 36px",...sf(14),color:C.s1,outline:"none"}}/>
+        </div>
+        <span style={{...sf(13),color:C.s5}}>{filtered.length} member{filtered.length!==1?"s":""}</span>
+      </div>
+
       {loading?(
         <div style={{padding:"60px",textAlign:"center",color:C.s5}}>Loading...</div>
-      ):clients.length===0?(
+      ):filtered.length===0?(
         <div style={{textAlign:"center",padding:"60px 20px",background:C.el,borderRadius:16,border:"1px solid "+C.bd}}>
           <Icon name="clients" size={40} color={C.s6}/>
-          <p style={{...sf(16,500),color:C.s3,margin:"16px 0"}}>No clients yet</p>
+          <p style={{...sf(16,500),color:C.s3,margin:"16px 0"}}>No members found</p>
         </div>
       ):(
         <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,overflow:"hidden"}}>
@@ -962,23 +1080,26 @@ function ClientsView(){
             <table style={{width:"100%",borderCollapse:"collapse"}}>
               <thead>
                 <tr style={{borderBottom:"1px solid "+C.bd}}>
-                  {["Name","Email","Phone","City","VIP","Notes"].map(function(h){
+                  {["Name","Email","City","Instagram","Referral Code","Referrals","Joined"].map(function(h){
                     return <th key={h} style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>{h}</th>;
                   })}
                 </tr>
               </thead>
               <tbody>
-                {clients.map(function(c){
+                {filtered.map(function(u){
                   return(
-                    <tr key={c.id} style={{borderBottom:"1px solid "+C.bd}}>
-                      <td style={{...sf(13,500),color:C.s1,padding:"12px 14px"}}>{c.name||"-"}</td>
-                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{c.email||"-"}</td>
-                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{c.phone||"-"}</td>
-                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{c.city||"-"}</td>
+                    <tr key={u.id} style={{borderBottom:"1px solid "+C.bd}}
+                      onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
+                      onMouseLeave={function(e){e.currentTarget.style.background="transparent";}}>
+                      <td style={{...sf(13,500),color:C.s1,padding:"12px 14px"}}>{(u.first_name||"")+" "+(u.last_name||"")}</td>
+                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.email||"-"}</td>
+                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.preferred_city||"-"}</td>
+                      <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.instagram_handle?"@"+u.instagram_handle:"-"}</td>
                       <td style={{padding:"12px 14px"}}>
-                        {c.vip_status?<span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:"rgba(212,168,83,0.12)",color:C.gd}}>VIP</span>:"-"}
+                        {u.referral_code?<span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:C.gd+"15",color:C.gd,fontFamily:"monospace"}}>{u.referral_code}</span>:"-"}
                       </td>
-                      <td style={{...sf(12),color:C.s5,padding:"12px 14px",maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.notes||"-"}</td>
+                      <td style={{...sf(13,600),color:u.referral_count>0?C.gn:C.s5,padding:"12px 14px"}}>{u.referral_count||0}</td>
+                      <td style={{...sf(12),color:C.s5,padding:"12px 14px"}}>{u.created_at?u.created_at.slice(0,10):"-"}</td>
                     </tr>
                   );
                 })}
@@ -1081,7 +1202,7 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
     ...CATS.map(function(c){return{id:c.id,label:c.label,icon:c.icon};}),
     {id:"divider2",divider:true},
     {id:"bookings",label:"Bookings",icon:"bookings"},
-    {id:"clients",label:"Clients",icon:"clients"},
+    {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
   ];
 
@@ -1167,7 +1288,7 @@ function MobileDrawer({active,onNav,onClose}){
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
     ...CATS.map(function(c){return{id:c.id,label:c.label,icon:c.icon};}),
     {id:"bookings",label:"Bookings",icon:"bookings"},
-    {id:"clients",label:"Clients",icon:"clients"},
+    {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
   ];
   return(
