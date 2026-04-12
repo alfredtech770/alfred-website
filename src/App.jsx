@@ -358,15 +358,18 @@ function AlfredLoader(p){
         <div style={{width:"100%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(44,44,49,0.5) 30%,rgba(44,44,49,0.5) 70%,transparent)",transformOrigin:"center",animation:"ldLineGrow 2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards",transform:"scaleX(0)"}} />
       </div>
 
-      {/* ALFRED — opacity driven by percentage */}
-      <div style={{zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",transform:phase>=2?"scale(1.12)":"scale(1)",transition:phase>=2?"transform 1.2s cubic-bezier(0.16,1,0.3,1)":"transform 0.3s ease"}}>
+      {/* ALFRED — opacity driven by percentage, responsive font */}
+      <div style={{zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 16px",maxWidth:"100%",transform:phase>=2?"scale(1.12)":"scale(1)",transition:phase>=2?"transform 1.2s cubic-bezier(0.16,1,0.3,1)":"transform 0.3s ease"}}>
         {TITLE.split("").map(function(ch,i){
           var letterOp=Math.min(opacity+i*0.008,1);
           var isShimmer=phase>=1;
           return <span key={i} style={{
             display:"inline-block",
-            ...sf(140,700),
-            letterSpacing:10,
+            fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif",
+            fontSize:"clamp(48px, 14vw, 140px)",
+            fontWeight:700,
+            WebkitFontSmoothing:"antialiased",
+            letterSpacing:"clamp(3px, 1vw, 10px)",
             color:"#F4F4F5",
             opacity:letterOp,
             transition:"opacity 0.15s linear",
