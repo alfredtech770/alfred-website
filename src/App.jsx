@@ -7,7 +7,7 @@ import SEOHead, { SEO } from "./components/SEOHead";
 import DiningPage from "./pages/DiningPage";
 import DiningDetailPage from "./pages/DiningDetailPage";
 import NightlifePage from "./pages/NightlifePage";
-import NightlifeDetailPage from "./pags/NightlifeDetailPage";
+import NightlifeDetailPage from "./pages/NightlifeDetailPage";
 import BarDetailPage from "./pages/BarDetailPage";
 import WellnessPage from "./pages/WellnessPage";
 import WellnessDetailPage from "./pages/WellnessDetailPage";
