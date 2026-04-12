@@ -7,7 +7,7 @@ import SEOHead, { SEO } from "./components/SEOHead";
 import DiningPage from "./pages/DiningPage";
 import DiningDetailPage from "./pages/DiningDetailPage";
 import NightlifePage from "./pages/NightlifePage";
-import NightlifeDetailPage from "./pages/NightlifeDetailPage";
+import NightlifeDetailPage from "./pags/NightlifeDetailPage";
 import BarDetailPage from "./pages/BarDetailPage";
 import WellnessPage from "./pages/WellnessPage";
 import WellnessDetailPage from "./pages/WellnessDetailPage";
@@ -23,6 +23,7 @@ import EventDetailPage from "./pages/EventDetailPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPost from "./pages/BlogPost";
 import CityPage from "./pages/CityPage";
+import ProposalBuilderPage from "./pages/ProposalBuilderPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -432,6 +433,7 @@ export default function App(){
         <Route path="/blog" element={<BlogPage/>}/>
         <Route path="/blog/:slug" element={<BlogPost/>}/>
         <Route path="/city/:slug" element={<CityPage/>}/>
+        <Route path="/proposal" element={<ProposalBuilderPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
     </BrowserRouter>
