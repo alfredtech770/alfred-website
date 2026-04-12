@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alfred Photo Admin</title>
+<style>
+body{margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui}
+.ld{color:#d4af37;font-size:1.2rem;text-align:center}
+.ld::after{content:'';display:block;width:40px;height:40px;margin:20px auto;border:3px solid #333;border-top-color:#d4af37;border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="ld" id="st">Loading Alfred Photo Admin...</div>
+<script>
+fetch('https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/venue-photos/admin/index.html')
+.then(r=>r.text()).then(h=>{document.open();document.write(h);document.close()})
+.catch(e=>{document.getElementById('st').textContent='Failed: '+e.message})
+</script>
+</body>
+</html>
