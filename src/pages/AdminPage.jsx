@@ -14,13 +14,28 @@ var C = {
 };
 
 /* ═══ Slack Integration ═══ */
-var SLACK_WEBHOOK = import.meta.env.VITE_SLACK_WEBHOOK || "";
+var SLACK_HOOKS = {
+  bookings: import.meta.env.VITE_SLACK_BOOKINGS || import.meta.env.VITE_SLACK_WEBHOOK || "",
+  signups: import.meta.env.VITE_SLACK_SIGNUPS || "",
+  downloads: import.meta.env.VITE_SLACK_DOWNLOADS || "",
+  inventory: import.meta.env.VITE_SLACK_INVENTORY || "",
+  vip: import.meta.env.VITE_SLACK_VIP || ""
+};
+
+function getWebhook(action){
+  if(action==="booking")return SLACK_HOOKS.bookings;
+  if(action==="signup")return SLACK_HOOKS.signups||SLACK_HOOKS.bookings;
+  if(action==="download")return SLACK_HOOKS.downloads||SLACK_HOOKS.bookings;
+  if(action==="created"||action==="updated"||action==="deleted"||action==="bulk"||action==="image")return SLACK_HOOKS.inventory||SLACK_HOOKS.bookings;
+  if(action==="vip")return SLACK_HOOKS.vip||SLACK_HOOKS.bookings;
+  return SLACK_HOOKS.bookings;
+}
 
 async function notifySlack(action, category, name, details){
   var emoji = {
     created:":white_check_mark:",updated:":pencil2:",deleted:":wastebasket:",
     status:":arrows_counterclockwise:",image:":frame_with_picture:",
-    booking:":calendar:",bulk:":package:"
+    booking:":calendar:",bulk:":package:",signup:":wave:",download:":arrow_down:",vip:":star2:"
   }[action]||":bell:";
   var color = {
     created:"#34C759",updated:"#007AFF",deleted:"#FF3B30",
@@ -28,11 +43,13 @@ async function notifySlack(action, category, name, details){
   }[action]||"#A1A1AA";
   var actionLabel = {
     created:"New Record Added",updated:"Record Updated",deleted:"Record Deleted",
-    status:"Status Changed",image:"Images Updated",booking:"Booking Updated",bulk:"Bulk Action"
+    status:"Status Changed",image:"Images Updated",booking:"Booking Updated",bulk:"Bulk Action",
+    signup:"New Member Signed Up",download:"New App Download",vip:"VIP Client Update"
   }[action]||action;
-  if(!SLACK_WEBHOOK)return;
+  var webhook=getWebhook(action);
+  if(!webhook)return;
   try{
-    await fetch(SLACK_WEBHOOK,{
+    await fetch(webhook,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
