@@ -1362,6 +1362,97 @@ export var BLOG_POSTS=[
 
 <p><strong>Download the Alfred app</strong> or contact our concierge team on WhatsApp to secure your Miami pool party experience — from reserved cabanas at Hyde Beach to private villa pool parties catered by Alfred's preferred vendors.</p>`
   }
+,
+  {
+    slug:"best-steakhouses-miami-2026",
+    title:"The Best Steakhouses in Miami 2026",
+    excerpt:"From Papi Steak to Prime 112, discover Miami's finest steakhouses.",
+    date:"2026-04-13",readingTime:7,category:"Dining",
+    keywords:"best steakhouses miami, papi steak, prime 112, steak miami",
+    image:"https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&h=630&fit=crop",
+    content:`<h1>The Best Steakhouses in Miami 2026</h1><p>Miami takes its steak seriously. From celebrity-packed tables at Papi Steak to the timeless elegance of Prime 112, the city offers a steakhouse for every occasion.</p><h2>Papi Steak</h2><p>David Grutman's Papi Steak in South Beach has become the steakhouse of the moment. The wagyu tomahawk is legendary, the truffle mac and cheese is addictive, and the energy rivals any nightclub.</p><h2>Prime 112</h2><p>Located in the historic Browns Hotel on Collins Avenue, this South Beach institution has been serving perfect cuts since 2004. The bone-in filet is their signature.</p><h2>Meat Market</h2><p>On Lincoln Road, Meat Market combines prime cuts with a trendy atmosphere. The Japanese A5 wagyu is a splurge worth every penny.</p><h2>Red The Steakhouse</h2><p>Dark, moody, and sophisticated. Their surf and turf combinations are some of the best in the city.</p><p><a href="/catalog/dining" style="color:#FFD60A">Browse all restaurants</a> or contact Alfred on <a href="https://wa.me/447449562204" style="color:#FFD60A">WhatsApp</a>.</p>`
+  },
+  {
+    slug:"miami-art-basel-2026-guide",
+    title:"Miami Art Basel 2026 — The Complete VIP Guide",
+    excerpt:"Galleries, parties, hotels, and how to experience Art Basel like a VIP.",
+    date:"2026-04-13",readingTime:9,category:"Events",
+    keywords:"art basel miami 2026, art basel guide, miami art week",
+    image:"https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=1200&h=630&fit=crop",
+    content:`<h1>Miami Art Basel 2026 — The Complete VIP Guide</h1><p>Art Basel Miami Beach transforms the city into the global epicenter of contemporary art every December. Over 280 galleries from 38 countries showcase works by more than 4,000 artists.</p><h2>Where to Stay</h2><p>The Faena Hotel is the unofficial headquarters during Basel. <a href="/catalog/hotels" style="color:#FFD60A">Browse hotels</a>.</p><h2>The Best Parties</h2><p>The party circuit is as curated as the art. Faena opening night, NADA afterparty, and brand events across Miami Beach and Wynwood.</p><h2>Dining During Art Week</h2><p>Restaurants create special menus. <a href="/catalog/dining" style="color:#FFD60A">Book through Alfred</a> for guaranteed tables.</p>`
+  },
+  {
+    slug:"luxury-spa-miami-guide",
+    title:"The Best Luxury Spas in Miami 2026",
+    excerpt:"Bamford Spa, Lapis Spa, ESPA — discover Miami's most indulgent wellness experiences.",
+    date:"2026-04-13",readingTime:7,category:"Wellness",
+    keywords:"luxury spa miami, best spa miami, wellness miami beach",
+    image:"https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&h=630&fit=crop",
+    content:`<h1>The Best Luxury Spas in Miami 2026</h1><p>Miami's luxury spa scene rivals any global destination.</p><h2>Bamford Wellness Spa — 1 Hotel</h2><p>Organic products, holistic treatments, and a serene rooftop setting.</p><h2>Lapis Spa — Fontainebleau</h2><p>40,000 square feet of mineral-rich water therapies and couples suites.</p><h2>ESPA at Acqualina</h2><p>Forbes Five-Star spa with oceanfront hydrotherapy circuit.</p><p><a href="/catalog/wellness" style="color:#FFD60A">Browse wellness</a>.</p>`
+  },
+  {
+    slug:"best-sushi-miami-2026",
+    title:"Best Sushi & Japanese Restaurants in Miami 2026",
+    excerpt:"From Zuma to hidden omakase counters, Miami's Japanese scene is world-class.",
+    date:"2026-04-13",readingTime:7,category:"Dining",
+    keywords:"best sushi miami, japanese restaurants miami, omakase miami, zuma miami",
+    image:"https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&h=630&fit=crop",
+    content:`<h1>Best Sushi & Japanese Restaurants in Miami 2026</h1><p>Miami's Japanese dining scene has exploded.</p><h2>Zuma</h2><p>Contemporary Japanese cuisine consistently ranked among the world's best. The robata grill produces incredible black cod miso.</p><h2>Nobu Miami Beach</h2><p>The greatest hits in a sophisticated beachfront setting.</p><h2>Gekko</h2><p>David Beckham's Japanese steakhouse in Brickell.</p><p><a href="/catalog/dining" style="color:#FFD60A">Browse dining</a>.</p>`
+  },
+  {
+    slug:"miami-south-beach-guide",
+    title:"South Beach Miami — The Ultimate Luxury Guide",
+    excerpt:"Hotels, restaurants, nightlife, beach clubs — your complete South Beach playbook.",
+    date:"2026-04-13",readingTime:9,category:"Travel",
+    keywords:"south beach guide, south beach miami, luxury south beach",
+    image:"https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=1200&h=630&fit=crop",
+    content:`<h1>South Beach Miami — The Ultimate Luxury Guide</h1><p>South Beach is Miami's crown jewel.</p><h2>Where to Stay</h2><p>The Setai, Faena, 1 Hotel, EDITION. <a href="/catalog/hotels" style="color:#FFD60A">Browse hotels</a>.</p><h2>Best Restaurants</h2><p>Carbone, Zuma, Papi Steak. <a href="/catalog/dining" style="color:#FFD60A">See all</a>.</p><h2>Nightlife</h2><p>LIV, Story, E11EVEN. <a href="/catalog/nightlife" style="color:#FFD60A">Explore</a>.</p>`
+  },
+  {
+    slug:"best-italian-restaurants-miami",
+    title:"Best Italian Restaurants in Miami 2026",
+    excerpt:"Carbone, Casa Tua, Cecconi's — Miami's finest Italian dining.",
+    date:"2026-04-13",readingTime:7,category:"Dining",
+    keywords:"italian restaurants miami, carbone miami, casa tua miami",
+    image:"https://images.unsplash.com/photo-1498579150354-977475b7ea0b?w=1200&h=630&fit=crop",
+    content:`<h1>Best Italian Restaurants in Miami 2026</h1><p>Miami's Italian scene is among the best in America.</p><h2>Carbone</h2><p>The Italian-American restaurant that changed the game. Spicy rigatoni vodka, veal parmesan.</p><h2>Casa Tua</h2><p>Part restaurant, part private club. The garden terrace is magical.</p><h2>Cecconi's</h2><p>Elegant Italian with ocean views at Soho Beach House.</p><p><a href="/catalog/dining" style="color:#FFD60A">Browse restaurants</a>.</p>`
+  },
+  {
+    slug:"dubai-luxury-concierge-guide",
+    title:"Dubai Luxury Concierge Guide 2026",
+    excerpt:"Restaurants, nightlife, supercars, yachts, and hotels in Dubai.",
+    date:"2026-04-13",readingTime:9,category:"Travel",
+    keywords:"luxury dubai, dubai concierge, dubai restaurants nightlife",
+    image:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200&h=630&fit=crop",
+    content:`<h1>Dubai Luxury Concierge Guide 2026</h1><p>Dubai is the world's playground for luxury.</p><h2>Hotels</h2><p>Burj Al Arab, Atlantis The Royal, One&Only The Palm.</p><h2>Restaurants</h2><p>Nobu, Zuma DIFC, Cipriani, La Petite Maison.</p><h2>Nightlife</h2><p>White Dubai, Cavalli Club, Base.</p><h2>Supercars</h2><p>Lamborghini and Ferrari delivered to your hotel.</p><p>Contact Alfred on <a href="https://wa.me/447449562204" style="color:#FFD60A">WhatsApp</a>.</p>`
+  },
+  {
+    slug:"paris-michelin-restaurants-2026",
+    title:"Paris Michelin-Starred Restaurants 2026",
+    excerpt:"Three-star legends to rising one-star gems in the world's gastronomy capital.",
+    date:"2026-04-13",readingTime:8,category:"Dining",
+    keywords:"michelin restaurants paris, best restaurants paris, fine dining paris",
+    image:"https://images.unsplash.com/photo-1550507992-eb63ffee0847?w=1200&h=630&fit=crop",
+    content:`<h1>Paris Michelin-Starred Restaurants 2026</h1><p>Paris remains the undisputed capital of gastronomy.</p><h2>Three Stars</h2><p>L'Ambroisie, Le Cinq, Arpege.</p><h2>Two Stars</h2><p>Le Clarence, Kei, Sylvestre.</p><h2>Rising One Stars</h2><p>Septime, Comice, Pilgrim, Table by Bruno Verjus.</p><p><a href="/catalog/dining" style="color:#FFD60A">Browse dining</a>.</p>`
+  },
+  {
+    slug:"miami-wedding-planning-guide",
+    title:"Planning a Luxury Wedding in Miami",
+    excerpt:"Venues, yachts, catering, after-parties — your dream Miami wedding guide.",
+    date:"2026-04-13",readingTime:8,category:"Events",
+    keywords:"luxury wedding miami, miami wedding venues, wedding planning miami",
+    image:"https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=630&fit=crop",
+    content:`<h1>Planning a Luxury Wedding in Miami</h1><p>Miami offers everything for a dream wedding.</p><h2>Venues</h2><p>Vizcaya, Faena, 1 Hotel, PAMM.</p><h2>Yacht Weddings</h2><p><a href="/catalog/yachts" style="color:#FFD60A">Browse yachts</a>.</p><h2>After-Party</h2><p>VIP at LIV, private Wynwood venue, late-night yacht cruise. <a href="/catalog/nightlife" style="color:#FFD60A">See nightlife</a>.</p><p>Contact Alfred on <a href="https://wa.me/447449562204" style="color:#FFD60A">WhatsApp</a>.</p>`
+  },
+  {
+    slug:"best-beach-clubs-miami-2026",
+    title:"Best Beach Clubs in Miami 2026",
+    excerpt:"Nikki Beach, Fontainebleau pool, 1 Beach Club — Miami's best daytime luxury.",
+    date:"2026-04-13",readingTime:7,category:"Nightlife",
+    keywords:"beach clubs miami, pool party miami, nikki beach, miami day party",
+    image:"https://images.unsplash.com/photo-1540541338287-41700207dee6?w=1200&h=630&fit=crop",
+    content:`<h1>Best Beach Clubs in Miami 2026</h1><p>Miami's daytime scene is as legendary as its nightlife.</p><h2>Nikki Beach</h2><p>The original. Sunday brunch with champagne and international DJs.</p><h2>1 Beach Club</h2><p>Eco-luxury meets South Beach. Organic cocktails, farm-to-table food.</p><h2>Fontainebleau Pool</h2><p>Multiple pools, cabanas, bottle service. The Tidal Pool is VIP.</p><h2>Hyde Beach at SLS</h2><p>High-energy weekend pool parties with top DJs.</p><p>Contact Alfred on <a href="https://wa.me/447449562204" style="color:#FFD60A">WhatsApp</a> for cabana reservations.</p>`
+  }
 ];
 
 function BlogPost(){
