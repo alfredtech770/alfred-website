@@ -1946,6 +1946,256 @@ function ComposeNotification({users,onClose,onSend}){
   );
 }
 
+/* ═══ Finance & Revenue ═══ */
+function FinanceView(){
+  var [bookings,setBookings]=useState([]);
+  var [users,setUsers]=useState([]);
+  var [loading,setLoading]=useState(true);
+  var [period,setPeriod]=useState("all");
+
+  useEffect(function(){
+    async function load(){
+      setLoading(true);
+      var {data:b}=await supabase.from("bookings").select("*").order("created_at",{ascending:false});
+      var {data:u}=await supabase.from("users").select("*").order("created_at",{ascending:false});
+      setBookings(b||[]);setUsers(u||[]);setLoading(false);
+    }
+    load();
+  },[]);
+
+  // Filter by period
+  var now=new Date();
+  var filteredBookings=bookings.filter(function(b){
+    if(period==="all")return true;
+    var d=new Date(b.created_at);
+    if(period==="today")return d.toDateString()===now.toDateString();
+    if(period==="week"){var w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}
+    if(period==="month"){var m=new Date(now);m.setMonth(m.getMonth()-1);return d>=m;}
+    if(period==="year"){var y=new Date(now);y.setFullYear(y.getFullYear()-1);return d>=y;}
+    return true;
+  });
+
+  // Calculations
+  var totalRevenue=filteredBookings.reduce(function(s,b){return s+(Number(b.payment_amount)||0);},0);
+  var totalBookings=filteredBookings.length;
+  var confirmedBookings=filteredBookings.filter(function(b){return b.status==="confirmed"||b.status==="completed";}).length;
+  var cancelledBookings=filteredBookings.filter(function(b){return b.status==="cancelled";}).length;
+  var pendingBookings=filteredBookings.filter(function(b){return b.status==="pending"||b.status==="requested";}).length;
+  var avgPartySize=totalBookings?Math.round(filteredBookings.reduce(function(s,b){return s+(b.party_size||0);},0)/totalBookings*10)/10:0;
+  var totalGuests=filteredBookings.reduce(function(s,b){return s+(b.party_size||0);},0);
+  var conversionRate=totalBookings?Math.round(confirmedBookings/totalBookings*100):0;
+
+  // Revenue by city
+  var revenueByCity={};
+  filteredBookings.forEach(function(b){
+    var city=b.city||"Unknown";
+    revenueByCity[city]=(revenueByCity[city]||0)+(Number(b.payment_amount)||0);
+  });
+
+  // Bookings by city
+  var bookingsByCity={};
+  filteredBookings.forEach(function(b){
+    var city=b.city||"Unknown";
+    bookingsByCity[city]=(bookingsByCity[city]||0)+1;
+  });
+
+  // Top venues by bookings
+  var venueCount={};
+  filteredBookings.forEach(function(b){
+    var v=b.restaurant_name||"Unknown";
+    venueCount[v]=(venueCount[v]||0)+1;
+  });
+  var topVenues=Object.entries(venueCount).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+
+  // Monthly revenue breakdown
+  var monthlyRevenue={};
+  var monthlyBookings={};
+  bookings.forEach(function(b){
+    var d=new Date(b.created_at);
+    var key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+    monthlyRevenue[key]=(monthlyRevenue[key]||0)+(Number(b.payment_amount)||0);
+    monthlyBookings[key]=(monthlyBookings[key]||0)+1;
+  });
+  var months=Object.keys(monthlyRevenue).sort().reverse().slice(0,12);
+
+  // User growth
+  var usersByMonth={};
+  users.forEach(function(u){
+    var d=new Date(u.created_at);
+    var key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+    usersByMonth[key]=(usersByMonth[key]||0)+1;
+  });
+
+  // Membership tiers (estimated from free_until field)
+  var freeUsers=users.filter(function(u){return !u.free_until||new Date(u.free_until)>now;}).length;
+  var paidUsers=users.length-freeUsers;
+
+  // Estimated MRR (Monthly Recurring Revenue)
+  var estimatedMRR=paidUsers*29.99; // Assuming Gold tier
+
+  if(loading)return <div style={{padding:"60px",textAlign:"center",color:C.s5}}>Loading financial data...</div>;
+
+  return(
+    <div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:20}}>
+        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Finance & Revenue</h2>
+        <div style={{display:"flex",gap:6}}>
+          {[{k:"all",l:"All Time"},{k:"year",l:"Year"},{k:"month",l:"Month"},{k:"week",l:"Week"},{k:"today",l:"Today"}].map(function(p){
+            var active=period===p.k;
+            return <button key={p.k} onClick={function(){setPeriod(p.k);}}
+              style={{padding:"7px 14px",borderRadius:10,border:"1px solid "+(active?C.gd:C.bd),background:active?C.gd+"15":"none",...sf(12,active?600:400),color:active?C.gd:C.s5,cursor:"pointer"}}>{p.l}</button>;
+          })}
+        </div>
+      </div>
+
+      {/* Revenue Cards */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:14,marginBottom:24}}>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Total Revenue</p>
+          <p style={{...sf(28,700),color:C.gd,margin:0}}>${totalRevenue.toLocaleString("en-US",{minimumFractionDigits:2})}</p>
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Est. MRR</p>
+          <p style={{...sf(28,700),color:C.gn,margin:0}}>${estimatedMRR.toFixed(2)}</p>
+          <p style={{...sf(10),color:C.s5,margin:"4px 0 0"}}>{paidUsers} paid · {freeUsers} free</p>
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Total Bookings</p>
+          <p style={{...sf(28,700),color:C.s1,margin:0}}>{totalBookings}</p>
+          <p style={{...sf(10),color:C.s5,margin:"4px 0 0"}}>{totalGuests} total guests</p>
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Conversion Rate</p>
+          <p style={{...sf(28,700),color:conversionRate>=50?C.gn:C.or,margin:0}}>{conversionRate}%</p>
+          <p style={{...sf(10),color:C.s5,margin:"4px 0 0"}}>{confirmedBookings} confirmed / {totalBookings}</p>
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Avg Party Size</p>
+          <p style={{...sf(28,700),color:C.bl,margin:0}}>{avgPartySize}</p>
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Total Members</p>
+          <p style={{...sf(28,700),color:C.s1,margin:0}}>{users.length}</p>
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:24}}>
+        {/* Monthly Breakdown */}
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px"}}>
+          <h3 style={{...sf(15,600),color:C.s2,marginBottom:16}}>Monthly Breakdown</h3>
+          {months.length===0?<p style={{...sf(13),color:C.s5}}>No data yet</p>:
+          months.map(function(m){
+            var rev=monthlyRevenue[m]||0;
+            var bk=monthlyBookings[m]||0;
+            var newUsers=usersByMonth[m]||0;
+            return(
+              <div key={m} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid "+C.bd}}>
+                <span style={{...sf(13,500),color:C.s2,minWidth:80}}>{m}</span>
+                <span style={{...sf(12),color:C.s4}}>{bk} bookings</span>
+                <span style={{...sf(12),color:C.gn}}>+{newUsers} users</span>
+                <span style={{...sf(13,600),color:C.gd}}>${rev.toFixed(2)}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Top Venues */}
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px"}}>
+          <h3 style={{...sf(15,600),color:C.s2,marginBottom:16}}>Top Venues by Bookings</h3>
+          {topVenues.length===0?<p style={{...sf(13),color:C.s5}}>No data yet</p>:
+          topVenues.map(function(v,i){
+            var maxCount=topVenues[0][1];
+            return(
+              <div key={v[0]} style={{marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{...sf(13,500),color:C.s2}}>{i+1}. {v[0]}</span>
+                  <span style={{...sf(12,600),color:C.gd}}>{v[1]}</span>
+                </div>
+                <div style={{height:6,background:C.srf,borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:(v[1]/maxCount*100)+"%",background:C.gd,borderRadius:3}}/>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Bookings by City + Status Breakdown */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:24}}>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px"}}>
+          <h3 style={{...sf(15,600),color:C.s2,marginBottom:16}}>Bookings by City</h3>
+          <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
+            {Object.entries(bookingsByCity).sort(function(a,b){return b[1]-a[1];}).map(function(e){
+              return <div key={e[0]} style={{background:C.srf,border:"1px solid "+C.bd,borderRadius:12,padding:"12px 18px",textAlign:"center",flex:"1 1 100px"}}>
+                <p style={{...sf(22,700),color:C.s1,margin:0}}>{e[1]}</p>
+                <p style={{...sf(11),color:C.s5,margin:"4px 0 0"}}>{e[0]}</p>
+                {revenueByCity[e[0]]>0&&<p style={{...sf(11,600),color:C.gd,margin:"2px 0 0"}}>${revenueByCity[e[0]].toFixed(0)}</p>}
+              </div>;
+            })}
+          </div>
+        </div>
+
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px"}}>
+          <h3 style={{...sf(15,600),color:C.s2,marginBottom:16}}>Status Breakdown</h3>
+          <div style={{display:"grid",gap:10}}>
+            {[["Confirmed",confirmedBookings,C.gn],["Pending",pendingBookings,C.or],["Cancelled",cancelledBookings,C.rd]].map(function(s){
+              var pct=totalBookings?Math.round(s[1]/totalBookings*100):0;
+              return(
+                <div key={s[0]}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                    <span style={{...sf(13,500),color:C.s2}}>{s[0]}</span>
+                    <span style={{...sf(12,600),color:s[2]}}>{s[1]} ({pct}%)</span>
+                  </div>
+                  <div style={{height:8,background:C.srf,borderRadius:4,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:pct+"%",background:s[2],borderRadius:4,transition:"width 0.5s"}}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Transactions */}
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px"}}>
+        <h3 style={{...sf(15,600),color:C.s2,marginBottom:16}}>Recent Transactions</h3>
+        {filteredBookings.filter(function(b){return b.payment_amount;}).length===0?(
+          <p style={{...sf(13),color:C.s5}}>No paid transactions yet. Revenue will appear here when bookings include payment amounts.</p>
+        ):(
+          <div style={{overflowX:"auto"}}>
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead>
+                <tr style={{borderBottom:"1px solid "+C.bd}}>
+                  {["Date","Venue","Guest","City","Amount","Status"].map(function(h){
+                    return <th key={h} style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"10px 14px",textAlign:"left"}}>{h}</th>;
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredBookings.filter(function(b){return b.payment_amount;}).slice(0,20).map(function(b){
+                  var user=users.find(function(u){return u.id===b.user_id;})||{};
+                  var sc=statusColors[b.status]||C.s5;
+                  return(
+                    <tr key={b.id} style={{borderBottom:"1px solid "+C.bd}}>
+                      <td style={{...sf(12),color:C.s4,padding:"10px 14px"}}>{b.reservation_date}</td>
+                      <td style={{...sf(12,500),color:C.s1,padding:"10px 14px"}}>{b.restaurant_name}</td>
+                      <td style={{...sf(12),color:C.s3,padding:"10px 14px"}}>{(user.first_name||"")+" "+(user.last_name||"")}</td>
+                      <td style={{...sf(12),color:C.s4,padding:"10px 14px"}}>{b.city||"-"}</td>
+                      <td style={{...sf(13,600),color:C.gd,padding:"10px 14px"}}>${Number(b.payment_amount).toFixed(2)}</td>
+                      <td style={{padding:"10px 14px"}}><span style={{...sf(10,600),padding:"3px 8px",borderRadius:20,background:sc+"15",color:sc}}>{b.status}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
   var items=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
@@ -1958,6 +2208,7 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
     {id:"featured",label:"Featured",icon:"star"},
     {id:"blog",label:"Blog",icon:"edit"},
     {id:"notifications",label:"Notifications",icon:"star"},
+    {id:"finance",label:"Finance",icon:"star"},
   ];
 
   return(
@@ -2047,6 +2298,7 @@ function MobileDrawer({active,onNav,onClose}){
     {id:"featured",label:"Featured",icon:"star"},
     {id:"blog",label:"Blog",icon:"edit"},
     {id:"notifications",label:"Notifications",icon:"star"},
+    {id:"finance",label:"Finance",icon:"star"},
   ];
   return(
     <div style={{position:"fixed",inset:0,zIndex:200,display:"flex"}}>
@@ -2112,6 +2364,7 @@ function AdminDashboard({onLogout}){
     if(page==="featured")return <FeaturedView/>;
     if(page==="blog")return <BlogView/>;
     if(page==="notifications")return <NotificationsView/>;
+    if(page==="finance")return <FinanceView/>;
     if(activeCat)return <CategoryView key={activeCat.id} cat={activeCat}/>;
     return <DashboardView counts={counts} onNav={setPage}/>;
   }
