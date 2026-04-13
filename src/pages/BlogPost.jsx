@@ -14,7 +14,7 @@ export var BLOG_POSTS=[
     readingTime:8,
     category:"Dining",
     keywords:"best restaurants miami, top restaurants miami, miami restaurants 2026, fine dining miami, michelin restaurants miami",
-    image:"https://images.unsplash.com/photo-1504674900906-f3b100ce2c4f?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=630&fit=crop",
     content:`<h1>The 15 Best Restaurants in Miami for 2026 — A Concierge's Guide</h1>
 
 <p>Miami's culinary scene has evolved into one of the most vibrant and sophisticated dining destinations in the world. From Michelin-starred establishments to innovative molecular gastronomy temples, the city offers an unparalleled selection of gastronomic experiences. At Alfred Concierge, we work with the city's most exclusive restaurants daily, securing impossible reservations for our clientele.</p>
@@ -152,7 +152,7 @@ export var BLOG_POSTS=[
     readingTime:7,
     category:"Lifestyle",
     keywords:"exotic car rental miami, ferrari rental miami, lamborghini rental miami, rolls royce rental, supercar rental miami",
-    image:"https://images.unsplash.com/photo-1550489213-49d056dc0a6a?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&h=630&fit=crop",
     content:`<h1>How to Rent an Exotic Car in Miami — Ferrari, Lamborghini & Rolls Royce Guide</h1>
 
 <p>Miami's sunshine, ocean views, and prestigious addresses create the perfect backdrop for exotic automotive experiences. Whether you're visiting Miami for business, pleasure, or special occasions, renting a supercar elevates your experience. From sleek Ferraris to powerful Lamborghinis to luxurious Rolls-Royces, Miami offers exceptional vehicles. This guide from Alfred Concierge covers everything you need to know about renting exotic cars in Miami.</p>
@@ -229,7 +229,7 @@ export var BLOG_POSTS=[
     readingTime:8,
     category:"Nightlife",
     keywords:"best nightclubs miami, LIV Miami, E11even Miami, Story Miami, VIP nightlife miami, nightclub tables miami",
-    image:"https://images.unsplash.com/photo-1519671482677-11fbb972b814?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=1200&h=630&fit=crop",
     content:`<h1>The Best Nightclubs in Miami 2026 — LIV, E11even, Story & More</h1>
 
 <p>Miami's nightlife scene stands unmatched globally. From mega-clubs hosting 4,000+ revelers to intimate venues featuring world-class DJs, Miami offers unparalleled nocturnal entertainment. The city attracts international celebrities, musicians, athletes, and socialites nightly. This guide from Alfred Concierge reveals Miami's finest nightclubs and how to access VIP experiences.</p>
@@ -314,7 +314,7 @@ export var BLOG_POSTS=[
     readingTime:9,
     category:"Yachts",
     keywords:"yacht charter miami, yacht rental miami, boat rental miami, luxury yacht charter, superyacht charter miami",
-    image:"https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=1200&h=630&fit=crop",
     content:`<h1>Miami Yacht Charter Guide 2026 — Everything You Need to Know</h1>
 
 <p>Yachting from Miami offers unmatched Caribbean access, crystalline waters, and cosmopolitan onboard luxury. From intimate 40-foot sailboats to 150-foot+ superyachts featuring helicopter decks and submarine tenders, Miami's yacht charter market offers extraordinary vessels. This comprehensive guide from Alfred Concierge covers everything about yacht chartering from Miami.</p>
@@ -395,7 +395,7 @@ export var BLOG_POSTS=[
     readingTime:7,
     category:"Services",
     keywords:"best concierge service, luxury concierge, personal concierge, concierge app, exclusive concierge",
-    image:"https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=630&fit=crop",
     content:`<h1>The Best Luxury Concierge Services in 2026 — Why Alfred Leads the Pack</h1>
 
 <p>Luxury concierge services transform how high-net-worth individuals manage their lifestyles. The best concierge services handle complex requests, secure impossible reservations, and create seamless experiences across dining, travel, entertainment, and lifestyle. This guide explores what distinguishes exceptional concierge from ordinary, and why Alfred represents the pinnacle of luxury concierge services.</p>
@@ -478,7 +478,7 @@ export var BLOG_POSTS=[
     readingTime:8,
     category:"Travel",
     keywords:"private jet charter, private jet rental, charter private jet, private flight, private jet cost",
-    image:"https://images.unsplash.com/photo-1494571869139-f1a9f2b28b50?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=1200&h=630&fit=crop",
     content:`<h1>How to Charter a Private Jet — Cost, Tips & What to Expect</h1>
 
 <p>Private jet travel eliminates the inefficiencies, delays, and compromises of commercial aviation. No security lines, no boarding delays, no baggage restrictions, no contaminated air recirculation. Private aviation delivers efficiency and comfort that commercial travel cannot match. This comprehensive guide from Alfred Concierge covers everything about private jet charter.</p>
@@ -565,7 +565,7 @@ export var BLOG_POSTS=[
     readingTime:8,
     category:"Events",
     keywords:"Miami Grand Prix 2026, Miami F1 tickets, Miami Grand Prix hospitality, Miami GP VIP, Formula 1 Miami",
-    image:"https://images.unsplash.com/photo-1609348942467-f4a86e1fb4d0?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1504817343863-5092a923e351?w=1200&h=630&fit=crop",
     content:`<h1>Miami Grand Prix 2026: VIP Hospitality, Tickets & After-Parties Guide</h1>
 
 <p>The Miami Grand Prix has evolved into Formula 1's signature American event, combining world-class motorsport with Miami's glamorous lifestyle. Held at the Miami International Autodrome (located at the Miami Dolphins' Hard Rock Stadium), the race attracts celebrities, international travelers, and motorsport enthusiasts worldwide. This comprehensive guide from Alfred Concierge reveals how to experience the Miami Grand Prix 2026 at the highest levels.</p>
@@ -751,7 +751,7 @@ export var BLOG_POSTS=[
     readingTime:9,
     category:"Dining",
     keywords:"best breakfast miami, brunch miami, best brunch spots miami, miami brunch 2026, miami breakfast restaurants",
-    image:"https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=1200&h=630&fit=crop",
     content:`<h1>Top 10 Best Breakfast & Brunch Spots in Miami 2026</h1>
 
 <p>Miami's brunch culture is nothing short of extraordinary. Fueled by the city's Latin influences, its beach lifestyle, and a culinary scene that attracts talented chefs from around the world, the morning meal in Miami has evolved into a full-blown social experience. Weekend brunch here isn't just about food — it's about Rosé at noon, ocean breezes, DJ sets, and long lazy hours with good company. Alfred Concierge has curated the definitive list of the best breakfast and brunch spots in Miami for 2026.</p>
@@ -834,7 +834,7 @@ export var BLOG_POSTS=[
     readingTime:10,
     category:"Dining",
     keywords:"kosher restaurants miami, kosher food miami, best kosher miami, kosher miami beach, kosher dining miami 2026",
-    image:"https://images.unsplash.com/photo-1551218808-94e220e084d2?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop",
     content:`<h1>Kosher Restaurants in Miami — The Complete Guide</h1>
 
 <p>Miami is home to one of the largest and most sophisticated kosher dining scenes in the United States. Anchored by the established Jewish communities of Surfside, Bal Harbour, Aventura, and North Miami Beach — and enriched by a steady influx of Israeli, French, and South American Jewish visitors — Miami's kosher restaurant landscape offers an extraordinary range of cuisines, price points, and dining experiences. From authentic Israeli street food to kosher steakhouses serving prime wagyu beef, from Mediterranean mezze to upscale sushi, the city delivers world-class kosher dining with Miami's characteristic glamour.</p>
@@ -974,7 +974,7 @@ export var BLOG_POSTS=[
     readingTime:9,
     category:"Nightlife",
     keywords:"rooftop bars miami, best rooftop miami, sky bars miami, miami rooftop 2026, best rooftop bars miami beach",
-    image:"https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1200&h=630&fit=crop",
     content:`<h1>Best Rooftop Bars in Miami 2026 — The Ultimate Sky Bar Guide</h1>
 
 <p>Miami's skyline has grown dramatically in recent years, and with it, the city's rooftop bar culture has exploded into one of the most compelling in the world. From Brickell's gleaming financial towers to the Art Deco rooftops of South Beach, from Wynwood's creative energy to the tranquility of Miami Beach's luxury hotels, a rooftop cocktail as the sun sets over Biscayne Bay is one of the city's defining experiences. Alfred Concierge presents the definitive guide to Miami's best rooftop bars in 2026.</p>
@@ -1049,7 +1049,7 @@ export var BLOG_POSTS=[
     readingTime:8,
     category:"Events",
     keywords:"watch world cup miami, sports bars miami, world cup viewing miami, world cup 2026 miami bars, best sports bars miami",
-    image:"https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=630&fit=crop",
     content:`<h1>Where to Watch the World Cup in Miami — Best Sports Bars & Venues</h1>
 
 <p>The FIFA World Cup 2026 will transform Miami into a football city unlike anything it has experienced since 1994. Whether you're watching matches happening in other host cities or experiencing the electric atmosphere of in-city game days, Miami offers an exceptional collection of venues for World Cup viewing. From authentic football pubs with devoted crowds to luxury restaurants with immersive big-screen setups, Alfred Concierge has identified the best places to watch the World Cup in Miami.</p>
@@ -1250,7 +1250,7 @@ export var BLOG_POSTS=[
     readingTime:8,
     category:"Lifestyle",
     keywords:"surfside miami, bal harbour guide, surfside restaurants, bal harbour shops, surfside kosher dining",
-    image:"https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=630&fit=crop",
     content:`<h1>Surfside & Bal Harbour Guide — Luxury Dining, Shopping & Hotels</h1>
 
 <p>Just north of Miami Beach, the neighboring communities of Surfside and Bal Harbour occupy a unique position in Miami's luxury landscape. These small, walkable neighborhoods — Surfside is barely one square mile, Bal Harbour even smaller — contain some of the most refined luxury experiences in all of Florida. The combination of world-class shopping, exceptional dining (including Miami's densest concentration of kosher restaurants), stunning beach access, and a collection of genuinely great luxury hotels makes Surfside and Bal Harbour a destination worth understanding deeply. Alfred Concierge presents the complete insider guide.</p>
