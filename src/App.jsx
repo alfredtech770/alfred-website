@@ -27,6 +27,8 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import AdminPage from "./pages/AdminPage";
 import ProposalBuilderPage from "./pages/ProposalBuilderPage";
+import HotelsPage from "./pages/HotelsPage";
+import HotelDetailPage from "./pages/HotelDetailPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -440,7 +442,9 @@ export default function App(){
         <Route path="/privacy" element={<PrivacyPage/>}/>
         <Route path="*" element={<NotFoundPage/>
         <Route path="/admin" element={<AdminPage/>}/>
-        <Route path="/proposal" element={<ProposalBuilderPage/>}/>}/>
+        <Route path="/proposal" element={<ProposalBuilderPage/>
+        <Route path="/catalog/hotels" element={<HotelsPage/>}/>
+        <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>}/>}/>
       </Routes>
     </BrowserRouter>
   );
@@ -947,7 +951,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
         <div className="exp-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,maxWidth:960,margin:"0 auto",padding:"0 40px",opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.3s"}}>
           {exps.map(function(e,i){
-            var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets","Yachts":"/catalog/yachts"};
+            var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets","Yachts":"/catalog/yachts","Hotels":"/catalog/hotels"};
             return <GridCard key={e.title} title={e.title} count={e.count} tag={e.tag} img={e.img} delay={0.1*i} onClick={function(){if(routes[e.title]){window.location.href=routes[e.title]}else{setModalCat(e.title)}}}/>;
           })}
         </div>
@@ -1557,7 +1561,7 @@ textarea{resize:vertical;min-height:100px}
               {title:"Nightlife",desc:"Clubs, lounges, VIP tables.",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/><circle cx="12" cy="12" r="4"/></svg>},
               {title:"Wellness & Spas",desc:"Luxury spas, trainers, retreats.",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c-4.97 0-9-2.686-9-6v-.002C3 12.686 7.03 10 12 10s9 2.686 9 5.998V16c0 3.314-4.03 6-9 6z"/><path d="M12 10V2"/><path d="M8 6c0-2.21 1.79-4 4-4s4 1.79 4 4"/></svg>},
               {title:"Exotic Cars",desc:"Supercars, classics, chauffeur services.",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>},
-              {title:"Private Aviation",desc:"Jets, helicopters, charter flights.",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>},
+              {title:"Private Aviation",desc:"Coming Soon",comingSoon:true,icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>},
               {title:"Yachts & Marine",desc:"Day charters, superyachts, sailing.",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/><path d="M4 18l1.7-10.2a1 1 0 01.9-.8h10.8a1 1 0 01.9.8L20 18"/><path d="M12 4v4"/></svg>},
               {title:"Experiences",desc:"VIP events, tours, personal shopping.",icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>},
             ].map(function(cat,i){
@@ -2058,7 +2062,7 @@ body::-webkit-scrollbar{width:0}
                 transform:loaded?"translateY(0)":"translateY(24px)",
                 transition:"all 0.7s cubic-bezier(0.16,1,0.3,1) "+(0.3+i*0.06)+"s",
                 filter:isComingSoon?"brightness(0.5)":"none",
-              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets","yachts":"/catalog/yachts"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
+              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets","yachts":"/catalog/yachts","hotels":"/catalog/hotels","accommodations":"/catalog/hotels"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
                 onMouseEnter={function(e){ if(cat.active){ e.currentTarget.style.transform="translateY(-6px) scale(1.02)"; e.currentTarget.style.boxShadow="0 24px 60px rgba(0,0,0,0.5)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"; }}}
                 onMouseLeave={function(e){ e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.borderColor=C.bd; }}
               >
