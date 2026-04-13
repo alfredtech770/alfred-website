@@ -906,7 +906,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
         {/* Links */}
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Events",href:"/events"},{label:"Membership",href:"/#membership"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(item,i){
+          {[{label:"Events",href:"/events"},{label:"Membership",href:"/#membership"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(item,i){
             return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{item.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1406,7 +1406,7 @@ textarea{resize:vertical;min-height:100px}
           </div>
         </div>
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(item,i){
+          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(item,i){
             return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{item.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1968,7 +1968,7 @@ body::-webkit-scrollbar{width:0}
           </div>
         </div>
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(link,i){
+          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(link,i){
             return <a key={link.label} href={link.href} target={link.ext?"_blank":undefined} rel={link.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{link.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
