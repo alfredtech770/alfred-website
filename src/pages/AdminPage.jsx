@@ -220,6 +220,34 @@ var CATS = [
       {k:"is_featured",l:"Featured",t:"bool"},
       {k:"is_convertible",l:"Convertible",t:"bool"},
     ]
+  },
+  {
+    id:"accommodations", label:"Hotels", table:"accommodations", icon:"star",
+    bucket:"venue-photos", imgField:"hero_image_url", galleryField:"photos_order",
+    orderField:"photos_order",
+    cols:["name","neighborhood","star_rating","status","is_active"],
+    fields:[
+      {k:"name",l:"Hotel Name",t:"text",req:true},
+      {k:"slug",l:"Slug",t:"text"},
+      {k:"city",l:"City",t:"select",opts:["Miami","Paris","Dubai","London","New York"]},
+      {k:"neighborhood",l:"Neighborhood",t:"text"},
+      {k:"address",l:"Address",t:"text",wide:true},
+      {k:"category",l:"Category",t:"select",opts:["hotel","resort","boutique","residence"]},
+      {k:"star_rating",l:"Stars",t:"number"},
+      {k:"description",l:"Description",t:"textarea",wide:true},
+      {k:"amenities",l:"Amenities",t:"tags",wide:true},
+      {k:"perks",l:"Perks",t:"tags",wide:true},
+      {k:"price_level",l:"Price Level (1-5)",t:"number"},
+      {k:"rating",l:"Rating",t:"number"},
+      {k:"website_url",l:"Website",t:"text"},
+      {k:"phone_number",l:"Phone",t:"text"},
+      {k:"instagram_url",l:"Instagram",t:"text"},
+      {k:"opening_date",l:"Opening Date",t:"text"},
+      {k:"status",l:"Status",t:"select",opts:["open","coming_soon","closed"]},
+      {k:"is_active",l:"Active",t:"bool"},
+      {k:"is_featured",l:"Featured",t:"bool"},
+      {k:"is_partner",l:"Partner",t:"bool"},
+    ]
   }
 ];
 
