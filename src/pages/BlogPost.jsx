@@ -83,7 +83,7 @@ export var BLOG_POSTS=[
     readingTime:10,
     category:"Events",
     keywords:"Monaco Grand Prix 2026, Monaco GP tickets, Monaco F1 hospitality, Monaco Grand Prix VIP, F1 Monaco hospitality packages",
-    image:"https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1541447271487-09612b3f49f7?w=1200&h=630&fit=crop",
     content:`<h1>Monaco Grand Prix 2026: The Complete VIP Guide — Tickets, Hotels & Hospitality</h1>
 
 <p>The Monaco Grand Prix stands as Formula 1's most prestigious event—a motorsport spectacle intertwined with glamour, tradition, and exclusivity. For nearly a century, the streets of Monte Carlo have hosted the world's elite drivers, while global audiences watch billionaires, celebrities, and royalty converge on the principality. In 2026, this legendary race returns with enhanced VIP experiences. Alfred Concierge offers the definitive guide to experiencing Monaco like true haute société.</p>
@@ -652,7 +652,7 @@ export var BLOG_POSTS=[
     readingTime:12,
     category:"Events",
     keywords:"miami world cup 2026, fifa world cup miami, world cup miami guide, miami world cup matches, hard rock stadium world cup",
-    image:"https://images.unsplash.com/photo-1459865264687-595d652de67e?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1200&h=630&fit=crop",
     content:`<h1>Miami FIFA World Cup 2026 — The Ultimate VIP Guide</h1>
 
 <p>The FIFA World Cup is coming to Miami in 2026, and the city is already buzzing with anticipation. For the first time in 32 years, the United States will co-host the world's largest sporting event alongside Canada and Mexico — and Miami is set to be one of the crown jewel host cities. With matches at Hard Rock Stadium, world-class hospitality, and Miami's unrivaled nightlife and dining scene as the backdrop, this is a once-in-a-generation event. Alfred Concierge has you covered with everything you need to make your World Cup 2026 Miami experience absolutely unforgettable.</p>
@@ -1104,7 +1104,7 @@ export var BLOG_POSTS=[
     readingTime:9,
     category:"Lifestyle",
     keywords:"bachelorette party miami, miami bachelorette guide, bachelorette miami, luxury bachelorette miami, miami bachelorette itinerary",
-    image:"https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1529543544282-ea8407407d89?w=1200&h=630&fit=crop",
     content:`<h1>Miami Bachelorette Party Planning — The Ultimate Luxury Guide</h1>
 
 <p>Miami has earned its reputation as one of the world's great bachelorette destinations, and the reasons are obvious: guaranteed sunshine, world-class beaches, iconic nightlife, extraordinary dining, and an atmosphere of effortless glamour that makes every experience feel special. Whether you're envisioning a sun-drenched yacht day followed by a Michelin-starred dinner and a VIP table at LIV, or a more intimate long weekend of spa treatments, great meals, and South Beach evenings, Miami delivers. Alfred Concierge specializes in creating luxury Miami bachelorette experiences that the whole group will remember for decades.</p>
@@ -1167,7 +1167,7 @@ export var BLOG_POSTS=[
     readingTime:10,
     category:"Dining",
     keywords:"date night miami, romantic restaurants miami, best date restaurants miami, romantic dinner miami, miami date night 2026",
-    image:"https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=1200&h=630&fit=crop",
     content:`<h1>Best Date Night Restaurants in Miami 2026 — 15 Romantic Spots</h1>
 
 <p>Miami's restaurant scene is uniquely suited to romance. The city's natural gifts — warm nights, ocean breezes, extraordinary light — combine with a dining culture that prizes atmosphere as highly as cuisine to create exceptional date night possibilities. Whether you're celebrating an anniversary, planning a first impression dinner, or simply seeking an evening that feels genuinely special, Miami's roster of romantic restaurants is among the finest in the world. Alfred Concierge presents our curated guide to the city's best date night restaurants for 2026.</p>
@@ -1307,7 +1307,7 @@ export var BLOG_POSTS=[
     readingTime:8,
     category:"Nightlife",
     keywords:"pool parties miami, best pool party miami, miami pool party guide, miami dayclub, best pool parties miami beach",
-    image:"https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=1200&h=630&fit=crop",
+    image:"https://images.unsplash.com/photo-1572331165267-854da2b10ccc?w=1200&h=630&fit=crop",
     content:`<h1>Best Pool Parties in Miami 2026 — The Ultimate Daytime Scene Guide</h1>
 
 <p>Miami's pool party culture is a phenomenon unto itself. Nowhere else in the United States — arguably nowhere else in the world except perhaps Ibiza — has the daytime pool party evolved into the same sophisticated, high-production, socially significant institution that it represents in Miami. From the legendary pools of Fontainebleau and the iconic Nikki Beach to the design-forward environments of 1 Hotel and Hyde Beach, spending a Saturday in the water with excellent music, cold Rosé, and a beautiful crowd is as essential a Miami experience as sunset on South Beach or dinner at a Michelin-starred restaurant. Alfred Concierge presents the definitive guide to Miami's best pool parties in 2026.</p>
