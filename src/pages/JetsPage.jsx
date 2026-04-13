@@ -57,17 +57,17 @@ export default function JetsPage(){
             <span style={{...sf(12,600),color:C.gd,letterSpacing:2,textTransform:"uppercase"}}>Coming Soon</span>
           </div>
 
-          <style>{\`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}\`}</style>
+          <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}`}</style>
 
           <h1 style={{...sf(isMobile?36:56,700),color:C.s1,margin:"0 0 20px",letterSpacing:-1,lineHeight:1.1}}>
             Private Jets
           </h1>
 
           <p style={{...sf(isMobile?16:20,300),color:C.s4,lineHeight:1.7,marginBottom:12}}>
-            Charter the world\u2019s finest private aircraft through Alfred.
+            Charter the world’s finest private aircraft through Alfred.
           </p>
           <p style={{...sf(isMobile?14:16,300),color:C.s5,lineHeight:1.7,marginBottom:40}}>
-            Gulfstream G650, Global 7500, Falcon 7X, Challenger 350, Citation XLS \u2014 light jets to ultra-long range. Instant quotes, same-day booking, empty leg deals from Miami, New York, London, Paris and Dubai.
+            Gulfstream G650, Global 7500, Falcon 7X, Challenger 350, Citation XLS — light jets to ultra-long range. Instant quotes, same-day booking, empty leg deals from Miami, New York, London, Paris and Dubai.
           </p>
 
           {/* Features */}
@@ -102,8 +102,8 @@ export default function JetsPage(){
             </div>
           ):(
             <div style={{padding:"20px 32px",borderRadius:16,border:"1px solid "+C.gn+"40",background:C.gn+"08"}}>
-              <p style={{...sf(16,600),color:C.gn,margin:"0 0 4px"}}>You\u2019re on the list</p>
-              <p style={{...sf(13),color:C.s4,margin:0}}>We\u2019ll notify you as soon as private jets go live on Alfred.</p>
+              <p style={{...sf(16,600),color:C.gn,margin:"0 0 4px"}}>You’re on the list</p>
+              <p style={{...sf(13),color:C.s4,margin:0}}>We’ll notify you as soon as private jets go live on Alfred.</p>
             </div>
           )}
         </div>
