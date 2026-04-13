@@ -23,6 +23,8 @@ import EventDetailPage from "./pages/EventDetailPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPost from "./pages/BlogPost";
 import CityPage from "./pages/CityPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -432,6 +434,8 @@ export default function App(){
         <Route path="/blog" element={<BlogPage/>}/>
         <Route path="/blog/:slug" element={<BlogPost/>}/>
         <Route path="/city/:slug" element={<CityPage/>}/>
+        <Route path="/terms" element={<TermsPage/>}/>
+        <Route path="/privacy" element={<PrivacyPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
     </BrowserRouter>
@@ -1161,7 +1165,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderTop:"1px solid "+C.bd,paddingTop:24}}>
             <span style={{...sf(12,400),color:C.s7}}>Alfred ©2026</span>
             <div style={{display:"flex",gap:24}}>
-              {["Privacy Policy","Terms"].map(function(l){return <a key={l} href="#" style={{...sf(12,400),color:C.s7,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s5}} onMouseLeave={function(e){e.target.style.color=C.s7}}>{l}</a>})}
+              {[{label:"Privacy Policy",href:"/privacy"},{label:"Terms",href:"/terms"}].map(function(l){return <a key={l.label} href={l.href} style={{...sf(12,400),color:C.s7,textDecoration:"none",transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s5}} onMouseLeave={function(e){e.target.style.color=C.s7}}>{l.label}</a>})}
             </div>
           </div>
         </div>
