@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SEOHead, { SEO } from "./components/SEOHead";
 
-/* ═══ CATEGORY PAGE IMPORTS ═══ */
+/* ═══ CATEGORY PAGE IMPORTS — v2 ═══ */
 /* Place each file in src/pages/ and uncomment these imports: */
 import DiningPage from "./pages/DiningPage";
 import DiningDetailPage from "./pages/DiningDetailPage";
