@@ -301,7 +301,7 @@ function AlfredLoader(p){
       <style>{`
         @keyframes ldGrain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
         @keyframes ldFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes ldWordIn{from{opacity:0;letter-spacing:20px}to{opacity:0.4;letter-spacing:10px}}
+        @keyframes ldWordIn{from{opacity:0;letter-spacing:clamp(10px,3vw,24px)}to{opacity:1;letter-spacing:clamp(6px,2vw,16px)}}
         @keyframes ldDotPulse{0%,100%{opacity:0.12}50%{opacity:0.4}}
         @keyframes ldCityScroll{from{transform:translateX(0)}to{transform:translateX(-33.333%)}}
       `}</style>
@@ -311,7 +311,7 @@ function AlfredLoader(p){
 
 
       {/* Wordmark */}
-      <p style={{...sf(11,300),color:"#F4F4F5",letterSpacing:10,textTransform:"uppercase",marginTop:-20,zIndex:2,animation:"ldWordIn 3s ease 0.8s both",opacity:lit?0.85:undefined,transition:"opacity 2s"}}>Alfred</p>
+      <p style={{...sf("clamp(36px,8vw,72px)",700),color:"#F4F4F5",letterSpacing:"clamp(6px,2vw,16px)",textTransform:"uppercase",marginTop:0,zIndex:2,animation:"ldWordIn 3s ease 0.8s both",opacity:lit?0.85:undefined,transition:"opacity 2s"}}>Alfred</p>
 
       {/* Percentage / Ready — crossfade */}
       <div style={{marginTop:32,zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",gap:12,animation:"ldFadeUp 1.5s ease 1s both",minHeight:60,position:"relative"}}>

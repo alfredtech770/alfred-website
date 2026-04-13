@@ -1309,6 +1309,135 @@ function ImageBrowserView(){
 }
 
 /* ═══ Sidebar ═══ */
+/* ═══ Featured Management ═══ */
+function FeaturedView(){
+  var [items,setItems]=useState([]);
+  var [loading,setLoading]=useState(true);
+  var [catFilter,setCatFilter]=useState("");
+
+  async function load(){
+    setLoading(true);
+    var all=[];
+    var tables=[
+      {table:"restaurants",cat:"Restaurants"},
+      {table:"yachts",cat:"Yachts"},
+      {table:"cars",cat:"Cars"},
+      {table:"wellness",cat:"Wellness"},
+      {table:"accommodations",cat:"Hotels"},
+    ];
+    for(var i=0;i<tables.length;i++){
+      var t=tables[i];
+      var {data}=await supabase.from(t.table).select("id,name,city,hero_image_url,is_featured,is_active").order("name");
+      if(data){
+        data.forEach(function(r){
+          all.push({...r,_table:t.table,_cat:t.cat});
+        });
+      }
+    }
+    setItems(all);
+    setLoading(false);
+  }
+  useEffect(function(){load();},[]);
+
+  async function toggleFeatured(item){
+    var newVal=!item.is_featured;
+    await supabase.from(item._table).update({is_featured:newVal}).eq("id",item.id);
+    notifySlack(newVal?"updated":"status",item._cat,item.name,"*Featured:* "+(newVal?"Added to featured":"Removed from featured"));
+    load();
+  }
+
+  var featured=items.filter(function(i){return i.is_featured;});
+  var filtered=items.filter(function(i){
+    if(catFilter&&i._cat!==catFilter)return false;
+    return true;
+  });
+  var cats=[...new Set(items.map(function(i){return i._cat;}))].sort();
+
+  return(
+    <div>
+      <h2 style={{...sf(24,600),color:C.s1,margin:"0 0 8px"}}>Featured Management</h2>
+      <p style={{...sf(14),color:C.s5,marginBottom:24}}>Control which venues appear in the featured section on the website. Currently {featured.length} featured.</p>
+
+      {/* Currently Featured */}
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px",marginBottom:24}}>
+        <h3 style={{...sf(15,600),color:C.gd,marginBottom:14}}>Currently Featured ({featured.length})</h3>
+        {featured.length===0?<p style={{...sf(13),color:C.s5}}>No featured venues yet. Toggle the star on any venue below.</p>:(
+          <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+            {featured.map(function(item){
+              return <div key={item.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderRadius:10,background:C.srf,border:"1px solid "+C.gd+"30"}}>
+                {item.hero_image_url&&<img src={item.hero_image_url} alt="" style={{width:32,height:32,borderRadius:6,objectFit:"cover"}}/>}
+                <div>
+                  <p style={{...sf(12,600),color:C.s1,margin:0}}>{item.name}</p>
+                  <p style={{...sf(10),color:C.s5,margin:0}}>{item._cat}</p>
+                </div>
+                <button onClick={function(){toggleFeatured(item);}} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",...sf(14),marginLeft:4}} title="Remove from featured">×</button>
+              </div>;
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* All Venues */}
+      <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center"}}>
+        <select value={catFilter} onChange={function(e){setCatFilter(e.target.value);}}
+          style={{padding:"8px 14px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
+          <option value="">All Categories</option>
+          {cats.map(function(c){return <option key={c} value={c}>{c}</option>;})}
+        </select>
+        <span style={{...sf(13),color:C.s5}}>{filtered.length} venue{filtered.length!==1?"s":""}</span>
+      </div>
+
+      {loading?<div style={{padding:"40px",textAlign:"center",color:C.s5}}>Loading...</div>:(
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,overflow:"hidden"}}>
+          <div style={{overflowX:"auto"}}>
+            <table style={{width:"100%",borderCollapse:"collapse"}}>
+              <thead>
+                <tr style={{borderBottom:"1px solid "+C.bd}}>
+                  <th style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"center",width:60}}>FEATURED</th>
+                  <th style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left",width:48}}>IMG</th>
+                  <th style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>NAME</th>
+                  <th style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>CATEGORY</th>
+                  <th style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>CITY</th>
+                  <th style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>ACTIVE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(function(item){
+                  return(
+                    <tr key={item.id+item._table} style={{borderBottom:"1px solid "+C.bd}}
+                      onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
+                      onMouseLeave={function(e){e.currentTarget.style.background="transparent";}}>
+                      <td style={{padding:"10px 14px",textAlign:"center"}}>
+                        <button onClick={function(){toggleFeatured(item);}}
+                          style={{background:"none",border:"none",cursor:"pointer",fontSize:20,color:item.is_featured?C.gd:C.s6,transition:"color 0.2s"}}
+                          title={item.is_featured?"Remove from featured":"Add to featured"}>
+                          {item.is_featured?"★":"☆"}
+                        </button>
+                      </td>
+                      <td style={{padding:"10px 14px"}}>
+                        {item.hero_image_url?<img src={item.hero_image_url} alt="" style={{width:36,height:36,borderRadius:6,objectFit:"cover"}}/>:
+                        <div style={{width:36,height:36,borderRadius:6,background:C.srf}}/>}
+                      </td>
+                      <td style={{...sf(13,500),color:C.s1,padding:"10px 14px"}}>{item.name}</td>
+                      <td style={{...sf(12),color:C.s4,padding:"10px 14px"}}>{item._cat}</td>
+                      <td style={{...sf(12),color:C.s4,padding:"10px 14px"}}>{item.city||"-"}</td>
+                      <td style={{padding:"10px 14px"}}>
+                        <span style={{...sf(11,600),padding:"3px 8px",borderRadius:20,background:item.is_active?"rgba(52,199,89,0.1)":"rgba(255,59,48,0.08)",color:item.is_active?C.gn:C.rd}}>
+                          {item.is_active?"Active":"Inactive"}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
   var items=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
@@ -1318,6 +1447,7 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
+    {id:"featured",label:"Featured",icon:"star"},
   ];
 
   return(
@@ -1404,6 +1534,7 @@ function MobileDrawer({active,onNav,onClose}){
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
+    {id:"featured",label:"Featured",icon:"star"},
   ];
   return(
     <div style={{position:"fixed",inset:0,zIndex:200,display:"flex"}}>
@@ -1466,6 +1597,7 @@ function AdminDashboard({onLogout}){
     if(page==="bookings")return <BookingsView/>;
     if(page==="clients")return <ClientsView/>;
     if(page==="images")return <ImageBrowserView/>;
+    if(page==="featured")return <FeaturedView/>;
     if(activeCat)return <CategoryView key={activeCat.id} cat={activeCat}/>;
     return <DashboardView counts={counts} onNav={setPage}/>;
   }
