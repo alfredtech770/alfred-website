@@ -643,6 +643,447 @@ export var BLOG_POSTS=[
 <p>Our relationships with Formula 1's hospitality partners, Miami's luxury venue operators, and private event promoters enable access otherwise unavailable. We transform a Miami Grand Prix visit from enjoyable to absolutely unforgettable.</p>
 
 <p><strong>Contact Alfred Concierge</strong> to begin planning your Miami Grand Prix 2026 experience. Our 24/7 team arranges hospitality, accommodations, dining, transportation, and all details creating a Formula 1 weekend you'll treasure forever.</p>`
+  },
+  {
+    slug:"best-restaurants-miami-2026-complete-guide",
+    title:"The 25 Best Restaurants in Miami 2026 — A Concierge's Insider Guide",
+    excerpt:"From Michelin-starred temples to hidden chef's tables, our concierge team reveals the 25 best restaurants in Miami for 2026 — with insider reservation tips for each one.",
+    date:"2026-04-10",
+    readingTime:12,
+    category:"Dining",
+    keywords:"best restaurants miami 2026, top miami restaurants, miami fine dining, miami michelin restaurants, miami dining guide, where to eat miami",
+    image:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&h=630&fit=crop",
+    content:`<h1>The 25 Best Restaurants in Miami 2026 — A Concierge's Insider Guide</h1>
+
+<p>Miami's restaurant scene in 2026 is operating at a level the city has never seen before. The arrival of world-renowned chefs, the opening of landmark hotel dining rooms, and a generation of homegrown talent that's been quietly refining their craft for a decade have all converged to create something extraordinary. As a luxury concierge service operating daily within this landscape, Alfred has the relationships, the reservations, and the insider knowledge to ensure you experience it at its absolute best.</p>
+
+<p>This guide covers the 25 restaurants that our concierge team recommends above all others — the places where we work hardest to secure tables, where our clients keep returning, and where the experience consistently exceeds even the most demanding expectations.</p>
+
+<h2>How to Get Into Miami's Hardest-to-Book Restaurants</h2>
+
+<p>Before diving into the list, a note on reservations. Miami's top restaurants are stratified. A handful release tables exclusively through concierge and hotel channels — these never appear on Resy or OpenTable. Another tier releases a small number publicly and reserves the rest for regulars and industry relationships. Alfred operates at both levels, which is why our members secure tables that others simply cannot find.</p>
+
+<p>The key variables: timing of the release (often 28–30 days in advance at midnight), having a history at the restaurant, and knowing which nights the chef is actually in the kitchen. Our concierge team tracks all of this so you don't have to.</p>
+
+<h2>Coconut Grove & Brickell's Finest</h2>
+
+<p><strong>1. Le Jardin Interdit</strong> — The most anticipated restaurant opening of 2025 has now settled into its position as Miami's most difficult reservation. French-Japanese omakase in a private garden setting, 14 seats, prix fixe only at $485 per person. The waiting list runs three months. Alfred members get first access to cancellation slots.</p>
+
+<p><strong>2. Stubborn Seed</strong> — James Beard-nominated chef Jeremy Ford delivers one of Miami's most intellectually engaging tasting menus. The 10-course format changes entirely each season. Request the kitchen counter when booking — it transforms the experience from dinner to private performance.</p>
+
+<p><strong>3. Komodo</strong> — The Groot Hospitality flagship remains one of Miami's great spectacles. Three levels of immersive dining and nightlife, exceptional pan-Asian cuisine, and the kind of energy you find nowhere else in the city. For groups, the private dining suite on the top floor is unmatched.</p>
+
+<p><strong>4. Sexy Fish Miami</strong> — The London import that became a Miami institution faster than anyone expected. The coral reef installation, the iconic Damien Hirst bronze mermaids, and the Japanese-inspired seafood menu combine to create an experience that photographs as well as it tastes. Book the booth by the aquarium wall.</p>
+
+<h2>South Beach & Wynwood Dining</h2>
+
+<p><strong>5. COTE Miami</strong> — The award-winning Korean steakhouse is the most fun you can have at a table in Miami. USDA Prime beef, the "Butcher's Feast" progression, and tableside grills that make the meal participatory. The sommelier team curates one of the most interesting wine lists in the city.</p>
+
+<p><strong>6. Naoe</strong> — Miami's most serious Japanese restaurant and possibly the most underappreciated reservation in the city. 8 seats, one seating per night, $250 omakase that sources fish from Japan three times weekly. Chef Kevin Cory's restraint and precision are extraordinary. Book 30 days ahead — Alfred monitors availability daily for members.</p>
+
+<p><strong>7. Carbone Miami</strong> — The New York import that remains one of the most requested reservations we receive. The red-sauce Italian is executed at a standard that justifies every bit of its reputation and pricing. The spicy rigatoni vodka is, genuinely, life-changing. Thursday and Friday nights are the most theatrical — the room is at its best.</p>
+
+<p><strong>8. Cantina La Veinte</strong> — The most beautiful restaurant interior in Miami serves Mexican cuisine that takes the cuisine seriously at every price point. The tequila and mezcal program is exceptional. Book the terrace for sunset dining from late October through May.</p>
+
+<h2>Miami Beach's Culinary Landmarks</h2>
+
+<p><strong>9. Cipriani Miami Beach</strong> — The legendary Italian brand's Miami outpost delivers the consistent excellence that has made the name synonymous with a certain kind of luxury. The bellinis, the carpaccio, the pasta — executed exactly as they should be, every single time. For business meals requiring impeccable service, this is often our first recommendation.</p>
+
+<p><strong>10. KYU</strong> — The wood-fired Asian-inspired menu that started in Wynwood has matured into one of Miami's most consistently excellent restaurants. The roasted cauliflower and the coal-roasted chicken are among the most-ordered dishes in the entire city. Long waits without reservations — always book ahead.</p>
+
+<p><strong>11. Zuma Miami</strong> — The contemporary Japanese izakaya format elevated to luxury. The robata grill program is exceptional, the sake selection rivals Tokyo, and the terrace over the Miami River creates one of the city's most romantic dining settings. A permanent fixture on our top-10 list.</p>
+
+<p><strong>12. Casa Tua</strong> — The legendary members' club opens its dining room to a select public. Italian farmhouse cuisine prepared with ingredients sourced directly from Italy, served in one of Miami Beach's most beautiful spaces. The upstairs garden at Casa Tua Cucina is the city's best-kept secret.</p>
+
+<h2>Hotel Restaurants Worth Seeking Out</h2>
+
+<p><strong>13. Leku at The Arca</strong> — Basque cuisine in Miami sounds like a contradiction — it isn't. Chef Mikel Goikoetxea brings the philosophical framework and ingredients of northern Spain's dining revolution to a stunning botanical garden setting. The tasting menu format is the right choice here.</p>
+
+<p><strong>14. Ora by Casa Tua</strong> — The newest addition from the Casa Tua family occupies the rooftop of the Arca hotel and delivers an elevated Mediterranean experience with views across Biscayne Bay. Still discovering itself in 2026 but already producing outstanding food.</p>
+
+<p><strong>15. NoMad Restaurant at NoMad Miami</strong> — The flagship restaurant of the NoMad Hotel group delivered on its considerable promise. The whole roasted chicken — a NoMad signature — has been adapted beautifully for Miami's climate and ingredients. The wine program is exceptional.</p>
+
+<h2>Rising Stars & Chef's Tables</h2>
+
+<p><strong>16. Fabel</strong> — The most compelling new opening of late 2025. Austrian-born chef Felix Baumgartner applies classical European technique to Florida ingredients with results that genuinely surprise. A 12-seat chef's counter dominates the experience — one of the best in the city.</p>
+
+<p><strong>17. Phuc Yea</strong> — Vietnamese-Cajun fusion that shouldn't work but absolutely does. Aniece Meinhold's cooking has a joyfulness and confidence that makes dinner here feel like a celebration. The crawfish pho is a Miami original.</p>
+
+<p><strong>18. Los Félix</strong> — The best Mexican tasting menu in Miami. Chef Ricardo Macouzet trained at Pujol before bringing his vision of modern Mexican cuisine to the Design District. The corn masa progression alone justifies the trip.</p>
+
+<p><strong>19. Byblos Miami</strong> — Eastern Mediterranean cuisine that covers Turkey, Lebanon, and Greece with equal sophistication. The mezze program is extraordinary and the whole-fish preparations are among the city's best.</p>
+
+<h2>For Every Occasion</h2>
+
+<p><strong>20. Milos Miami</strong> — The best seafood restaurant in Miami, bar none. Fish flown daily from Greece, prepared with the restraint that lets extraordinary ingredients speak for themselves. The prix fixe lunch is one of the city's great value propositions. For dinner, expect a serious bill — and worth every cent.</p>
+
+<p><strong>21. Swan</strong> — Pharrell Williams's Design District restaurant remains one of the city's great people-watching venues while also serving genuinely excellent food. The brunch program has become iconic. The rooftop at The Goodtime Hotel next door pairs perfectly.</p>
+
+<p><strong>22. Le Sirenuse Miami</strong> — The famous Positano hotel's Miami outpost delivers a transportive slice of the Amalfi Coast. The pasta program is the finest Italian in the city and the wine list digs deep into southern Italian producers you won't find elsewhere.</p>
+
+<p><strong>23. Quinto La Huella</strong> — The Uruguayan parrilla transplanted to Miami. Wood-fired meats at a standard that would be remarkable even in Buenos Aires. The outdoor terrace at Faena is the setting — one of the most beautiful in all of Miami Beach.</p>
+
+<p><strong>24. Hakkasan Miami</strong> — Michelin-starred Cantonese in a stunning subterranean setting. The dim sum program at lunch is exceptional; the Peking duck at dinner is essential. For groups of 6–12, the private dining rooms are some of the best in the city.</p>
+
+<p><strong>25. The Dutch Miami</strong> — Andrew Carmellini's W South Beach restaurant has aged into exactly the kind of relaxed, confident excellence that makes it equally right for business, romance, and celebration. The raw bar is consistently excellent. The burger, eaten at the bar, is a Miami classic.</p>
+
+<h2>Reservation Strategy: How Alfred Gets You In</h2>
+
+<p>Several restaurants on this list — Naoe, Le Jardin Interdit, and Carbone in particular — have effectively zero public availability. Our approach is direct relationships with reservation managers and sommeliers, maintained through consistent business and personal respect for the operations. For members seeking these tables, we recommend flagging your request 30 days in advance and providing flexibility on dates. Same-week availability at top restaurants is rare but not impossible through concierge channels.</p>
+
+<p>For all 25 restaurants on this list, Alfred members can request reservations through the app's <a href="/catalog/dining" style="color:#34C759;text-decoration:none;font-weight:500">dining catalog</a>. Our concierge team handles the booking, confirms the details, and follows up with reminders and any pre-arrival information you should know.</p>
+
+<h2>Experience Miami's Best Dining with Alfred</h2>
+
+<p>This list represents the current state of excellence in Miami dining — but the city evolves quickly. New openings, chef departures, and seasonal changes affect the landscape constantly. Alfred's concierge team tracks it all in real time.</p>
+
+<p><strong>Download the Alfred app</strong> to access our full dining catalog, submit reservation requests, and connect with our concierge team. Whether you're planning a special occasion, hosting clients, or simply want to eat extraordinarily well during your time in Miami, Alfred delivers access that transforms good intentions into unforgettable meals.</p>`
+  },
+  {
+    slug:"how-to-get-into-liv-miami",
+    title:"How to Get Into LIV Miami — VIP Tables, Dress Code & Everything You Need to Know",
+    excerpt:"LIV at Fontainebleau is Miami's most legendary nightclub. Here's exactly how VIP table access works, what it costs, which nights are best, and how Alfred gets you in.",
+    date:"2026-04-08",
+    readingTime:10,
+    category:"Nightlife",
+    keywords:"LIV Miami, LIV nightclub Miami, LIV Miami VIP table, how to get into LIV Miami, LIV Miami bottle service, Fontainebleau nightclub",
+    image:"https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1200&h=630&fit=crop",
+    content:`<h1>How to Get Into LIV Miami — VIP Tables, Dress Code & Everything You Need to Know</h1>
+
+<p>LIV at the Fontainebleau Hotel is not just Miami Beach's best nightclub — it's one of the most iconic clubs in the world. Since opening in 2008, it has hosted virtually every major recording artist on the planet, set the standard for American nightclub production, and remained the single most requested booking Alfred receives for Miami nightlife. Getting in, however, requires more than just showing up. This is the complete guide to experiencing LIV at the level it deserves.</p>
+
+<h2>What Makes LIV Different</h2>
+
+<p>LIV operates at a scale and production level that most nightclubs can't approach. The main room holds approximately 800 guests, features a state-of-the-art sound and lighting system that costs more than most clubs are worth, and books talent — DJs, live performances, surprise acts — at a level that makes weekend lineups feel like headlining festival sets.</p>
+
+<p>The Fontainebleau setting matters too. Arriving at the iconic mid-century hotel, walking through the lobby, and descending into LIV creates a theatrical experience before the first beat drops. The design, the service culture, and the standard of the crowd all reflect the hotel's position as one of Miami Beach's defining properties.</p>
+
+<h2>Nights to Know</h2>
+
+<p><strong>Friday (Michelin Night):</strong> LIV's traditional opening night of the weekend, known for strong DJ bookings and a slightly more relaxed entry standard compared to Saturday. Typically starts earlier and peaks by midnight. Excellent for first-timers — you get a representative LIV experience without the full Saturday intensity.</p>
+
+<p><strong>Saturday (The Main Event):</strong> LIV's signature night. Top-tier DJ bookings, celebrity appearances, and the highest energy the room produces. The hardest table reservations to secure and the strictest door policy. If you're celebrating something significant, this is the night — but plan further ahead and budget accordingly.</p>
+
+<p><strong>Special Events:</strong> LIV hosts major themed events for Art Basel, Miami Music Week, and Super Bowl weekend that command premium pricing and require booking months in advance. These events often feature exclusive talent that rivals major festival lineups. Alfred tracks all major LIV event dates and opens booking to members as early as possible.</p>
+
+<h2>VIP Table Reservations: How It Works</h2>
+
+<p>LIV operates a bottle service model. To guarantee entry and seated access, you reserve a table with an associated bottle minimum. Tables range in quality — location within the room, proximity to the DJ booth and stage, size — and minimums vary accordingly.</p>
+
+<p><strong>Table Minimums (2026 approximate):</strong></p>
+<ul>
+  <li>Standard tables: $1,500–$3,000 minimum (typically accommodates 4–6 guests)</li>
+  <li>Premium floor tables: $3,000–$6,000 minimum (closer proximity to the DJ booth)</li>
+  <li>Front section / VIP stage area: $6,000–$15,000+ minimum (limited availability, direct sightlines to performances)</li>
+  <li>Special events and celebrity appearances: premiums of 50–200% above standard minimums apply</li>
+</ul>
+
+<p>Minimums are spent on bottles (spirits and Champagne at venue pricing, which carries a significant markup over retail) plus applicable service charges and taxes. A table for 6 with standard bottles and full service will typically total between $2,500–$5,000 before special event premiums. Budget conservatively and you'll have a better experience than if you arrive expecting change from your minimum.</p>
+
+<h2>How to Get the Best Table</h2>
+
+<p>Not all LIV tables are equal. The difference between a back-of-room table and a front floor position is the difference between watching LIV and being inside it. When making a reservation through Alfred, we specify your preference and the occasion — birthday, proposal, business entertainment — and our contacts at LIV work to place you appropriately given availability.</p>
+
+<p>The practical reality: premium placements require higher minimums and earlier booking. For a Saturday night front-section table during peak season (October–May), booking 2–3 weeks ahead is the minimum. For Art Basel or Music Week, 2–3 months ahead. Through Alfred's relationships with LIV's VIP team, we access table inventory that isn't available through standard reservation channels and can often secure better placement than the public-facing request system offers.</p>
+
+<h2>Dress Code: What Actually Gets You In</h2>
+
+<p>LIV enforces its dress code. The written policy says "upscale attire" but the practical standard is somewhat higher. What this means in practice:</p>
+
+<p><strong>Men:</strong> Dress shoes (no sneakers, ever), tailored trousers or dark jeans (no rips), a collared shirt or smart casual top at minimum. Blazers significantly improve your standing at the door and with the table host. Sportswear, shorts, sandals, athletic shoes of any kind, or overly casual t-shirts will result in denial regardless of your reservation status.</p>
+
+<p><strong>Women:</strong> The standard is elevated going-out attire — dresses, heels, sophisticated separates. LIV's crowd dresses to be seen and the door team reflects this in their assessments. There is meaningful flexibility here compared to the men's standard, but visibly casual presentation will create friction.</p>
+
+<p>Having a confirmed table reservation doesn't eliminate dress code scrutiny entirely — it reduces it significantly and gives you a meaningful cushion, but arriving in clear violation of the code will still cause problems. When Alfred confirms your booking, we always include the current dress code briefing.</p>
+
+<h2>Arrival Strategy</h2>
+
+<p>LIV opens at 11 PM. The room reaches peak capacity and energy between midnight and 2 AM. For table guests, we recommend arriving between 11 PM and midnight — early enough to get settled, meet your table host, order your first bottles, and be fully in position when the room hits its stride. Arriving after 1 AM with a table reservation creates unnecessary friction and costs you the best hours of the night.</p>
+
+<p>The Fontainebleau valet circle can back up significantly on weekend nights. Factor 15–20 minutes for arrival logistics if you're driving. If you have a car service, use the hotel's main entrance and have your driver communicate with the venue team in advance — Alfred coordinates this as part of the booking when requested.</p>
+
+<h2>What to Order</h2>
+
+<p>LIV's bottle service menu centers on premium spirits and Champagne. The most popular choices among our clients:</p>
+
+<ul>
+  <li><strong>Vodka:</strong> Belvedere, Grey Goose, and CÎROC are the workhorses. For tables wanting to make an impression, CÎROC VSP or Belvedere 9L bottles create visual impact that resonates in the room.</li>
+  <li><strong>Tequila:</strong> Don Julio 1942 is the default luxury tequila in Miami nightlife and LIV is no different. Clase Azul is the step up.</li>
+  <li><strong>Champagne:</strong> Louis Roederer Cristal and Dom Pérignon are LIV staples. For significant moments, the bottle parade with sparklers is a LIV signature move worth experiencing.</li>
+</ul>
+
+<p>Your table host will guide ordering based on your group size and budget. Communicating your preferences and budget constraints honestly with your host results in better guidance — they want you to have a good experience and come back.</p>
+
+<h2>Special Events Worth Knowing</h2>
+
+<p>LIV's biggest annual events: Art Basel weekend (first week of December) when the entire Miami Beach arts world converges; Miami Music Week (late March), which transforms LIV into effectively a weeklong festival; and New Year's Eve, which is the most expensive and most in-demand single night of the year. Alfred recommends 60-day advance booking for all of these and manages waitlists for members who miss the initial release.</p>
+
+<h2>Experience LIV with Alfred</h2>
+
+<p>LIV is accessible without a concierge — but experiencing it at its best, with the right table position, in the right section on the right night, having navigated the dress code briefing and arrival logistics — that's where Alfred makes a genuine difference. Our <a href="/catalog/nightlife" style="color:#34C759;text-decoration:none;font-weight:500">nightlife catalog</a> covers LIV alongside Miami's other premier venues, from E11even to Story to Club Space.</p>
+
+<p><strong>Download Alfred</strong> to request VIP table access at LIV and Miami's best nightlife venues. Our concierge team handles every detail — table selection, minimum guidance, arrival coordination, and special requests — so your only job is to show up looking the part and have an extraordinary night.</p>`
+  },
+  {
+    slug:"miami-yacht-charter-guide-2026",
+    title:"Miami Yacht Charter Guide 2026 — Pricing, Routes & Tips",
+    excerpt:"Everything you need to know about chartering a yacht in Miami: what it costs, the best routes, what's included, how to book, and how Alfred's concierge team makes the process seamless.",
+    date:"2026-04-06",
+    readingTime:10,
+    category:"Yachts",
+    keywords:"miami yacht charter, rent a yacht miami, miami yacht rental, private yacht miami, biscayne bay yacht, miami boat charter 2026",
+    image:"https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=1200&h=630&fit=crop",
+    content:`<h1>Miami Yacht Charter Guide 2026 — Pricing, Routes & Tips</h1>
+
+<p>Miami is one of the world's great yachting destinations. The convergence of Biscayne Bay, the Atlantic Ocean, the Florida Keys, and the Bahamas — all within reach of a single port — creates a range of charter experiences that few cities can match. Whether you're planning a sunset cruise for eight, a multi-day offshore expedition, or a floating event for fifty guests, the Miami charter market in 2026 offers options at every level of ambition. Alfred's concierge team manages yacht bookings daily, and this guide distills what we know.</p>
+
+<h2>Understanding the Miami Charter Market</h2>
+
+<p>Miami's yacht charter industry divides into two main categories: day charters and overnight/extended charters. Day charters (typically 4–8 hours) represent the majority of bookings and require the least planning. Extended charters involving overnight stays or multi-day itineraries require more logistics but unlock experiences — Bahamas runs, Keys anchorages, offshore fishing grounds — that day charters simply can't reach.</p>
+
+<p>The yacht itself ranges from 40-foot sport boats to 200-foot superyachts. For most of our clients, the sweet spot is a 50–90 foot motor yacht or sailing catamaran: large enough for comfort and a proper crew, small enough to access the best anchorages, and priced at a level that delivers extraordinary value for groups of 8–20.</p>
+
+<h2>Charter Pricing in Miami (2026)</h2>
+
+<p>Pricing in the Miami charter market is straightforward once you understand the structure. Most charters are quoted as a base rate (for the vessel and captain) plus additional costs for fuel, crew gratuity, provisioning, and any marina fees.</p>
+
+<p><strong>Day Charter Rates (4–8 hours, includes captain and first mate):</strong></p>
+<ul>
+  <li>40–50 ft motor yacht: $1,200–$2,500</li>
+  <li>50–65 ft motor yacht: $2,500–$5,000</li>
+  <li>65–80 ft motor yacht: $5,000–$9,000</li>
+  <li>80–100 ft motor yacht: $8,000–$15,000</li>
+  <li>100–130 ft superyacht: $15,000–$30,000</li>
+  <li>Sailing catamaran (45–55 ft): $1,500–$3,500</li>
+</ul>
+
+<p><strong>Additional Costs to Budget:</strong></p>
+<ul>
+  <li>Fuel: typically $300–$1,500 depending on vessel size, speed, and route</li>
+  <li>Crew gratuity: 15–20% of charter fee (strongly customary)</li>
+  <li>Provisioning: $200–$800 depending on food and beverage selections</li>
+  <li>Docking fees: variable, typically $0–$500 for day charters</li>
+</ul>
+
+<p>When Alfred books your charter, we provide an all-inclusive estimated total before confirmation — no surprise line items.</p>
+
+<h2>The Best Routes & Destinations</h2>
+
+<h3>Biscayne Bay (Half-Day)</h3>
+<p>The classic Miami charter route. Depart from one of the marinas in Coconut Grove, Miami Beach, or Aventura, cruise the bay's turquoise shallows, and anchor near the sandbanks of the northern bay for swimming. The Miami skyline as a backdrop makes this one of the most photogenic charter experiences in the world. Ideal for 3–4 hours, groups of up to 20, and occasions requiring spectacular but accessible scenery.</p>
+
+<h3>Stiltsville & the Southern Bay</h3>
+<p>Stiltsville — a collection of historic wooden structures on stilts in the southern reaches of Biscayne Bay — is one of Miami's most unusual landmarks and only accessible by water. A half-day route combining Stiltsville, the Cape Florida lighthouse, and a swim stop at the bay's sandbars creates a genuinely distinctive Miami experience most tourists never access.</p>
+
+<h3>Miami Beach & Star Island (Sunset)</h3>
+<p>The sunset charter along the Miami Beach channel and past Star Island's celebrity estates is the most requested route for special occasions. Watching the sun set behind the Miami skyline from the water, with a glass of Champagne, is one of those moments that makes people understand why people move to Miami. Depart around 4:30 PM for optimal light during peak season.</p>
+
+<h3>The Florida Keys (Day Trip)</h3>
+<p>For extended day charters (8–10 hours) or overnight trips, heading south toward the Florida Keys opens extraordinary snorkeling and diving over living coral reefs. The trip to Key Largo's John Pennekamp Coral Reef State Park takes approximately 2.5–3 hours by motor yacht from Miami. Best as an overnight charter — anchor for the night, dive in the morning, and return by early afternoon.</p>
+
+<h3>Bimini, Bahamas (Overnight)</h3>
+<p>Bimini is the closest Bahamian island to Miami — approximately 50 nautical miles, a comfortable 3–4 hour crossing in calm conditions. An overnight charter to Bimini offers clear blue Atlantic water, excellent fishing, spectacular snorkeling, and the surreal pleasure of clearing Bahamian customs and waking up in another country. This is the trip that our clients remember for years. Alfred coordinates all documentation, customs filings, and provisioning for Bahamas charters.</p>
+
+<h2>What's Included on a Properly Provisioned Charter</h2>
+
+<p>The experience of a well-managed charter depends heavily on provisioning. Alfred works with each charter company's crew to establish exactly what's aboard before departure. A standard Alfred-arranged provisioning for a full-day charter for 10–12 guests typically includes:</p>
+
+<ul>
+  <li>Champagne or sparkling wine for arrival and toasts</li>
+  <li>Selection of premium spirits (tequila, vodka, rum) and mixers</li>
+  <li>Curated wine selection (white wines that work in heat)</li>
+  <li>Non-alcoholic beverages, juices, water</li>
+  <li>Charcuterie, cheese, and fruit platters for grazing throughout the day</li>
+  <li>A proper lunch service with proteins and salads</li>
+  <li>Snorkeling and water sports equipment (typically included on larger yachts)</li>
+  <li>Towels, sunscreen, and basic first aid supplies</li>
+</ul>
+
+<p>Special dietary requirements, custom menus, birthday cakes, floral arrangements, and photographers can all be arranged in advance. Alfred coordinates these add-ons as part of the booking process — no separate vendors to manage.</p>
+
+<h2>Choosing the Right Vessel</h2>
+
+<p>Group size is the primary driver. As a rough guide: up to 8 guests, a 50–60 foot vessel is comfortable; 8–20 guests, look at 65–85 feet; 20–50 guests, you're in superyacht territory. For events over 50 guests, Miami has a selection of party vessels and larger charter boats purpose-built for larger groups, though the experience differs significantly from a private yacht charter.</p>
+
+<p>For families with children, stability matters — catamarans and wider-beam motor yachts are far more comfortable than narrower performance vessels. For couples or small groups prioritizing intimacy, a well-chosen 50-footer with a professional crew delivers a private yacht experience without the overhead of larger vessels.</p>
+
+<h2>Best Time of Year for Miami Charters</h2>
+
+<p>Miami charters operate year-round, but the experience varies seasonally. <strong>November through May</strong> offers the best combination: comfortable temperatures (75–85°F), low humidity, relatively calm seas, and minimal rainfall. This is peak season and rates reflect it.</p>
+
+<p><strong>June through October</strong> is hurricane season. The majority of years pass without incident, but weather windows can close quickly and charters are subject to cancellation. June through August are also the most humid months. That said, summer rates are 20–30% lower, and many of our clients prefer the uncrowded waters. We always recommend flexible cancellation protection for summer charters.</p>
+
+<h2>Charter Your Miami Experience with Alfred</h2>
+
+<p>Alfred manages the complete charter process — vessel selection based on your group size and preferences, route planning, provisioning coordination, crew briefing, and day-of logistics. Our <a href="/catalog/yachts" style="color:#34C759;text-decoration:none;font-weight:500">yacht catalog</a> gives members access to our curated fleet of partner vessels, ranging from intimate day boats to full superyacht experiences.</p>
+
+<p><strong>Download Alfred</strong> and tell our concierge team your vision — party size, budget, occasion, and preferred dates. We'll match you with the right vessel, handle every detail, and make sure your time on the water in Miami is exactly what you imagined, probably better.</p>`
+  },
+  {
+    slug:"exotic-car-rental-miami-guide-2026",
+    title:"Exotic Car Rental Miami — Ferrari, Lamborghini & Rolls Royce Guide",
+    excerpt:"The complete guide to renting exotic cars in Miami — pricing for every major model, delivery options, insurance requirements, best routes to drive, and how Alfred handles the booking.",
+    date:"2026-04-04",
+    readingTime:11,
+    category:"Exotic Cars",
+    keywords:"exotic car rental miami, ferrari rental miami, lamborghini rental miami, rolls royce rental miami, luxury car rental miami, supercar miami 2026",
+    image:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&h=630&fit=crop",
+    content:`<h1>Exotic Car Rental Miami — Ferrari, Lamborghini & Rolls Royce Guide</h1>
+
+<p>Miami is one of the world's best cities for driving exotic cars. The combination of scenic routes — Ocean Drive, the Venetian Causeway, the stretch of US-1 through Coconut Grove — and a culture that genuinely appreciates extraordinary automobiles creates a setting where renting a Ferrari or Lamborghini makes complete sense. Alfred works with Miami's top exotic car rental operators daily, and this guide covers everything you need to know to make the right choice.</p>
+
+<h2>Why Miami for Exotic Cars</h2>
+
+<p>Beyond the aesthetics, the practical case for Miami exotic rentals is strong. The weather is excellent for open-air driving approximately 300 days a year. Traffic, while present, rarely reaches the stop-and-go paralysis of Los Angeles or New York, which means you actually get to drive rather than sit. The city's layout includes several genuinely enjoyable driving roads alongside the iconic scenic routes. And Miami's rental market is competitive and mature — pricing is more reasonable than many comparable cities.</p>
+
+<p>There's also the social dimension. Miami is one of the few American cities where driving a Lamborghini Huracán down Collins Avenue at sunset is entirely unremarkable — this is simply what people drive here. If you've ever wanted to experience what it feels like to be behind the wheel of a car like that without attracting unnecessary attention, Miami is the place to do it.</p>
+
+<h2>Pricing Guide by Model (2026)</h2>
+
+<p>Pricing varies by operator, season, and demand, but the following represents typical daily rates in the Miami market:</p>
+
+<h3>Ferrari</h3>
+<ul>
+  <li><strong>Ferrari Roma:</strong> $950–$1,400/day — The grand tourer is the most accessible Ferrari experience. Beautiful proportions, a properly usable interior, and a twin-turbo V8 that delivers 612 horsepower with surprising civility.</li>
+  <li><strong>Ferrari F8 Tributo:</strong> $1,200–$1,800/day — The mid-engine V8 and one of the most rewarding cars to drive on the road. The Tributo is a genuine performance car that rewards committed driving in a way the Roma doesn't aspire to.</li>
+  <li><strong>Ferrari SF90 Stradale:</strong> $1,800–$2,800/day — Ferrari's hybrid hypercar flagship. Nearly 1,000 horsepower, all-wheel drive, and a driving experience that makes you recalibrate your understanding of what's possible in a road car.</li>
+  <li><strong>Ferrari 812 GTS (Convertible):</strong> $1,600–$2,400/day — The 789-horsepower naturally aspirated V12 convertible is, in our team's collective opinion, the best Ferrari experience available in Miami's rental market. The sound alone justifies the premium.</li>
+</ul>
+
+<h3>Lamborghini</h3>
+<ul>
+  <li><strong>Lamborghini Huracán EVO Spyder:</strong> $1,100–$1,600/day — The most popular exotic rental in Miami, and for good reason. The mid-engine 5.2L V10 is magnificent, the all-wheel drive makes it genuinely approachable, and the droptop is perfectly suited to Miami's climate.</li>
+  <li><strong>Lamborghini Huracán Sterrato:</strong> $1,300–$1,900/day — The off-road variant has arrived in Miami's rental market. Raised suspension, all-terrain tires, and 610 hp make this a genuinely adventurous choice.</li>
+  <li><strong>Lamborghini Urus S:</strong> $800–$1,400/day — The super-SUV is the most practical choice for groups of 4–5 who still want the Lamborghini experience. 666 horsepower in a form that accommodates luggage.</li>
+  <li><strong>Lamborghini Revuelto:</strong> $3,500–$5,000/day — The new V12 flagship hybrid. Extremely limited availability in Miami's rental market — book well in advance.</li>
+</ul>
+
+<h3>McLaren</h3>
+<ul>
+  <li><strong>McLaren Artura:</strong> $1,100–$1,600/day — The twin-turbo V6 hybrid is the entry point to McLaren's mid-engine formula. Exceptional driver engagement and exotic credibility at a relatively accessible price point.</li>
+  <li><strong>McLaren 720S Spider:</strong> $1,500–$2,200/day — The driver's choice among Miami's rental fleet. The 720S's combination of handling, acceleration, and the electronic roof makes this the most engaging open-air exotic available.</li>
+</ul>
+
+<h3>Rolls-Royce</h3>
+<ul>
+  <li><strong>Rolls-Royce Ghost:</strong> $1,200–$1,800/day — The Ghost is the most understated Rolls in the lineup and, arguably, the most appropriate for Miami's relatively casual luxury culture. Effortless, quiet, and enormous in the best possible way.</li>
+  <li><strong>Rolls-Royce Cullinan:</strong> $1,500–$2,200/day — The SUV has become the definitive Miami luxury statement vehicle. High seating position, spectacular interior, and presence that registers even in a city full of exotic metal.</li>
+  <li><strong>Rolls-Royce Wraith:</strong> $1,400–$2,000/day — The fastback coupe is the most dramatic Rolls-Royce for those who want presence without the full formal statement of the Ghost or Phantom.</li>
+</ul>
+
+<h3>Bentley & Other Ultra-Luxury</h3>
+<ul>
+  <li><strong>Bentley Bentayga Speed:</strong> $1,000–$1,500/day — Often the most cost-effective way to experience ultra-luxury SUV driving in Miami. The W12 engine is extraordinary.</li>
+  <li><strong>Bentley Continental GT V8 Convertible:</strong> $1,100–$1,600/day — The drop-top grand tourer is exceptional for longer drives down to the Keys. Comfortable, fast, and visually compelling without the intimidation factor of a Lamborghini.</li>
+  <li><strong>Porsche 911 Turbo S Cabriolet:</strong> $650–$1,000/day — The most reasonable way to experience a genuinely spectacular car. Faster than most exotics, more practical than all of them, and a convertible that feels correct in Miami's climate.</li>
+</ul>
+
+<h2>Delivery & Pickup Options</h2>
+
+<p>One of the most significant practical advantages of booking through Alfred is white-glove delivery. Our partner operators deliver vehicles to your hotel, villa, or airport arrival gate — eliminating the rental counter entirely. The car arrives detailed, fueled, and ready. On return, the driver picks up wherever is convenient.</p>
+
+<p>Airport delivery is available at MIA and FLL with advance notice. Hotel delivery works at virtually every major Miami Beach, Brickell, and Coconut Grove property. For arrivals at private terminals (OPF or executive aviation), Alfred coordinates seamless aircraft-to-exotic-car transitions.</p>
+
+<h2>Requirements & Insurance</h2>
+
+<p>To rent an exotic car in Miami you need a valid driver's license (international licenses accepted with a passport), to be at least 25 years old (some operators require 28+ for certain vehicles), and a major credit card for the security deposit.</p>
+
+<p><strong>Insurance:</strong> All vehicles come with basic liability coverage. Most operators offer supplemental collision damage waiver (CDW) at $150–$400/day depending on vehicle value. Some premium credit cards provide exotic car coverage — confirm with your card issuer before declining CDW. For vehicles valued over $250,000, we recommend the operators' CDW regardless of credit card coverage.</p>
+
+<p><strong>Deposits:</strong> Security deposits range from $5,000–$25,000 (credit card authorization, not a charge) depending on the vehicle. Alfred advises clients on deposit amounts at time of booking so there are no surprises.</p>
+
+<h2>Best Driving Routes in Miami</h2>
+
+<p><strong>Ocean Drive / Collins Avenue Loop:</strong> The classic. Starting from South Beach, heading north on Collins through Miami Beach, crossing the Haulover Inlet, and returning via the bay side. Approximately 30 minutes of continuous driving with excellent scenery.</p>
+
+<p><strong>Venetian Causeway:</strong> The most scenic causeway connecting Miami Beach to the mainland, passing through a series of small islands with views across the bay in both directions. Best at golden hour.</p>
+
+<p><strong>Coconut Grove & South Miami:</strong> Old Cutler Road through South Miami provides genuine driving pleasure — a divided highway through tropical canopy with enough curve to engage a performance car properly.</p>
+
+<p><strong>Florida Keys Day Trip:</strong> The Overseas Highway from Miami to Key West is 160 miles of bridges, ocean views, and tropical character. In a Ferrari convertible or McLaren Spider, this is a bucket-list drive. Allow a full day, stop for lunch in Islamorada, and return as the sun sets behind you on the drive north.</p>
+
+<h2>Book Your Miami Exotic Car with Alfred</h2>
+
+<p>Alfred's <a href="/catalog/exotic-cars" style="color:#34C759;text-decoration:none;font-weight:500">exotic car catalog</a> features our full fleet of partner vehicles with real-time availability and transparent all-inclusive pricing. From single-day rentals to week-long itineraries, we handle the booking, delivery coordination, insurance guidance, and any special requests — airport pickup signs, custom playlists, champagne in the glovebox.</p>
+
+<p><strong>Download Alfred</strong> and tell our concierge team what you want to drive. Whether you have a specific model in mind or want a recommendation based on your plans, we'll match you with the right car, handle delivery to wherever you're staying, and make sure the experience lives up to everything the car promises.</p>`
+  },
+  {
+    slug:"best-nightclubs-paris-2026",
+    title:"Best Nightclubs in Paris 2026 — VIP Guide to Raspoutine, Castel, L'Arc & More",
+    excerpt:"Paris nightlife is unlike anywhere else in the world. Our complete VIP guide covers the city's best clubs — Raspoutine, Castel, L'Arc, Silencio, and how to access each at the highest level.",
+    date:"2026-04-02",
+    readingTime:10,
+    category:"Nightlife",
+    keywords:"best nightclubs paris, paris nightlife, Raspoutine paris, Castel paris, L'Arc paris, paris VIP clubs, paris nightlife guide 2026, paris clubs",
+    image:"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1200&h=630&fit=crop",
+    content:`<h1>Best Nightclubs in Paris 2026 — VIP Guide to Raspoutine, Castel, L'Arc & More</h1>
+
+<p>Paris nightlife operates by entirely different rules than Miami, London, or Dubai. The city's best clubs are old-money private members' clubs as often as they are commercial nightlife venues, and access frequently depends on your standing with the maître de nuit rather than the size of your bottle order. The upside: when you're inside Paris's best clubs, the experience — the crowd, the architecture, the service — is genuinely unlike anywhere else in the world. This guide covers the venues Alfred recommends to members spending nights out in Paris, and how to access each of them properly.</p>
+
+<h2>Understanding Paris Nightlife Culture</h2>
+
+<p>A few fundamentals before diving into specific venues. Paris's elite nightlife starts late — genuinely late. Arriving before midnight at any club listed here puts you in the room before the night has found its character. The social peak is typically 1–3 AM. Plan your dinner accordingly; a 10 PM table at a Michelin-starred restaurant followed by 12:30 AM arrival at Raspoutine is a properly calibrated Paris evening.</p>
+
+<p>Dress standards in Paris are quietly demanding. The aesthetic is European chic rather than American nightclub — tailored, elegant, and not visibly trying too hard. A well-fitted dark suit without a tie, or a blazer over quality trousers, works for men in virtually every venue on this list. Women's standards involve the same elevated sensibility: sophisticated evening wear rather than nightclub attire. The rule of thumb: dress as if you're going to a dinner that matters, not as if you're going to a nightclub.</p>
+
+<p>Finally, the concierge relationship in Paris nightlife is more important than anywhere else Alfred operates. Most of these venues don't have websites, don't take reservations through standard channels, and actively manage their door to preserve the feeling of exclusivity. Alfred's Paris team maintains direct relationships with the people who actually control access.</p>
+
+<h2>Raspoutine</h2>
+
+<p>Raspoutine, on Rue de Bassano in the 8th arrondissement near the Champs-Élysées, is perhaps Paris's most famous nightclub and one of the most storied in Europe. The décor is theatrical Russian-inspired excess — deep reds, velvet, candelabras, and the kind of design confidence that only comes with 40+ years of institutional authority. The clientele is genuinely international: oil families, Middle Eastern royalty, Silicon Valley figures, Parisian fashion world, all in the same room on a good Saturday night.</p>
+
+<p>Raspoutine operates a seated table service model. There are no standing areas — you arrive with a table, or you don't arrive. Tables range from intimate two-person positions to larger group tables, with bottle minimums that increase based on location (proximity to the dance floor and the stage where live performances occasionally occur) and the night in question. Weekend minimums for good table positions typically begin around €1,500–€3,000.</p>
+
+<p>The live entertainment element distinguishes Raspoutine. Many evenings feature surprise performances — an operatic tenor at midnight, a recognized pop artist for three songs, or a cabaret act — that elevate the experience beyond standard nightclub territory. These moments are the reason clients remember Raspoutine specifically, and they're genuinely difficult to replicate anywhere else in the world.</p>
+
+<p>Access through standard channels is essentially impossible without an existing relationship. Raspoutine's reservation system is managed through a small network of approved concierges and established clients. Alfred maintains an active relationship with Raspoutine's management, which is how we consistently secure access for members.</p>
+
+<h2>Castel</h2>
+
+<p>Castel, on Rue Princess in Saint-Germain-des-Prés, is technically a members' club. The Castel family has operated the venue since 1962, and the client book reads like a French cultural history — Gainsbourg, Bardot, Warhol, and every significant figure of Parisian cultural life since the 1960s have passed through. The current era is somewhat more accessible than its history might suggest, but the members-first culture remains dominant.</p>
+
+<p>The space is a magnificent Left Bank townhouse. Several floors, a restaurant and bar on the upper levels, and a basement nightclub where the dancing happens. The basement is the destination: low ceilings, powerful sound, and a feeling of intimacy that larger commercial clubs can never manufacture. When Castel is working well — the right crowd on the right night — it's one of the best nightlife experiences in Europe.</p>
+
+<p>Non-member access is possible but requires introduction. Alfred arranges access for members through our Paris contacts, typically securing table reservations in the restaurant that transition naturally to the downstairs club as the evening progresses. For those interested in ongoing Paris nightlife, the Castel membership waiting list is worth pursuing — Alfred can provide introductions to the membership committee for qualified applicants.</p>
+
+<h2>L'Arc</h2>
+
+<p>L'Arc, positioned on Avenue de New-York with views of the Eiffel Tower, represents Paris nightlife's more commercial and accessible tier — but its execution is exceptional enough to belong on any serious list. The venue is visually spectacular: multiple levels, a terrace that may be the best night view of the Eiffel Tower in the city, and interior design that manages to feel both luxurious and contemporary.</p>
+
+<p>Unlike Raspoutine and Castel, L'Arc actively welcomes external reservations and publishes its capacity for groups and private events. This makes it the most bookable destination for clients who want a guaranteed Paris nightlife experience without navigating the more exclusive venues' access systems. Table minimums at L'Arc typically begin around €800–€1,500 and the venue accommodates groups ranging from intimate couples to large celebrations.</p>
+
+<p>The crowd at L'Arc skews younger and more international than Raspoutine or Castel — think well-traveled mid-twenties to mid-thirties professionals and visitors, with a meaningful presence of the French upper-middle class alongside tourists. The music is mainstream electronic and hip-hop at a quality level that beats most commercial competitors. For first-time visitors to Paris nightlife who want a reliably excellent experience, Alfred typically recommends starting with L'Arc before working toward the more exclusively accessed venues.</p>
+
+<h2>Silencio</h2>
+
+<p>Silencio, on Rue Montmartre near the Grands Boulevards, is David Lynch's nightclub and operates on a members-only basis until midnight, after which it opens to the public. The Lynch DNA is visible everywhere: Bauhaus-influenced design, unexpected material combinations, art installations, and a general sense of sophisticated strangeness that makes it genuinely unlike any other nightlife venue in the city.</p>
+
+<p>Silencio is not primarily a dance venue — it's more of a late-night salon with a dance floor. The programming includes live performances, film screenings, artistic events, and genuine nightlife. The crowd is creative industry: fashion, film, music, art, and the people who circulate in those worlds. The basement bar is one of the best-designed bar spaces in Paris.</p>
+
+<p>Pre-midnight access requires membership. Alfred maintains Silencio membership for member use — contact our Paris concierge team for availability. Post-midnight access is possible through standard reservation channels, though the venue operates a considered door that maintains quality. For clients interested in Paris's creative nightlife culture rather than its social display culture, Silencio is the essential destination.</p>
+
+<h2>Other Paris Venues Worth Knowing</h2>
+
+<p><strong>Le Très Particulier (Hotel Particulier Montmartre):</strong> The garden bar of this intimate boutique hotel becomes one of Paris's most atmospheric drinking experiences on warm evenings. Small, beautifully designed, and genuinely off the tourist circuit.</p>
+
+<p><strong>Wanderlust:</strong> The outdoor riverside venue at the Cité de la Mode is the best summer nightlife experience in Paris. Terrace space on the Seine, good DJs, and an energy that captures what Parisian summer nights are supposed to feel like.</p>
+
+<p><strong>Petit Bain:</strong> A floating venue on the Seine near Austerlitz. The most creative music programming in Paris — techno, experimental, and underground sounds in a genuinely unusual setting.</p>
+
+<p><strong>Le Baron:</strong> The historic nightclub that defined a certain era of Parisian fashion nightlife. Still operating, still relevant among the fashion and art world crowd, though its peak years were the late 2000s. Worth knowing for clients with existing connections to Paris's creative world.</p>
+
+<h2>Practical Paris Nightlife Notes</h2>
+
+<p>Most of these venues don't accept taxis or ride-share drop-offs at the entrance on busy nights — you walk the final distance or have a driver circle. Alfred coordinates private car service for Paris nightlife clients, which simplifies logistics considerably.</p>
+
+<p>Currency: Paris nightlife operates in euros. Premium bottles (Armand de Brignac, Louis XIII cognac, Dom Pérignon) are priced significantly above retail but comparable to equivalent London venues. Budget €300–€600 per person for a full evening including dinner and club spend at the upper-tier venues.</p>
+
+<h2>Experience Paris Nightlife with Alfred</h2>
+
+<p>Alfred's Paris team manages nightlife access alongside dining, transportation, and hotel recommendations. Our <a href="/catalog/nightlife" style="color:#34C759;text-decoration:none;font-weight:500">nightlife catalog</a> covers Paris, Miami, Dubai, and London, with direct booking access to our concierge team for any venue not listed.</p>
+
+<p><strong>Download Alfred</strong> and tell our Paris concierge team what kind of evening you're envisioning — intimate, celebratory, fashion-forward, or simply the best possible night in one of the world's great cities. We'll design the evening around you, handle every reservation and arrival detail, and make sure Paris delivers exactly what it's supposed to.</p>`
   }
 ];
 
