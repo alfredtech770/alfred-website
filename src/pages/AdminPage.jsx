@@ -131,7 +131,8 @@ var CATS = [
       {k:"hours_dinner",l:"Dinner Hours (text)",t:"text"},
       {k:"hours_closed",l:"Closed Days",t:"text"},
       {k:"peak_price_per_person",l:"Peak Price / Person",t:"number"},
-      {k:"peak_perks",l:"Peak Perks",t:"textarea",wide:true},
+      {k:"peak_perks",l:"Peak Perks (comma-separated)",t:"tags",wide:true},
+      {k:"category",l:"Category",t:"select",opts:["restaurant","bar","cafe","bakery","lounge"]},
       {k:"chef_name",l:"Chef Name",t:"text"},
       {k:"alfred_note",l:"Alfred Note",t:"textarea",wide:true},
       {k:"alfred_tip",l:"Alfred Tip",t:"textarea",wide:true},
@@ -583,6 +584,35 @@ function FieldInput({field,value,onChange}){
       onFocus={function(e){e.target.style.borderColor=C.gd;}}
       onBlur={function(e){e.target.style.borderColor=C.bd;}}/>;
   }
+  if(field.t==="tags"){
+    var arr=value||[];
+    if(typeof arr==="string")try{arr=JSON.parse(arr)}catch(e){arr=arr.split(",").map(function(s){return s.trim();}).filter(Boolean);}
+    var [tagInput,setTagInput]=useState("");
+    function addTag(){
+      if(!tagInput.trim())return;
+      var newArr=arr.concat(tagInput.trim());
+      onChange(newArr);setTagInput("");
+    }
+    function removeTag(i){var a=arr.slice();a.splice(i,1);onChange(a);}
+    return(
+      <div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+          {arr.map(function(tag,i){
+            return <span key={i} style={{...sf(12,500),padding:"4px 10px",borderRadius:8,background:C.gd+"15",color:C.gd,display:"inline-flex",alignItems:"center",gap:6}}>
+              {tag}<span onClick={function(){removeTag(i);}} style={{cursor:"pointer",opacity:0.6,fontSize:14}}>×</span>
+            </span>;
+          })}
+        </div>
+        <div style={{display:"flex",gap:6}}>
+          <input value={tagInput} onChange={function(e){setTagInput(e.target.value);}}
+            onKeyDown={function(e){if(e.key==="Enter"){e.preventDefault();addTag();}}}
+            placeholder="Type and press Enter"
+            style={{...inputStyle,flex:1}}/>
+          <button type="button" onClick={addTag} style={{padding:"8px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer"}}>Add</button>
+        </div>
+      </div>
+    );
+  }
   if(field.t==="timeslots"){
     var slots=value||[];
     if(typeof slots==="string")try{slots=JSON.parse(slots)}catch(e){slots=[];}
@@ -646,7 +676,7 @@ function FieldInput({field,value,onChange}){
 
 /* ═══ Edit Modal ═══ */
 function EditModal({cat,record,onClose,onSave}){
-  var [form,setForm]=useState(record?{...record}:{is_active:true});
+  var [form,setForm]=useState(record?{...record}:{is_active:true,category:cat.id==="restaurants"?"restaurant":undefined});
   var [saving,setSaving]=useState(false);
   var [saveErr,setSaveErr]=useState("");
   var [tab,setTab]=useState("details");
