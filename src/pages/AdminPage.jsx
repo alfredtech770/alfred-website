@@ -1438,6 +1438,247 @@ function FeaturedView(){
   );
 }
 
+/* ═══ Blog Management ═══ */
+function BlogView(){
+  var [posts,setPosts]=useState([]);
+  var [loading,setLoading]=useState(true);
+  var [editPost,setEditPost]=useState(null);
+  var [showAdd,setShowAdd]=useState(false);
+
+  async function load(){
+    setLoading(true);
+    var {data}=await supabase.from("blog_posts").select("*").order("created_at",{ascending:false});
+    setPosts(data||[]);setLoading(false);
+  }
+  useEffect(function(){load();},[]);
+
+  async function togglePublish(post){
+    await supabase.from("blog_posts").update({is_published:!post.is_published}).eq("id",post.id);
+    load();
+  }
+  async function deletePost(id){
+    if(!confirm("Delete this article?"))return;
+    await supabase.from("blog_posts").delete().eq("id",id);
+    load();
+  }
+  async function savePost(form,isNew){
+    if(isNew){
+      await supabase.from("blog_posts").insert(form);
+    }else{
+      var id=form.id;delete form.id;delete form.created_at;delete form.updated_at;
+      await supabase.from("blog_posts").update(form).eq("id",id);
+    }
+    setEditPost(null);setShowAdd(false);load();
+  }
+
+  return(
+    <div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:24}}>
+        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Blog ({posts.length} articles)</h2>
+        <button onClick={function(){setShowAdd(true);}} style={{...btn(C.gd,"#000"),fontWeight:700}}>+ New Article</button>
+      </div>
+      {loading?<div style={{padding:"40px",textAlign:"center",color:C.s5}}>Loading...</div>:(
+        <div style={{display:"grid",gap:16}}>
+          {posts.map(function(p){return(
+            <div key={p.id} style={{display:"flex",gap:16,padding:16,background:C.el,border:"1px solid "+C.bd,borderRadius:14,alignItems:"center"}}
+              onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
+              onMouseLeave={function(e){e.currentTarget.style.background=C.el;}}>
+              {p.image&&<img src={p.image} alt="" style={{width:80,height:56,borderRadius:8,objectFit:"cover",flexShrink:0}}/>}
+              <div style={{flex:1,minWidth:0}}>
+                <p style={{...sf(14,600),color:C.s1,margin:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.title}</p>
+                <p style={{...sf(11),color:C.s5,margin:"4px 0 0"}}>{p.category} · {p.date} · {p.reading_time||7} min read</p>
+              </div>
+              <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:p.is_published?"rgba(52,199,89,0.1)":"rgba(255,149,0,0.1)",color:p.is_published?C.gn:C.or,flexShrink:0}}>
+                {p.is_published?"Published":"Draft"}
+              </span>
+              <button onClick={function(){togglePublish(p);}} style={btn(C.srf,C.s3,{sm:true})}>{p.is_published?"Unpublish":"Publish"}</button>
+              <button onClick={function(){setEditPost(p);}} style={btn(C.srf,C.s3,{sm:true})}>Edit</button>
+              <button onClick={function(){deletePost(p.id);}} style={btn("rgba(255,59,48,0.08)",C.rd,{sm:true,bd:"rgba(255,59,48,0.2)"})}>Delete</button>
+            </div>
+          );})}
+        </div>
+      )}
+      {(editPost||showAdd)&&<BlogEditModal post={editPost} onClose={function(){setEditPost(null);setShowAdd(false);}} onSave={savePost}/>}
+    </div>
+  );
+}
+
+function BlogEditModal({post,onClose,onSave}){
+  var [form,setForm]=useState(post?{...post}:{slug:"",title:"",excerpt:"",date:"2026-04-13",reading_time:7,category:"Dining",keywords:"",image:"",content:"",is_published:true,author:"Alfred Concierge"});
+  function set(k,v){setForm(function(p){return{...p,[k]:v};});}
+  var inputStyle={width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(14),color:C.s1,outline:"none"};
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}} onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:700,maxHeight:"92vh",display:"flex",flexDirection:"column"}}>
+        <div style={{padding:"20px 24px",borderBottom:"1px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <h2 style={{...sf(18,600),color:C.s1,margin:0}}>{post?"Edit Article":"New Article"}</h2>
+          <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:20}}>×</button>
+        </div>
+        <div style={{overflowY:"auto",padding:"20px 24px",flex:1}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+            <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Title</label><input value={form.title} onChange={function(e){set("title",e.target.value);}} style={inputStyle}/></div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Slug</label><input value={form.slug} onChange={function(e){set("slug",e.target.value);}} style={inputStyle}/></div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Category</label><select value={form.category} onChange={function(e){set("category",e.target.value);}} style={{...inputStyle,appearance:"auto"}}><option>Dining</option><option>Nightlife</option><option>Travel</option><option>Events</option><option>Wellness</option><option>Lifestyle</option></select></div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Date</label><input value={form.date} onChange={function(e){set("date",e.target.value);}} style={inputStyle}/></div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Reading Time (min)</label><input type="number" value={form.reading_time} onChange={function(e){set("reading_time",Number(e.target.value));}} style={inputStyle}/></div>
+            <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Excerpt</label><textarea value={form.excerpt} onChange={function(e){set("excerpt",e.target.value);}} rows={2} style={{...inputStyle,resize:"vertical"}}/></div>
+            <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Image URL</label><input value={form.image} onChange={function(e){set("image",e.target.value);}} style={inputStyle}/>{form.image&&<img src={form.image} alt="" style={{width:"100%",height:120,objectFit:"cover",borderRadius:8,marginTop:8}}/>}</div>
+            <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Keywords</label><input value={form.keywords} onChange={function(e){set("keywords",e.target.value);}} style={inputStyle}/></div>
+            <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Content (HTML)</label><textarea value={form.content} onChange={function(e){set("content",e.target.value);}} rows={12} style={{...inputStyle,resize:"vertical",fontFamily:"monospace",fontSize:12}}/></div>
+          </div>
+        </div>
+        <div style={{padding:"16px 24px",borderTop:"1px solid "+C.bd,display:"flex",gap:10,justifyContent:"flex-end"}}>
+          <button onClick={onClose} style={btn("none",C.s3,{bd:C.bd})}>Cancel</button>
+          <button onClick={function(){onSave(form,!post);}} style={{...btn(C.gd,"#000"),fontWeight:700}}>Save Article</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ Notifications Management ═══ */
+function NotificationsView(){
+  var [notifs,setNotifs]=useState([]);
+  var [loading,setLoading]=useState(true);
+  var [showCompose,setShowCompose]=useState(false);
+  var [users,setUsers]=useState([]);
+
+  async function load(){
+    setLoading(true);
+    var {data}=await supabase.from("notifications").select("*").order("created_at",{ascending:false});
+    var {data:u}=await supabase.from("users").select("id,first_name,last_name,email,preferred_city");
+    setNotifs(data||[]);setUsers(u||[]);setLoading(false);
+  }
+  useEffect(function(){load();},[]);
+
+  async function sendNotification(form){
+    var payload={...form,is_sent:true,sent_at:new Date().toISOString()};
+    await supabase.from("notifications").insert(payload);
+    notifySlack("created","Notifications",form.title,"*Type:* "+form.type+" | *Target:* "+form.target+(form.target_city?" ("+form.target_city+")":""));
+    setShowCompose(false);load();
+  }
+  async function deleteNotif(id){
+    await supabase.from("notifications").delete().eq("id",id);load();
+  }
+
+  var typeColors={general:C.bl,promotional:C.gd,booking:C.gn,alert:C.rd,welcome:C.or};
+
+  return(
+    <div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:24}}>
+        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Notifications</h2>
+        <button onClick={function(){setShowCompose(true);}} style={{...btn(C.gd,"#000"),fontWeight:700}}>+ Compose</button>
+      </div>
+
+      {/* Stats */}
+      <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:24}}>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"16px 20px",flex:"1 1 120px"}}>
+          <p style={{...sf(24,700),color:C.s1,margin:0}}>{notifs.length}</p>
+          <p style={{...sf(11),color:C.s5,margin:"4px 0 0"}}>Total Sent</p>
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"16px 20px",flex:"1 1 120px"}}>
+          <p style={{...sf(24,700),color:C.s1,margin:0}}>{users.length}</p>
+          <p style={{...sf(11),color:C.s5,margin:"4px 0 0"}}>Total Users</p>
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"16px 20px",flex:"1 1 120px"}}>
+          <p style={{...sf(24,700),color:C.gn,margin:0}}>{notifs.filter(function(n){return n.is_sent;}).length}</p>
+          <p style={{...sf(11),color:C.s5,margin:"4px 0 0"}}>Delivered</p>
+        </div>
+      </div>
+
+      {/* History */}
+      {loading?<div style={{padding:"40px",textAlign:"center",color:C.s5}}>Loading...</div>:notifs.length===0?(
+        <div style={{textAlign:"center",padding:"60px 20px",background:C.el,borderRadius:16,border:"1px solid "+C.bd}}>
+          <p style={{...sf(16,500),color:C.s3,margin:"0 0 8px"}}>No notifications sent yet</p>
+          <p style={{...sf(13),color:C.s5}}>Click "Compose" to send your first notification.</p>
+        </div>
+      ):(
+        <div style={{display:"grid",gap:12}}>
+          {notifs.map(function(n){
+            var tc=typeColors[n.type]||C.bl;
+            return(
+              <div key={n.id} style={{display:"flex",gap:14,padding:16,background:C.el,border:"1px solid "+C.bd,borderRadius:14,alignItems:"center"}}>
+                <div style={{width:4,height:40,borderRadius:2,background:tc,flexShrink:0}}/>
+                <div style={{flex:1,minWidth:0}}>
+                  <p style={{...sf(14,600),color:C.s1,margin:0}}>{n.title}</p>
+                  <p style={{...sf(12),color:C.s4,margin:"4px 0 0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{n.body}</p>
+                  <p style={{...sf(10),color:C.s5,margin:"4px 0 0"}}>{n.type} · {n.target}{n.target_city?" · "+n.target_city:""} · {n.sent_at?new Date(n.sent_at).toLocaleDateString():""}</p>
+                </div>
+                <span style={{...sf(10,600),padding:"3px 8px",borderRadius:20,background:n.is_sent?C.gn+"15":C.or+"15",color:n.is_sent?C.gn:C.or}}>{n.is_sent?"Sent":"Draft"}</span>
+                <button onClick={function(){deleteNotif(n.id);}} style={btn("rgba(255,59,48,0.08)",C.rd,{sm:true,bd:"rgba(255,59,48,0.2)"})}>Delete</button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Compose Modal */}
+      {showCompose&&<ComposeNotification users={users} onClose={function(){setShowCompose(false);}} onSend={sendNotification}/>}
+    </div>
+  );
+}
+
+function ComposeNotification({users,onClose,onSend}){
+  var [form,setForm]=useState({title:"",body:"",type:"general",target:"all",target_user_id:null,target_city:"",image_url:"",action_url:""});
+  function set(k,v){setForm(function(p){return{...p,[k]:v};});}
+  var inputStyle={width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(14),color:C.s1,outline:"none"};
+
+  var cities=[...new Set(users.map(function(u){return u.preferred_city;}).filter(Boolean))].sort();
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}} onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:560,maxHeight:"92vh",display:"flex",flexDirection:"column"}}>
+        <div style={{padding:"20px 24px",borderBottom:"1px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <h2 style={{...sf(18,600),color:C.s1,margin:0}}>Compose Notification</h2>
+          <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:20}}>×</button>
+        </div>
+        <div style={{overflowY:"auto",padding:"20px 24px",flex:1}}>
+          <div style={{display:"grid",gap:14}}>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Type</label>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                {["general","promotional","booking","alert","welcome"].map(function(t){
+                  var active=form.type===t;
+                  return <button key={t} onClick={function(){set("type",t);}} style={{padding:"8px 16px",borderRadius:10,border:"1px solid "+(active?C.gd:C.bd),background:active?C.gd+"15":"none",...sf(13,active?600:400),color:active?C.gd:C.s5,cursor:"pointer",textTransform:"capitalize"}}>{t}</button>;
+                })}
+              </div>
+            </div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Target Audience</label>
+              <select value={form.target} onChange={function(e){set("target",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+                <option value="all">All Users</option>
+                <option value="city">By City</option>
+                <option value="individual">Individual User</option>
+              </select>
+            </div>
+            {form.target==="city"&&<div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>City</label>
+              <select value={form.target_city} onChange={function(e){set("target_city",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+                <option value="">Select city...</option>
+                {cities.map(function(c){return <option key={c} value={c}>{c}</option>;})}
+                <option value="Miami">Miami</option><option value="Paris">Paris</option><option value="Dubai">Dubai</option><option value="London">London</option>
+              </select>
+            </div>}
+            {form.target==="individual"&&<div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>User</label>
+              <select value={form.target_user_id||""} onChange={function(e){set("target_user_id",e.target.value||null);}} style={{...inputStyle,appearance:"auto"}}>
+                <option value="">Select user...</option>
+                {users.map(function(u){return <option key={u.id} value={u.id}>{(u.first_name||"")+" "+(u.last_name||"")+" ("+u.email+")"}</option>;})}
+              </select>
+            </div>}
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Title</label><input value={form.title} onChange={function(e){set("title",e.target.value);}} placeholder="Weekend in Miami?" style={inputStyle}/></div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Body</label><textarea value={form.body} onChange={function(e){set("body",e.target.value);}} rows={3} placeholder="New restaurants just added to Alfred..." style={{...inputStyle,resize:"vertical"}}/></div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Image URL (optional)</label><input value={form.image_url} onChange={function(e){set("image_url",e.target.value);}} style={inputStyle}/></div>
+            <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Action URL (optional)</label><input value={form.action_url} onChange={function(e){set("action_url",e.target.value);}} placeholder="/catalog/dining" style={inputStyle}/></div>
+          </div>
+        </div>
+        <div style={{padding:"16px 24px",borderTop:"1px solid "+C.bd,display:"flex",gap:10,justifyContent:"flex-end"}}>
+          <button onClick={onClose} style={btn("none",C.s3,{bd:C.bd})}>Cancel</button>
+          <button onClick={function(){if(!form.title||!form.body)return;onSend(form);}} disabled={!form.title||!form.body}
+            style={{...btn(C.gd,"#000"),fontWeight:700,opacity:(!form.title||!form.body)?0.5:1}}>Send Notification</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
   var items=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
@@ -1448,6 +1689,8 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
     {id:"featured",label:"Featured",icon:"star"},
+    {id:"blog",label:"Blog",icon:"edit"},
+    {id:"notifications",label:"Notifications",icon:"star"},
   ];
 
   return(
@@ -1535,6 +1778,8 @@ function MobileDrawer({active,onNav,onClose}){
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
     {id:"featured",label:"Featured",icon:"star"},
+    {id:"blog",label:"Blog",icon:"edit"},
+    {id:"notifications",label:"Notifications",icon:"star"},
   ];
   return(
     <div style={{position:"fixed",inset:0,zIndex:200,display:"flex"}}>
@@ -1598,6 +1843,8 @@ function AdminDashboard({onLogout}){
     if(page==="clients")return <ClientsView/>;
     if(page==="images")return <ImageBrowserView/>;
     if(page==="featured")return <FeaturedView/>;
+    if(page==="blog")return <BlogView/>;
+    if(page==="notifications")return <NotificationsView/>;
     if(activeCat)return <CategoryView key={activeCat.id} cat={activeCat}/>;
     return <DashboardView counts={counts} onNav={setPage}/>;
   }
