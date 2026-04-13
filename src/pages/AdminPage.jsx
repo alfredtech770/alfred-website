@@ -72,6 +72,41 @@ async function notifySlack(action, category, name, details){
   }catch(e){console.log("Slack notify error:",e);}
 }
 
+
+/* ═══ Klaviyo Integration ═══ */
+var KLAVIYO_KEY = "pk_00649a9a5dff37ca2ff7e82ec99716e325";
+
+async function pushToKlaviyo(eventName, email, properties){
+  if(!KLAVIYO_KEY||!email)return;
+  try{
+    await fetch("https://a.klaviyo.com/api/events",{
+      method:"POST",
+      headers:{"Authorization":"Klaviyo-API-Key "+KLAVIYO_KEY,"Accept":"application/vnd.api+json","Content-Type":"application/vnd.api+json","revision":"2024-10-15"},
+      body:JSON.stringify({data:{type:"event",attributes:{
+        metric:{data:{type:"metric",attributes:{name:eventName}}},
+        profile:{data:{type:"profile",attributes:{email:email}}},
+        properties:properties||{},
+        time:new Date().toISOString()
+      }}})
+    });
+  }catch(e){console.log("Klaviyo error:",e);}
+}
+
+async function syncProfileToKlaviyo(email, firstName, lastName, city, properties){
+  if(!KLAVIYO_KEY||!email)return;
+  try{
+    await fetch("https://a.klaviyo.com/api/profile-import",{
+      method:"POST",
+      headers:{"Authorization":"Klaviyo-API-Key "+KLAVIYO_KEY,"Accept":"application/vnd.api+json","Content-Type":"application/vnd.api+json","revision":"2024-10-15"},
+      body:JSON.stringify({data:{type:"profile",attributes:{
+        email:email,first_name:firstName||"",last_name:lastName||"",
+        location:{city:city||""},
+        properties:properties||{}
+      }}})
+    });
+  }catch(e){console.log("Klaviyo sync error:",e);}
+}
+
 /* ═══ Icons (inline SVG) ═══ */
 function Icon({name,size,color}){
   var s=size||18, c=color||C.s4;
@@ -1070,6 +1105,7 @@ function BookingsView(){
   async function updateStatus(id,status){
     var booking=bookings.find(function(b){return b.id===id;});
     await supabase.from("bookings").update({status:status}).eq("id",id);
+    pushToKlaviyo("Booking "+status,booking?booking.restaurant_name:"",{restaurant_name:booking?booking.restaurant_name:"",status:status,party_size:booking?booking.party_size:0,city:booking?booking.city:""});
     notifySlack("booking","Bookings",booking?booking.client_name:"Unknown","*Status:* Changed to _"+status+"_"+(booking?" | *Item:* "+booking.item_name:""));
     load();
   }
