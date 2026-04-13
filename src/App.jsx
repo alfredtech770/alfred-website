@@ -25,6 +25,8 @@ import BlogPost from "./pages/BlogPost";
 import CityPage from "./pages/CityPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import AdminPage from "./pages/AdminPage";
+import ProposalBuilderPage from "./pages/ProposalBuilderPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -436,7 +438,9 @@ export default function App(){
         <Route path="/city/:slug" element={<CityPage/>}/>
         <Route path="/terms" element={<TermsPage/>}/>
         <Route path="/privacy" element={<PrivacyPage/>}/>
-        <Route path="*" element={<NotFoundPage/>}/>
+        <Route path="*" element={<NotFoundPage/>
+        <Route path="/admin" element={<AdminPage/>}/>
+        <Route path="/proposal" element={<ProposalBuilderPage/>}/>}/>
       </Routes>
     </BrowserRouter>
   );
