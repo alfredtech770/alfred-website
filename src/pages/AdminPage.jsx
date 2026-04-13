@@ -1265,72 +1265,114 @@ function BookingsView(){
       )}
 
       {/* Booking Detail Modal */}
-      {selectedBooking&&(function(){
-        var b=selectedBooking;
-        var user=getUser(b.user_id);
-        var sc=statusColors[b.status]||C.s5;
-        var [note,setNote]=useState(b.notes||"");
-        return(
-          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}}
-            onClick={function(e){if(e.target===e.currentTarget)setSelectedBooking(null);}}>
-            <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:560,maxHeight:"90vh",overflow:"auto"}}>
-              <div style={{padding:"24px",borderBottom:"1px solid "+C.bd,display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                <div>
-                  <h2 style={{...sf(20,600),color:C.s1,margin:"0 0 4px"}}>{b.restaurant_name}</h2>
-                  <p style={{...sf(13),color:C.s5,margin:0}}>{b.reservation_date} at {b.reservation_time?b.reservation_time.slice(0,5):"-"} · {b.city}</p>
-                </div>
-                <button onClick={function(){setSelectedBooking(null);}} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:22}}>×</button>
-              </div>
-              <div style={{padding:"24px",display:"grid",gap:20}}>
-                {/* Status */}
-                <div style={{display:"flex",alignItems:"center",gap:12}}>
-                  <span style={{...sf(12,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",width:80}}>Status</span>
-                  <select value={b.status} onChange={function(e){updateStatus(b.id,e.target.value);setSelectedBooking({...b,status:e.target.value});}}
-                    style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:10,padding:"8px 14px",...sf(14,600),color:sc,outline:"none",appearance:"auto",flex:1}}>
-                    {["pending","requested","confirmed","completed","cancelled"].map(function(s){return <option key={s} value={s}>{s}</option>;})}
-                  </select>
-                </div>
-                {/* Guest Info */}
-                <div style={{background:C.srf,borderRadius:14,padding:"16px 20px",border:"1px solid "+C.bd}}>
-                  <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>Guest Information</p>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                    <div><span style={{...sf(10),color:C.s5}}>Name</span><p style={{...sf(14,600),color:C.s1,margin:"2px 0 0"}}>{(user.first_name||"")+" "+(user.last_name||"")||"Unknown"}</p></div>
-                    <div><span style={{...sf(10),color:C.s5}}>Email</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.email||"-"}</p></div>
-                    <div><span style={{...sf(10),color:C.s5}}>Instagram</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.instagram_handle?"@"+user.instagram_handle:"-"}</p></div>
-                    <div><span style={{...sf(10),color:C.s5}}>City</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.preferred_city||"-"}</p></div>
-                  </div>
-                </div>
-                {/* Reservation Details */}
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                  <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Party Size</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.party_size} guest{b.party_size!==1?"s":""}</p></div>
-                  <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Time</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.reservation_time?b.reservation_time.slice(0,5):"-"}</p></div>
-                  {b.occasion&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Occasion</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.occasion}</p></div>}
-                  {b.seating_preference&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Seating</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.seating_preference}</p></div>}
-                  {b.payment_amount&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Payment</span><p style={{...sf(14,600),color:C.gd,margin:"4px 0 0"}}>${b.payment_amount}</p></div>}
-                </div>
-                {/* Notes */}
-                <div>
-                  <span style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",display:"block",marginBottom:6}}>Concierge Notes</span>
-                  <div style={{display:"flex",gap:8}}>
-                    <textarea value={note} onChange={function(e){setNote(e.target.value);}} rows={2} placeholder="Add a note about this reservation..."
-                      style={{flex:1,background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(13),color:C.s1,outline:"none",resize:"vertical"}}/>
-                    <button onClick={function(){addNote(b.id,note);}} style={btn(C.srf,C.s3,{sm:true})}>Save</button>
-                  </div>
-                </div>
-                {/* Timestamps */}
-                <div style={{borderTop:"1px solid "+C.bd,paddingTop:12}}>
-                  <p style={{...sf(11),color:C.s6,margin:0}}>Created: {b.created_at?new Date(b.created_at).toLocaleString():"-"}</p>
-                  <p style={{...sf(11),color:C.s6,margin:"2px 0 0"}}>Updated: {b.updated_at?new Date(b.updated_at).toLocaleString():"-"}</p>
-                  <p style={{...sf(10),color:C.s6,margin:"2px 0 0"}}>ID: {b.id}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      {selectedBooking&&<BookingDetailModal booking={selectedBooking} user={getUser(selectedBooking.user_id)} statusColors={statusColors} onClose={function(){setSelectedBooking(null);}} onUpdateStatus={updateStatus} onAddNote={addNote} onLoad={load}/>}
 
       {/* Add Reservation Modal */}
       {showAdd&&<BookingAddModal users={users} onClose={function(){setShowAdd(false);}} onSave={saveBooking}/>}
+    </div>
+  );
+}
+
+function BookingDetailModal({booking,user,statusColors,onClose,onUpdateStatus,onAddNote,onLoad}){
+  var b=booking;
+  var sc=statusColors[b.status]||"#71717A";
+  var [note,setNote]=useState(b.notes||"");
+  
+  // Get booking link for the restaurant
+  var bookingLinks={
+    "Carbone":"https://www.exploretock.com/carbone",
+    "Zuma":"https://www.sevenrooms.com/reservations/zumamia",
+    "Komodo":"https://www.opentable.com/r/komodo-miami",
+    "LIV":"https://www.taogroup.com/venues/liv/",
+    "Nobu":"https://www.noburestaurants.com/miami/reservations",
+    "Gekko":"https://www.exploretock.com/gekko",
+    "Swan":"https://www.opentable.com/r/swan-miami",
+    "Papi Steak":"https://www.opentable.com/r/papi-steak-miami-beach",
+    "Prime 112":"https://www.mylesrestaurantgroup.com/prime-112",
+    "Joia Beach":"https://www.opentable.com/r/joia-beach-miami",
+    "Cecconis":"https://www.opentable.com/r/cecconis-miami-beach",
+    "Casa Tua":"https://www.casatualife.com/miami-beach",
+  };
+  
+  // Try to find a booking link by partial match
+  var venueLink=null;
+  var venueName=b.restaurant_name||"";
+  Object.keys(bookingLinks).forEach(function(key){
+    if(venueName.toLowerCase().includes(key.toLowerCase()))venueLink=bookingLinks[key];
+  });
+  
+  // Also check Supabase for the restaurant's booking_platform and website_url
+  var [venueData,setVenueData]=useState(null);
+  useEffect(function(){
+    if(b.restaurant_id){
+      supabase.from("restaurants").select("booking_platform,booking_venue_id,website_url,phone_number").eq("id",b.restaurant_id).single().then(function(res){
+        if(res.data)setVenueData(res.data);
+      });
+    }
+  },[b.restaurant_id]);
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}}
+      onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:580,maxHeight:"90vh",overflow:"auto"}}>
+        <div style={{padding:"24px",borderBottom:"1px solid "+C.bd,display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <h2 style={{...sf(20,600),color:C.s1,margin:"0 0 4px"}}>{b.restaurant_name}</h2>
+            <p style={{...sf(13),color:C.s5,margin:0}}>{b.reservation_date} at {b.reservation_time?b.reservation_time.slice(0,5):"-"} · {b.city}</p>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:22}}>×</button>
+        </div>
+        <div style={{padding:"24px",display:"grid",gap:20}}>
+          {/* Quick Actions */}
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            {venueLink&&<a href={venueLink} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.gd+"15",border:"1px solid "+C.gd+"30",...sf(12,600),color:C.gd,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>Book on Platform</a>}
+            {venueData&&venueData.website_url&&<a href={venueData.website_url} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Website</a>}
+            {venueData&&venueData.phone_number&&<a href={"tel:"+venueData.phone_number} style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Call {venueData.phone_number}</a>}
+            {!venueLink&&!venueData&&<a href={"https://www.google.com/search?q="+encodeURIComponent(b.restaurant_name+" "+b.city+" reservations")} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Search Booking</a>}
+          </div>
+          {/* Status */}
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <span style={{...sf(12,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",width:80}}>Status</span>
+            <select value={b.status} onChange={function(e){onUpdateStatus(b.id,e.target.value);}}
+              style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:10,padding:"8px 14px",...sf(14,600),color:sc,outline:"none",appearance:"auto",flex:1}}>
+              {["pending","requested","confirmed","completed","cancelled"].map(function(s){return <option key={s} value={s}>{s}</option>;})}
+            </select>
+          </div>
+          {/* Guest Info */}
+          <div style={{background:C.srf,borderRadius:14,padding:"16px 20px",border:"1px solid "+C.bd}}>
+            <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>Guest Information</p>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <div><span style={{...sf(10),color:C.s5}}>Name</span><p style={{...sf(14,600),color:C.s1,margin:"2px 0 0"}}>{(user.first_name||"")+" "+(user.last_name||"")||"Unknown"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>Email</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.email||"-"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>Instagram</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.instagram_handle?"@"+user.instagram_handle:"-"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>City</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.preferred_city||"-"}</p></div>
+            </div>
+          </div>
+          {/* Reservation Details */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Party Size</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.party_size} guest{b.party_size!==1?"s":""}</p></div>
+            <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Time</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.reservation_time?b.reservation_time.slice(0,5):"-"}</p></div>
+            {b.occasion&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Occasion</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.occasion}</p></div>}
+            {b.seating_preference&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Seating</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.seating_preference}</p></div>}
+            {b.payment_amount&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Payment</span><p style={{...sf(14,600),color:C.gd,margin:"4px 0 0"}}>${b.payment_amount}</p></div>}
+          </div>
+          {/* Notes */}
+          <div>
+            <span style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",display:"block",marginBottom:6}}>Concierge Notes</span>
+            <div style={{display:"flex",gap:8}}>
+              <textarea value={note} onChange={function(e){setNote(e.target.value);}} rows={2} placeholder="Add a note about this reservation..."
+                style={{flex:1,background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(13),color:C.s1,outline:"none",resize:"vertical"}}/>
+              <button onClick={function(){onAddNote(b.id,note);}} style={{padding:"8px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer",alignSelf:"flex-end"}}>Save</button>
+            </div>
+          </div>
+          {/* Timestamps */}
+          <div style={{borderTop:"1px solid "+C.bd,paddingTop:12}}>
+            <p style={{...sf(11),color:C.s6,margin:0}}>Created: {b.created_at?new Date(b.created_at).toLocaleString():"-"}</p>
+            <p style={{...sf(11),color:C.s6,margin:"2px 0 0"}}>Updated: {b.updated_at?new Date(b.updated_at).toLocaleString():"-"}</p>
+            <p style={{...sf(10),color:C.s6,margin:"2px 0 0"}}>ID: {b.id}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
