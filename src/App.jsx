@@ -441,9 +441,9 @@ export default function App(){
         <Route path="/terms" element={<TermsPage/>}/>
         <Route path="/privacy" element={<PrivacyPage/>}/>
         <Route path="/admin" element={<AdminPage/>}/>
-        <Route path="/proposal" element={<ProposalBuilderPage/>
+        <Route path="/proposal" element={<ProposalBuilderPage/>}/>
         <Route path="/catalog/hotels" element={<HotelsPage/>}/>
-        <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>}/>}/>
+        <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>
         <Route path="*" element={<NotFoundPage/>
       </Routes>
     </BrowserRouter>
