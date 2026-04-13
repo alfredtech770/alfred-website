@@ -23,6 +23,10 @@ import EventDetailPage from "./pages/EventDetailPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPost from "./pages/BlogPost";
 import CityPage from "./pages/CityPage";
+import HotelsPage from "./pages/HotelsPage";
+import HotelDetailPage from "./pages/HotelDetailPage";
+import AdminPage from "./pages/AdminPage";
+import ProposalBuilderPage from "./pages/ProposalBuilderPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -432,6 +436,10 @@ export default function App(){
         <Route path="/blog" element={<BlogPage/>}/>
         <Route path="/blog/:slug" element={<BlogPost/>}/>
         <Route path="/city/:slug" element={<CityPage/>}/>
+        <Route path="/catalog/hotels" element={<HotelsPage/>}/>
+        <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>
+        <Route path="/admin" element={<AdminPage/>}/>
+        <Route path="/proposal" element={<ProposalBuilderPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
     </BrowserRouter>
@@ -1828,6 +1836,7 @@ var CATEGORIES = [
     subtitle: "Charter, fractional & empty legs",
     count: "Global fleet access",
     tag: "Ultra Premium",
+    badge: "Coming Soon",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg",
     items: [
       {name:"NetJets",loc:"Global",price:"From $5,000/hr"},
@@ -1857,11 +1866,11 @@ var CATEGORIES = [
     id: "accommodations",
     title: "Accommodations",
     subtitle: "Hotels, villas & residences",
-    count: "Coming soon",
-    tag: "Coming Soon",
+    count: "45 hotels",
+    tag: "Luxury Hotels",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg",
     items: [],
-    active: false,
+    active: true,
   },
   {
     id: "services",
@@ -2050,7 +2059,7 @@ body::-webkit-scrollbar{width:0}
                 transform:loaded?"translateY(0)":"translateY(24px)",
                 transition:"all 0.7s cubic-bezier(0.16,1,0.3,1) "+(0.3+i*0.06)+"s",
                 filter:isComingSoon?"brightness(0.5)":"none",
-              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets","yachts":"/catalog/yachts"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
+              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets","yachts":"/catalog/yachts","accommodations":"/catalog/hotels"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
                 onMouseEnter={function(e){ if(cat.active){ e.currentTarget.style.transform="translateY(-6px) scale(1.02)"; e.currentTarget.style.boxShadow="0 24px 60px rgba(0,0,0,0.5)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"; }}}
                 onMouseLeave={function(e){ e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.borderColor=C.bd; }}
               >
@@ -2061,6 +2070,11 @@ body::-webkit-scrollbar{width:0}
 
                 {/* Tag */}
                 <div style={{position:"absolute",top:14,left:14,...sf(8,600),letterSpacing:0.5,textTransform:"uppercase",color:isComingSoon?C.s5:C.s1,padding:"4px 8px",borderRadius:7,background:"rgba(0,0,0,0.35)",backdropFilter:"blur(12px)",border:"0.5px solid rgba(255,255,255,0.08)"}}>{cat.tag}</div>
+
+                {/* Gold "Coming Soon" badge for specific cards */}
+                {cat.badge&&(
+                  <div style={{position:"absolute",top:14,right:14,...sf(9,600),color:C.gd,padding:"4px 10px",borderRadius:20,background:"rgba(255,214,10,0.12)",border:"1px solid rgba(255,214,10,0.3)",backdropFilter:"blur(12px)",letterSpacing:0.5}}>{cat.badge}</div>
+                )}
 
                 {/* Bottom text */}
                 <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"0 16px 18px"}}>
