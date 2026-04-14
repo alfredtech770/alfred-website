@@ -131,7 +131,7 @@ export default function DiningPage(){
   useEffect(function(){
     async function load(){
       try{
-        var {data,error}=await supabase.from("restaurants").select("*").order("name");
+        var {data,error}=await supabase.from("restaurants").select("*").neq("is_active",false).order("name");
         if(error)throw error;
         setRestaurants((data||[]).map(function(r){
           var pl=r.price_level||0;
