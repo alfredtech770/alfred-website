@@ -5,18 +5,696 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alfred Photo Admin</title>
 <style>
-body{margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui}
-.ld{color:#d4af37;font-size:1.2rem;text-align:center}
-.ld::after{content:'';display:block;width:40px;height:40px;margin:20px auto;border:3px solid #333;border-top-color:#d4af37;border-radius:50%;animation:s 1s linear infinite}
-@keyframes s{to{transform:rotate(360deg)}}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0a0a0a; color:#fff; }
+
+.header { background:#111; border-bottom:1px solid #222; padding:16px 24px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; }
+.header h1 { font-size:20px; color:#d4af37; flex:1; }
+.header select, .header input { background:#222; color:#fff; border:1px solid #444; padding:8px 12px; border-radius:6px; font-size:14px; }
+.header select { min-width:160px; }
+.header input { min-width:250px; }
+.header .stats { font-size:13px; color:#888; }
+
+.tabs { display:flex; gap:2px; background:#111; padding:0 24px; border-bottom:1px solid #222; }
+.tab { padding:12px 20px; cursor:pointer; color:#888; font-size:14px; font-weight:500; border-bottom:2px solid transparent; transition:all 0.2s; }
+.tab:hover { color:#ccc; }
+.tab.active { color:#d4af37; border-bottom-color:#d4af37; }
+.tab .count { background:#333; padding:2px 8px; border-radius:10px; font-size:11px; margin-left:6px; }
+
+.venue-grid { padding:24px; display:flex; flex-direction:column; gap:20px; }
+
+.venue-card { background:#151515; border:1px solid #252525; border-radius:12px; overflow:hidden; }
+.venue-header { padding:16px 20px; display:flex; align-items:center; gap:12px; cursor:pointer; }
+.venue-header:hover { background:#1a1a1a; }
+.venue-name { font-size:16px; font-weight:600; flex:1; }
+.venue-badge { font-size:11px; padding:3px 10px; border-radius:12px; background:#1a3a1a; color:#4ade80; }
+.venue-badge.no-photos { background:#3a1a1a; color:#f87171; }
+.venue-badge.hidden-badge { background:#3a2a1a; color:#fbbf24; border:1px solid #5a4a2a; font-weight:700; letter-spacing:0.5px; }
+.venue-card.venue-hidden { opacity:0.6; border-color:#3a2a1a; }
+.venue-card.venue-hidden .venue-name { text-decoration:line-through; color:#888; }
+
+.btn-visibility { background:#2a1a1a; color:#f87171; border:1px solid #3a2a2a; font-size:11px; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:600; margin-left:8px; transition:all 0.2s; }
+.btn-visibility:hover { background:#3a1a1a; border-color:#5a2a2a; }
+.btn-visibility.is-hidden { background:#1a3a1a; color:#4ade80; border-color:#2a5a2a; }
+.btn-visibility.is-hidden:hover { background:#2a5a2a; }
+.venue-count { font-size:13px; color:#888; }
+.venue-toggle { color:#666; font-size:18px; transition:transform 0.2s; }
+.venue-toggle.open { transform:rotate(90deg); }
+
+.venue-photos { display:none; padding:4px 20px 20px; }
+.venue-photos.open { display:block; }
+
+.photo-grid { display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; }
+
+.photo-item { position:relative; width:160px; height:120px; border-radius:8px; overflow:hidden; border:2px solid transparent; cursor:pointer; transition:all 0.2s; }
+.photo-item:hover { border-color:#555; transform:scale(1.02); }
+.photo-item.hero { border-color:#d4af37; box-shadow:0 0 12px rgba(212,175,55,0.3); }
+.photo-item img { width:100%; height:100%; object-fit:cover; }
+
+.photo-number { position:absolute; top:6px; left:6px; background:rgba(0,0,0,0.7); color:#fff; font-size:11px; font-weight:700; padding:2px 7px; border-radius:4px; }
+.photo-hero-badge { position:absolute; top:6px; right:6px; background:#d4af37; color:#000; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; }
+
+.photo-actions { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,0.9)); padding:24px 6px 6px; display:flex; gap:4px; opacity:0; transition:opacity 0.2s; }
+.photo-item:hover .photo-actions { opacity:1; }
+
+.btn-sm { font-size:10px; padding:3px 8px; border:none; border-radius:4px; cursor:pointer; font-weight:600; transition:all 0.2s; }
+.btn-hero { background:#d4af37; color:#000; }
+.btn-hero:hover { background:#e5c048; }
+.btn-remove { background:#dc2626; color:#fff; }
+.btn-remove:hover { background:#ef4444; }
+.btn-left { background:#555; color:#fff; }
+.btn-left:hover { background:#777; }
+.btn-right { background:#555; color:#fff; }
+.btn-right:hover { background:#777; }
+
+.add-photo { width:160px; height:120px; border:2px dashed #333; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; color:#555; }
+.add-photo:hover { border-color:#d4af37; color:#d4af37; }
+.add-photo span { font-size:28px; }
+.add-photo small { font-size:11px; margin-top:4px; }
+
+.toast { position:fixed; bottom:24px; right:24px; background:#1a3a1a; color:#4ade80; padding:12px 20px; border-radius:8px; font-size:13px; z-index:200; opacity:0; transition:opacity 0.3s; border:1px solid #2a5a2a; }
+.toast.show { opacity:1; }
+.toast.error { background:#3a1a1a; color:#f87171; border-color:#5a2a2a; }
+
+.upload-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:150; align-items:center; justify-content:center; }
+.upload-modal.open { display:flex; }
+.upload-box { background:#1a1a1a; border:1px solid #333; border-radius:12px; padding:24px; max-width:500px; width:90%; }
+.upload-box h3 { color:#d4af37; margin-bottom:16px; }
+.upload-box input[type="file"] { margin:12px 0; }
+.upload-box .btn-row { display:flex; gap:8px; margin-top:16px; }
+.btn { padding:8px 20px; border:none; border-radius:6px; cursor:pointer; font-size:14px; font-weight:500; }
+.btn-primary { background:#d4af37; color:#000; }
+.btn-primary:hover { background:#e5c048; }
+.btn-cancel { background:#333; color:#fff; }
+.btn-cancel:hover { background:#444; }
+
+.loading { text-align:center; padding:60px; color:#666; font-size:14px; }
+
+.booking-section { padding:16px 20px 20px; border-top:1px solid #222; margin-top:4px; }
+.booking-section h4 { font-size:13px; color:#d4af37; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.booking-section h4 .count-pill { background:#222; color:#aaa; font-size:11px; padding:2px 8px; border-radius:10px; letter-spacing:0; }
+
+.booking-list { display:flex; flex-direction:column; gap:10px; }
+.booking-row { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px; padding:12px; }
+.booking-row.unavailable { opacity:0.55; }
+.booking-fields { display:grid; grid-template-columns: 1fr 1fr 120px 120px 100px; gap:8px; margin-bottom:8px; }
+.booking-fields-row2 { display:grid; grid-template-columns: 1fr 140px 80px 80px 60px; gap:8px; margin-bottom:8px; }
+.booking-row input, .booking-row select, .booking-row textarea {
+  background:#111; color:#fff; border:1px solid #333; padding:6px 10px; border-radius:5px; font-size:12px; font-family:inherit;
+}
+.booking-row input:focus, .booking-row select:focus, .booking-row textarea:focus { border-color:#d4af37; outline:none; }
+.booking-row label { font-size:10px; color:#777; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:3px; }
+.booking-row .field { min-width:0; }
+.booking-includes { background:#111; border:1px solid #333; border-radius:5px; padding:8px; min-height:30px; color:#fff; font-size:12px; width:100%; resize:vertical; }
+.booking-actions { display:flex; gap:8px; justify-content:flex-end; align-items:center; margin-top:8px; }
+.booking-actions .toggle-available { display:flex; align-items:center; gap:6px; font-size:11px; color:#aaa; cursor:pointer; margin-right:auto; }
+.booking-actions .toggle-available input { width:14px; height:14px; cursor:pointer; }
+.btn-save { background:#16a34a; color:#fff; font-size:11px; padding:5px 12px; border:none; border-radius:5px; cursor:pointer; font-weight:600; }
+.btn-save:hover { background:#22c55e; }
+.btn-save.dirty { background:#d4af37; color:#000; }
+.btn-del-option { background:#2a1a1a; color:#f87171; font-size:11px; padding:5px 10px; border:1px solid #3a2a2a; border-radius:5px; cursor:pointer; }
+.btn-del-option:hover { background:#3a1a1a; }
+.btn-add-option { background:transparent; color:#d4af37; border:1px dashed #3a3a1a; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:12px; margin-top:4px; width:100%; transition:all 0.2s; }
+.btn-add-option:hover { background:#1a1a0a; border-color:#d4af37; }
+.booking-loading { color:#666; font-size:12px; padding:12px; text-align:center; }
 </style>
 </head>
 <body>
-<div class="ld" id="st">Loading Alfred Photo Admin...</div>
+
+<div class="header">
+  <h1>✦ Alfred Photo Admin</h1>
+  <input type="text" id="search" placeholder="Search venues..." oninput="filterVenues()">
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-tab="restaurants" onclick="switchTab('restaurants')">Restaurants <span class="count" id="count-restaurants">0</span></div>
+  <div class="tab" data-tab="nightlife" onclick="switchTab('nightlife')">Nightlife <span class="count" id="count-nightlife">0</span></div>
+  <div class="tab" data-tab="wellness" onclick="switchTab('wellness')">Wellness <span class="count" id="count-wellness">0</span></div>
+  <div class="tab" data-tab="yachts" onclick="switchTab('yachts')">Yachts <span class="count" id="count-yachts">0</span></div>
+  <div class="tab" data-tab="cars" onclick="switchTab('cars')">Cars <span class="count" id="count-cars">0</span></div>
+</div>
+
+<div class="venue-grid" id="venueGrid">
+  <div class="loading">Loading venues...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="upload-modal" id="uploadModal">
+  <div class="upload-box">
+    <h3 id="uploadTitle">Add Photos</h3>
+    <p style="color:#999;font-size:13px">Select one or more images to add to this venue.</p>
+    <input type="file" id="uploadInput" multiple accept="image/*">
+    <div id="uploadProgress" style="margin-top:12px;font-size:13px;color:#888"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="doUpload()">Upload</button>
+      <button class="btn btn-cancel" onclick="closeUpload()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
-fetch('https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/venue-photos/admin/index.html')
-.then(r=>r.text()).then(h=>{document.open();document.write(h);document.close()})
-.catch(e=>{document.getElementById('st').textContent='Failed: '+e.message})
+const SUPABASE_URL = 'https://fbdgbnnkgyljehtccgaq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZGdibm5rZ3lsamVodGNjZ2FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjA5MzgsImV4cCI6MjA4MjMzNjkzOH0.NmlSkGMDZ-DmhV0bmSCFPQmuFNo4E5H-Sz1cjRyYs8Q';
+const HEADERS = { 'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY };
+
+let allData = { restaurants: [], nightlife: [], wellness: [], yachts: [], cars: [] };
+let currentTab = 'restaurants';
+
+// Map each tab to one or more DB tables. Each venue row gets a `_table` field
+// so edits route back to the right table.
+const TAB_TABLES = {
+  restaurants: ['restaurants'],
+  nightlife:   ['nightclubs', 'bars'],
+  wellness:    ['wellness'],
+  yachts:      ['yachts'],
+  cars:        ['cars']
+};
+
+// For each venue table, which booking_options table + foreign-key column to use
+const BOOKING_MAP = {
+  restaurants: { table: 'restaurant_booking_options', fk: 'restaurant_id' },
+  nightclubs:  { table: 'nightclub_booking_options',  fk: 'nightclub_id'  },
+  bars:        { table: 'bar_booking_options',        fk: 'bar_id'        },
+  wellness:    { table: 'wellness_booking_options',   fk: 'wellness_id'   },
+  yachts:      { table: 'yacht_booking_options',      fk: 'yacht_id'      },
+  cars:        { table: 'car_booking_options',        fk: 'car_id'        }
+};
+
+// Cache of booking options per venue id
+let bookingCache = {};
+let openVenues = new Set();
+let uploadTarget = null;
+
+// Toast notification
+function toast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Fetch all data
+async function loadData() {
+  for (const tab of Object.keys(TAB_TABLES)) {
+    const tables = TAB_TABLES[tab];
+    let rows = [];
+    for (const table of tables) {
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id,name,hero_image_url,photos_order,is_active&order=name`, { headers: HEADERS });
+        const data = await r.json();
+        // Attach source table so updates route correctly
+        data.forEach(v => { v._table = table; });
+        rows = rows.concat(data);
+      } catch (e) {
+        console.error(`Error loading ${table}:`, e);
+      }
+    }
+    rows.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    allData[tab] = rows;
+    const countEl = document.getElementById(`count-${tab}`);
+    if (countEl) countEl.textContent = rows.length;
+  }
+  const total = Object.values(allData).reduce((s, a) => s + a.filter(v => v.photos_order?.length > 0).length, 0);
+  const totalVenues = Object.values(allData).reduce((s, a) => s + a.length, 0);
+  document.getElementById('stats').textContent = `${total} venues with photos / ${totalVenues} total`;
+  renderVenues();
+}
+
+// Switch category tab
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  openVenues.clear();
+  renderVenues();
+}
+
+// Filter by search
+function filterVenues() {
+  renderVenues();
+}
+
+// Render venue list
+function renderVenues() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const venues = allData[currentTab].filter(v => !search || v.name.toLowerCase().includes(search));
+  const grid = document.getElementById('venueGrid');
+
+  if (!venues.length) {
+    grid.innerHTML = '<div class="loading">No venues found</div>';
+    return;
+  }
+
+  grid.innerHTML = venues.map(v => {
+    const photos = v.photos_order || [];
+    const isOpen = openVenues.has(v.id);
+    const hasPhotos = photos.length > 0;
+
+    return `
+      <div class="venue-card ${v.is_active === false ? 'venue-hidden' : ''}" id="card-${v.id}">
+        <div class="venue-header" onclick="toggleVenue('${v.id}')">
+          <span class="venue-toggle ${isOpen ? 'open' : ''}">›</span>
+          <span class="venue-name">${escHtml(v.name)}</span>
+          ${v.is_active === false ? '<span class="venue-badge hidden-badge">HIDDEN</span>' : ''}
+          <span class="venue-badge ${hasPhotos ? '' : 'no-photos'}">${hasPhotos ? photos.length + ' photos' : 'No photos'}</span>
+          ${v.hero_image_url ? '<span class="venue-count">Hero set</span>' : '<span class="venue-count" style="color:#f87171">No hero</span>'}
+          <button class="btn-visibility ${v.is_active === false ? 'is-hidden' : ''}" onclick="toggleVisibility('${v.id}', event)" title="${v.is_active === false ? 'Show on app' : 'Hide from app'}">
+            ${v.is_active === false ? '👁 Show' : '🚫 Hide'}
+          </button>
+        </div>
+        <div class="venue-photos ${isOpen ? 'open' : ''}" id="photos-${v.id}">
+          ${isOpen ? renderPhotos(v) : ''}
+        </div>
+        ${isOpen ? `
+          <div class="booking-section">
+            <h4>Booking Options <span class="count-pill" id="bk-count-${v.id}">${bookingCache[v.id] ? bookingCache[v.id].length : '…'}</span></h4>
+            <div class="booking-list" id="bk-list-${v.id}">${renderBookingList(v)}</div>
+            <button class="btn-add-option" onclick="addBookingOption('${v.id}', event)">+ Add Booking Option</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderPhotos(venue) {
+  const photos = venue.photos_order || [];
+  const heroUrl = venue.hero_image_url;
+
+  let html = '<div class="photo-grid">';
+  photos.forEach((url, i) => {
+    const isHero = url === heroUrl;
+    html += `
+      <div class="photo-item ${isHero ? 'hero' : ''}" title="${isHero ? 'Current hero image' : 'Click Set Hero to use as featured image'}">
+        <img src="${url}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22120%22><rect fill=%22%23333%22 width=%22160%22 height=%22120%22/><text fill=%22%23666%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22>Error</text></svg>'">
+        <span class="photo-number">${i + 1}</span>
+        ${isHero ? '<span class="photo-hero-badge">HERO</span>' : ''}
+        <div class="photo-actions">
+          ${!isHero ? `<button class="btn-sm btn-hero" onclick="setHero('${venue.id}','${url}',event)">★ Hero</button>` : ''}
+          ${i > 0 ? `<button class="btn-sm btn-left" onclick="movePhoto('${venue.id}',${i},-1,event)">◀</button>` : ''}
+          ${i < photos.length - 1 ? `<button class="btn-sm btn-right" onclick="movePhoto('${venue.id}',${i},1,event)">▶</button>` : ''}
+          <button class="btn-sm btn-remove" onclick="removePhoto('${venue.id}',${i},event)">✕</button>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `
+    <div class="add-photo" onclick="openUpload('${venue.id}','${escHtml(venue.name)}')">
+      <span>+</span>
+      <small>Add Photos</small>
+    </div>
+  `;
+  html += '</div>';
+  return html;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Toggle venue visibility on the app (is_active)
+async function toggleVisibility(venueId, event) {
+  if (event) event.stopPropagation();
+  const venue = findVenue(venueId);
+  if (!venue) return;
+  const newActive = venue.is_active === false ? true : false;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${venue._table}?id=eq.${venueId}`, {
+      method: 'PATCH',
+      headers: { ...HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ is_active: newActive })
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    venue.is_active = newActive;
+    renderVenues();
+    toast(newActive ? `${venue.name} is now visible on the app` : `${venue.name} is now hidden from the app`);
+  } catch (e) {
+    toast('Failed to update visibility: ' + e.message, true);
+  }
+}
+
+// Toggle venue card open/closed
+function toggleVenue(id) {
+  if (openVenues.has(id)) {
+    openVenues.delete(id);
+  } else {
+    openVenues.add(id);
+    // Lazy-load booking options the first time the card opens
+    if (!bookingCache[id]) loadBookingOptions(id);
+  }
+  renderVenues();
+}
+
+// ─── BOOKING OPTIONS ──────────────────────────────────────────────────────────
+
+async function loadBookingOptions(venueId) {
+  const venue = findVenue(venueId);
+  if (!venue) return;
+  const map = BOOKING_MAP[venue._table];
+  if (!map) { bookingCache[venueId] = []; return; }
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL}/rest/v1/${map.table}?${map.fk}=eq.${venueId}&order=sort_order.asc`,
+      { headers: HEADERS }
+    );
+    bookingCache[venueId] = await r.json();
+  } catch (e) {
+    console.error('loadBookingOptions', e);
+    bookingCache[venueId] = [];
+  }
+  updateBookingList(venueId);
+}
+
+function updateBookingList(venueId) {
+  const venue = findVenue(venueId);
+  if (!venue) return;
+  const listEl = document.getElementById(`bk-list-${venueId}`);
+  const countEl = document.getElementById(`bk-count-${venueId}`);
+  if (listEl) listEl.innerHTML = renderBookingList(venue);
+  if (countEl) countEl.textContent = (bookingCache[venueId] || []).length;
+}
+
+function renderBookingList(venue) {
+  const opts = bookingCache[venue.id];
+  if (!opts) return '<div class="booking-loading">Loading booking options…</div>';
+  if (opts.length === 0) return '<div class="booking-loading">No booking options yet. Click "+ Add Booking Option" below.</div>';
+  return opts.map((o, idx) => renderBookingRow(venue.id, o, idx)).join('');
+}
+
+function renderBookingRow(venueId, o, idx) {
+  const types = ['table','vip','bar','booth','cabana','package','reservation','tour','charter','service','experience','other'];
+  const typeOpts = types.map(t => `<option value="${t}" ${o.option_type === t ? 'selected':''}>${t}</option>`).join('');
+  const price = o.price_cents == null ? '' : (o.price_cents / 100);
+  const minSpend = o.min_spend_cents == null ? '' : (o.min_spend_cents / 100);
+  const includes = Array.isArray(o.includes) ? o.includes.join('\n') : '';
+  const rowKey = o.id || `new-${idx}`;
+  return `
+    <div class="booking-row ${o.is_available === false ? 'unavailable' : ''}" data-row="${rowKey}" onclick="event.stopPropagation()">
+      <div class="booking-fields">
+        <div class="field"><label>Label</label><input type="text" value="${escAttr(o.label || '')}" oninput="markDirty('${venueId}','${rowKey}','label',this.value)"></div>
+        <div class="field"><label>Subtitle</label><input type="text" value="${escAttr(o.subtitle || '')}" oninput="markDirty('${venueId}','${rowKey}','subtitle',this.value)"></div>
+        <div class="field"><label>Type</label><select onchange="markDirty('${venueId}','${rowKey}','option_type',this.value)">${typeOpts}</select></div>
+        <div class="field"><label>Price ($)</label><input type="number" step="0.01" placeholder="null" value="${price}" oninput="markDirty('${venueId}','${rowKey}','price_cents',this.value === '' ? null : Math.round(parseFloat(this.value)*100))"></div>
+        <div class="field"><label>Min Spend ($)</label><input type="number" step="0.01" placeholder="null" value="${minSpend}" oninput="markDirty('${venueId}','${rowKey}','min_spend_cents',this.value === '' ? null : Math.round(parseFloat(this.value)*100))"></div>
+      </div>
+      <div class="booking-fields-row2">
+        <div class="field"><label>Capacity Label</label><input type="text" value="${escAttr(o.capacity_label || '')}" oninput="markDirty('${venueId}','${rowKey}','capacity_label',this.value)"></div>
+        <div class="field"><label>Icon (SF Symbol)</label><input type="text" value="${escAttr(o.icon || '')}" oninput="markDirty('${venueId}','${rowKey}','icon',this.value)"></div>
+        <div class="field"><label>Max Guests</label><input type="number" value="${o.max_guests ?? ''}" oninput="markDirty('${venueId}','${rowKey}','max_guests',this.value === '' ? null : parseInt(this.value))"></div>
+        <div class="field"><label>Per Person</label><select onchange="markDirty('${venueId}','${rowKey}','per_person', this.value === 'true')"><option value="false" ${!o.per_person?'selected':''}>No</option><option value="true" ${o.per_person?'selected':''}>Yes</option></select></div>
+        <div class="field"><label>Order</label><input type="number" value="${o.sort_order ?? 0}" oninput="markDirty('${venueId}','${rowKey}','sort_order', parseInt(this.value) || 0)"></div>
+      </div>
+      <div class="field"><label>Includes (one per line)</label><textarea class="booking-includes" rows="2" oninput="markDirty('${venueId}','${rowKey}','includes', this.value.split('\\n').map(s=>s.trim()).filter(Boolean))">${escHtml(includes)}</textarea></div>
+      <div class="booking-actions">
+        <label class="toggle-available"><input type="checkbox" ${o.is_available !== false ? 'checked':''} onchange="markDirty('${venueId}','${rowKey}','is_available', this.checked)"> Available</label>
+        <button class="btn-save" id="save-${venueId}-${rowKey}" onclick="saveBookingOption('${venueId}','${rowKey}', event)">${o.id ? 'Save' : 'Create'}</button>
+        <button class="btn-del-option" onclick="deleteBookingOption('${venueId}','${rowKey}', event)">Delete</button>
+      </div>
+    </div>
+  `;
+}
+
+function escAttr(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Track unsaved edits
+let pendingEdits = {}; // { [rowKey]: { field: value } }
+function markDirty(venueId, rowKey, field, value) {
+  if (!pendingEdits[rowKey]) pendingEdits[rowKey] = {};
+  pendingEdits[rowKey][field] = value;
+  const btn = document.getElementById(`save-${venueId}-${rowKey}`);
+  if (btn) btn.classList.add('dirty');
+}
+
+function addBookingOption(venueId, event) {
+  if (event) event.stopPropagation();
+  const opts = bookingCache[venueId] || [];
+  opts.push({
+    id: null,
+    option_type: 'table',
+    label: 'New Option',
+    subtitle: '',
+    icon: '',
+    price_cents: null,
+    min_spend_cents: null,
+    per_person: false,
+    includes: [],
+    capacity_label: '',
+    max_guests: null,
+    is_available: true,
+    sort_order: opts.length
+  });
+  bookingCache[venueId] = opts;
+  updateBookingList(venueId);
+}
+
+async function saveBookingOption(venueId, rowKey, event) {
+  if (event) event.stopPropagation();
+  const venue = findVenue(venueId);
+  if (!venue) return;
+  const map = BOOKING_MAP[venue._table];
+  if (!map) return toast('No booking options for this category', true);
+
+  const opts = bookingCache[venueId] || [];
+  const idx = opts.findIndex(o => (o.id || `new-${opts.indexOf(o)}`) === rowKey);
+  if (idx === -1) return;
+  const opt = { ...opts[idx], ...(pendingEdits[rowKey] || {}) };
+
+  try {
+    if (opt.id) {
+      // UPDATE
+      const { id, created_at, ...patch } = opt;
+      delete patch._table;
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${map.table}?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: { ...HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+        body: JSON.stringify(patch)
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}: ${await r.text()}`);
+      const data = await r.json();
+      opts[idx] = data[0] || opt;
+    } else {
+      // INSERT
+      const { id, created_at, ...payload } = opt;
+      payload[map.fk] = venueId;
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${map.table}`, {
+        method: 'POST',
+        headers: { ...HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}: ${await r.text()}`);
+      const data = await r.json();
+      opts[idx] = data[0];
+    }
+    delete pendingEdits[rowKey];
+    bookingCache[venueId] = opts;
+    updateBookingList(venueId);
+    toast('Booking option saved');
+  } catch (e) {
+    toast('Save failed: ' + e.message, true);
+  }
+}
+
+async function deleteBookingOption(venueId, rowKey, event) {
+  if (event) event.stopPropagation();
+  const venue = findVenue(venueId);
+  if (!venue) return;
+  const map = BOOKING_MAP[venue._table];
+  if (!map) return;
+
+  const opts = bookingCache[venueId] || [];
+  const idx = opts.findIndex(o => (o.id || `new-${opts.indexOf(o)}`) === rowKey);
+  if (idx === -1) return;
+  const opt = opts[idx];
+
+  if (!confirm(`Delete booking option "${opt.label || '(unnamed)'}"?`)) return;
+
+  try {
+    if (opt.id) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${map.table}?id=eq.${opt.id}`, {
+        method: 'DELETE',
+        headers: { ...HEADERS, 'Prefer': 'return=minimal' }
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    }
+    opts.splice(idx, 1);
+    delete pendingEdits[rowKey];
+    bookingCache[venueId] = opts;
+    updateBookingList(venueId);
+    toast('Booking option removed');
+  } catch (e) {
+    toast('Delete failed: ' + e.message, true);
+  }
+}
+
+// Set hero image
+async function setHero(venueId, url, event) {
+  event.stopPropagation();
+  const venue = findVenue(venueId);
+  if (!venue) return;
+
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${venue._table}?id=eq.${venueId}`, {
+      method: 'PATCH',
+      headers: { ...HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ hero_image_url: url })
+    });
+    if (r.ok) {
+      venue.hero_image_url = url;
+      renderVenues();
+      toast(`Hero image updated for ${venue.name}`);
+    } else {
+      toast('Failed to update hero image', true);
+    }
+  } catch (e) {
+    toast('Error: ' + e.message, true);
+  }
+}
+
+// Move photo (reorder)
+async function movePhoto(venueId, index, direction, event) {
+  event.stopPropagation();
+  const venue = findVenue(venueId);
+  if (!venue || !venue.photos_order) return;
+
+  const photos = [...venue.photos_order];
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= photos.length) return;
+
+  [photos[index], photos[newIndex]] = [photos[newIndex], photos[index]];
+
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${venue._table}?id=eq.${venueId}`, {
+      method: 'PATCH',
+      headers: { ...HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ photos_order: photos })
+    });
+    if (r.ok) {
+      venue.photos_order = photos;
+      renderVenues();
+      toast('Photo reordered');
+    }
+  } catch (e) {
+    toast('Error reordering', true);
+  }
+}
+
+// Remove photo
+async function removePhoto(venueId, index, event) {
+  event.stopPropagation();
+  const venue = findVenue(venueId);
+  if (!venue || !venue.photos_order) return;
+
+  if (!confirm(`Remove photo ${index + 1} from ${venue.name}?`)) return;
+
+  const photos = [...venue.photos_order];
+  const removedUrl = photos.splice(index, 1)[0];
+  const update = { photos_order: photos };
+
+  // If removed photo was hero, set new hero to first remaining
+  if (venue.hero_image_url === removedUrl) {
+    update.hero_image_url = photos.length > 0 ? photos[0] : null;
+  }
+
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${venue._table}?id=eq.${venueId}`, {
+      method: 'PATCH',
+      headers: { ...HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(update)
+    });
+    if (r.ok) {
+      venue.photos_order = photos;
+      if (update.hero_image_url !== undefined) venue.hero_image_url = update.hero_image_url;
+      renderVenues();
+      toast('Photo removed');
+    }
+  } catch (e) {
+    toast('Error removing photo', true);
+  }
+}
+
+// Upload photos
+function openUpload(venueId, venueName) {
+  uploadTarget = venueId;
+  document.getElementById('uploadTitle').textContent = `Add Photos to ${venueName}`;
+  document.getElementById('uploadInput').value = '';
+  document.getElementById('uploadProgress').textContent = '';
+  document.getElementById('uploadModal').classList.add('open');
+}
+
+function closeUpload() {
+  document.getElementById('uploadModal').classList.remove('open');
+  uploadTarget = null;
+}
+
+async function doUpload() {
+  const files = document.getElementById('uploadInput').files;
+  if (!files.length || !uploadTarget) return;
+
+  const venue = findVenue(uploadTarget);
+  if (!venue) return;
+
+  const progress = document.getElementById('uploadProgress');
+  const photos = venue.photos_order ? [...venue.photos_order] : [];
+  let startIndex = photos.length;
+  const slug = venue.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const bucket = currentTab === 'yachts' ? 'yacht-photos' : 'venue-photos';
+
+  let uploaded = 0;
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    const ext = f.name.split('.').pop().toLowerCase();
+    const ct = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+    const n = startIndex + i + 1;
+    const storagePath = `${bucket}/${slug}/photo-${n}.${ext}`;
+
+    progress.textContent = `Uploading ${i + 1}/${files.length}...`;
+
+    try {
+      const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${storagePath}`, {
+        method: 'POST',
+        headers: { ...HEADERS, 'Content-Type': ct, 'x-upsert': 'true' },
+        body: f
+      });
+      if (r.ok) {
+        photos.push(`${SUPABASE_URL}/storage/v1/object/public/${storagePath}`);
+        uploaded++;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Update DB
+  const update = { photos_order: photos };
+  if (!venue.hero_image_url && photos.length > 0) {
+    update.hero_image_url = photos[0];
+  }
+
+  await fetch(`${SUPABASE_URL}/rest/v1/${venue._table}?id=eq.${uploadTarget}`, {
+    method: 'PATCH',
+    headers: { ...HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(update)
+  });
+
+  venue.photos_order = photos;
+  if (update.hero_image_url) venue.hero_image_url = update.hero_image_url;
+
+  closeUpload();
+  renderVenues();
+  toast(`${uploaded} photo${uploaded !== 1 ? 's' : ''} added to ${venue.name}`);
+}
+
+// Find venue in current tab's data
+function findVenue(id) {
+  return allData[currentTab].find(v => v.id === id);
+}
+
+// Init
+loadData();
 </script>
 </body>
 </html>
