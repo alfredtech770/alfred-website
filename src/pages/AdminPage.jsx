@@ -143,6 +143,37 @@ var CATS = [
     ]
   },
   {
+    id:"nightlife", label:"Nightlife", table:"nightclubs", icon:"nightlife",
+    bucket:"nightlife-images", imgField:"hero_image_url", galleryField:"photos_order",
+    orderField:"photos_order",
+    cols:["name","category","city","vibe","rating","is_active"],
+    fields:[
+      {k:"name",l:"Name",t:"text",req:true},
+      {k:"category",l:"Category",t:"select",opts:["nightclub","bar","lounge","rooftop"]},
+      {k:"city",l:"City",t:"select",opts:["Miami","Paris","Dubai","London","New York"]},
+      {k:"vibe",l:"Vibe",t:"text"},
+      {k:"music",l:"Music",t:"text"},
+      {k:"description",l:"Description",t:"textarea",wide:true},
+      {k:"address",l:"Address",t:"text",wide:true},
+      {k:"price_level",l:"Price Level",t:"select",opts:["1","2","3","4"]},
+      {k:"rating",l:"Rating",t:"number"},
+      {k:"entry_type",l:"Entry Type",t:"select",opts:["Free Entry","Guestlist","Tickets","Table Only"]},
+      {k:"dress_code",l:"Dress Code",t:"text"},
+      {k:"opening_hours",l:"Opening Hours",t:"text"},
+      {k:"capacity",l:"Capacity",t:"text"},
+      {k:"reservation",l:"Reservation",t:"text"},
+      {k:"age_policy",l:"Age Policy",t:"text"},
+      {k:"crowd_type",l:"Crowd Type",t:"text"},
+      {k:"best_night",l:"Best Night",t:"text"},
+      {k:"phone_number",l:"Phone",t:"text"},
+      {k:"website_url",l:"Website",t:"text"},
+      {k:"instagram_url",l:"Instagram",t:"text"},
+      {k:"is_active",l:"Active",t:"bool"},
+      {k:"is_featured",l:"Featured",t:"bool"},
+      {k:"is_partner",l:"Partner",t:"bool"},
+    ]
+  },
+  {
     id:"yachts", label:"Yachts", table:"yachts", icon:"yacht",
     bucket:"yacht-images", imgField:"hero_image_url", galleryField:"photos_order",
     orderField:"photos_order",
@@ -704,7 +735,9 @@ function FieldInput({field,value,onChange}){
 
 /* ═══ Edit Modal ═══ */
 function EditModal({cat,record,onClose,onSave}){
-  var [form,setForm]=useState(record?{...record}:{is_active:true,category:cat.id==="restaurants"?"restaurant":undefined});
+  var defaultCity=(cat.fields.find(function(f){return f.k==="city";})||{}).opts;
+  defaultCity=defaultCity?defaultCity[0]:"Paris";
+  var [form,setForm]=useState(record?{...record}:{is_active:true,city:defaultCity,category:cat.id==="restaurants"?"restaurant":cat.id==="nightlife"?"nightclub":undefined});
   var [saving,setSaving]=useState(false);
   var [saveErr,setSaveErr]=useState("");
   var [tab,setTab]=useState("details");
@@ -715,6 +748,10 @@ function EditModal({cat,record,onClose,onSave}){
     setSaving(true);setSaveErr("");
     var payload={...form};
     delete payload.id;delete payload.created_at;delete payload.updated_at;
+    // Strip empty strings to null so DB doesn't reject optional fields
+    Object.keys(payload).forEach(function(k){if(payload[k]==="")payload[k]=null;});
+    // Ensure city is never null
+    if(!payload.city){payload.city=defaultCity;}
     var result;
     if(record&&record.id){
       result=await supabase.from(cat.table).update(payload).eq("id",record.id).select();
