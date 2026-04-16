@@ -29,6 +29,7 @@ import AdminPage from "./pages/AdminPage";
 import ProposalBuilderPage from "./pages/ProposalBuilderPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import SupportPage from "./pages/SupportPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -440,6 +441,7 @@ export default function App(){
         <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>
         <Route path="/terms" element={<TermsPage/>}/>
         <Route path="/privacy" element={<PrivacyPage/>}/>
+        <Route path="/support" element={<SupportPage/>}/>
         <Route path="/admin" element={<AdminPage/>}/>
         <Route path="/proposal" element={<ProposalBuilderPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
