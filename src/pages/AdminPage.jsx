@@ -494,35 +494,53 @@ function DashboardView({counts,onNav}){
 function ImageUploadBtn({bucket,onUpload,multi}){
   var ref=useRef(null);
   var [uploading,setUploading]=useState(false);
+  var [uploadErr,setUploadErr]=useState(null);
+  var [progress,setProgress]=useState("");
 
   async function handleFiles(e){
     var files=Array.from(e.target.files);
     if(!files.length)return;
     setUploading(true);
+    setUploadErr(null);
     var urls=[];
+    var errs=[];
     for(var i=0;i<files.length;i++){
       var file=files[i];
-      var ext=file.name.split(".").pop();
-      var path=Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
-      var {error}=await supabase.storage.from(bucket).upload(path,file,{upsert:true});
-      if(!error){
-        var {data:u}=supabase.storage.from(bucket).getPublicUrl(path);
-        urls.push(u.publicUrl);
+      var ext=file.name.split(".").pop().toLowerCase();
+      var path="uploads/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+      setProgress(files.length>1?"("+(i+1)+"/"+files.length+") Uploading…":"Uploading…");
+      var {data:uploadData,error}=await supabase.storage.from(bucket).upload(path,file,{
+        upsert:true,
+        contentType:file.type||"image/jpeg",
+        cacheControl:"3600"
+      });
+      if(error){
+        console.error("Storage upload error:",error);
+        errs.push(error.message||JSON.stringify(error));
+      }else{
+        var {data:u}=supabase.storage.from(bucket).getPublicUrl(uploadData?uploadData.path:path);
+        if(u&&u.publicUrl)urls.push(u.publicUrl);
       }
     }
-    onUpload(urls);
+    setProgress("");
     setUploading(false);
     if(ref.current)ref.current.value="";
+    if(errs.length>0){
+      // Show the raw error so the user knows what to fix (usually a missing bucket or RLS policy)
+      setUploadErr("Upload failed: "+errs[0]);
+    }
+    if(urls.length>0)onUpload(urls);
   }
 
   return(
-    <>
-      <button onClick={function(){ref.current&&ref.current.click();}} disabled={uploading}
-        style={btn(C.srf,C.s3,{sm:true,extra:{opacity:uploading?0.5:1}})}>
-        {uploading?"Uploading...":"+ Upload"}
+    <div style={{display:"inline-flex",flexDirection:"column",alignItems:"flex-start",gap:4}}>
+      <button onClick={function(){if(!uploading)ref.current&&ref.current.click();}} disabled={uploading}
+        style={btn(uploading?C.srf:C.srf,uploading?C.s5:C.s3,{sm:true,extra:{opacity:uploading?0.7:1,minWidth:90}})}>
+        {uploading?(progress||"Uploading…"):"+ Upload"}
       </button>
+      {uploadErr&&<p style={{...sf(11),color:C.rd,margin:0,maxWidth:260,wordBreak:"break-word"}}>{uploadErr}</p>}
       <input ref={ref} type="file" accept="image/*" multiple={!!multi} onChange={handleFiles} style={{display:"none"}}/>
-    </>
+    </div>
   );
 }
 
@@ -810,6 +828,16 @@ function EditModal({cat,record,onClose,onSave}){
     Object.keys(updates).forEach(function(k){setField(k,updates[k]);});
   }
 
+  // Auto-save image fields immediately to DB so uploads don't require "Save Changes"
+  async function handleImageAutoSave(updates){
+    handleImageUpdate(updates);
+    if(!(record&&record.id))return; // new record — fall through to normal save
+    var payload={};
+    Object.keys(updates).forEach(function(k){payload[k]=updates[k]===""?null:updates[k];});
+    var {error}=await supabase.from(cat.table).update(payload).eq("id",record.id);
+    if(error){setSaveErr("Image save failed: "+error.message);}
+  }
+
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}}
       onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
@@ -852,7 +880,7 @@ function EditModal({cat,record,onClose,onSave}){
               })}
             </div>
           ):(
-            <ImageGalleryManager record={form} cat={cat} onUpdate={handleImageUpdate}/>
+            <ImageGalleryManager record={form} cat={cat} onUpdate={handleImageAutoSave}/>
           )}
           {saveErr&&<p style={{...sf(13),color:C.rd,marginTop:12,padding:"10px 14px",background:"rgba(255,59,48,0.08)",borderRadius:10}}>{saveErr}</p>}
         </div>
