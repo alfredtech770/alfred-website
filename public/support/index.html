@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alfred Concierge - Support</title>
+    <meta
+      name="description"
+      content="Alfred Concierge support: how to get help, contact your concierge, manage bookings, billing, and account."
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0c0c0e;
+        --fg: #f5f5f7;
+        --muted: #8e8e93;
+        --border: rgba(255, 255, 255, 0.08);
+        --card: #1c1c1e;
+        --accent: #c8a46a;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 64px 24px 120px;
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 24px;
+        margin-bottom: 40px;
+      }
+      h1 {
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 0 0 8px 0;
+      }
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+      }
+      h2 {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 48px 0 12px 0;
+      }
+      h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 24px 0 6px 0;
+      }
+      p, li { font-size: 15px; color: var(--fg); }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin: 16px 0 8px 0;
+      }
+      .contact-card {
+        display: block;
+        padding: 20px 22px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        text-decoration: none;
+        color: var(--fg);
+      }
+      .contact-card:hover { border-color: rgba(200, 164, 106, 0.35); text-decoration: none; }
+      .contact-card .label {
+        display: block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .contact-card .value {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      ul { padding-left: 20px; }
+      li { margin-bottom: 6px; }
+      footer {
+        margin-top: 80px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+      }
+      footer a { color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Alfred Support</h1>
+        <p>Your concierge is here 24/7. Most requests are answered in under 5 minutes.</p>
+      </header>
+
+      <section>
+        <h2>Get in touch</h2>
+        <div class="contact-grid">
+          <a class="contact-card" href="mailto:support@getalfred.com">
+            <span class="label">Email</span>
+            <span class="value">support@getalfred.com</span>
+          </a>
+          <a class="contact-card" href="https://wa.me/447449562204">
+            <span class="label">WhatsApp (24/7 concierge)</span>
+            <span class="value">+44 7449 562 204</span>
+          </a>
+          <a class="contact-card" href="mailto:privacy@getalfred.com">
+            <span class="label">Privacy / data requests</span>
+            <span class="value">privacy@getalfred.com</span>
+          </a>
+        </div>
+        <p>We reply to all emails within one business day.</p>
+      </section>
+
+      <section>
+        <h2>Frequently asked questions</h2>
+
+        <h3>How do I make a booking?</h3>
+        <p>
+          Open the Alfred app, pick a category (dining, cars, yachts, jets, wellness, private
+          chef, chauffeur, travel, shopping), tap a venue, and send the request. Your concierge
+          confirms within minutes. You can also message your concierge directly on WhatsApp.
+        </p>
+
+        <h3>How do I cancel or change a reservation?</h3>
+        <p>
+          Go to the <strong>Bookings</strong> tab, tap the reservation, and choose
+          <em>Modify</em> or <em>Cancel</em>. The concierge is notified instantly and will
+          confirm the change. Cancellation policies vary by venue, and your concierge will flag
+          any fees before you confirm.
+        </p>
+
+        <h3>How do I manage or cancel my Alfred membership?</h3>
+        <p>
+          Alfred memberships (Gold, Platinum, Centurion) are billed through your Apple ID.
+          Manage, pause, or cancel at any time in
+          <a href="https://apps.apple.com/account/subscriptions">Settings &gt; Apple ID &gt;
+          Subscriptions</a> on your iPhone. Cancellations take effect at the end of your current
+          billing period.
+        </p>
+
+        <h3>How do I update my saved payment method?</h3>
+        <p>
+          In the app, open <strong>Profile &gt; Payment Methods</strong>. You can add a new
+          card, remove an old one, or change your default. Cards are tokenised by Stripe, so we
+          never see your full card number.
+        </p>
+
+        <h3>I was charged incorrectly, how do I request a refund?</h3>
+        <p>
+          Email <a href="mailto:support@getalfred.com">support@getalfred.com</a> with the
+          booking ID (shown in the Bookings tab) and a short description. We handle refund
+          decisions within one business day. App Store subscription refunds are processed by
+          Apple; request them at
+          <a href="https://reportaproblem.apple.com">reportaproblem.apple.com</a>.
+        </p>
+
+        <h3>How do I delete my account?</h3>
+        <p>
+          Open <strong>Profile &gt; Security &gt; Delete Account</strong>, or email
+          <a href="mailto:privacy@getalfred.com">privacy@getalfred.com</a>. Deletion is
+          permanent and removes your profile, saved venues, saved payment methods, and booking
+          history within 30 days.
+        </p>
+
+        <h3>How do I report a bug?</h3>
+        <p>
+          Email <a href="mailto:support@getalfred.com">support@getalfred.com</a> with the
+          device model, iOS version, and steps to reproduce. Screenshots or a screen recording
+          help us fix it faster.
+        </p>
+
+        <h3>Do you have a privacy policy?</h3>
+        <p>
+          Yes. See <a href="https://alfredconcierge.app/privacy">Privacy Policy</a> and
+          <a href="https://alfredconcierge.app/terms">Terms of Service</a>.
+        </p>
+      </section>
+
+      <footer>
+        <p>&copy; Alfred Concierge. Paris &middot; Miami &middot; London &middot; Dubai &middot; Monaco.</p>
+        <p>
+          <a href="/">Home</a> &middot;
+          <a href="https://alfredconcierge.app/privacy">Privacy</a> &middot;
+          <a href="https://alfredconcierge.app/terms">Terms</a>
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>
