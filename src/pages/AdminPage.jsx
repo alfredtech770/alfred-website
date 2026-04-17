@@ -274,6 +274,7 @@ var CATS = [
       {k:"phone_number",l:"Phone",t:"text"},
       {k:"instagram_url",l:"Instagram",t:"text"},
       {k:"opening_date",l:"Opening Date",t:"text"},
+      {k:"room_types",l:"Room Types & Prices",t:"rooms",wide:true},
       {k:"status",l:"Status",t:"select",opts:["open","coming_soon","closed"]},
       {k:"is_active",l:"Active",t:"bool"},
       {k:"is_featured",l:"Featured",t:"bool"},
@@ -724,6 +725,46 @@ function FieldInput({field,value,onChange}){
       </div>
     );
   }
+  if(field.t==="rooms"){
+    var rooms=value||[];
+    if(typeof rooms==="string")try{rooms=JSON.parse(rooms)}catch(e){rooms=[];}
+    var [roomName,setRoomName]=useState("");
+    var [roomPrice,setRoomPrice]=useState("");
+    function addRoom(){
+      if(!roomName.trim())return;
+      onChange(rooms.concat({name:roomName.trim(),price:Number(roomPrice)||0}));
+      setRoomName("");setRoomPrice("");
+    }
+    function removeRoom(i){var a=rooms.slice();a.splice(i,1);onChange(a);}
+    function updateRoom(i,key,val){var a=rooms.map(function(r,idx){return idx===i?{...r,[key]:val}:r;});onChange(a);}
+    return(
+      <div>
+        <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
+          {rooms.map(function(room,i){
+            return(
+              <div key={i} style={{display:"flex",gap:8,alignItems:"center",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"8px 12px"}}>
+                <input value={room.name||""} onChange={function(e){updateRoom(i,"name",e.target.value);}}
+                  placeholder="Room name" style={{...inputStyle,flex:2,padding:"6px 10px"}}/>
+                <input type="number" value={room.price||""} onChange={function(e){updateRoom(i,"price",Number(e.target.value)||0);}}
+                  placeholder="Price/night" style={{...inputStyle,flex:1,padding:"6px 10px"}}/>
+                <span style={{...sf(10),color:C.s5}}>$/night</span>
+                <button type="button" onClick={function(){removeRoom(i);}} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px"}}>×</button>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <input value={roomName} onChange={function(e){setRoomName(e.target.value);}}
+            onKeyDown={function(e){if(e.key==="Enter"){e.preventDefault();addRoom();}}}
+            placeholder="Room type (e.g. Deluxe Suite)" style={{...inputStyle,flex:2}}/>
+          <input type="number" value={roomPrice} onChange={function(e){setRoomPrice(e.target.value);}}
+            placeholder="Price/night" style={{...inputStyle,flex:1}}/>
+          <button type="button" onClick={addRoom} style={{padding:"8px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer",whiteSpace:"nowrap"}}>+ Add</button>
+        </div>
+        {rooms.length>0&&<p style={{...sf(11),color:C.s5,marginTop:6}}>{rooms.length} room type{rooms.length!==1?"s":""}</p>}
+      </div>
+    );
+  }
   return(
     <input type={field.t==="number"?"number":"text"} value={value===undefined||value===null?"":value}
       onChange={function(e){onChange(field.t==="number"?(e.target.value===""?null:Number(e.target.value)):e.target.value);}}
@@ -1103,7 +1144,18 @@ function BookingsView(){
     var {data:u}=await supabase.from("users").select("*");
     setBookings(b||[]);setUsers(u||[]);setLoading(false);
   }
-  useEffect(function(){load();},[]);
+  useEffect(function(){
+    load();
+    // Real-time: notify Slack whenever a new booking is inserted from the app
+    var channel=supabase.channel("new-bookings-notify")
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"bookings"},function(payload){
+        var bk=payload.new;
+        notifySlack("booking","New Booking 🎉",bk.restaurant_name||"","*Status:* "+(bk.status||"pending")+" | *Date:* "+(bk.reservation_date||"-")+" "+(bk.reservation_time?("at "+bk.reservation_time.slice(0,5)):"")+" | *Party:* "+(bk.party_size||1)+(bk.city?" | *City:* "+bk.city:"")+(bk.occasion?" | *Occasion:* "+bk.occasion:""));
+        load();
+      })
+      .subscribe();
+    return function(){supabase.removeChannel(channel);};
+  },[]);
 
   function getUser(userId){return users.find(function(u){return u.id===userId;})||{};}
 
@@ -1147,8 +1199,7 @@ function BookingsView(){
     var booking=bookings.find(function(b){return b.id===id;});
     var user=getUser(booking?booking.user_id:"");
     await supabase.from("bookings").update({status:status,updated_at:new Date().toISOString()}).eq("id",id);
-    pushToKlaviyo("Booking "+status.charAt(0).toUpperCase()+status.slice(1),user.email||"",{restaurant_name:booking?booking.restaurant_name:"",status:status,party_size:booking?booking.party_size:0,city:booking?booking.city:""});
-    notifySlack("booking","Bookings",(user.first_name||"")+" "+(user.last_name||""),"*Status:* "+status+" | *Venue:* "+(booking?booking.restaurant_name:"")+" | *Date:* "+(booking?booking.reservation_date:"")+" "+(booking?booking.reservation_time:""));
+    notifySlack("booking","Bookings",(user.first_name||"")+" "+(user.last_name||""),"*Status changed to:* "+status+" | *Venue:* "+(booking?booking.restaurant_name:"")+" | *Guest:* "+(user.email||booking&&booking.user_id||"unknown")+" | *Date:* "+(booking?booking.reservation_date:"")+" "+(booking?booking.reservation_time?"at "+(booking.reservation_time.slice(0,5)):"":""));
     load();
   }
 
@@ -1379,11 +1430,14 @@ function BookingDetailModal({booking,user,statusColors,onClose,onUpdateStatus,on
           <div style={{background:C.srf,borderRadius:14,padding:"16px 20px",border:"1px solid "+C.bd}}>
             <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>Guest Information</p>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              <div><span style={{...sf(10),color:C.s5}}>Name</span><p style={{...sf(14,600),color:C.s1,margin:"2px 0 0"}}>{(user.first_name||"")+" "+(user.last_name||"")||"Unknown"}</p></div>
-              <div><span style={{...sf(10),color:C.s5}}>Email</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.email||"-"}</p></div>
-              <div><span style={{...sf(10),color:C.s5}}>Instagram</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.instagram_handle?"@"+user.instagram_handle:"-"}</p></div>
-              <div><span style={{...sf(10),color:C.s5}}>City</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.preferred_city||"-"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>Name</span><p style={{...sf(14,600),color:C.s1,margin:"2px 0 0"}}>{((user.first_name||"")+" "+(user.last_name||"")).trim()||b.guest_name||"—"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>Email</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.email||b.guest_email||"—"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>Instagram</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.instagram_handle?"@"+user.instagram_handle:b.guest_instagram?"@"+b.guest_instagram:"—"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>Phone</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.phone_number||b.guest_phone||"—"}</p></div>
+              <div><span style={{...sf(10),color:C.s5}}>City</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.preferred_city||b.city||"—"}</p></div>
+              {b.user_id&&<div><span style={{...sf(10),color:C.s5}}>User ID</span><p style={{...sf(10),color:C.s6,margin:"2px 0 0",fontFamily:"monospace",wordBreak:"break-all"}}>{b.user_id}</p></div>}
             </div>
+            {!user.id&&<p style={{...sf(11),color:C.or,marginTop:8,marginBottom:0}}>⚠ No user profile found — user may not have completed onboarding yet.</p>}
           </div>
           {/* Reservation Details */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
