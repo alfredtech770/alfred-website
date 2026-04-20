@@ -2,6 +2,26 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
+import { supabase } from "../lib/supabase";
+
+/* Match ExoticCarsPage's slugify + UI-shape transform so a car that was
+ * clicked into from the catalog looks identical whether it arrived via
+ * sessionStorage (fast path) or a direct URL that hits Supabase. */
+function slugify(n){return (n||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}
+function dbCarToUi(c){
+  var imgs=[c.hero_image_url].concat(c.photos_order||[]).filter(Boolean);
+  imgs=imgs.filter(function(u,i){return imgs.indexOf(u)===i});
+  return {
+    name:c.name, brand:c.brand, category:c.category,
+    body:c.type||c.category||"Coupe",
+    hp:c.hp||0, accel:c.acceleration||"", top:c.top_speed!=null?String(c.top_speed):"",
+    engine:c.engine||"", trans:c.transmission||"Auto",
+    drive:c.is_convertible?"RWD":"AWD",
+    seats:c.seats||2, deposit:c.deposit||0, price:c.price_1_day||0,
+    locs:c.city?[c.city]:[], available:c.available!==false&&c.is_active!==false,
+    img:c.hero_image_url||imgs[0]||"", imgs:imgs,
+  };
+}
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -25,37 +45,56 @@ var REVIEWS=[
 
 export default function CarDetailPage(){
   var params = useParams();
-  var storedCar = null;
-  try { storedCar = JSON.parse(sessionStorage.getItem("alfred_car_" + params.slug)); } catch(e) {}
-  if (!storedCar) {
-    return (<div style={{width:"100%",minHeight:"100vh",background:"#0A0A0B",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20}}>
-      <h2 style={{color:"#F4F4F5",fontFamily:"system-ui",fontSize:24}}>Car not found</h2>
-      <a href="/catalog/exotic-cars" style={{color:"#A1A1AA",fontFamily:"system-ui",fontSize:14}}>← Back to catalog</a>
-    </div>);
-  }
+  // sessionStorage is the fast path (arrived via catalog click); Supabase
+  // is the fallback for direct URL loads so the page doesn't depend on
+  // a stale static dataset. Hooks must run unconditionally on every
+  // render — we branch on `fetchStatus` at render time only.
+  var initial=null;
+  try { initial = JSON.parse(sessionStorage.getItem("alfred_car_"+params.slug)); } catch(e) {}
+  var [storedCar,setStoredCar]=useState(initial);
+  var [fetchStatus,setFetchStatus]=useState(initial?"ready":"loading");
+  useEffect(function(){
+    if(storedCar) return;
+    var cancelled=false;
+    supabase.from("cars").select("*").neq("is_active",false)
+      .then(function(res){
+        if(cancelled) return;
+        if(res.error||!res.data){setFetchStatus("not-found");return}
+        var match=res.data.find(function(c){return slugify(c.name)===params.slug});
+        if(!match){setFetchStatus("not-found");return}
+        var ui=dbCarToUi(match);
+        try{ sessionStorage.setItem("alfred_car_"+params.slug, JSON.stringify(ui));}catch(e){}
+        setStoredCar(ui);
+        setFetchStatus("ready");
+      });
+    return function(){cancelled=true};
+  },[params.slug]);
+  // Safe fallback so the rest of the component can compute without null
+  // checks; the actual "loading"/"not-found" UI is rendered at the end.
+  var _c = storedCar || {};
   var CAR = {
-    name: storedCar.name,
-    brand: storedCar.brand,
-    body: storedCar.body || "Coupe",
-    pricePerDay: storedCar.price,
-    imgs: storedCar.imgs || [storedCar.img],
-    hp: storedCar.hp,
+    name: _c.name || "",
+    brand: _c.brand || "",
+    body: _c.body || "Coupe",
+    pricePerDay: _c.price || 0,
+    imgs: (_c.imgs && _c.imgs.length) ? _c.imgs : [_c.img].filter(Boolean),
+    hp: _c.hp || 0,
     torque: "",
-    engine: storedCar.engine || "",
-    transmission: storedCar.trans || "Auto",
-    drive: storedCar.drive || "AWD",
-    topSpeed: storedCar.top + " km/h",
-    acceleration: storedCar.accel,
+    engine: _c.engine || "",
+    transmission: _c.trans || "Auto",
+    drive: _c.drive || "AWD",
+    topSpeed: (_c.top || "") + " km/h",
+    acceleration: _c.accel || "",
     weight: "",
-    seats: storedCar.seats || 2,
+    seats: _c.seats || 2,
     rating: 5.0,
     reviews: Math.floor(Math.random() * 20) + 5,
-    available: storedCar.available !== false,
+    available: _c.available !== false,
     color: "",
-    location: (storedCar.locs || []).join(" · "),
-    features: [(storedCar.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"],
-    deposit: storedCar.deposit || 1000,
-    alfredNote: "Contact Alfred for the best experience with the " + storedCar.name + ". We handle delivery, insurance, and everything in between.",
+    location: (_c.locs || []).join(" \u00b7 "),
+    features: [(_c.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"],
+    deposit: _c.deposit || 1000,
+    alfredNote: "Contact Alfred for the best experience with the " + (_c.name||"car") + ". We handle delivery, insurance, and everything in between.",
     alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
   };
 
@@ -87,6 +126,24 @@ export default function CarDetailPage(){
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)",maxWidth:"100%",margin:"0 0 0"}}/>;
+
+  // All hooks above run unconditionally. Branch the render at the end.
+  if (fetchStatus === "loading") {
+    return (
+      <div style={{width:"100%",minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div style={{width:28,height:28,border:"2px solid rgba(244,244,245,0.12)",borderTopColor:"#FFD60A",borderRadius:"50%",animation:"cd-spin 0.8s linear infinite"}}/>
+        <style>{"@keyframes cd-spin{to{transform:rotate(360deg)}}"}</style>
+      </div>
+    );
+  }
+  if (fetchStatus === "not-found" || !storedCar) {
+    return (
+      <div style={{width:"100%",minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20}}>
+        <h2 style={{color:C.s1,fontFamily:"system-ui",fontSize:24}}>Car not found</h2>
+        <a href="/catalog/exotic-cars" style={{color:C.s4,fontFamily:"system-ui",fontSize:14}}>← Back to catalog</a>
+      </div>
+    );
+  }
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>

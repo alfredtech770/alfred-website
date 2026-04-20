@@ -2,7 +2,42 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
-import ECARS from "../data/cars";
+import { supabase } from "../lib/supabase";
+import ECARS_FALLBACK from "../data/cars";
+
+/* ═══ DB → UI row transform ═══
+ * The admin dashboard + iOS app write to the public.cars Supabase table.
+ * The catalog UI expects the shape that `src/data/cars.js` used (imgs,
+ * price, body, trans, drive, accel, top, locs). Translate here so the
+ * card components don't have to change.
+ *
+ * Image order: hero first, then photos_order, deduped. Matches what the
+ * admin ImageManager writes (see AdminPage.jsx ImageManager.onChange).
+ */
+function dbCarToUi(c){
+  var imgs=[c.hero_image_url].concat(c.photos_order||[]).filter(Boolean);
+  imgs=imgs.filter(function(u,i){return imgs.indexOf(u)===i});
+  return {
+    id: c.id,
+    name: c.name,
+    brand: c.brand,
+    category: c.category,
+    body: c.type || c.category || "Coupe",
+    hp: c.hp || 0,
+    accel: c.acceleration || "",
+    top: c.top_speed != null ? String(c.top_speed) : "",
+    engine: c.engine || "",
+    trans: c.transmission || "Auto",
+    drive: c.is_convertible ? "RWD" : "AWD",
+    seats: c.seats || 2,
+    deposit: c.deposit || 0,
+    price: c.price_1_day || 0,
+    locs: c.city ? [c.city] : [],
+    available: c.available !== false && c.is_active !== false,
+    img: c.hero_image_url || imgs[0] || "",
+    imgs: imgs,
+  };
+}
 
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
@@ -143,6 +178,19 @@ function CarCard(p){
 export default function ExoticCarsPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
+  // Start with the static list as a fallback so the grid never flashes
+  // empty; live data replaces it as soon as Supabase responds.
+  var [cars,setCars]=useState(ECARS_FALLBACK);
+  useEffect(function(){
+    var cancelled=false;
+    supabase.from("cars").select("*").neq("is_active",false).order("name")
+      .then(function(res){
+        if(cancelled) return;
+        if(res.error){console.warn("Failed to load cars from Supabase; using static fallback",res.error);return}
+        if(res.data&&res.data.length){setCars(res.data.map(dbCarToUi));}
+      });
+    return function(){cancelled=true};
+  },[]);
   var [searchParams,setSearchParams]=useSearchParams();
   var [city,setCity]=useState(searchParams.get("city")||"All Cities");
   var [bodyType,setBodyType]=useState(searchParams.get("type")||"Type");
@@ -181,7 +229,7 @@ export default function ExoticCarsPage(){
   var days=Math.max(1,Math.round((d2-d1)/86400000));
 
   /* Filter logic */
-  var filtered=ECARS.filter(function(c){
+  var filtered=cars.filter(function(c){
     if(city!=="All Cities"&&c.locs.indexOf(city)===-1) return false;
     if(bodyType!=="Type"&&c.body!==bodyType) return false;
     if(brand!=="Brand"&&c.brand!==brand) return false;
@@ -207,7 +255,7 @@ export default function ExoticCarsPage(){
 
   var clearAll=function(){setCity("All Cities");setBodyType("Type");setSeats("Seats");setHpRange("Power");setPriceRange("Price");setDriveType("Drive");setBrand("Brand")};
 
-  var brands=["Brand"].concat(ECARS.map(function(c){return c.brand}).filter(function(v,i,a){return a.indexOf(v)===i}).sort());
+  var brands=["Brand"].concat(cars.map(function(c){return c.brand}).filter(function(v,i,a){return v&&a.indexOf(v)===i}).sort());
 
   var inputS={padding:"0 16px",borderRadius:12,background:"transparent",border:"1px solid "+C.bd,color:C.s1,...sf(11,400),outline:"none",transition:"border-color 0.3s",width:"100%",colorScheme:"dark",height:40,boxSizing:"border-box",WebkitAppearance:"none",MozAppearance:"none",appearance:"none",minHeight:40,maxHeight:40,lineHeight:"40px"};
 
