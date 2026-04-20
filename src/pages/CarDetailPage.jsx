@@ -66,9 +66,11 @@ export default function CarDetailPage(){
       .then(function(res){
         if(cancelled) return;
         if(res.error||!res.data){setFetchStatus("not-found");return}
-        var match=res.data.find(function(c){return slugify(c.name)===params.slug});
-        if(!match){setFetchStatus("not-found");return}
-        var ui=dbCarToUi(match);
+        // Transform first, then match — the slug is built from the
+        // UI-combined "Brand Name", not the raw DB column.
+        var uiList=res.data.map(dbCarToUi);
+        var ui=uiList.find(function(c){return slugify(c.name)===params.slug});
+        if(!ui){setFetchStatus("not-found");return}
         try{ sessionStorage.setItem("alfred_car_"+params.slug, JSON.stringify(ui));}catch(e){}
         setStoredCar(ui);
         setFetchStatus("ready");
