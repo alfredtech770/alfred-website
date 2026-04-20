@@ -17,9 +17,18 @@ import ECARS_FALLBACK from "../data/cars";
 function dbCarToUi(c){
   var imgs=[c.hero_image_url].concat(c.photos_order||[]).filter(Boolean);
   imgs=imgs.filter(function(u,i){return imgs.indexOf(u)===i});
+  // The static src/data/cars.js had the combined "Brand Model" in `name`
+  // (e.g. "Bugatti Chiron"); the DB splits brand + name. Combine them so
+  // slugify(car.name) keeps producing the same /bugatti-chiron-style URL
+  // that's already indexed + bookmarked.
+  var rawName = (c.name||"").trim();
+  var rawBrand = (c.brand||"").trim();
+  var fullName = rawBrand && rawName && rawName.toLowerCase().indexOf(rawBrand.toLowerCase())!==0
+    ? rawBrand+" "+rawName
+    : rawName;
   return {
     id: c.id,
-    name: c.name,
+    name: fullName,
     brand: c.brand,
     category: c.category,
     body: c.type || c.category || "Coupe",

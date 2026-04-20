@@ -11,8 +11,14 @@ function slugify(n){return (n||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").repl
 function dbCarToUi(c){
   var imgs=[c.hero_image_url].concat(c.photos_order||[]).filter(Boolean);
   imgs=imgs.filter(function(u,i){return imgs.indexOf(u)===i});
+  // Mirror ExoticCarsPage: combine brand + name so slugify matches the
+  // existing /bugatti-chiron URL shape (DB has them split; the catalog
+  // card slugifies the combined string).
+  var rawName=(c.name||"").trim(), rawBrand=(c.brand||"").trim();
+  var fullName=rawBrand && rawName && rawName.toLowerCase().indexOf(rawBrand.toLowerCase())!==0
+    ? rawBrand+" "+rawName : rawName;
   return {
-    name:c.name, brand:c.brand, category:c.category,
+    name:fullName, brand:c.brand, category:c.category,
     body:c.type||c.category||"Coupe",
     hp:c.hp||0, accel:c.acceleration||"", top:c.top_speed!=null?String(c.top_speed):"",
     engine:c.engine||"", trans:c.transmission||"Auto",
