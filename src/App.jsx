@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import SEOHead, { SEO } from "./components/SEOHead";
 
 /* ═══ CATEGORY PAGE IMPORTS — v2 ═══ */
@@ -446,6 +448,8 @@ export default function App(){
         <Route path="/proposal" element={<ProposalBuilderPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
+      <Analytics/>
+      <SpeedInsights/>
     </BrowserRouter>
   );
 }
