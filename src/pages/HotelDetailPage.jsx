@@ -67,7 +67,7 @@ export default function HotelDetailPage(){
           <button onClick={function(){setImgIdx(function(c){return c>0?c-1:imgs.length-1})}} style={{position:"absolute",left:16,top:"50%",transform:"translateY(-50%)",width:40,height:40,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"none",color:"#fff",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>‹</button>
           <button onClick={function(){setImgIdx(function(c){return c<imgs.length-1?c+1:0})}} style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",width:40,height:40,borderRadius:"50%",background:"rgba(0,0,0,0.5)",border:"none",color:"#fff",fontSize:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>›</button>
         </>}
-        {V.status==="coming_soon"&&<div style={{position:"absolute",top:80,left:isMobile?20:40,padding:"6px 16px",borderRadius:20,background:C.gd,...sf(12,700),color:"#000",letterSpacing:1}}>COMING SOON</div>}
+        {V.status==="coming_soon"&&<div style={{position:"absolute",top:80,left:isMobile?20:40,padding:"6px 14px",borderRadius:20,background:"rgba(0,0,0,0.55)",backdropFilter:"blur(10px)",border:"0.5px solid rgba(255,255,255,0.12)",...sf(11,600),color:C.s1,letterSpacing:1}}>COMING SOON</div>}
       </div>
 
       {/* Content */}
@@ -78,9 +78,9 @@ export default function HotelDetailPage(){
             <p style={{...sf(14),color:C.s5,margin:0}}>{V.neighborhood}, {V.city||"Miami"} · {"★".repeat(V.star_rating||5)} · {V.category==="resort"?"Resort":"Hotel"}</p>
           </div>
           <a href="https://wa.me/447449562204" target="_blank" rel="noopener noreferrer"
-            style={{padding:"14px 28px",borderRadius:14,background:C.gd,border:"none",...sf(15,700),color:"#000",textDecoration:"none",whiteSpace:"nowrap",transition:"opacity 0.2s"}}
-            onMouseEnter={function(e){e.currentTarget.style.opacity="0.85"}}
-            onMouseLeave={function(e){e.currentTarget.style.opacity="1"}}>
+            style={{padding:"14px 28px",borderRadius:14,background:C.s1,border:"none",...sf(14,600),color:C.bg,textDecoration:"none",whiteSpace:"nowrap",transition:"transform 0.3s,box-shadow 0.3s"}}
+            onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}}
+            onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             Book via Concierge
           </a>
         </div>
@@ -102,7 +102,7 @@ export default function HotelDetailPage(){
           <div style={{marginBottom:32}}>
             <h2 style={{...sf(18,600),color:C.s2,marginBottom:14}}>Alfred Exclusive Perks</h2>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-              {V.perks.map(function(p){return <span key={p} style={{...sf(13,500),padding:"8px 16px",borderRadius:10,background:C.gd+"10",border:"1px solid "+C.gd+"30",color:C.gd}}>{p}</span>})}
+              {V.perks.map(function(p){return <span key={p} style={{...sf(13,500),padding:"8px 16px",borderRadius:10,background:C.gn+"0F",border:"0.5px solid "+C.gn+"22",color:C.gn+"E6"}}>{p}</span>})}
             </div>
           </div>
         )}
@@ -118,7 +118,7 @@ export default function HotelDetailPage(){
                 return (
                   <a key={r.id} href={"https://wa.me/447449562204?text="+msg} target="_blank" rel="noopener noreferrer"
                     style={{display:"block",borderRadius:14,overflow:"hidden",background:C.el,border:"1px solid "+C.bd,textDecoration:"none",transition:"all 0.2s",cursor:"pointer"}}
-                    onMouseEnter={function(e){e.currentTarget.style.borderColor=C.gd+"60";e.currentTarget.style.transform="translateY(-2px)"}}
+                    onMouseEnter={function(e){e.currentTarget.style.borderColor="rgba(244,244,245,0.18)";e.currentTarget.style.transform="translateY(-2px)"}}
                     onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
                     {r.hero_image_url&&<div style={{height:160,background:"#222",backgroundImage:"url("+r.hero_image_url+")",backgroundSize:"cover",backgroundPosition:"center"}}/>}
                     <div style={{padding:"14px 16px"}}>
@@ -130,7 +130,7 @@ export default function HotelDetailPage(){
                         {r.view?" · "+r.view+" view":""}
                       </p>
                       {r.description&&<p style={{...sf(13),color:C.s3,margin:"0 0 12px",lineHeight:1.6}}>{r.description}</p>}
-                      <span style={{...sf(12,700),color:C.gd}}>Request rate via WhatsApp →</span>
+                      <span style={{...sf(12,600),color:C.s1}}>Request rate via WhatsApp →</span>
                     </div>
                   </a>
                 );
@@ -156,7 +156,7 @@ export default function HotelDetailPage(){
             {V.address&&<div><span style={{...sf(11),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Address</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{V.address}</p></div>}
             {V.neighborhood&&<div><span style={{...sf(11),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Neighborhood</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{V.neighborhood}</p></div>}
             {V.opening_date&&<div><span style={{...sf(11),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Opening</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{V.opening_date}</p></div>}
-            {V.website_url&&<div><span style={{...sf(11),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Website</span><p style={{...sf(14),margin:"4px 0 0"}}><a href={V.website_url} target="_blank" rel="noopener noreferrer" style={{color:C.gd,textDecoration:"none"}}>{V.website_url.replace("https://","").replace("www.","")}</a></p></div>}
+            {V.website_url&&<div><span style={{...sf(11),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Website</span><p style={{...sf(14),margin:"4px 0 0"}}><a href={V.website_url} target="_blank" rel="noopener noreferrer" style={{color:C.s2,textDecoration:"none",borderBottom:"0.5px solid "+C.s6}}>{V.website_url.replace("https://","").replace("www.","")}</a></p></div>}
           </div>
         </div>
 
@@ -165,7 +165,9 @@ export default function HotelDetailPage(){
           <p style={{...sf(18,600),color:C.s1,marginBottom:8}}>Ready to book {V.name}?</p>
           <p style={{...sf(14),color:C.s5,marginBottom:20}}>Your Alfred concierge will secure the best rate, room upgrade, and exclusive perks.</p>
           <a href="https://wa.me/447449562204" target="_blank" rel="noopener noreferrer"
-            style={{display:"inline-block",padding:"16px 36px",borderRadius:14,background:C.gd,...sf(16,700),color:"#000",textDecoration:"none"}}>
+            style={{display:"inline-block",padding:"16px 36px",borderRadius:14,background:C.s1,...sf(15,600),color:C.bg,textDecoration:"none",transition:"transform 0.3s,box-shadow 0.3s"}}
+            onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}}
+            onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             Contact Concierge on WhatsApp
           </a>
         </div>

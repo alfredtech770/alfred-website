@@ -14,7 +14,7 @@ function HotelCard({hotel,onClick}){
       style={{borderRadius:18,overflow:"hidden",background:C.el,border:"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s",transform:hover?"translateY(-4px)":"none",boxShadow:hover?"0 12px 40px rgba(0,0,0,0.3)":"none"}}>
       <div style={{position:"relative",height:220,overflow:"hidden"}}>
         <img src={hotel.hero_image_url||""} alt={hotel.name} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.5s",transform:hover?"scale(1.05)":"scale(1)"}}/>
-        {hotel.status==="coming_soon"&&<div style={{position:"absolute",top:12,left:12,padding:"4px 12px",borderRadius:20,background:C.gd,...sf(10,700),color:"#000",letterSpacing:1}}>COMING SOON</div>}
+        {hotel.status==="coming_soon"&&<div style={{position:"absolute",top:12,left:12,padding:"4px 11px",borderRadius:20,background:"rgba(0,0,0,0.55)",backdropFilter:"blur(8px)",border:"0.5px solid rgba(255,255,255,0.12)",...sf(10,600),color:C.s1,letterSpacing:1}}>COMING SOON</div>}
         <div style={{position:"absolute",top:12,right:12,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)",...sf(11,600),color:C.s1}}>{"★".repeat(hotel.star_rating||5)}</div>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:80,background:"linear-gradient(transparent,rgba(0,0,0,0.7))"}}/>
       </div>
@@ -29,8 +29,8 @@ function HotelCard({hotel,onClick}){
         )}
         {hotel.perks&&hotel.perks.length>0&&(
           <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-            {hotel.perks.slice(0,2).map(function(p){return <span key={p} style={{...sf(10,500),padding:"3px 8px",borderRadius:6,background:C.gd+"10",color:C.gd}}>{p}</span>})}
-            {hotel.perks.length>2&&<span style={{...sf(10),color:C.gd}}>+{hotel.perks.length-2} more</span>}
+            {hotel.perks.slice(0,2).map(function(p){return <span key={p} style={{...sf(10,500),padding:"3px 8px",borderRadius:6,background:C.gn+"10",color:C.gn+"E6"}}>{p}</span>})}
+            {hotel.perks.length>2&&<span style={{...sf(10),color:C.s4}}>+{hotel.perks.length-2} more</span>}
           </div>
         )}
       </div>
