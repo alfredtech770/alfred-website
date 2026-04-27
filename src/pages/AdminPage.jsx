@@ -280,6 +280,28 @@ var CATS = [
       {k:"is_featured",l:"Featured",t:"bool"},
       {k:"is_partner",l:"Partner",t:"bool"},
     ]
+  },
+  {
+    id:"featured_events", label:"Featured Events", table:"featured_events", icon:"event",
+    bucket:"Website", imgField:"hero_image_url", galleryField:null,
+    orderField:null,
+    cols:["name","tag","date","location","spots","is_active"],
+    fields:[
+      {k:"name",l:"Event Name",t:"text",req:true},
+      {k:"slug",l:"Slug",t:"text",req:true},
+      {k:"tag",l:"Tag",t:"select",opts:["F1","Tennis","Racing","Nightlife","Football","Yachting","Golf","Festival"]},
+      {k:"date",l:"Date (free text)",t:"text"},
+      {k:"location",l:"Location",t:"text"},
+      {k:"venue",l:"Venue / Hospitality",t:"text",wide:true},
+      {k:"description",l:"Description",t:"textarea",wide:true},
+      {k:"perks",l:"Perks (comma-separated)",t:"tags",wide:true},
+      {k:"color",l:"Accent Color (hex)",t:"text"},
+      {k:"spots",l:"Spots Remaining",t:"number"},
+      {k:"wa_msg",l:"WhatsApp Pre-fill",t:"textarea",wide:true},
+      {k:"sort_order",l:"Sort Order",t:"number"},
+      {k:"is_active",l:"Active",t:"bool"},
+      {k:"is_featured",l:"Featured",t:"bool"},
+    ]
   }
 ];
 

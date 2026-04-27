@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -7,7 +8,9 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 var WA_NUM="447449562204";
 function openWA(msg){window.open("https://wa.me/"+WA_NUM+"?text="+encodeURIComponent(msg),"_blank")}
 
-var EVENTS=[
+// Hardcoded fallback used only if Supabase is unreachable. The /admin panel
+// edits the Supabase `featured_events` table; this array stays as a safety net.
+var EVENTS_FALLBACK=[
   {name:"Monaco Grand Prix",slug:"monaco-grand-prix",date:"June 5 – 7, 2026",location:"Monte Carlo, Monaco",tag:"F1",
    venue:"The Alfred Lounge · Swimming Pool Chicane",
    desc:"Private hospitality on the Swimming Pool chicane. Caviar & champagne service, private chef, premium catering, and after-party VIP access.",
@@ -54,13 +57,33 @@ function useIsMobile(breakpoint){
   return mob;
 }
 
+// Map a Supabase row to the legacy field names the JSX below expects.
+function rowToEvent(r){
+  return {
+    name: r.name, slug: r.slug, date: r.date, location: r.location, tag: r.tag,
+    venue: r.venue, desc: r.description, perks: r.perks||[],
+    img: r.hero_image_url, color: r.color||"#71717A", spots: r.spots||0,
+    waMsg: r.wa_msg||("Hi Alfred, I'm interested in the "+(r.name||"")+" experience.")
+  };
+}
+
 export default function FeaturedEvents(){
   var nav=useNavigate();
   var [idx,setIdx]=useState(0);
   var [entered,setEntered]=useState(false);
+  var [EVENTS,setEvents]=useState(EVENTS_FALLBACK);
   var sectionRef=useRef(null);
   var lastWheel=useRef(0);
   var mob=useIsMobile(768);
+
+  // Fetch from Supabase; fall back to hardcoded if empty/error.
+  useEffect(function(){
+    supabase.from("featured_events").select("*").eq("is_active",true).order("sort_order",{ascending:true}).then(function(res){
+      if(res.data && res.data.length>0){
+        setEvents(res.data.map(rowToEvent));
+      }
+    });
+  },[]);
 
   useEffect(function(){
     var el=sectionRef.current;if(!el)return;
