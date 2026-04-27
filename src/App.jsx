@@ -618,9 +618,9 @@ function AlfredSite(){
   var exps=[
     {title:"Dining",count:"200+ restaurants",tag:"Most Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg"},
     {title:"Nightlife",count:"23 exclusive venues",tag:"Members Only",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg"},
+    {title:"Accommodations",count:"45 hotels",tag:"Luxury Hotels",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg"},
     {title:"Wellness",count:"120+ wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
     {title:"Exotic Cars",count:"45+ vehicles",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
-    {title:"Jets",count:"Global fleet access",tag:"Ultra Premium",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(75).jpeg"},
     {title:"Yachts",count:"Charter & day trips",tag:"Exclusive",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg"},
   ];
 
@@ -955,7 +955,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
         <div className="exp-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,maxWidth:960,margin:"0 auto",padding:"0 40px",opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.3s"}}>
           {exps.map(function(e,i){
-            var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets","Yachts":"/catalog/yachts"};
+            var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Accommodations":"/catalog/hotels","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets","Yachts":"/catalog/yachts"};
             return <GridCard key={e.title} title={e.title} count={e.count} tag={e.tag} img={e.img} delay={0.1*i} onClick={function(){if(routes[e.title]){window.location.href=routes[e.title]}else{setModalCat(e.title)}}}/>;
           })}
         </div>
