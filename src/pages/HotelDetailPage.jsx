@@ -107,6 +107,38 @@ export default function HotelDetailPage(){
           </div>
         )}
 
+        {/* Rooms */}
+        {V.rooms&&V.rooms.length>0&&(
+          <div style={{marginBottom:32}}>
+            <h2 style={{...sf(20,700),color:C.s1,marginBottom:6}}>Rooms & Suites</h2>
+            <p style={{...sf(13),color:C.s5,marginBottom:18}}>Tap any room to request the best available rate from your Alfred concierge.</p>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(2,1fr)",gap:14}}>
+              {V.rooms.map(function(r){
+                var msg = encodeURIComponent("Hi Alfred — I'd like to request the best available rate for the "+r.name+" at "+V.name+".");
+                return (
+                  <a key={r.id} href={"https://wa.me/447449562204?text="+msg} target="_blank" rel="noopener noreferrer"
+                    style={{display:"block",borderRadius:14,overflow:"hidden",background:C.el,border:"1px solid "+C.bd,textDecoration:"none",transition:"all 0.2s",cursor:"pointer"}}
+                    onMouseEnter={function(e){e.currentTarget.style.borderColor=C.gd+"60";e.currentTarget.style.transform="translateY(-2px)"}}
+                    onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+                    {r.hero_image_url&&<div style={{height:160,background:"#222",backgroundImage:"url("+r.hero_image_url+")",backgroundSize:"cover",backgroundPosition:"center"}}/>}
+                    <div style={{padding:"14px 16px"}}>
+                      <h3 style={{...sf(16,700),color:C.s1,margin:"0 0 4px"}}>{r.name}</h3>
+                      <p style={{...sf(12),color:C.s5,margin:"0 0 10px",lineHeight:1.5}}>
+                        {r.bed_config}
+                        {r.max_guests?" · "+r.max_guests+" guests":""}
+                        {r.size_sqft?" · "+r.size_sqft+" sq ft":""}
+                        {r.view?" · "+r.view+" view":""}
+                      </p>
+                      {r.description&&<p style={{...sf(13),color:C.s3,margin:"0 0 12px",lineHeight:1.6}}>{r.description}</p>}
+                      <span style={{...sf(12,700),color:C.gd}}>Request rate via WhatsApp →</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Tags */}
         {V.tags&&V.tags.length>0&&(
           <div style={{marginBottom:32}}>
