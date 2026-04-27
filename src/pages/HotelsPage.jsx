@@ -71,7 +71,7 @@ export default function HotelsPage(){
   useEffect(function(){
     document.title="Luxury Hotels Miami — 5-Star Accommodations | Alfred Concierge";
     var meta=document.querySelector('meta[name="description"]');
-    if(meta)meta.setAttribute("content","Browse 45+ luxury hotels in Miami. Five-star beachfront resorts, boutique hotels, and urban retreats. Book through Alfred Concierge for exclusive perks and upgrades.");
+    if(meta)meta.setAttribute("content","Browse 57 luxury hotels in Miami. Five-star beachfront resorts, boutique hotels, and urban retreats. Book through Alfred Concierge for exclusive perks and upgrades.");
   },[]);
 
   return(
@@ -83,7 +83,7 @@ export default function HotelsPage(){
 
       <div style={{padding:isMobile?"90px 20px 40px":"110px 40px 60px",maxWidth:1200,margin:"0 auto"}}>
         <h1 style={{...sf(isMobile?28:40,700),color:C.s1,marginBottom:8}}>Luxury Hotels</h1>
-        <p style={{...sf(isMobile?14:16),color:C.s5,marginBottom:32}}>45+ five-star hotels and resorts in Miami. Book through Alfred for exclusive perks, room upgrades, and VIP treatment.</p>
+        <p style={{...sf(isMobile?14:16),color:C.s5,marginBottom:32}}>{hotels.length||"50+"} luxury hotels and resorts in Miami. Book through Alfred for exclusive perks, room upgrades, and VIP treatment.</p>
 
         <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:28,alignItems:"center"}}>
           <input placeholder="Search hotels..." value={search} onChange={function(e){setSearch(e.target.value)}}
