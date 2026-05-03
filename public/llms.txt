@@ -59,6 +59,10 @@ Premium spa bookings at Four Seasons, Dior Spa, Le Bristol. Personal training, f
 ## Links
 
 - Home: https://alfredconcierge.app
+- About Alfred: https://alfredconcierge.app/about
+- How it Works: https://alfredconcierge.app/how-it-works
+- Pricing: https://alfredconcierge.app/pricing
+- Contact: https://alfredconcierge.app/contact
 - Catalog: https://alfredconcierge.app/catalog
 - Dining: https://alfredconcierge.app/catalog/dining
 - Nightlife: https://alfredconcierge.app/catalog/nightlife
@@ -66,12 +70,18 @@ Premium spa bookings at Four Seasons, Dior Spa, Le Bristol. Personal training, f
 - Private Jets: https://alfredconcierge.app/catalog/jets
 - Yachts: https://alfredconcierge.app/catalog/yachts
 - Wellness: https://alfredconcierge.app/catalog/wellness
+- Hotels: https://alfredconcierge.app/catalog/hotels
 - Events: https://alfredconcierge.app/events
 - Monaco GP: https://alfredconcierge.app/events/monaco-grand-prix
 - Miami GP: https://alfredconcierge.app/events/miami-grand-prix
+- Roland Garros: https://alfredconcierge.app/events/roland-garros
+- Royal Ascot: https://alfredconcierge.app/events/royal-ascot
+- Ibiza Opening: https://alfredconcierge.app/events/ibiza-opening
 - Blog: https://alfredconcierge.app/blog
 - Miami Concierge: https://alfredconcierge.app/city/miami
 - Paris Concierge: https://alfredconcierge.app/city/paris
 - Dubai Concierge: https://alfredconcierge.app/city/dubai
 - London Concierge: https://alfredconcierge.app/city/london
 - For Business: https://alfredconcierge.app/business
+- Privacy Policy: https://alfredconcierge.app/privacy
+- Terms: https://alfredconcierge.app/terms

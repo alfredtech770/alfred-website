@@ -31,6 +31,10 @@ import AdminPage from "./pages/AdminPage";
 import ProposalBuilderPage from "./pages/ProposalBuilderPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import AboutPage from "./pages/AboutPage";
+import HowItWorksPage from "./pages/HowItWorksPage";
+import PricingPage from "./pages/PricingPage";
+import ContactPage from "./pages/ContactPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -442,6 +446,10 @@ export default function App(){
         <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>
         <Route path="/terms" element={<TermsPage/>}/>
         <Route path="/privacy" element={<PrivacyPage/>}/>
+        <Route path="/about" element={<AboutPage/>}/>
+        <Route path="/how-it-works" element={<HowItWorksPage/>}/>
+        <Route path="/pricing" element={<PricingPage/>}/>
+        <Route path="/contact" element={<ContactPage/>}/>
         <Route path="/admin" element={<AdminPage/>}/>
         <Route path="/proposal" element={<ProposalBuilderPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
@@ -696,7 +704,7 @@ function AlfredSite(){
           {"@type":"Question","name":"What is Alfred Concierge?","acceptedAnswer":{"@type":"Answer","text":"Alfred is a luxury concierge iOS app that lets you book the best restaurants, nightclubs, wellness spas, private chefs, luxury cars, yachts and jets in Miami and Paris through one app with a real human concierge available 24/7."}},
           {"@type":"Question","name":"How does Alfred work?","acceptedAnswer":{"@type":"Answer","text":"Tell Alfred what you want in plain language, a real human concierge checks your request and responds in seconds. They find the best options, make the calls, and confirm everything. Average response time is under 2 minutes."}},
           {"@type":"Question","name":"Where is Alfred available?","acceptedAnswer":{"@type":"Answer","text":"Alfred is currently available in Miami and Paris with expansion planned to Dubai, London, New York, Monaco, Milan, Tokyo, Mykonos, Ibiza, St. Barts, and Aspen."}},
-          {"@type":"Question","name":"How much does Alfred cost?","acceptedAnswer":{"@type":"Answer","text":"Alfred offers a free Explorer tier with limited bookings, a Gold membership at $49/month with unlimited bookings and personal concierge, and a Platinum membership at $199/month with a dedicated human concierge and VIP access."}}
+          {"@type":"Question","name":"How much does Alfred cost?","acceptedAnswer":{"@type":"Answer","text":"Alfred Gold is $9.99/month and includes the full app, the AI concierge, and integrated bookings. Alfred Platinum is $99/month and adds a real human concierge team with VIP venue benefits, reduced minimum spends and waived advance payments. Alfred Centurion is invite-only with a dedicated personal agent on WhatsApp 24/7. Detailed pricing at https://alfredconcierge.app/pricing."}}
         ]
       })}}/>
       {/* Hidden SEO content for crawlers */}
@@ -718,7 +726,7 @@ function AlfredSite(){
         <h2>Private Chef and Yacht Charter Services</h2>
         <p>Michelin-trained private chefs in Miami and Paris. Day yacht charters, weekend getaways, private aviation, NetJets, XO Aviation, Blade Helicopters</p>
         <h2>Alfred Concierge Membership Plans</h2>
-        <p>Free Explorer membership with smart search and 3 bookings per month. Gold membership $49/month with unlimited bookings, priority reservations, personal concierge, and member-only venues. Platinum membership $199/month with dedicated human concierge, VIP event access, same-day guaranteed bookings, bespoke experience curation, and private chef and yacht access. Alfred Noir $9,999/month invite-only ultimate luxury concierge service.</p>
+        <p>Alfred Gold $9.99/month — full app access, AI concierge, restaurant discovery and bookings via Resy, OpenTable, SevenRooms and Tock, the full venue catalogue across Miami, Paris, Dubai and London, and event discovery. Alfred Platinum $99/month — everything in Gold plus a real human concierge team, VIP table placement, reduced minimum spends, waived advance payments, waived valet, skip-the-line entry, and concierge consultancy. Alfred Centurion invite-only — dedicated personal agent on WhatsApp 24/7, worldwide VIP, airport-to-venue coordination, last-minute impossible reservations, full travel itinerary building. All plans cancel anytime.</p>
         <h2>Download Alfred Concierge App</h2>
         <p>Download Alfred on the App Store for iOS. Available in Miami Florida and Paris France. Coming soon to Dubai, London, New York, Monaco, Milan, Tokyo, Mykonos, Ibiza, St. Barts, and Aspen. Luxury concierge service, restaurant reservations, nightclub VIP tables, wellness bookings, supercar rentals, private chef hiring, yacht charters, and private jet bookings.</p>
       </div>
@@ -914,7 +922,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
         {/* Links */}
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Events",href:"/events"},{label:"Membership",href:"/#membership"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/447449562204",ext:true}].map(function(item,i){
+          {[{label:"Events",href:"/events"},{label:"Pricing",href:"/pricing"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"/contact"}].map(function(item,i){
             return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{item.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1130,7 +1138,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* Explore */}
             <div>
               <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
-              {["How it Works","Events","Catalog","Blog","Business"].map(function(l){var href=l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Events"?"/events":l==="Blog"?"/blog":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
+              {["About","How it Works","Pricing","Events","Catalog","Blog","Business","Contact"].map(function(l){var href=l==="About"?"/about":l==="How it Works"?"/how-it-works":l==="Pricing"?"/pricing":l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Events"?"/events":l==="Blog"?"/blog":l==="Contact"?"/contact":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
             </div>
 
             {/* Follow us */}
@@ -1175,7 +1183,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderTop:"1px solid "+C.bd,paddingTop:24}}>
             <span style={{...sf(12,400),color:C.s7}}>Alfred ©2026</span>
             <div style={{display:"flex",gap:24}}>
-              {["Privacy Policy","Terms"].map(function(l){return <a key={l} href="#" style={{...sf(12,400),color:C.s7,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s5}} onMouseLeave={function(e){e.target.style.color=C.s7}}>{l}</a>})}
+              {[{l:"Privacy Policy",h:"/privacy"},{l:"Terms",h:"/terms"}].map(function(it){return <a key={it.l} href={it.h} style={{...sf(12,400),color:C.s7,transition:"color 0.2s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.color=C.s5}} onMouseLeave={function(e){e.target.style.color=C.s7}}>{it.l}</a>})}
             </div>
           </div>
         </div>

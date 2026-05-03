@@ -75,7 +75,11 @@ const STATIC_ROUTES = [
   '/city/miami',
   '/city/paris',
   '/city/dubai',
-  '/city/london'
+  '/city/london',
+  '/about',
+  '/how-it-works',
+  '/pricing',
+  '/contact'
 ];
 
 const DIST_DIR = path.join(__dirname, 'dist');
