@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import SEOHead, { SEO } from "./components/SEOHead";
+import SiteAnalytics from "./components/SiteAnalytics";
 
 /* ═══ CATEGORY PAGE IMPORTS — v2 ═══ */
 /* Place each file in src/pages/ and uncomment these imports: */
@@ -456,6 +457,7 @@ export default function App(){
       </Routes>
       <Analytics/>
       <SpeedInsights/>
+      <SiteAnalytics/>
     </BrowserRouter>
   );
 }

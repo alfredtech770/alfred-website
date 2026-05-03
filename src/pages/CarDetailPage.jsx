@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
 import { supabase } from "../lib/supabase";
+import { carJsonLd } from "../lib/jsonld";
 
 /* Match ExoticCarsPage's slugify + UI-shape transform so a car that was
  * clicked into from the catalog looks identical whether it arrived via
@@ -159,28 +160,24 @@ export default function CarDetailPage(){
         title={CAR.name+" "+(CAR.location?CAR.location.split(" · ")[0]:"Miami")+" — Rent a Car | Alfred Concierge"}
         description={"Rent the "+CAR.name+" in Miami. "+CAR.hp+"hp, "+CAR.transmission+", "+CAR.drive+". Full insurance included. Delivered to your door. Book through Alfred Concierge."}
         path={"/catalog/exotic-cars/"+params.slug}
-        jsonLd={[
-          {
-            "@context":"https://schema.org",
-            "@type":"Product",
-            "name":CAR.name,
-            "description":"Rent the "+CAR.name+" in Miami. "+CAR.hp+" hp supercar with full insurance included.",
-            "image":CAR.imgs[0],
-            "brand":{"@type":"Brand","name":CAR.brand},
-            "category":"Exotic Car Rental",
-            "offers":{"@type":"Offer","price":CAR.pricePerDay,"priceCurrency":"USD","availability":"https://schema.org/InStock"}
-          },
-          {
-            "@context":"https://schema.org",
-            "@type":"BreadcrumbList",
-            "itemListElement":[
-              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
-              {"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},
-              {"@type":"ListItem","position":3,"name":"Exotic Cars","item":"https://alfredconcierge.app/catalog/exotic-cars"},
-              {"@type":"ListItem","position":4,"name":CAR.name,"item":"https://alfredconcierge.app/catalog/exotic-cars/"+params.slug}
-            ]
-          }
-        ]}
+        jsonLd={carJsonLd({
+          name: CAR.name,
+          brand: CAR.brand,
+          description: "Rent the "+CAR.name+" in "+(CAR.location||"Miami")+". "+CAR.hp+"hp, "+CAR.transmission+", "+CAR.drive+". Full insurance included.",
+          hero_image_url: CAR.imgs && CAR.imgs[0],
+          photos_order: CAR.imgs,
+          engine: CAR.engine,
+          hp: CAR.hp,
+          transmission: CAR.transmission,
+          is_convertible: CAR.drive==="RWD",
+          seats: CAR.seats,
+          body: CAR.body,
+          top_speed: CAR.topSpeed && CAR.topSpeed.replace(/[^0-9]/g,""),
+          acceleration: CAR.acceleration,
+          price_1_day: CAR.pricePerDay,
+          city: CAR.location ? CAR.location.split(" · ")[0] : "Miami",
+          is_active: CAR.available
+        }, params.slug)}
       />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}

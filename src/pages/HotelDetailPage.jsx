@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
 import { supabase } from "../lib/supabase";
+import { hotelJsonLd } from "../lib/jsonld";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759"};
@@ -95,29 +96,16 @@ export default function HotelDetailPage(){
         description={(V.description||V.name+" — luxury hotel in "+(V.neighborhood||"Miami")+". Book through Alfred Concierge for exclusive perks, room upgrades, and VIP treatment.").slice(0,160)}
         image={imgs[0]}
         path={"/catalog/hotels/"+slug}
-        jsonLd={[
-          {
-            "@context":"https://schema.org",
-            "@type":V.category==="resort"?"Resort":"Hotel",
-            "name":V.name,
-            "description":V.description||V.name+" — luxury hotel in "+(V.neighborhood||"Miami"),
-            "image":imgs[0],
-            "address":V.address?{"@type":"PostalAddress","streetAddress":V.address,"addressLocality":V.city||"Miami","addressCountry":"US"}:undefined,
-            "starRating":{"@type":"Rating","ratingValue":stars},
-            "url":"https://alfredconcierge.app/catalog/hotels/"+slug,
-            ...(V.rooms&&V.rooms.length>0?{"containsPlace":V.rooms.map(function(r){return{"@type":"HotelRoom","name":r.name,"description":r.description,"occupancy":{"@type":"QuantitativeValue","maxValue":r.max_guests}}})}:{})
-          },
-          {
-            "@context":"https://schema.org",
-            "@type":"BreadcrumbList",
-            "itemListElement":[
-              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
-              {"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},
-              {"@type":"ListItem","position":3,"name":"Hotels","item":"https://alfredconcierge.app/catalog/hotels"},
-              {"@type":"ListItem","position":4,"name":V.name,"item":"https://alfredconcierge.app/catalog/hotels/"+slug}
-            ]
+        jsonLd={(function(){
+          var schema = hotelJsonLd(V, slug);
+          // Augment with HotelRoom containment if available
+          if(V.rooms && V.rooms.length){
+            schema[0].containsPlace = V.rooms.map(function(r){
+              return {"@type":"HotelRoom","name":r.name,"description":r.description,"occupancy":{"@type":"QuantitativeValue","maxValue":r.max_guests}};
+            });
           }
-        ]}
+          return schema;
+        })()}
       />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}

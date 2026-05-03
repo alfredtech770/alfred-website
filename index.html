@@ -17,6 +17,12 @@
   <meta name="revisit-after" content="3 days"/>
   <link rel="canonical" href="https://alfredconcierge.app"/>
 
+  <!-- Search engine verification (Vite substitutes %VITE_*% at build time;
+       leave the env var unset and the meta renders an empty content="" which
+       crawlers ignore. Set in Vercel env to activate.) -->
+  <meta name="google-site-verification" content="%VITE_GSC_VERIFICATION%"/>
+  <meta name="msvalidate.01" content="%VITE_BING_VERIFICATION%"/>
+
   <!-- Geo targeting -->
   <meta name="geo.region" content="US-FL"/>
   <meta name="geo.placename" content="Miami"/>
