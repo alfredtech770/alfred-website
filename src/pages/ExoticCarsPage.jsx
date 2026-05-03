@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
+import CatalogSeoBody from "../components/CatalogSeoBody";
 import { supabase } from "../lib/supabase";
 import ECARS_FALLBACK from "../data/cars";
 
@@ -388,6 +389,8 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
           return <CarCard key={car.name} car={car} i={i} vis={gridVis}/>;
         })}
       </div>
+
+      <CatalogSeoBody category="exotic-cars"/>
 
       {/* CTA */}
       <section ref={ctaRef} style={{padding:"100px 0 120px",position:"relative"}}><div style={ecDiv}/>

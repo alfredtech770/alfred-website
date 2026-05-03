@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
+import CatalogSeoBody from "../components/CatalogSeoBody";
 
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
@@ -384,6 +385,8 @@ body::-webkit-scrollbar{width:0}
           </div>
         }
       </section>
+
+      <CatalogSeoBody category="yachts"/>
 
       {/* Divider */}
       <div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)",margin:"0 40px"}}/>

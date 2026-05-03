@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
+import CatalogSeoBody from "../components/CatalogSeoBody";
 import { supabase } from "../lib/supabase";
 
 
@@ -325,6 +326,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           </div>
         ):filtered.map(function(v,i){return <VenueCard key={v.slug} v={v} i={i} vis={gridVis}/>})}
       </div>
+
+      <CatalogSeoBody category="nightlife"/>
 
       {/* CTA */}
       <section ref={ctaRef} style={{padding:"100px 0 120px",position:"relative"}}><div style={ecDiv}/>

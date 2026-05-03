@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
+import CatalogSeoBody from "../components/CatalogSeoBody";
 
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
@@ -264,6 +265,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           </div>
         ):filtered.map(function(v,i){return <WellCard key={v.name} v={v} i={i} vis={gridVis}/>})}
       </div>
+
+      <CatalogSeoBody category="wellness"/>
 
       <section ref={ctaRef} style={{padding:"100px 0 120px",position:"relative"}}><div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
