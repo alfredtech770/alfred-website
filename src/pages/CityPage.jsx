@@ -10,6 +10,12 @@ var CITIES={
     name:"Miami",
     tagline:"The World's Premier Destination for Luxury & Nightlife",
     heroDescription:"Alfred gives you access to Miami's most exclusive restaurants, VIP nightclubs, exotic supercars, private jets, and luxury yachts. From impossible dining reservations at Stubborn Seed and Juvia to table service at LIV and E11even, Alfred connects you to the lifestyle. Whether you're navigating Wynwood, South Beach, or Coral Gables, your personal concierge is available 24/7.",
+    aboutSections:[
+      {title:"The neighbourhoods that matter",body:"Miami is functionally five cities laid end-to-end along Biscayne Bay, and the neighbourhood you base from materially shapes the trip. South Beach (Ocean Drive, Collins, Washington) is where the legendary nightlife sits — LIV, Story, E11even, Mynt — and where the historic Art Deco hotels (the Faena, the Setai, the Edition) cluster. Brickell is the financial district turned restaurant capital, with Komodo, Cipriani, Sexy Fish, La Mar, and the city's best skyline views. The Design District is luxury retail and Michelin dining (L'Atelier de Joël Robuchon, Le Jardinier, ZZ's Club). Wynwood is street art, design-led restaurants and live music. Coconut Grove and Coral Gables are the residential luxury zones — quieter, with Ariete and Boia De respectively. Alfred members typically split between South Beach (for atmosphere) and Brickell (for restaurants) depending on the trip's priority."},
+      {title:"The dining scene, ranked by occasion",body:"For impressing a date or a client: Carbone Miami Beach (Major Food Group's Italian-American showpiece), Casa Tua South Beach (Tuscan, members-only feel), or Le Jardinier in the Design District (one Michelin star, French gardens to a tee). For the social occasion: Komodo Brickell, Papi Steak South Beach, Swan in the Design District. For Michelin precision: ZZ's Club Members Only, Stubborn Seed Midtown (Top Chef-winner Jeremy Ford), Boia De Buena Vista. For waterfront: Joia Beach Watson Island, Baia Beach Club, Casa Tua Cucina. Alfred handles bookings at all of these including the impossible cases — Carbone same-week, ZZ's first-time visitors, Casa Tua at peak season — through direct relationships with the management."},
+      {title:"After dark, in detail",body:"LIV at the Fontainebleau is the legendary main room, hosting DJ Khaled's residency, regular sets from David Guetta, Tiësto, and Diplo, and the F1 takeover during the Miami Grand Prix weekend. E11even is the only 24-hour ultra-club in the country, with international touring DJs and headline talent (Travis Scott, Drake, Bad Bunny appearances are not uncommon). Story sits between the two with a more curated booking. Hyde Beach at the SLS is the daytime pool-party version. Club Space in Downtown is the after-hours destination — house and techno from 11pm through to noon the following day. Mynt is the boutique smaller-room option. Alfred secures VIP tables at all of these with reduced minimums, no advance payment requirements, and host introductions."},
+      {title:"Logistics: airports, transfers, when to come",body:"Miami International (MIA) is the main commercial gateway, with the city's best private terminal at Signature MIA. For private aviation, Opa-Locka Executive (OPF) is the FBO of choice — closer to South Beach (15 min) and quieter than MIA. Fort Lauderdale-Hollywood (FLL) is 45 minutes north and useful for Caribbean connections. Best months: November-April (peak season, with December for Art Basel and February for the South Beach Wine & Food Festival). Avoid August-September (peak hurricane season). Alfred coordinates ground transfers from any airport, FBO, or marina in under 20 minutes notice for Platinum members."}
+    ],
     services:[
       {name:"Fine Dining",desc:"Michelin-starred restaurants & impossible reservations",icon:"🍽️"},
       {name:"Nightlife & Tables",desc:"VIP access to LIV, E11even, Story & exclusive clubs",icon:"🍾"},
@@ -51,6 +57,12 @@ var CITIES={
     name:"Paris",
     tagline:"The City of Light Meets Luxury Concierge Excellence",
     heroDescription:"Alfred elevates your Paris experience with access to Michelin three-star restaurants, legendary nightclubs like Raspoutine and Castel, private jet charters to the French Riviera, and bespoke wellness experiences. From intimate tables at L'Astrance to VIP bottle service on the Left Bank, Alfred's concierge team speaks your language and knows Paris like locals. Discover neighborhoods from Marais to the 8th Arrondissement.",
+    aboutSections:[
+      {title:"The neighbourhoods that matter",body:"Paris is the most neighbourhood-defined of Alfred's four cities — where you base from shapes which restaurants, nightclubs, and shops are within walking distance and which require a 25-minute crosstown car. The 1st arrondissement (Louvre, Tuileries, Place Vendôme) is luxury hotel territory: the Costes group, the Crillon, the Ritz, the Mandarin Oriental. The 8th (Champs-Élysées, Faubourg Saint-Honoré, Triangle d'Or) is the high-end shopping spine and home to the most heavily-trafficked nightclubs (L'Arc, Manko, Raspoutine). The 16th and 17th are residential luxury — quieter, with the best private members' clubs and old-money restaurants. Saint-Germain (6th, 7th) is the literary-luxury combination — Café de Flore, Les Deux Magots, the Hôtel Lutetia, the Bon Marché. Le Marais (3rd, 4th) is contemporary art, fashion, and design-led restaurants. Most Alfred members stay in the 1st or 8th."},
+      {title:"The dining scene, ranked by occasion",body:"For three-star Michelin: Le Cinq at the Four Seasons George V (Christian Le Squer's three stars since 2016), L'Ambroisie on Place des Vosges (Bernard Pacaud, three stars since 1986, the most traditional of the elite), Plénitude at the Cheval Blanc (Arnaud Donckele, the newer arrival), Epicure at Le Bristol (Eric Frechon). For modern French and bistronomy: Septime (Bertrand Grébaut, the Saint Sébastien neighbour Clamato is the casual sister), L'Arpège (Alain Passard's vegetable-focused three-star), Frenchie (Grégory Marchand, the rue du Nil cluster). For occasion dining: Girafe at Trocadéro (Eiffel Tower views, Italian-Mediterranean), Le Jules Verne (in the Eiffel Tower itself), Pavyllon (Yannick Alléno's Champs-Élysées spot). Alfred holds inventory at the three-star tier and handles the casual difficult cases (Septime is famously hard to book) through direct relationships."},
+      {title:"After dark, in detail",body:"Paris nightlife is structured around private members' venues rather than the open-format superclubs you find in Miami or Ibiza. Raspoutine on rue de Ponthieu is the most internationally-known — a tightly-curated room that runs late, hosts visiting DJs and celebrity drop-ins, and operates a strict door. Castel in Saint-Germain is the older, more establishment counterpart — restaurant, bar, basement nightclub, members-only with guests on the list. L'Arc on the Champs is the contemporary equivalent — louder, larger, broader booking. CoCo Club is the newer arrival on rue du Faubourg Saint-Honoré with strong early-week programming. Le Montana, Silencio, Le Bain, Le Baron — all worth knowing. Alfred secures table placement and door access at all of these for members."},
+      {title:"Logistics: airports, transfers, when to come",body:"Paris-Charles de Gaulle (CDG) is the commercial gateway, 35-50 minutes from central Paris depending on traffic. Le Bourget (LBG) is the city's primary FBO and the most-used private aviation airport in Europe — 25 minutes from the 8th. Orly (ORY) is the secondary commercial airport, useful for southern Europe routes. Best months: April-June (spring) and September-October (autumn) for weather and atmosphere. July-August empties as Parisians leave for the south — many top restaurants close, but the city's quieter feel suits some members. December has the holiday lighting; January is the quietest. Avoid Fashion Week dates (late February, late September) unless that's the reason for the trip."}
+    ],
     services:[
       {name:"Michelin Dining",desc:"3-star restaurants & exclusive chef's tables across Paris",icon:"🍽️"},
       {name:"VIP Nightclubs",desc:"Raspoutine, Castel, L'Arc & exclusive Paris nightlife",icon:"🍾"},
@@ -92,6 +104,12 @@ var CITIES={
     name:"Dubai",
     tagline:"The Pinnacle of Luxury in the Middle East",
     heroDescription:"Alfred unlocks Dubai's most exclusive experiences—from Michelin-dining at Nobu and Zuma to VIP access at Cavalli Club and Omnia, state-of-the-art supercars, private jet charters across the Gulf, and ultra-luxury yacht charters in the Arabian Gulf. Navigate the Palm Jumeirah, Downtown Dubai, and Business Bay with a 24/7 concierge who speaks Arabic, English, French, and beyond.",
+    aboutSections:[
+      {title:"The neighbourhoods that matter",body:"Dubai is the most architecturally-distributed of Alfred's four cities — luxury sits in pockets along a 40-kilometre arc rather than a dense centre. Downtown Dubai (Burj Khalifa, Dubai Mall, Dubai Opera) is the contemporary tourist core with the most concentrated dining (Zuma, La Petite Maison, COYA, Roberto's nearby in DIFC). DIFC is the financial-district equivalent of Brickell Miami — newer high-rises, polished restaurants (Hakkasan, Cipriani, Roberto's), and the most reliable business-meeting venue density. Palm Jumeirah hosts the resort hotels (Atlantis The Royal, Atlantis The Palm, FIVE Palm Jumeirah, Bvlgari Resort) and the increasingly prominent beach club scene (WHITE Beach, Beach by FIVE, Drift Beach Club). Dubai Marina and JBR is the more casual, beach-walk side. Business Bay is the contemporary middle-tier with strong daytime dining. Most Alfred members stay on the Palm or Downtown depending on whether the trip is leisure or business."},
+      {title:"The dining scene, ranked by occasion",body:"For Michelin: the city went from zero to ten Michelin stars between 2022 and 2024, with the leading three-star contender FZN by Björn Frantzén opening in late 2024 in the Atlantis. Two-star Trésind Studio (Modern Indian, Voco Hotel), Row on 45 (Australian, Grosvenor House), and Stay by Yannick Alléno (Armani Hotel) form the upper tier. For high-end social dining: Nobu Atlantis, Zuma Downtown, Roberto's DIFC, Coya DIFC, La Petite Maison DIFC, Cipriani DIFC, Hakkasan Atlantis. For local Emirati and regional cuisine: Logma at the Boxpark, Bait Maryam, Al Mahara at the Burj Al Arab. For occasion: Sumosan Twiga at Tribe Burj Khalifa, Carnival by Tresind, Mimi Kakushi. Alcohol licensing varies by venue (most international hotels are fully licensed); Alfred briefs members ahead of each booking."},
+      {title:"After dark, in detail",body:"Dubai nightlife is split between the beach club daytime scene and the late-night hotel-attached clubs. Daytime: WHITE Beach (FIVE Palm), Beach by FIVE, Drift Beach Club (One&Only Royal Mirage), Cove Beach (Caesars Palace), and Aura Skypool (top of Palm Tower). Late-night: SOHO Garden in Meydan (the largest entertainment complex with multiple rooms), Drai's Dubai, BASE Dubai, FIVE Palm's Penthouse. Cavalli Club at Fairmont was Dubai's flagship for years and remains relevant. Boa Steakhouse Dubai runs late. Most clubs operate Wednesday-Saturday with brunch culture filling Friday daytime. Alfred secures table placement and host introductions across all of these. Note that Dubai's nightlife operates within UAE alcohol regulations — venues require ID, and behaviour expectations are strict."},
+      {title:"Logistics: airports, transfers, when to come",body:"Dubai International (DXB) is the world's busiest airport for international passengers and the main commercial gateway, 15-30 minutes from most luxury accommodations. Al Maktoum International (DWC, Dubai South) is the secondary commercial airport and the primary FBO for private aviation — 35-45 minutes from Downtown but increasingly used as DXB capacity tightens. The two are 50 km apart. Best months: November-March (peak season, mild weather, 22-28°C). October and April are shoulder months. May-September is summer with daytime temperatures of 35-45°C; many members shift to indoor activities and pool/beach club mornings only. December-February also brings Dubai Shopping Festival and major event programming (Dubai World Cup horse racing in late March, F1 weekend if hosted)."}
+    ],
     services:[
       {name:"Fine Dining",desc:"Michelin restaurants & exclusive chef's tables citywide",icon:"🍽️"},
       {name:"Nightlife & Clubs",desc:"VIP tables at Cavalli Club, Omnia & exclusive venues",icon:"🍾"},
@@ -133,6 +151,12 @@ var CITIES={
     name:"London",
     tagline:"Where British Heritage Meets Cosmopolitan Luxury",
     heroDescription:"Alfred gives you insider access to London's most prestigious dining—Michelin three-stars in Mayfair and Covent Garden—exclusive members clubs like Annabel's, bespoke tailoring in Savile Row, private aviation via Luton & Battersea, and Thames river yacht experiences. From the City to Chelsea, Westminster to Notting Hill, your concierge navigates London's sophisticated landscape with white-glove service.",
+    aboutSections:[
+      {title:"The neighbourhoods that matter",body:"London is the most stratified by neighbourhood of Alfred's four cities. Mayfair (W1) is luxury's geographic heart — Claridge's, the Connaught, the Berkeley, the Dorchester, the highest concentration of Michelin stars (Sketch, the Connaught Restaurant, Hide, Kitchen Table), Annabel's, 5 Hertford Street, the Birley Clubs, and Savile Row. Belgravia and Knightsbridge sit immediately south — Harrods, the Lanesborough, the Berkeley overlap. Chelsea is residential luxury with the King's Road and the Bibendum. Marylebone is the more relaxed alternative to Mayfair, with Chiltern Firehouse and the Marylebone hotel scene. Soho and Fitzrovia carry the contemporary food scene (Brat, Ikoyi, Lyle's). Notting Hill (W11) is the bourgeois-bohemian counterpart with weekend markets and 108 Garage. The City and Shoreditch are the financial-district and east-London creative axes. Most Alfred members stay in Mayfair or Marylebone."},
+      {title:"The dining scene, ranked by occasion",body:"For three-star Michelin: Restaurant Gordon Ramsay (Chelsea), the Hélène Darroze at the Connaught, Sketch (the Lecture Room and Library, Pierre Gagnaire), Core by Clare Smyth (Notting Hill), Alain Ducasse at the Dorchester. For two-star: A. Wong, Story by Tom Sellers, Le Gavroche (Michel Roux Jr's institution before its 2024 closure), Hide, the Fat Duck (in Bray, but London-related). For one-star contemporary: Brat (Shoreditch), Ikoyi (St James's), Kitchen Table (Fitzrovia), Lyle's (Shoreditch), Sabor (Mayfair, Nieves Barragán). For occasion: the Connaught Bar (best cocktails in London by most rankings), Scott's Mayfair, J Sheekey, the Wolseley. For private members' dining: 5 Hertford Street, Mark's Club, Loulou's. Alfred holds inventory across the three-star tier and handles same-week reservations through direct relationships."},
+      {title:"After dark and members' clubs, in detail",body:"London's nightlife is members'-club led. Annabel's on Berkeley Square is the most internationally-known — moved to its current Birley-redesigned home in 2018, with restaurants, bars, garden room, basement nightclub, and Saturday-night queues even for members. 5 Hertford Street (Robin Birley's flagship) is the more discreet alternative, members-only with strict no-photos. Loulou's is the basement nightclub at 5HS — small, late-night, the most internationally-mixed crowd. Mark's Club is the older-establishment members'-club restaurant. Soho House and its outposts (76 Dean Street, Shoreditch House, the Ned, White City House) form the broader members' network. Public nightlife: Cirque le Soir (Mayfair, late-night theatricality), Tape London, Bagatelle. Alfred secures Annabel's guest access for members through partner host introductions, and table placement at the public clubs."},
+      {title:"Logistics: airports, transfers, when to come",body:"London Heathrow (LHR) is the main commercial gateway, 45-90 minutes to central London depending on traffic and tube vs car. Gatwick (LGW), Stansted (STN), and Luton (LTN) are secondary commercial. For private aviation: Farnborough (FAB) is the premier business aviation airport — 50 minutes from Mayfair, Europe's busiest dedicated business airport. Biggin Hill (BQH) is the southern alternative — 45 minutes. Luton (LTN) handles the larger heavy jets. London City (LCY) lands smaller jets directly into the Docklands. Battersea Heliport handles helicopters from anywhere into central London. Best months: May-September (peak summer with the strongest social calendar — Wimbledon late June, Royal Ascot mid-June, Henley Regatta early July). October and November are autumn social season. December has the Christmas-week activity. January-March is the quieter season."}
+    ],
     services:[
       {name:"Michelin Dining",desc:"3-star restaurants & private dining in prestigious venues",icon:"🍽️"},
       {name:"Members Clubs",desc:"Annabel's, Groucho Club & exclusive London establishments",icon:"🍾"},
@@ -142,11 +166,11 @@ var CITIES={
       {name:"Thames Yachts",desc:"Private river cruises & yacht experiences on the Thames",icon:"⛵"}
     ],
     venues:[
-      {name:"Fist Elia",desc:"Michelin three-star dining in Mayfair with innovative cuisine",link:"/catalog/dining/fist-elia"},
-      {name:"Sketch",desc:"Artistic Michelin restaurant in Mayfair with gallery vibes",link:"/catalog/dining/sketch"},
-      {name:"Annabel's",desc:"Legendary private members club in Mayfair nightclub & cocktails",link:"/catalog/nightlife/annabels"},
-      {name:"Groucho Club",desc:"Historic Soho members club with restaurant & entertainment",link:"/catalog/nightlife/groucho-club"},
-      {name:"Cowshed Spa",desc:"Premium wellness spa in Mayfair and South Kensington",link:"/catalog/wellness/cowshed-spa"}
+      {name:"The Connaught",desc:"Hélène Darroze's three-Michelin-star dining at the Connaught hotel in Mayfair",link:"/catalog/dining/the-connaught"},
+      {name:"Sketch",desc:"Pierre Gagnaire's three-star Lecture Room & Library — Mayfair art-meets-cuisine institution",link:"/catalog/dining/sketch"},
+      {name:"Annabel's",desc:"Berkeley Square's legendary private members' club — restaurants, bars, basement nightclub",link:"/catalog/nightlife/annabels"},
+      {name:"5 Hertford Street",desc:"Robin Birley's discreet Mayfair members' club, with Loulou's nightclub downstairs",link:"/catalog/nightlife/5-hertford-street"},
+      {name:"Bulgari Spa London",desc:"Premier Knightsbridge wellness destination with private treatment suites",link:"/catalog/wellness/bulgari-spa-london"}
     ],
     faqs:[
       {q:"How do I access Michelin three-star restaurants in London?",a:"London's three-stars (Elia, Hibiscus, others) require advance booking through connections. Alfred has established relationships and books 6-12 weeks ahead. Premium rates apply. We also arrange wine pairings and special menu requests."},
@@ -209,7 +233,25 @@ export default function CityPage(){
         description={seoDesc}
         keywords={city.keywords}
         path={seoPath}
-        jsonLd={city.jsonLdData}
+        jsonLd={(function(){
+          var schema = [city.jsonLdData];
+          schema.push({
+            "@context":"https://schema.org",
+            "@type":"BreadcrumbList",
+            "itemListElement":[
+              {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},
+              {"@type":"ListItem","position":2,"name":city.name,"item":"https://alfredconcierge.app/city/"+slug}
+            ]
+          });
+          if(city.faqs&&city.faqs.length){
+            schema.push({
+              "@context":"https://schema.org",
+              "@type":"FAQPage",
+              "mainEntity": city.faqs.map(function(f){return {"@type":"Question","name":f.q,"acceptedAnswer":{"@type":"Answer","text":f.a}}})
+            });
+          }
+          return schema;
+        })()}
       />
 
       {/* Hero Section */}
@@ -276,6 +318,24 @@ export default function CityPage(){
           </div>
         </div>
       </section>
+
+      {/* Deep-dive about sections */}
+      {city.aboutSections&&city.aboutSections.length>0&&<section style={{paddingTop:mob?60:100,paddingBottom:mob?60:100,paddingLeft:mob?20:60,paddingRight:mob?20:60}}>
+        <div style={{maxWidth:820,margin:"0 auto"}}>
+          <p style={{...sf(11,600),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:14,textAlign:"center"}}>The Detail</p>
+          <h2 style={{...sf(mob?32:44,700),color:C.s1,marginBottom:48,textAlign:"center",letterSpacing:-1}}>
+            What Alfred members actually use {city.name} for
+          </h2>
+          <div style={{display:"flex",flexDirection:"column",gap:36}}>
+            {city.aboutSections.map(function(sec,i){
+              return <div key={i}>
+                <h3 style={{...sf(mob?20:22,600),color:C.s1,marginBottom:12,letterSpacing:-0.3}}>{sec.title}</h3>
+                <p style={{...sf(mob?14:15,400),color:C.s3,lineHeight:1.85}}>{sec.body}</p>
+              </div>;
+            })}
+          </div>
+        </div>
+      </section>}
 
       {/* FAQ Section */}
       <section style={{paddingTop:mob?60:100,paddingBottom:mob?60:100,paddingLeft:mob?20:60,paddingRight:mob?20:60}}>
