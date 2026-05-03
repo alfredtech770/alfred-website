@@ -7,6 +7,8 @@ var sf = function(size, weight){
 };
 var C = {bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gold:"#FFD60A"};
 
+function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
+
 var STEPS = [
   {n:"01", title:"Download Alfred and choose your tier", body:"Install Alfred from the App Store or Google Play, pick a membership tier — Gold, Platinum or Centurion — and complete a one-time onboarding (preferences, dietary, your usual cities, dress sizes for stylist work, partner names, allergies). The full catalogue unlocks immediately."},
   {n:"02", title:"Browse or ask", body:"Open the catalogue to browse 200+ Michelin restaurants, the top nightclubs in each city, the supercar fleet, the yacht lineup, the jet partners and the spa list. Or just open the chat and ask: \"book me a table for four at Carbone Miami Friday at 8.\" Both work."},
@@ -69,11 +71,8 @@ export default function HowItWorksPage(){
 
       <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(10,10,11,0.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid "+C.bd,padding:"0 40px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div onClick={function(){navigate("/")}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
-          <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-            <path d="M16 4L28 26H4L16 4Z" stroke={C.gold} strokeWidth="1.5" fill="none"/>
-            <path d="M16 4L28 26H4L16 4Z" fill={C.gold} fillOpacity="0.1"/>
-          </svg>
-          <span style={{...sf(16,600),color:C.s1}}>Alfred</span>
+          <Mark size={20} color={C.s1}/>
+          <span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span>
         </div>
         <div style={{display:"flex",gap:24,alignItems:"center"}}>
           <a href="/about" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>About</a>
