@@ -73,7 +73,29 @@ export var BLOG_POSTS=[
 
 <p>Miami's dining scene represents years of culinary development and investment. Accessing its best establishments requires connections, timing, and detailed knowledge—exactly what Alfred Concierge provides. From securing impossible reservations at three-star Michelin restaurants to arranging exclusive chef's tables and wine tastings, Alfred transforms your Miami dining experience from ordinary to unforgettable.</p>
 
-<p><strong>Contact Alfred Concierge today</strong> to begin planning your culinary journey. Our team is available 24/7 to arrange reservations at Miami's finest <a href="/catalog/dining" style="color:#34C759;text-decoration:none;font-weight:500">dining establishments</a>, curate personalized menus, and ensure every detail of your dining experience exceeds expectations.</p>`
+<p><strong>Contact Alfred Concierge today</strong> to begin planning your culinary journey. Our team is available 24/7 to arrange reservations at Miami's finest <a href="/catalog/dining" style="color:#34C759;text-decoration:none;font-weight:500">dining establishments</a>, curate personalized menus, and ensure every detail of your dining experience exceeds expectations.</p>
+
+<h2>Booking Strategy: How Reservations Actually Work in Miami</h2>
+
+<p>The booking landscape in Miami's top restaurants has shifted significantly since the post-pandemic boom. Most premium venues now release tables 30 days out via Resy, OpenTable, or SevenRooms, with a smaller cohort of impossible-reservation venues — Carbone, ZZ's Club, Casa Tua, the Surf Club Restaurant — operating private booking systems that the public never sees. The window between "reservation released" and "fully booked" at the top venues is often under three minutes for prime weekend slots. This is why concierge access matters: Alfred's relationships at the management level mean we can secure tables outside the public booking window, including same-week reservations that publicly show as fully booked.</p>
+
+<p>For Friday and Saturday dinner at the most in-demand restaurants — Carbone, Komodo, Papi Steak, Casa Tua — six weeks of advance notice gives you the most flexibility on time slots. Three weeks out, prime times (7:30pm-9:00pm seatings) are typically gone but earlier (6:00pm) and later (9:30pm onwards) seatings remain available. Same-week reservations are achievable at most venues through Alfred but may require flexibility on time. Major holidays (Valentine's Day, Mother's Day, New Year's Eve), Art Basel week, F1 weekend, and Super Bowl weekend if held in Miami compress the booking calendar — for these dates, eight to ten weeks of advance notice is the safe window.</p>
+
+<h2>What to Know Before You Sit Down</h2>
+
+<p>Tipping in Miami is expected at 20-22% on the pre-tax total at fine-dining venues, with a 25%+ tip the norm at the most premium service tiers. Many venues now apply automatic gratuity on parties of six or more — verify the bill before adding more. Cash tips on the credit card receipt go to the server; tips left on the table go straight to the bus team. For sommelier-paired wine dinners, a separate gratuity to the sommelier (typically $20-50 per guest) is appropriate and appreciated.</p>
+
+<p>Dress codes vary materially. The strictest fine-dining venues (ZZ's Club, the Surf Club Restaurant, Le Jardinier) expect jacket-collared shirt for men and elevated dressy attire for women — no shorts, no flip-flops, no athletic wear. Most major restaurants (Carbone, Komodo, Papi Steak) operate "smart-resort" — collared shirts and proper shoes, but jackets aren't required. Beach-club restaurants (Joia Beach, Casa Tua Cucina, Baia) accept resort-appropriate beachwear. When in doubt, err on the side of more dressed than less; Miami is more formal than its reputation suggests at the top of the dining tier.</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<p><strong>How far in advance should I book Carbone Miami?</strong> Six weeks ahead for Friday or Saturday prime time, three weeks for weeknights. Same-week is possible through Alfred for our members, particularly if you're flexible on the seating time. The dining room turns at 6pm, 8pm, and 10pm — the 8pm seating is the most-requested.</p>
+
+<p><strong>Can Alfred get a table when the restaurant says they're fully booked?</strong> Often yes, particularly at our partner venues where we hold reserved inventory outside the public booking system. Restaurants protect a percentage of seats for relationships and walk-ins; concierge bookings frequently fill those reserved slots. We won't always succeed — some weekends are genuinely full — but our hit rate at impossible bookings is materially higher than what's available to the public.</p>
+
+<p><strong>What about dietary restrictions and allergies?</strong> Every Alfred booking includes a dietary brief that we send to the kitchen ahead of arrival. Vegetarian, vegan, gluten-free, kosher-style, nut allergies, shellfish allergies — all handled by the kitchen in advance rather than negotiated at the table. For severe allergies we recommend disclosing during booking; the kitchen prepares dishes in dedicated stations to avoid cross-contamination.</p>
+
+<p><strong>Are there off-menu options?</strong> Yes. Most Miami fine-dining venues maintain off-menu items for repeat guests and concierge bookings — particular cuts of beef, specific cheese courses, custom cocktails. Alfred briefs the venue ahead of arrival; if there's something specific you want to try, mention it during the booking and we'll arrange whether it's available.</p>`
   },
   {
     slug:"monaco-grand-prix-2026-guide",
@@ -219,7 +241,29 @@ export var BLOG_POSTS=[
 
 <p>Renting an exotic car in Miami transforms your visit from memorable to unforgettable. Whether your interest is pure driving excitement, special occasion celebration, or experiencing the automotive masterpiece on wheels, Miami offers exceptional vehicles. Alfred Concierge handles the complexity, ensuring your exotic car rental experience exceeds expectations.</p>
 
-<p><strong>Contact Alfred Concierge today</strong> to explore <a href="/catalog/exotic-cars" style="color:#34C759;text-decoration:none;font-weight:500">exotic car rental options in Miami</a>. Our 24/7 team is ready to arrange your supercar experience, from Ferrari rentals to Rolls-Royce luxury vehicles.</p>`
+<p><strong>Contact Alfred Concierge today</strong> to explore <a href="/catalog/exotic-cars" style="color:#34C759;text-decoration:none;font-weight:500">exotic car rental options in Miami</a>. Our 24/7 team is ready to arrange your supercar experience, from Ferrari rentals to Rolls-Royce luxury vehicles.</p>
+
+<h2>Insurance, Deposits, and the Fine Print</h2>
+
+<p>Exotic car rentals carry materially different insurance and deposit terms from regular car hire, and the unfamiliar mechanics catch first-time renters off-guard. Standard premium rental insurance typically covers the first $50,000-$100,000 of damage with deductibles of $5,000-$10,000 — meaning even a minor incident can leave you on the hook for thousands. Most exotic rental companies require a security hold on a credit card ranging from $5,000 (entry-level Porsche, BMW M-series) to $25,000-$50,000 (Lamborghini, Rolls Royce, McLaren) to over $100,000 (top-tier Bugatti, Pagani if available). The hold is released within 48-72 hours of return assuming no damage. Premium credit cards (Amex Centurion, Chase Sapphire Reserve, Visa Infinite) include primary collision coverage on rental cars in many cases — verify your card's coverage before declining the rental company's collision damage waiver. Alfred briefs members on insurance and deposit specifics during the booking call rather than at the handover, which is when most surprises happen.</p>
+
+<p>Mileage caps are the second commonly-missed clause. Most exotic rentals include 100-150 miles per day; over that, you pay $1-5 per additional mile depending on the vehicle. For a one-day rental staying within Miami-Dade county, this rarely matters. For multi-day rentals or trips north to Palm Beach (75 miles), south to Key West (160 miles), or west to Naples (130 miles), the mileage costs add up. Unlimited-mileage upgrades are available at most rental companies for an additional 10-20% on the daily rate; for road trips, it's almost always worth taking. Tolls (typically $5-15/day for Miami driving) are billed separately and processed through SunPass; the rental company invoices a service fee on top.</p>
+
+<h2>Driving Considerations Specific to Exotic Cars in Miami</h2>
+
+<p>Miami's roads are particularly hard on exotic cars. The combination of broken pavement on older bridges (the Julia Tuttle and the MacArthur in particular), aggressive driving culture in the Brickell corridor, and the abundance of valet operations at premium hotels and restaurants creates more daily risk than driving the same car in, say, Aspen or Newport. Three rules from members who've been through it: avoid the I-95 corridor where possible during commute hours, particularly on Mondays and Thursdays, when traffic patterns are at their most aggressive. Second, use covered or attended valet only — never street park a $250,000+ supercar overnight, even on Lincoln Road. Third, brief any valet team explicitly on the car's transmission quirks and starting procedure; Lamborghini Aventadors and Ferrari F8s have specific start sequences that an unfamiliar valet can damage. Alfred's deliveries include a 15-minute walkthrough at handover that covers all of these specifics.</p>
+
+<p>Age requirements typically run 25+ for top-tier exotics, with under-25 surcharges of $50-150/day at companies that allow under-25 rentals at all. International drivers need their home country license plus an International Driving Permit (IDP) and a passport for verification. US drivers from out-of-state need a current US driving license and a credit card matching the license name. Drivers under 21 cannot rent exotic vehicles at most reputable companies regardless of insurance.</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<p><strong>How early should I book an exotic car for an event weekend?</strong> Two to three weeks for a standard weekend; six to eight weeks for major events (Art Basel, F1 weekend, Spring Break, holiday week). The most popular models — Lamborghini Urus, Ferrari 296 GTB, Rolls Royce Cullinan, McLaren 720S — book first. If a specific vehicle matters (color, year, exact spec), longer lead time is necessary. Alfred members get priority booking on partner inventory.</p>
+
+<p><strong>Can I take the car to the Florida Keys or out of state?</strong> Most rental companies allow Florida-only travel; out-of-state requires explicit advance permission and may carry an additional fee. Florida Keys travel is typically allowed but verify before driving — some companies prohibit certain vehicles on the Overseas Highway due to insurance restrictions on the bridges. Caribbean and international transit is rarely allowed on exotic rentals.</p>
+
+<p><strong>What if I get a parking ticket or traffic violation?</strong> Tickets are billed to the rental company's address and forwarded to you with an administrative fee (typically $25-75 per violation). Pay promptly to avoid escalation. Speed-camera violations on the Florida Turnpike now process automatically through SunPass and similar billing.</p>
+
+<p><strong>Is delivery to my hotel actually free, or is there a hidden fee?</strong> Alfred-coordinated deliveries to South Beach, Brickell, and Miami International are included at no charge for partner-fleet vehicles. Delivery to outlying areas (Coral Gables, Aventura, Doral) may carry a $50-150 fee depending on the company and the vehicle. Cross-county delivery (Fort Lauderdale, Palm Beach) is quoted case-by-case.</p>`
   },
   {
     slug:"best-nightclubs-miami",
@@ -385,7 +429,29 @@ export var BLOG_POSTS=[
 
 <p>Miami yacht charters combine Caribbean exploration with luxury onboard experiences. Whether you're seeking intimate sailing experiences, high-speed superyacht exploration, or family-friendly adventures, Miami's charter market offers perfect vessels. Alfred Concierge handles all details, ensuring your yacht charter exceeds expectations.</p>
 
-<p><strong>Contact Alfred Concierge</strong> to begin planning your Miami <a href="/catalog/yachts" style="color:#34C759;text-decoration:none;font-weight:500">yacht charter</a>. Our 24/7 team arranges vessels, manages bookings, and creates yachting experiences you'll treasure forever.</p>`
+<p><strong>Contact Alfred Concierge</strong> to begin planning your Miami <a href="/catalog/yachts" style="color:#34C759;text-decoration:none;font-weight:500">yacht charter</a>. Our 24/7 team arranges vessels, manages bookings, and creates yachting experiences you'll treasure forever.</p>
+
+<h2>Routes and Destinations from Miami</h2>
+
+<p>The most common day-charter route from Miami runs Biscayne Bay south to Key Biscayne and Stiltsville, with a swim and lunch stop and return up the bay past the Miami skyline. This is roughly 4-5 hours on water and the right introduction for first-time yacht charters. Half-day charters (4 hours) typically stay inside the bay; full-day charters (8 hours) extend to Elliott Key, Boca Chita, or No Name Harbor. Multi-day charters open the Bahamas — Bimini is roughly two hours from Miami, the Berry Islands four hours, the Exumas six to eight hours, and Eleuthera eight to ten hours. Charter destinations to the north (Palm Beach, Stuart, Vero Beach) are less common but available for members coordinating events along the Florida coast.</p>
+
+<p>Weather drives charter decisions in Miami. The November-April season has the most stable winds and lowest storm risk; May-October brings hotter weather, more humidity, afternoon thunderstorm patterns, and the Atlantic hurricane season (June 1 - November 30). Most charter companies suspend Bahamas crossings during named storm threats, with cancellation policies that typically refund or reschedule without penalty if the captain declares conditions unsafe. Alfred briefs members on weather windows during booking and proactively reaches out if a charter falls in a developing storm window.</p>
+
+<h2>What's Actually Included (and What Isn't)</h2>
+
+<p>Alfred yacht charters typically include the captain, crew, fuel, dockage, ice, soft drinks and water, basic snorkeling and water-toy gear (paddleboards, snorkel sets, towed inflatables), and standard insurance. Catering is usually a separate quoted line — most members opt for in-house catering by the boat's chef (typical range $80-150 per person for full-day) rather than catering by Casa Tua Cucina or similar onshore. Alcohol is not included in base rates and is either guest-supplied (BYO) or arranged by Alfred ahead of departure with a custom shopping order — the latter is what most members do. Larger superyachts have onboard cellars with curated wine selections at the venue's pricing.</p>
+
+<p>Crew gratuity is the line that catches first-time charterers off-guard. The international standard is 15-20% of the charter fee paid directly to the crew at the end of the trip, distributed by the captain. On a $5,000 day charter that's $750-1,000; on a $25,000 superyacht week that's $3,750-5,000. Cash is preferred but card or bank transfer is now widely accepted. Alfred briefs gratuity expectations during booking so there are no surprises at the dock.</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<p><strong>How quickly can Alfred arrange a yacht charter?</strong> For day charters in Miami, 24-48 hours is typical for our partner fleet — same-day is possible for Platinum and Centurion members during weekdays. For multi-day Bahamas charters, allow at least 5-7 days for provisioning and itinerary planning. Last-minute charters during Art Basel, F1, and Spring Break have been booked successfully but Alfred can't guarantee specific vessels at peak windows.</p>
+
+<p><strong>Can I bring my own captain or crew?</strong> Most charter contracts include the vessel's licensed captain — bringing your own captain isn't possible on commercially-chartered yachts due to insurance and Coast Guard requirements. For owner-operated vessels (a different category) bringing a personal captain may be possible but requires advance arrangement.</p>
+
+<p><strong>What happens if weather forces cancellation?</strong> Standard contracts include a captain's-discretion clause — if the captain declares conditions unsafe, the charter is rescheduled or refunded depending on the vessel's policy. Most Alfred-coordinated charters reschedule to the next available date at no charge. For named storms, charter companies typically issue full refunds or credit toward a future booking.</p>
+
+<p><strong>Is yachting a good fit for groups with children?</strong> Yes for day charters; mixed for multi-day. Day charters in Biscayne Bay are family-friendly with shallow swim stops, water toys, and shorter durations that suit younger attention spans. Multi-day Bahamas charters work for families with teenagers and older but are less ideal for very young children due to the open-water transit times and the lack of shore-side amenities at remote islands. We recommend daytime charters for groups with under-12s.</p>`
   },
   {
     slug:"best-concierge-services",
@@ -468,7 +534,29 @@ export var BLOG_POSTS=[
 
 <p>Our team combines industry experts (former restaurant managers, event coordinators, travel specialists) with deep local knowledge across multiple cities. This expertise translates into recommendations you can trust and services exceeding expectations.</p>
 
-<p><strong>Experience the Alfred difference.</strong> Our 24/7 team is ready to transform how you experience luxury lifestyle. Contact Alfred Concierge today to explore membership and discover why we're the leading luxury concierge service globally.</p>`
+<p><strong>Experience the Alfred difference.</strong> Our 24/7 team is ready to transform how you experience luxury lifestyle. Contact Alfred Concierge today to explore membership and discover why we're the leading luxury concierge service globally.</p>
+
+<h2>How to Choose a Concierge Service: The Five Questions That Matter</h2>
+
+<p>The luxury concierge market is dense and the marketing language is similar across providers. To cut through, ask any potential service provider five specific questions. First: do they have direct relationships with the venues that matter to you, or do they work through aggregators and APIs? Direct relationships mean someone at the venue knows your concierge by name — the difference between a confirmed booking and a "submitted request." Second: what's the membership-to-concierge ratio? Top-tier services maintain ratios of 100:1 or better; lower-tier services run 500:1 or higher and the experience reflects it. Third: what's the response time SLA, and is it tier-dependent? Fourth: how do they handle escalations when something fails — what's the recovery protocol when a booking falls through at 9pm on a Saturday? Fifth: what's the total annual cost, including the membership fee, any per-booking surcharges, and gratuity expectations on top of venue costs?</p>
+
+<p>The honest answers vary widely. Card-issuer concierge (Amex Centurion, Chase Reserve) operates on volume — large reach, slower response, no direct venue relationships. Legacy concierge (Quintessentially, John Paul) has deep global reach and a long brand history but charges $5,000-$15,000+ annually and runs primarily on email and phone. New-generation app-first concierge (Alfred and a small number of competitors) sits between — direct relationships in core cities, app-first surface, transparent pricing, faster response times. The right choice depends on your usage pattern. If you spend most of your time in fewer than five cities and value response time, app-first wins. If you travel constantly across 20+ cities globally, legacy concierge breadth is hard to beat.</p>
+
+<h2>Comparing Alfred to Quintessentially, Velocity Black, and Card Concierge</h2>
+
+<p>Quintessentially is the longest-running luxury concierge brand, founded in 2000 with offices in 60+ cities and the broadest global reach in the category. Membership tiers run from £1,000 to £100,000+ annually depending on service level. Quintessentially's strength is the global footprint and the institutional relationships built over 25 years. The trade-off is that the service runs primarily on email and phone — there's no usable app, response times are measured in hours rather than minutes, and the membership cost is an order of magnitude above newer competitors. Velocity Black was the closest direct competitor to Alfred until its acquisition by Capital One in 2023; the consumer product was discontinued shortly after. American Express Centurion concierge (and the Black Card concierge) is included with the card and operates with the broadest call-center reach but no curated relationships at specific venues — it's good for travel logistics, mediocre for impossible reservations.</p>
+
+<p>Alfred sits in a deliberate position: app-first surface for booking and discovery, real human concierge team behind every member, direct relationships at the top venues in our four cities (Miami, Paris, Dubai, London), and pricing that's a fraction of legacy competitors ($9.99 Gold, $99 Platinum, Centurion invite-only). We're not the right choice for someone who needs concierge support in 30 cities globally; we are the right choice for someone whose life centers on our four cities and who values response time, transparent pricing, and the operational benefits (waived advance payments, reduced minimum spends, VIP table placement) that real venue relationships unlock.</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<p><strong>What's the difference between AI concierge and human concierge?</strong> AI handles search, recommendations, and routing — what restaurants serve seafood within 20 minutes of your hotel, which yacht is appropriate for a group of 8, what's the weather window for a Bahamas crossing. Humans handle judgement and recovery — the impossible reservation, the last-minute table swap when a guest cancels, the apology and redo when something fails. Alfred Gold uses AI for the first layer; Platinum and Centurum add humans for the second.</p>
+
+<p><strong>Do concierge services charge per booking?</strong> Most don't, including Alfred. The membership fee covers the concierge layer; you pay only what the venue charges, with no per-booking surcharge. The exception is event hospitality (F1, Roland Garros, Royal Ascot) where ticket and hospitality packages have a small disclosed handling fee.</p>
+
+<p><strong>Can I trial a concierge service before committing?</strong> Most services require a 12-month commitment. Alfred is unusual in offering monthly billing — you can sign up for one month, use the service for a trip or event, and cancel at the end of the month with no penalty. This is the right way to evaluate concierge services without long-term commitment.</p>
+
+<p><strong>Is concierge service worth it for occasional travelers?</strong> If you travel to a luxury destination once or twice a year, Gold-tier app access ($9.99/month) is worth it for the catalogue and AI booking integrations alone. Platinum ($99/month) is overkill unless you're planning multiple premium nights out per month. For 4+ premium dinners or club nights per month, Platinum pays for itself in waived advance payments and reduced minimums alone.</p>`
   },
   {
     slug:"private-jet-charter-guide",
