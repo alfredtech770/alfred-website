@@ -1,71 +1,63 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import SEOHead from "../components/SEOHead";
+import {
+  T, type
+} from "../lib/brand";
+import {
+  Hero, BrandNav, SerifWordmark, SilverText, FilmGrain,
+  SectionHeader, PrimaryCTA, GhostCTA, GlassCard, Eyebrow, Divider,
+  useReveal, revealStyle, useMobile
+} from "../components/brand";
 
-var sf = function(size, weight){
-  return {fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
-};
-var C = {bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gold:"#FFD60A"};
-
-function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
+var T_ = T; // shadow alias for nested closures
 
 var TIERS = [
   {
-    id:"gold",
-    label:"Entry",
-    name:"Alfred Gold",
-    price:"$9.99",
-    cadence:"/month",
-    cta:"Get Alfred Gold",
-    summary:"Full app access, the AI concierge and the booking integrations. The right tier to see what Alfred is.",
+    id:"gold", label:"Entry",
+    name:"Alfred Gold", italicWord:"Gold",
+    price:"$9.99", cadence:"/ month",
+    summary:"The catalogue, the AI concierge, and integrated bookings. The right tier to see what Alfred is.",
     features:[
-      "Full access to the Alfred app and catalogue",
+      "Full app and catalogue access",
       "AI concierge chat agent",
-      "Restaurant discovery and recommendations",
-      "Bookings via Resy, OpenTable, SevenRooms and Tock",
-      "Global venue catalogue across Miami, Paris, Dubai and London",
+      "Bookings via Resy, OpenTable, SevenRooms, Tock",
+      "Global venue catalogue across four cities",
       "Event discovery and ticketing access",
-      "Up to four secondary profiles per account",
+      "Up to four secondary profiles",
       "End-to-end encrypted messaging",
       "Cancel anytime"
-    ]
+    ],
+    cta:"Get Alfred Gold", ctaHref:"#"
   },
   {
-    id:"platinum",
-    label:"Recommended",
-    name:"Alfred Platinum",
-    price:"$99",
-    cadence:"/month",
-    cta:"Get Alfred Platinum",
-    badge:"MOST POPULAR",
-    summary:"Everything in Gold plus the human concierge team and the operational benefits that real luxury concierge work depends on.",
+    id:"platinum", label:"Recommended",
+    name:"Alfred Platinum", italicWord:"Platinum",
+    price:"$99", cadence:"/ month",
+    summary:"Everything in Gold plus a real human concierge team and the operational benefits that real luxury concierge work depends on.",
+    badge:"Most Popular",
     features:[
       "Everything in Alfred Gold",
-      "Real human concierge team — request fulfilment by named operators",
-      "Skip the line — outside and at the check-in desk",
+      "Real human concierge — named operators",
+      "Skip the line outside and at check-in",
       "Strategic table placement at partner venues",
       "Reduced minimum spend on alcohol and food",
       "Waived advance payment requirement",
-      "VIP flag in the venue system — upgrade eligibility",
+      "VIP flag in venue systems — upgrade eligibility",
       "Most experienced waiter and bottle service",
       "Waived valet at partner venues",
-      "Waived 15-minute grace period on reservations",
       "Custom bottle parade and shoutouts on request",
       "Music request selection at partner clubs",
-      "VIP host at your table all night",
-      "Guest companions on request",
       "Exclusive event access and pre-sale windows",
       "Concierge consultancy and trip advice"
-    ]
+    ],
+    cta:"Get Alfred Platinum", ctaHref:"#",
+    featured: true
   },
   {
-    id:"centurion",
-    label:"Invite Only",
-    name:"Alfred Centurion",
-    price:"By invitation",
-    cadence:"",
-    cta:"Apply for Centurion",
-    summary:"A single named agent for every aspect of a member's life. The full Alfred operation, dedicated, 24/7.",
+    id:"centurion", label:"Invite Only",
+    name:"Alfred Centurion", italicWord:"Centurion",
+    price:"By invitation", cadence:"",
+    summary:"A single named agent for every aspect of a member's life. The full Alfred operation, dedicated, twenty-four hours a day.",
     features:[
       "Everything in Alfred Platinum",
       "Dedicated personal agent — one human, always your contact",
@@ -77,7 +69,8 @@ var TIERS = [
       "Private event and experience curation",
       "Quarterly branded gifting",
       "Annual member-only experience access"
-    ]
+    ],
+    cta:"Apply for Centurion", ctaHref:"/contact"
   }
 ];
 
@@ -125,12 +118,93 @@ var JSONLD = [
   }
 ];
 
+function TierCard({tier, mobile}){
+  var r = useReveal(0.05);
+  var featured = !!tier.featured;
+  return (
+    <div ref={r.ref} style={{...revealStyle(r.visible), height:"100%"}}>
+      <GlassCard featured={featured} sheen={featured} padded={false} style={{
+        height:"100%", display:"flex", flexDirection:"column",
+        padding: mobile ? "32px 24px" : "40px 30px",
+        position:"relative",
+        transform: featured ? "translateY(-8px)" : "none"
+      }}>
+        {tier.badge && <div style={{
+          position:"absolute", top:0, left:"50%", transform:"translateX(-50%) translateY(-50%)",
+          padding:"6px 16px", borderRadius:999,
+          background: T_.silverGradient,
+          color:"#0E0E11", ...type.kicker(), letterSpacing:1.4,
+          boxShadow:"0 6px 16px rgba(220,220,224,0.15)"
+        }}>{tier.badge}</div>}
+
+        <Eyebrow color={featured ? T_.silver : T_.silverDim}>{tier.label}</Eyebrow>
+
+        <div style={{marginTop:14, marginBottom:8, lineHeight:1.1}}>
+          <span style={{...type.cardSerif(28), color:T_.text}}>Alfred </span>
+          <SilverText style={{...type.cardSerif(28), fontStyle:"italic"}}>{tier.italicWord}</SilverText>
+        </div>
+
+        <div style={{display:"flex", alignItems:"baseline", gap:6, marginBottom:18}}>
+          <span style={{...type.italicSerif(38), color:T_.text}}>{tier.price}</span>
+          {tier.cadence && <span style={{...type.bodySm(), color:T_.textDim}}>{tier.cadence}</span>}
+        </div>
+
+        <p style={{...type.body(), color:T_.textMid, marginBottom:24, minHeight:56}}>{tier.summary}</p>
+
+        <div style={{height:0.5, background:T_.border, marginBottom:20}}/>
+
+        <div style={{flex:1, marginBottom:24}}>
+          {tier.features.map(function(f, i){
+            return <div key={i} style={{display:"flex", alignItems:"flex-start", gap:10, marginBottom:12}}>
+              <div style={{
+                width:16, height:16, borderRadius:"50%",
+                background:"rgba(255,255,255,0.06)",
+                border:`0.5px solid ${T_.border2}`,
+                display:"flex", alignItems:"center", justifyContent:"center",
+                marginTop:2, flexShrink:0
+              }}>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={featured ? T_.silver : T_.textMid} strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <span style={{...type.body(), color: featured ? T_.text : T_.textMid, fontSize:13.5}}>{f}</span>
+            </div>;
+          })}
+        </div>
+
+        {featured ? (
+          <PrimaryCTA href={tier.ctaHref} fullWidth size="lg">{tier.cta}</PrimaryCTA>
+        ) : (
+          <GhostCTA href={tier.ctaHref} fullWidth>{tier.cta}</GhostCTA>
+        )}
+      </GlassCard>
+    </div>
+  );
+}
+
+function FaqItem({q, a, mobile}){
+  return (
+    <details style={{
+      borderBottom:`0.5px solid ${T_.border2}`,
+      padding: mobile ? "20px 0" : "24px 0"
+    }}>
+      <summary style={{
+        ...type.cardSerif(mobile ? 17 : 19),
+        color:T_.text, cursor:"pointer", listStyle:"none",
+        display:"flex", justifyContent:"space-between", alignItems:"center", gap:16
+      }}>
+        <span>{q}</span>
+        <span aria-hidden style={{...type.kicker(), color:T_.silverDim, flexShrink:0}}>+</span>
+      </summary>
+      <p style={{...type.bodyLg(), color:T_.textMid, marginTop:14, maxWidth:680}}>{a}</p>
+    </details>
+  );
+}
+
 export default function PricingPage(){
-  var navigate = useNavigate();
+  var mobile = useMobile();
   useEffect(function(){ window.scrollTo(0,0); }, []);
 
   return (
-    <div style={{background:C.bg, minHeight:"100vh", color:C.s1}}>
+    <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
         title="Alfred Pricing — Membership Tiers from $9.99/month | Alfred Concierge"
         description="Alfred Concierge memberships from $9.99/month. Gold: full app access and AI concierge. Platinum $99/month: real human concierge team, VIP venue benefits. Centurion: invite-only dedicated agent. Compare every tier."
@@ -140,93 +214,162 @@ export default function PricingPage(){
         jsonLd={JSONLD}
       />
 
-      <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(10,10,11,0.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid "+C.bd,padding:"0 40px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div onClick={function(){navigate("/")}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
-          <Mark size={20} color={C.s1}/>
-          <span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span>
+      <BrandNav mobile={mobile} links={[
+        {label:"About", href:"/about"},
+        {label:"How it Works", href:"/how-it-works"},
+        {label:"Pricing", href:"/pricing", active:true},
+        {label:"Contact", href:"/contact"}
+      ]}/>
+
+      {/* ─── HERO ─────────────────────────────────────────────────── */}
+      <Hero mobile={mobile} height={mobile ? 480 : 620} scrim={true}>
+        <div style={{
+          height:"100%", display:"flex", flexDirection:"column", justifyContent:"flex-end",
+          padding: mobile ? "0 22px 56px" : "0 56px 80px", maxWidth:1200, margin:"0 auto"
+        }}>
+          <Eyebrow dot accent={T_.warm}>Membership</Eyebrow>
+          <h1 style={{
+            ...(mobile ? type.heroSerifMobile() : type.heroSerif()),
+            color:T_.text, marginTop:18, maxWidth:880
+          }}>
+            Three tiers.<br/>One concierge.<br/>
+            <SilverText style={{fontStyle:"italic"}}>Every door open.</SilverText>
+          </h1>
+          <p style={{
+            ...type.bodyLg(), color:T_.textMid, marginTop:18, maxWidth:560
+          }}>
+            Transparent pricing. No per-booking fees. Cancel any plan at any time.
+          </p>
         </div>
-        <div style={{display:"flex",gap:24,alignItems:"center"}}>
-          <a href="/about" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>About</a>
-          <a href="/how-it-works" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>How it Works</a>
-          <a href="/contact" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>Contact</a>
+      </Hero>
+
+      {/* ─── TIER CARDS ───────────────────────────────────────────── */}
+      <section style={{
+        padding: mobile ? "60px 22px 80px" : "100px 56px 120px",
+        maxWidth:1200, margin:"0 auto"
+      }}>
+        <div style={{
+          display:"grid",
+          gridTemplateColumns: mobile ? "1fr" : "repeat(3, 1fr)",
+          gap: mobile ? 16 : 20,
+          alignItems:"stretch"
+        }}>
+          {TIERS.map(function(t){ return <TierCard key={t.id} tier={t} mobile={mobile}/>; })}
         </div>
-      </nav>
+        <p style={{
+          textAlign:"center", marginTop:36,
+          ...type.caption(), color:T_.textDim, letterSpacing:1.5, textTransform:"uppercase"
+        }}>End-to-end encryption · No advertising · Cancel anytime</p>
+      </section>
 
-      <article style={{maxWidth:1100,margin:"0 auto",padding:"80px 40px 120px"}}>
-        <header style={{textAlign:"center",maxWidth:680,margin:"0 auto 64px"}}>
-          <p style={{...sf(11,600),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:16}}>Pricing</p>
-          <h1 style={{...sf(56,700),letterSpacing:-2,lineHeight:1.05,marginBottom:24,color:C.s1}}>Three tiers. One concierge. Every door open.</h1>
-          <p style={{...sf(20,400),color:C.s4,lineHeight:1.55}}>Transparent pricing. No per-booking fees. Cancel anytime.</p>
-        </header>
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
 
-        {/* Tier cards */}
-        <section style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:20,marginBottom:96}}>
-          {TIERS.map(function(t){
-            var isPlat = t.id==="platinum";
-            return <div key={t.id} id={t.id} style={{position:"relative",borderRadius:24,background:isPlat?C.el:C.el,border:isPlat?"1.5px solid rgba(244,244,245,0.18)":"1px solid "+C.bd,padding:"40px 32px",display:"flex",flexDirection:"column",boxShadow:isPlat?"0 20px 60px rgba(0,0,0,0.3)":"none",transform:isPlat?"translateY(-4px)":"none"}}>
-              {t.badge && <div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",padding:"5px 16px",borderRadius:"0 0 12px 12px",background:C.s1,...sf(10,700),color:C.bg,letterSpacing:1}}>{t.badge}</div>}
-              <div style={{...sf(10,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:12,marginTop:t.badge?8:0}}>{t.label}</div>
-              <div style={{...sf(28,700),color:C.s1,marginBottom:6,letterSpacing:-0.5}}>{t.name}</div>
-              <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:18}}>
-                <span style={{...sf(38,700),color:C.s1}}>{t.price}</span>
-                {t.cadence && <span style={{...sf(15),color:C.s6}}>{t.cadence}</span>}
-              </div>
-              <p style={{...sf(14,400),color:C.s4,lineHeight:1.6,marginBottom:24,minHeight:60}}>{t.summary}</p>
-              <div style={{height:0.5,background:C.bd,marginBottom:20}}/>
-              <div style={{flex:1,marginBottom:24}}>
-                {t.features.map(function(f,i){
-                  return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:14}}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isPlat?C.s2:C.s5} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
-                    <span style={{...sf(13,400),color:isPlat?C.s3:C.s4,lineHeight:1.55}}>{f}</span>
-                  </div>;
-                })}
-              </div>
-              <a href={t.id==="centurion"?"/contact":"#"} style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"15px 0",borderRadius:14,background:isPlat?C.s1:"transparent",border:isPlat?"none":"1px solid "+C.bd,...sf(14,600),color:isPlat?C.bg:C.s1,textDecoration:"none"}}>{t.cta}</a>
-            </div>;
-          })}
-        </section>
+      {/* ─── CHOOSING THE RIGHT TIER ──────────────────────────────── */}
+      <ChoosingSection mobile={mobile}/>
 
-        {/* Comparison narrative */}
-        <section style={{maxWidth:780,margin:"0 auto",marginBottom:80}}>
-          <h2 style={{...sf(32,600),color:C.s1,marginBottom:24,letterSpacing:-0.7}}>Choosing the right tier</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Most members start at Gold to see the catalogue and use the AI concierge for restaurant discovery and event browsing. It is the right tier for someone who wants the modern app surface — search, recommendations, integrated booking with Resy and OpenTable — but is not ready to commit to the full concierge service.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Platinum is the inflection point. It adds a real human concierge team behind every request and unlocks the operational benefits that make the difference at premium venues — waived advance payments, reduced minimum spends on bottles, VIP table placement, skipped queues, the right waiter on your table. If you book three or four premium nights out a month or take more than one trip a quarter to one of our cities, Platinum pays for itself in waived minimums alone. The $99 a month membership is small relative to a single waived $500 advance payment at LIV Miami or a guaranteed table at Carbone the week of Art Basel.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Centurion is for members who want a single named agent on call 24/7 — someone who knows their preferences, their travel patterns, their family, and the standing relationships at venues. It is structured per member rather than priced as a SKU, and the right way to start the conversation is to apply through the <a href="/contact" style={{color:C.s1,textDecoration:"underline"}}>contact page</a>.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>All tiers can be cancelled at any time. Memberships paid annually are refunded pro-rata on cancellation. There are no per-booking surcharges, no automatic renewal traps and no upsell pressure once you're in.</p>
-        </section>
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
 
-        {/* What's not charged */}
-        <section style={{maxWidth:780,margin:"0 auto",marginBottom:80}}>
-          <h2 style={{...sf(32,600),color:C.s1,marginBottom:24,letterSpacing:-0.7}}>What is and isn't included</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>The membership covers the concierge service itself — the catalogue, the bookings, the human team, the relationships and the benefits. It does not cover what you spend at the venue: the dinner, the bottle, the car rental, the yacht day, the jet hour. Those are billed at the venue's rate and paid through the app at point of booking or to the venue at the time of service, depending on the category.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>Event hospitality — Monaco Grand Prix, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening — is sold at face value plus a small handling fee that is disclosed at the time of booking. There is never a hidden mark-up on tickets or hospitality packages.</p>
-        </section>
+      {/* ─── WHAT'S INCLUDED ─────────────────────────────────────── */}
+      <IncludedSection mobile={mobile}/>
 
-        {/* FAQ */}
-        <section style={{maxWidth:780,margin:"0 auto",marginBottom:48}}>
-          <h2 style={{...sf(32,600),color:C.s1,marginBottom:32,letterSpacing:-0.7}}>Pricing FAQ</h2>
-          {FAQ.map(function(f,i){
-            return <details key={i} style={{borderBottom:"1px solid "+C.bd,padding:"22px 0"}}>
-              <summary style={{...sf(16,500),color:C.s1,cursor:"pointer",listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <span>{f.q}</span>
-                <span style={{...sf(20,300),color:C.s5}}>+</span>
-              </summary>
-              <p style={{...sf(15,400),color:C.s4,lineHeight:1.7,marginTop:14}}>{f.a}</p>
-            </details>;
-          })}
-        </section>
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
 
-        <section style={{maxWidth:780,margin:"0 auto"}}>
-          <div style={{padding:"36px 32px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,textAlign:"center"}}>
-            <h3 style={{...sf(24,600),color:C.s1,marginBottom:12,letterSpacing:-0.3}}>Still deciding?</h3>
-            <p style={{...sf(15,400),color:C.s4,lineHeight:1.6,marginBottom:24,maxWidth:480,margin:"0 auto 24px"}}>Start with Alfred Gold to see the catalogue. Upgrade to Platinum any time — your account, history and preferences carry over.</p>
-            <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
-              <a href="/how-it-works" style={{display:"inline-flex",alignItems:"center",padding:"14px 22px",borderRadius:12,background:C.s1,color:C.bg,...sf(14,600),textDecoration:"none"}}>See how it works</a>
-              <a href="/contact" style={{display:"inline-flex",alignItems:"center",padding:"14px 22px",borderRadius:12,border:"1px solid "+C.bd,color:C.s1,...sf(14,600),textDecoration:"none"}}>Talk to Alfred</a>
-            </div>
+      {/* ─── FAQ ─────────────────────────────────────────────────── */}
+      <section style={{
+        padding: mobile ? "60px 22px 80px" : "100px 56px 120px",
+        maxWidth:980, margin:"0 auto"
+      }}>
+        <SectionHeader
+          kicker="Pricing FAQ"
+          title="Questions members ask before they sign up"
+        />
+        <div>
+          {FAQ.map(function(f, i){ return <FaqItem key={i} q={f.q} a={f.a} mobile={mobile}/>; })}
+        </div>
+      </section>
+
+      {/* ─── FINAL CTA ───────────────────────────────────────────── */}
+      <section style={{
+        padding: mobile ? "60px 22px 100px" : "80px 56px 140px",
+        maxWidth:1200, margin:"0 auto"
+      }}>
+        <GlassCard featured sheen padded={false} style={{
+          padding: mobile ? "40px 28px" : "64px 56px",
+          textAlign:"center"
+        }}>
+          <Eyebrow color={T_.silver}>Still deciding</Eyebrow>
+          <h2 style={{
+            ...type.sectionSerif(), fontSize: mobile ? 28 : 34,
+            color:T_.text, marginTop:14, marginBottom:14, lineHeight:1.15
+          }}>
+            Start with <SilverText style={{fontStyle:"italic"}}>Gold</SilverText>.<br/>
+            Upgrade any time.
+          </h2>
+          <p style={{
+            ...type.bodyLg(), color:T_.textMid, maxWidth:520, margin:"0 auto 28px"
+          }}>Your account, history, and preferences carry across tiers.</p>
+          <div style={{
+            display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap"
+          }}>
+            <PrimaryCTA href="/how-it-works">See how it works</PrimaryCTA>
+            <GhostCTA href="/contact">Talk to Alfred</GhostCTA>
           </div>
-        </section>
-      </article>
+        </GlassCard>
+      </section>
     </div>
+  );
+}
+
+function ChoosingSection({mobile}){
+  var r = useReveal();
+  return (
+    <section ref={r.ref} style={{
+      padding: mobile ? "60px 22px 60px" : "100px 56px 80px",
+      maxWidth:880, margin:"0 auto",
+      ...revealStyle(r.visible)
+    }}>
+      <SectionHeader
+        kicker="Choosing your tier"
+        title="Which tier is the right entry point"
+      />
+      <div style={{display:"flex", flexDirection:"column", gap:22}}>
+        <p style={{...type.bodyLg(), color:T_.textMid}}>
+          Most members start at <span style={{color:T_.text}}>Gold</span> to see the catalogue and use the AI concierge for restaurant discovery and event browsing. It is the right tier for someone who wants the modern app surface — search, recommendations, integrated booking — without committing to the full concierge service.
+        </p>
+        <p style={{...type.bodyLg(), color:T_.textMid}}>
+          <span style={{color:T_.text}}>Platinum</span> is the inflection point. It adds a real human concierge team behind every request and unlocks the operational benefits that make the difference at premium venues — waived advance payments, reduced minimum spends on bottles, VIP table placement, skipped queues, the right waiter on your table. If you book three or four premium nights out a month or take more than one trip a quarter to one of our cities, Platinum pays for itself in waived minimums alone.
+        </p>
+        <p style={{...type.bodyLg(), color:T_.textMid}}>
+          <span style={{color:T_.text}}>Centurion</span> is for members who want a single named agent on call twenty-four hours a day — someone who knows their preferences, their travel patterns, their family, and the standing relationships at venues. It is structured per member rather than priced as a SKU, and the right way to start the conversation is to apply through the <a href="/contact" style={{color:T_.text, textDecoration:"underline", textUnderlineOffset:3}}>contact page</a>.
+        </p>
+        <p style={{...type.bodyLg(), color:T_.textMid}}>
+          All tiers can be cancelled at any time. Memberships paid annually are refunded pro-rata on cancellation. There are no per-booking surcharges, no automatic renewal traps and no upsell pressure once you're in.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function IncludedSection({mobile}){
+  var r = useReveal();
+  return (
+    <section ref={r.ref} style={{
+      padding: mobile ? "60px 22px 60px" : "80px 56px 100px",
+      maxWidth:880, margin:"0 auto",
+      ...revealStyle(r.visible)
+    }}>
+      <SectionHeader
+        kicker="What's included"
+        title="What the membership covers, and what it doesn't"
+      />
+      <div style={{display:"flex", flexDirection:"column", gap:22}}>
+        <p style={{...type.bodyLg(), color:T_.textMid}}>
+          The membership covers the concierge service itself — the catalogue, the bookings, the human team, the relationships and the benefits. It does not cover what you spend at the venue: the dinner, the bottle, the car rental, the yacht day, the jet hour. Those are billed at the venue's rate and paid through the app at point of booking or to the venue at the time of service, depending on the category.
+        </p>
+        <p style={{...type.bodyLg(), color:T_.textMid}}>
+          Event hospitality — Monaco Grand Prix, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening — is sold at face value plus a small handling fee that is disclosed at the time of booking. There is never a hidden mark-up on tickets or hospitality packages.
+        </p>
+      </div>
+    </section>
   );
 }
