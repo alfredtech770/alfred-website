@@ -1,21 +1,23 @@
 /**
- * SEO body content for catalog hub pages. Each category has ~1,000 words
- * of substantive prose + a topic-specific FAQ that catalog pages render
- * below the grid and above the CTA. Renders schema.org FAQPage JSON-LD
- * for the FAQ section.
+ * SEO body content for catalog hub pages, branded to match the iOS app.
+ * Renders below the catalog grid + above the existing CTA on each page.
+ * Emits FAQPage JSON-LD for the FAQ section.
  *
- * Usage in a catalog page:
+ * Usage:
  *   import CatalogSeoBody from "../components/CatalogSeoBody";
  *   ...
  *   <CatalogSeoBody category="dining"/>
  */
 
-var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
-var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46"};
+import { T, type } from "../lib/brand";
+import { SectionHeader, GlassCard, Eyebrow, SilverText, useReveal, revealStyle, useMobile } from "./brand";
+
+var T_ = T;
 
 var CONTENT = {
   dining:{
     label:"Dining",
+    italic:"dining",
     intro:"Alfred handles restaurant reservations across Miami and Paris with direct relationships at the venues that matter — Michelin-starred kitchens, the impossible-to-book seasonal venues, and the long-running establishments where the right table makes the entire evening. Below is what members consistently want to know about how dining bookings actually work and where the operational benefits sit.",
     sections:[
       {title:"What kind of dining Alfred actually books",body:"The catalogue covers four overlapping tiers. The first is Michelin-starred fine dining — Le Cinq, L'Ambroisie, Plénitude, Epicure in Paris, the city's three- and two-star houses. The second is occasion-driven contemporary dining — Carbone, Komodo, Casa Tua, Papi Steak in Miami; Septime, Frenchie, Girafe in Paris. The third is members'-only and club-attached — ZZ's Club Miami, the Surf Club Restaurant, Mark's Club London, Loulou's. The fourth is the daytime and beach-club restaurants — Casa Tua Cucina, Joia Beach, Beso Beach, Nikki Beach. Alfred's bookings sit across all four; the operational benefits scale up at the top of the catalogue (waived advance payments, reduced minimum spends, VIP table placement) and down at the casual end (priority seating, dietary briefing, off-menu access)."},
@@ -33,6 +35,7 @@ var CONTENT = {
 
   nightlife:{
     label:"Nightlife",
+    italic:"nightlife",
     intro:"Alfred handles VIP table placement, guest-list access, and bottle service across the world's top nightclubs — LIV and E11even Miami, Story, Club Space, Hyde Beach, Raspoutine and Castel Paris, Annabel's London, SOHO Garden Dubai. The mechanics of how nightclub bookings work are different enough from restaurant reservations that members consistently want clarification on what the membership actually unlocks at the door.",
     sections:[
       {title:"Table service vs guest list — the actual difference",body:"Every premium nightclub operates two parallel systems. Guest list is free entry past the line for groups of one to four, typically requiring you to be inside by 12am-1am to qualify. Table service is paid bottle service — you reserve a physical table with bottle minimums, hosted by a server, with priority entry, no line, and a place to sit and put drinks. The bottle minimum varies wildly: $2,500-5,000 at LIV main floor, $5,000-15,000+ at LIV VIP balcony or owner's table, $2,000-4,000 at E11even main floor, similar at Story. Tables also come with reduced advance-payment requirements at Alfred-partner venues — a $5,000 minimum at LIV typically requires $2,500 upfront via the venue's app, whereas Alfred Platinum and Centurion members have the advance payment waived. Guest list works for the casual visit; table service is the right call for groups of 5+ or anyone who wants to actually sit down at any point in the evening."},
@@ -50,6 +53,7 @@ var CONTENT = {
 
   "exotic-cars":{
     label:"Exotic Cars",
+    italic:"exotic cars",
     intro:"Alfred handles exotic and luxury car rentals across Miami, Paris, and Dubai — Ferrari, Lamborghini, Rolls Royce, McLaren, Porsche, Bentley, and the broader supercar fleet. The catalogue is delivered to your door, fully insured, with a proper handover that briefs you on each vehicle's specific quirks. The operational mechanics differ from regular car hire in ways that catch first-time renters off-guard.",
     sections:[
       {title:"The fleet, by category",body:"The catalogue is structured in four tiers. Daily-driver luxury (Mercedes G-Wagon, Range Rover Autobiography, Porsche Cayenne Turbo, Cadillac Escalade): the everyday tier for groups, families, or members who want luxury without the supercar attention. Sports car tier (Porsche 911 GT3, BMW M8, Audi RS6, AMG GT): the right balance of performance and discretion. Supercar tier (Lamborghini Huracan/Urus, Ferrari Roma/296 GTB, McLaren 720S, Aston Martin DB12): the headline cars for occasion-driven trips, photo opportunities, or members who want the visibility. Ultra-luxury (Rolls Royce Cullinan/Phantom/Spectre, Bentley Continental GT, Maybach S-Class): chauffeur-eligible and oriented toward presence rather than driving dynamics. Within each tier, specific models and years rotate based on inventory and member preference."},
@@ -67,6 +71,7 @@ var CONTENT = {
 
   jets:{
     label:"Private Jets",
+    italic:"private jets",
     intro:"Alfred coordinates private jet charter worldwide with empty-leg deals, instant quotes, and dedicated agent handling. The aviation market is fragmented across hundreds of operators with widely-varying safety standards, fleet quality, and pricing transparency. Alfred works through a vetted operator panel with consistent ARGUS Platinum, Wyvern Wingman, or IS-BAO certifications and pricing structures that members can predict.",
     sections:[
       {title:"The four jet categories, by use case",body:"Light jets (Citation CJ3, Phenom 300, Lear 75) seat 6-8, range up to roughly 2,000 nautical miles, suit short-hop flights — Miami to New York, London to Geneva, New York to the Caribbean. Cost runs $3,500-5,500 per hour. Midsize jets (Citation XLS, Hawker 900XP, Praetor 600) seat 8-10, range up to 3,500 nm, suit transcontinental flights — Miami to LA, London to Madrid. Cost runs $5,500-8,000 per hour. Heavy jets (Falcon 7X, Challenger 605, Gulfstream G450) seat 12-16, range up to 5,500 nm, suit transatlantic flights — New York to London or Paris. Cost runs $8,000-12,000 per hour. Ultra-long-range (Gulfstream G650/G700, Global 7500, Falcon 8X) seat 14-18, range up to 7,500+ nm, fly anywhere on Earth nonstop. Cost runs $12,000-16,000+ per hour. Alfred matches aircraft to mission rather than defaulting to the bigger option — for a 4-person Miami-NYC overnight, a light jet is usually the right call; for an 8-person Miami-Paris business trip, a heavy jet wins on cabin comfort across 8 hours."},
@@ -84,6 +89,7 @@ var CONTENT = {
 
   yachts:{
     label:"Yachts",
+    italic:"yachts",
     intro:"Alfred coordinates yacht and superyacht charters from Miami, the French Riviera, Ibiza, Monaco, the Bahamas, and the Caribbean. The catalogue ranges from 30-foot day boats to 100ft+ superyachts with full crew, fuel, water toys, and catering. Yacht charter mechanics are different enough from any other category Alfred coordinates — distinct vocabulary, distinct payment structures, distinct seasonal patterns — that members consistently want clarity on what they're actually buying.",
     sections:[
       {title:"Charter categories, ranked by use case",body:"Day boats and small yachts (30-50ft) seat 8-15 guests, suit half-day or full-day charters in protected water — Biscayne Bay out of Miami, the Côte d'Azur out of Cannes, the Balearic islands out of Ibiza. Cost runs $1,500-5,000/day. Mid-range yachts (50-80ft) seat 10-25 guests with overnight cabins, suit full-day charters or short multi-day trips — Bahamas out of Miami, Corsica from Saint-Tropez. Cost runs $5,000-25,000/day. Superyachts (80-150ft) seat 12-40 guests with full crew (captain, mate, stew, chef, deckhands), suit week-charter cruises through the Mediterranean or Caribbean. Cost runs $25,000-150,000/day. Mega-yachts (150ft+) are weekly or longer charters at $150,000+/day. Most Alfred bookings sit in the day-boat or mid-range tier; superyachts are member-led requests for specific weeks (typically Saint-Tropez to Monaco in May-July, Caribbean December-March)."},
@@ -101,6 +107,7 @@ var CONTENT = {
 
   wellness:{
     label:"Wellness",
+    italic:"wellness",
     intro:"Alfred coordinates spa and wellness bookings across Miami, Paris, London, and Dubai — Canyon Ranch and Lapis at the Fontainebleau in Miami, Dior Spa Plaza Athénée and Le Spa Ritz in Paris, the Bulgari Spa London and Dorchester Spa in London, Talise and the Mandarin Oriental Spa in Dubai. The catalogue includes single-treatment bookings, multi-day wellness retreats, personal training, and IV therapy. Booking specifics differ from restaurant or club reservations in ways that matter at the high end.",
     sections:[
       {title:"What 'luxury wellness' actually covers",body:"The catalogue spans four categories. The first is hotel-attached luxury spas — Canyon Ranch Miami Beach, Lapis at the Fontainebleau, Four Seasons Surf Club Spa, the Setai Spa, Dior Spa Cheval Blanc Paris, Le Spa Ritz, Spa Le Bristol, Bulgari Spa London. These are the prestige category — full menus of facials, massages, body treatments, and signature rituals, typically with spa pools, hammam, sauna, and relaxation lounges included with treatment booking. The second is brand-led spas — Dior, Guerlain, La Mer, Carita — typically embedded in flagship boutiques or hotels and using proprietary product lines. The third is medical spa and aesthetics — Botox, fillers, laser treatments, IV therapy — offered at concierge medical practices like Eternal Body Care or the Cleveland Clinic Wellness Institute. The fourth is fitness and personal training — private trainers at the SoHo House gym network, Equinox Hotel, or in-residence sessions arranged by Alfred."},
@@ -118,6 +125,7 @@ var CONTENT = {
 
   hotels:{
     label:"Luxury Hotels",
+    italic:"hotels",
     intro:"Alfred handles luxury hotel reservations across Miami, Paris, Dubai, and London with member benefits — room upgrades, late check-out, complimentary breakfast, food and beverage credits, and waived advance payments where venue policy allows. The hotel catalogue is curated rather than comprehensive — every property in the Alfred catalogue is one our team has stayed in personally and maintains a direct relationship with the management.",
     sections:[
       {title:"The hotel categories that matter",body:"Alfred's catalogue spans five tiers. Iconic flagship hotels — the Four Seasons Surf Club Miami, the Plaza Athénée Paris, the Burj Al Arab Dubai, Claridge's London — properties that are destinations in themselves, often with Michelin-starred restaurants on-site, signature spas, and waiting lists for prime suites. Boutique luxury — the Faena Hotel Miami, the Costes Paris, the Portman Ritz-Carlton London — properties with strong design identity and intimate scale. Resort luxury — Atlantis The Royal Dubai, the Bvlgari Resort Dubai — destinations with resort programming around the accommodations. Members-only and residential-style — ZZ's Members Club Miami (with attached residences), the Bristol Paris (with the long-stay residence wing), the Mandarin Oriental Hyde Park London. New entrants — the Aman Miami Beach (opening 2026), the Bulgari Hotel Tokyo, the Rosewood Munich. Alfred members get consistent benefits across the five tiers, though the operational specifics vary by hotel."},
@@ -134,8 +142,37 @@ var CONTENT = {
   }
 };
 
+function FaqItem({q, a, mobile}){
+  return (
+    <details style={{borderBottom:`0.5px solid ${T_.border2}`, padding: mobile ? "20px 0" : "24px 0"}}>
+      <summary style={{
+        ...type.cardSerif(mobile ? 17 : 19),
+        color:T_.text, cursor:"pointer", listStyle:"none",
+        display:"flex", justifyContent:"space-between", alignItems:"center", gap:16
+      }}>
+        <span>{q}</span>
+        <span aria-hidden style={{...type.kicker(), color:T_.silverDim, flexShrink:0}}>+</span>
+      </summary>
+      <p style={{...type.bodyLg(), color:T_.textMid, marginTop:14, maxWidth:680}}>{a}</p>
+    </details>
+  );
+}
+
+function Section({sec, mobile}){
+  var r = useReveal(0.05);
+  return (
+    <div ref={r.ref} style={{...revealStyle(r.visible)}}>
+      <GlassCard style={{padding: mobile ? "28px 24px" : "36px 36px"}}>
+        <h3 style={{...type.cardSerif(mobile ? 19 : 22), color:T_.text, marginBottom:14, letterSpacing:-0.4}}>{sec.title}</h3>
+        <p style={{...type.body(), color:T_.textMid}}>{sec.body}</p>
+      </GlassCard>
+    </div>
+  );
+}
+
 export default function CatalogSeoBody({category}){
   var data = CONTENT[category];
+  var mobile = useMobile();
   if(!data) return null;
 
   var faqJsonLd = {
@@ -145,37 +182,46 @@ export default function CatalogSeoBody({category}){
   };
 
   return (
-    <section style={{padding:"60px 24px 100px",borderTop:"1px solid "+C.bd}}>
+    <section style={{
+      borderTop: `0.5px solid ${T_.border2}`,
+      background: T_.bg
+    }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(faqJsonLd)}}/>
-      <div style={{maxWidth:820,margin:"0 auto"}}>
-        <p style={{...sf(11,600),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:16,textAlign:"center"}}>The Detail</p>
-        <h2 style={{...sf(36,700),color:C.s1,marginBottom:14,textAlign:"center",letterSpacing:-0.8,lineHeight:1.15}}>
-          What members actually use Alfred for in {data.label.toLowerCase()}
-        </h2>
-        <p style={{...sf(15,400),color:C.s4,lineHeight:1.75,marginBottom:48,textAlign:"left"}}>{data.intro}</p>
 
-        <div style={{display:"flex",flexDirection:"column",gap:32,marginBottom:48}}>
-          {data.sections.map(function(sec,i){
-            return <div key={i}>
-              <h3 style={{...sf(20,600),color:C.s1,marginBottom:10,letterSpacing:-0.3}}>{sec.title}</h3>
-              <p style={{...sf(15,400),color:C.s3,lineHeight:1.85}}>{sec.body}</p>
-            </div>;
-          })}
+      {/* Intro */}
+      <div style={{
+        padding: mobile ? "60px 22px 40px" : "100px 56px 60px",
+        maxWidth:880, margin:"0 auto"
+      }}>
+        <SectionHeader
+          kicker="The Detail"
+          title={<>What members actually use Alfred for in <SilverText style={{fontStyle:"italic"}}>{data.italic}</SilverText></>}
+        />
+        <p style={{...type.bodyLg(), color:T_.textMid}}>{data.intro}</p>
+      </div>
+
+      {/* Sections grid */}
+      <div style={{
+        padding: mobile ? "0 22px 40px" : "0 56px 60px",
+        maxWidth:1100, margin:"0 auto"
+      }}>
+        <div style={{
+          display:"grid",
+          gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
+          gap: mobile ? 14 : 18
+        }}>
+          {data.sections.map(function(s, i){ return <Section key={i} sec={s} mobile={mobile}/>; })}
         </div>
+      </div>
 
-        <div style={{borderTop:"1px solid "+C.bd,paddingTop:36}}>
-          <h3 style={{...sf(22,600),color:C.s1,marginBottom:24,letterSpacing:-0.3}}>Frequently asked</h3>
-          <div>
-            {data.faqs.map(function(f,i){
-              return <details key={i} style={{borderBottom:"1px solid "+C.bd,padding:"18px 0"}}>
-                <summary style={{...sf(15,500),color:C.s1,cursor:"pointer",listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16}}>
-                  <span>{f.q}</span>
-                  <span style={{...sf(20,300),color:C.s5,flexShrink:0}}>+</span>
-                </summary>
-                <p style={{...sf(14,400),color:C.s4,lineHeight:1.7,marginTop:12}}>{f.a}</p>
-              </details>;
-            })}
-          </div>
+      {/* FAQ */}
+      <div style={{
+        padding: mobile ? "40px 22px 80px" : "60px 56px 120px",
+        maxWidth:880, margin:"0 auto"
+      }}>
+        <SectionHeader kicker="Frequently asked" title="Common questions"/>
+        <div>
+          {data.faqs.map(function(f, i){ return <FaqItem key={i} q={f.q} a={f.a} mobile={mobile}/>; })}
         </div>
       </div>
     </section>

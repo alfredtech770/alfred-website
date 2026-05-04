@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEOHead from "../components/SEOHead";
+import { T as BT, type as bType } from "../lib/brand";
+import {
+  SectionHeader as BSectionHeader, GlassCard as BGlassCard,
+  SilverText as BSilverText, useReveal as bUseReveal, revealStyle as bRevealStyle
+} from "../components/brand";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -319,47 +324,53 @@ export default function CityPage(){
         </div>
       </section>
 
-      {/* Deep-dive about sections */}
-      {city.aboutSections&&city.aboutSections.length>0&&<section style={{paddingTop:mob?60:100,paddingBottom:mob?60:100,paddingLeft:mob?20:60,paddingRight:mob?20:60}}>
-        <div style={{maxWidth:820,margin:"0 auto"}}>
-          <p style={{...sf(11,600),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:14,textAlign:"center"}}>The Detail</p>
-          <h2 style={{...sf(mob?32:44,700),color:C.s1,marginBottom:48,textAlign:"center",letterSpacing:-1}}>
-            What Alfred members actually use {city.name} for
-          </h2>
-          <div style={{display:"flex",flexDirection:"column",gap:36}}>
+      {/* Deep-dive about sections — branded to iOS app design */}
+      {city.aboutSections&&city.aboutSections.length>0&&<section style={{
+        background: BT.bg, borderTop:`0.5px solid ${BT.border2}`,
+        padding: mob ? "60px 22px" : "100px 56px"
+      }}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
+          <BSectionHeader
+            kicker="The Detail"
+            title={<>What members actually use <BSilverText style={{fontStyle:"italic"}}>{city.name}</BSilverText> for</>}
+            align="center"
+          />
+          <div style={{
+            display:"grid",
+            gridTemplateColumns: mob ? "1fr" : "1fr 1fr",
+            gap: mob ? 14 : 18,
+            marginTop:32
+          }}>
             {city.aboutSections.map(function(sec,i){
-              return <div key={i}>
-                <h3 style={{...sf(mob?20:22,600),color:C.s1,marginBottom:12,letterSpacing:-0.3}}>{sec.title}</h3>
-                <p style={{...sf(mob?14:15,400),color:C.s3,lineHeight:1.85}}>{sec.body}</p>
-              </div>;
+              return <CityAboutCard key={i} sec={sec} mob={mob}/>;
             })}
           </div>
         </div>
       </section>}
 
-      {/* FAQ Section */}
-      <section style={{paddingTop:mob?60:100,paddingBottom:mob?60:100,paddingLeft:mob?20:60,paddingRight:mob?20:60}}>
-        <div style={{maxWidth:800,margin:"0 auto"}}>
-          <h2 style={{...sf(mob?32:48,700),color:C.s1,marginBottom:12,textAlign:"center"}}>
-            Frequently Asked Questions
-          </h2>
-          <p style={{...sf(mob?14:16),color:C.s5,textAlign:"center",marginBottom:60}}>
-            Everything you need to know about Alfred in {city.name}
-          </p>
-          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+      {/* FAQ Section — branded */}
+      <section style={{
+        background: BT.bg, borderTop:`0.5px solid ${BT.border2}`,
+        padding: mob ? "60px 22px" : "100px 56px"
+      }}>
+        <div style={{maxWidth:880,margin:"0 auto"}}>
+          <BSectionHeader
+            kicker="Frequently asked"
+            title={<>Questions about Alfred in <BSilverText style={{fontStyle:"italic"}}>{city.name}</BSilverText></>}
+          />
+          <div style={{marginTop:8}}>
             {city.faqs.map(function(faq,i){
-              var open=expandedFaq===i;
-              return(
-                <div key={i} style={{borderRadius:12,border:"1px solid "+C.bd,overflow:"hidden",transition:"all 0.3s"}}>
-                  <div onClick={function(){setExpandedFaq(open?null:i)}} style={{padding:mob?16:20,background:C.el,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12}} onMouseEnter={function(e){e.currentTarget.style.background=C.srf}} onMouseLeave={function(e){e.currentTarget.style.background=C.el}}>
-                    <h3 style={{...sf(15,600),color:C.s1,flex:1,textAlign:"left"}}>{faq.q}</h3>
-                    <div style={{...sf(18),color:C.s5,flexShrink:0,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform 0.3s"}}>⌄</div>
-                  </div>
-                  {open&&<div style={{padding:mob?16:20,paddingTop:0,background:C.srf,borderTop:"1px solid "+C.bd}}>
-                    <p style={{...sf(14),color:C.s4,lineHeight:1.7}}>{faq.a}</p>
-                  </div>}
-                </div>
-              );
+              return <details key={i} style={{borderBottom:`0.5px solid ${BT.border2}`, padding: mob ? "20px 0" : "24px 0"}}>
+                <summary style={{
+                  ...bType.cardSerif(mob ? 17 : 19),
+                  color:BT.text, cursor:"pointer", listStyle:"none",
+                  display:"flex", justifyContent:"space-between", alignItems:"center", gap:16
+                }}>
+                  <span>{faq.q}</span>
+                  <span aria-hidden style={{...bType.kicker(), color:BT.silverDim, flexShrink:0}}>+</span>
+                </summary>
+                <p style={{...bType.bodyLg(), color:BT.textMid, marginTop:14, maxWidth:680}}>{faq.a}</p>
+              </details>;
             })}
           </div>
         </div>
@@ -380,6 +391,22 @@ export default function CityPage(){
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+ * CityAboutCard — single deep-dive section card matching the iOS brand.
+ * Scroll-revealed glass card with serif title + sans body.
+ * ──────────────────────────────────────────────────────────────────── */
+function CityAboutCard({sec, mob}){
+  var r = bUseReveal(0.05);
+  return (
+    <div ref={r.ref} style={{...bRevealStyle(r.visible)}}>
+      <BGlassCard style={{padding: mob ? "28px 24px" : "36px 36px"}}>
+        <h3 style={{...bType.cardSerif(mob ? 19 : 22), color:BT.text, marginBottom:14, letterSpacing:-0.4}}>{sec.title}</h3>
+        <p style={{...bType.body(), color:BT.textMid}}>{sec.body}</p>
+      </BGlassCard>
     </div>
   );
 }

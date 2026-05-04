@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SEOHead from "../components/SEOHead";
+import { T as BT, type as bType } from "../lib/brand";
+import { GlassCard as BGlassCard, useReveal as bUseReveal, revealStyle as bRevealStyle, SilverText as BSilverText } from "../components/brand";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -384,34 +386,31 @@ export default function EventDetailPage(){
 
         <div style={{marginBottom:36}}>{divider}</div>
 
-        {/* Deep-dive about sections */}
+        {/* Deep-dive about sections — branded */}
         {V.aboutSections&&V.aboutSections.length>0&&<>
           <div style={{paddingBottom:36}}>
-            <p style={{...sf(10,600),color:C.s6,letterSpacing:2.5,textTransform:"uppercase",marginBottom:18}}>The Detail</p>
-            <div style={{display:"flex",flexDirection:"column",gap:24,maxWidth:820}}>
+            <p style={{...bType.kicker(),color:BT.silverDim,marginBottom:24}}>The Detail</p>
+            <div style={{display:"grid",gridTemplateColumns: mob ? "1fr" : "1fr 1fr",gap: mob ? 14 : 18}}>
               {V.aboutSections.map(function(sec,i){
-                return <div key={i}>
-                  <h3 style={{...sf(mob?17:19,600),color:C.s1,marginBottom:10,letterSpacing:-0.3}}>{sec.title}</h3>
-                  <p style={{...sf(mob?14:15,400),color:C.s3,lineHeight:1.8}}>{sec.body}</p>
-                </div>;
+                return <EventAboutCard key={i} sec={sec} mob={mob}/>;
               })}
             </div>
           </div>
           <div style={{marginBottom:36}}>{divider}</div>
         </>}
 
-        {/* FAQ */}
+        {/* FAQ — branded */}
         {V.faq&&V.faq.length>0&&<>
           <div style={{paddingBottom:36}}>
-            <p style={{...sf(10,600),color:C.s6,letterSpacing:2.5,textTransform:"uppercase",marginBottom:18}}>Frequently Asked</p>
+            <p style={{...bType.kicker(),color:BT.silverDim,marginBottom:24}}>Frequently asked</p>
             <div style={{maxWidth:820}}>
               {V.faq.map(function(item,i){
-                return <details key={i} style={{borderBottom:"1px solid "+C.bd,padding:"20px 0"}}>
-                  <summary style={{...sf(mob?14:15,500),color:C.s1,cursor:"pointer",listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16}}>
+                return <details key={i} style={{borderBottom:`0.5px solid ${BT.border2}`,padding:"22px 0"}}>
+                  <summary style={{...bType.cardSerif(mob ? 17 : 19),color:BT.text,cursor:"pointer",listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16}}>
                     <span>{item.q}</span>
-                    <span style={{...sf(20,300),color:C.s5,flexShrink:0}}>+</span>
+                    <span style={{...bType.kicker(),color:BT.silverDim,flexShrink:0}}>+</span>
                   </summary>
-                  <p style={{...sf(mob?13:14,400),color:C.s4,lineHeight:1.7,marginTop:12}}>{item.a}</p>
+                  <p style={{...bType.bodyLg(),color:BT.textMid,marginTop:14}}>{item.a}</p>
                 </details>;
               })}
             </div>
@@ -444,6 +443,22 @@ export default function EventDetailPage(){
         </div>
       </div>}
       {mob&&<div style={{height:80}}/>}
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+ * EventAboutCard — single deep-dive section card matching the iOS brand.
+ * Glass card with serif title, sans body, scroll-revealed.
+ * ──────────────────────────────────────────────────────────────────── */
+function EventAboutCard({sec, mob}){
+  var r = bUseReveal(0.05);
+  return (
+    <div ref={r.ref} style={{...bRevealStyle(r.visible)}}>
+      <BGlassCard style={{padding: mob ? "26px 22px" : "32px 30px"}}>
+        <h3 style={{...bType.cardSerif(mob ? 18 : 21),color:BT.text,marginBottom:12,letterSpacing:-0.4}}>{sec.title}</h3>
+        <p style={{...bType.body(),color:BT.textMid}}>{sec.body}</p>
+      </BGlassCard>
     </div>
   );
 }
