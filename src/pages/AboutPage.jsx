@@ -1,13 +1,31 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import SEOHead from "../components/SEOHead";
+import { T, type } from "../lib/brand";
+import {
+  Hero, BrandNav, SilverText, SectionHeader, PrimaryCTA, GhostCTA,
+  GlassCard, Eyebrow, Divider, useReveal, revealStyle, useMobile
+} from "../components/brand";
 
-var sf = function(size, weight){
-  return {fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
-};
-var C = {bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gold:"#FFD60A"};
+var T_ = T;
 
-function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
+var DIFFERENTIATORS = [
+  {
+    title: "Real humans, not chatbots",
+    body: "Every booking is verified by a human concierge before it goes out. Centurion members get a single named agent who handles every request, twenty-four hours a day, on WhatsApp."
+  },
+  {
+    title: "Direct relationships at every venue",
+    body: "We do not work through third-party APIs for our top venues. Our concierges have direct lines to managers at LIV, E11even, Zuma, Cipriani, Casa Tua, Raspoutine, Castel, and the rest of our partner roster."
+  },
+  {
+    title: "Member benefits that move the needle",
+    body: "Reduced minimum spends, waived advance payments, VIP flags in venue systems, priority placement and complimentary upgrades — concrete benefits negotiated on behalf of members, not vague perks."
+  },
+  {
+    title: "One app, four cities, one team",
+    body: "Miami, Paris, Dubai and London under a single membership. No regional sub-services, no separate apps, no handoffs between teams when you cross a border."
+  }
+];
 
 var JSONLD = {
   "@context":"https://schema.org",
@@ -36,13 +54,30 @@ var JSONLD = {
   }
 };
 
-export default function AboutPage(){
-  var navigate = useNavigate();
+function ProseSection({kicker, title, paragraphs, mobile}){
+  var r = useReveal();
+  return (
+    <section ref={r.ref} style={{
+      padding: mobile ? "60px 22px" : "100px 56px",
+      maxWidth: 880, margin: "0 auto",
+      ...revealStyle(r.visible)
+    }}>
+      <SectionHeader kicker={kicker} title={title}/>
+      <div style={{display:"flex", flexDirection:"column", gap:22}}>
+        {paragraphs.map(function(p, i){
+          return <p key={i} style={{...type.bodyLg(), color:T_.textMid}} dangerouslySetInnerHTML={{__html:p}}/>;
+        })}
+      </div>
+    </section>
+  );
+}
 
+export default function AboutPage(){
+  var mobile = useMobile();
   useEffect(function(){ window.scrollTo(0,0); }, []);
 
   return (
-    <div style={{background:C.bg, minHeight:"100vh", color:C.s1}}>
+    <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
         title="About Alfred — The Luxury Concierge App for Miami, Paris, Dubai & London"
         description="Learn about Alfred Concierge: real human concierges, an AI assistant, and member-only access to Michelin restaurants, VIP nightlife, jets, yachts and exotic cars across Miami, Paris, Dubai and London."
@@ -52,83 +87,145 @@ export default function AboutPage(){
         jsonLd={JSONLD}
       />
 
-      {/* Nav */}
-      <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(10,10,11,0.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid "+C.bd,padding:"0 40px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div onClick={function(){navigate("/")}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
-          <Mark size={20} color={C.s1}/>
-          <span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span>
+      <BrandNav mobile={mobile} links={[
+        {label:"About", href:"/about", active:true},
+        {label:"How it Works", href:"/how-it-works"},
+        {label:"Pricing", href:"/pricing"},
+        {label:"Contact", href:"/contact"}
+      ]}/>
+
+      <Hero mobile={mobile} height={mobile ? 480 : 620}>
+        <div style={{
+          height:"100%", display:"flex", flexDirection:"column", justifyContent:"flex-end",
+          padding: mobile ? "0 22px 56px" : "0 56px 80px", maxWidth:1200, margin:"0 auto"
+        }}>
+          <Eyebrow dot accent={T_.warm}>About</Eyebrow>
+          <h1 style={{
+            ...(mobile ? type.heroSerifMobile() : type.heroSerif()),
+            color:T_.text, marginTop:18, maxWidth:980
+          }}>
+            The luxury concierge for people who value their{" "}
+            <SilverText style={{fontStyle:"italic"}}>time</SilverText>{" "}above everything else.
+          </h1>
+          <p style={{
+            ...type.bodyLg(), color:T_.textMid, marginTop:18, maxWidth:580
+          }}>
+            One app. One concierge team. Every door open across Miami, Paris, Dubai and London.
+          </p>
         </div>
-        <div style={{display:"flex",gap:24,alignItems:"center"}}>
-          <a href="/how-it-works" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>How it Works</a>
-          <a href="/pricing" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>Pricing</a>
-          <a href="/contact" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>Contact</a>
-        </div>
-      </nav>
+      </Hero>
 
-      <article style={{maxWidth:780,margin:"0 auto",padding:"80px 40px 120px"}}>
-        <header style={{marginBottom:56}}>
-          <p style={{...sf(11,600),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:16}}>About</p>
-          <h1 style={{...sf(56,700),letterSpacing:-2,lineHeight:1.05,marginBottom:24,color:C.s1}}>The luxury concierge for people who value their time above everything else.</h1>
-          <p style={{...sf(20,400),color:C.s4,lineHeight:1.55}}>Alfred is a private concierge built for the modern luxury client — one app, one chat, one team handling every detail across Miami, Paris, Dubai and London.</p>
-        </header>
+      <ProseSection
+        mobile={mobile}
+        kicker="Why Alfred exists"
+        title="Two systems that didn't quite work — and one that does"
+        paragraphs={[
+          "The traditional luxury concierge industry runs on phone calls, email chains, fax confirmations and a thousand favours owed across hotel front desks, restaurant managers and event promoters. It works — but it is slow, opaque, and built for a different generation. The newer apps that tried to fix this went the other way: chatbots, generic recommendations, no real relationships, no accountability when things go wrong at 11pm on a Saturday in South Beach.",
+          "Alfred sits between the two. We built an app that puts the catalogue, the bookings and the receipts in your pocket — and behind that app sits a real concierge team with real relationships at the venues that matter. Every Michelin restaurant we book has a manager who picks up our call. Every nightclub has a host who walks our members in. Every yacht broker, jet operator and supercar fleet on our platform is one we have used personally.",
+          "That combination — modern interface, traditional relationships — is the entire premise of Alfred."
+        ]}
+      />
 
-        <section style={{marginBottom:48}}>
-          <h2 style={{...sf(28,600),color:C.s1,marginBottom:18,letterSpacing:-0.5}}>Why Alfred exists</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>The traditional luxury concierge industry runs on phone calls, email chains, fax confirmations and a thousand favours owed across hotel front desks, restaurant managers and event promoters. It works — but it is slow, opaque, and built for a different generation. The newer apps that tried to fix this went the other way: chatbots, generic recommendations, no real relationships, no accountability when things go wrong at 11pm on a Saturday in South Beach.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Alfred sits between the two. We built an app that puts the catalogue, the bookings and the receipts in your pocket — and behind that app sits a real concierge team with real relationships at the venues that matter. Every Michelin restaurant we book has a manager who picks up our call. Every nightclub has a host who walks our members in. Every yacht broker, jet operator and supercar fleet on our platform is one we have used personally.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>That combination — modern interface, traditional relationships — is the entire premise of Alfred.</p>
-        </section>
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
 
-        <section style={{marginBottom:48}}>
-          <h2 style={{...sf(28,600),color:C.s1,marginBottom:18,letterSpacing:-0.5}}>What we do</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Alfred members get instant access to seven categories of curated luxury experience: Michelin and impossible-reservation dining, VIP tables and bottle service at the world's top nightclubs, exotic and luxury car rentals delivered to the door, private jet charters with empty-leg deals, day yachts and superyachts with full crew, wellness and spa bookings at the best venues in each city, and luxury hotel reservations with member benefits across our partner network.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>We also handle the things that don't fit a category — last-minute private chefs, courtside seats, helicopter transfers, jewellery stylists, surprise proposals on the Eiffel Tower at 9pm. If it can be arranged in one of our cities, Alfred has a person who can arrange it.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>Tickets and hospitality for the world's marquee events — Monaco Grand Prix, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening — are sold directly through the app each season.</p>
-        </section>
+      <ProseSection
+        mobile={mobile}
+        kicker="What we do"
+        title="Seven categories of curated luxury, one chat thread"
+        paragraphs={[
+          "Alfred members get instant access to seven categories of curated luxury experience: Michelin and impossible-reservation dining, VIP tables and bottle service at the world's top nightclubs, exotic and luxury car rentals delivered to the door, private jet charters with empty-leg deals, day yachts and superyachts with full crew, wellness and spa bookings at the best venues in each city, and luxury hotel reservations with member benefits across our partner network.",
+          "We also handle the things that don't fit a category — last-minute private chefs, courtside seats, helicopter transfers, jewellery stylists, surprise proposals on the Eiffel Tower at 9pm. If it can be arranged in one of our cities, Alfred has a person who can arrange it.",
+          "Tickets and hospitality for the world's marquee events — Monaco Grand Prix, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening — are sold directly through the app each season."
+        ]}
+      />
 
-        <section style={{marginBottom:48}}>
-          <h2 style={{...sf(28,600),color:C.s1,marginBottom:18,letterSpacing:-0.5}}>How we are different</h2>
-          <div style={{display:"grid",gridTemplateColumns:"1fr",gap:24}}>
-            <div style={{padding:"24px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd}}>
-              <h3 style={{...sf(16,600),color:C.s1,marginBottom:8}}>Real humans, not chatbots</h3>
-              <p style={{...sf(14,400),color:C.s4,lineHeight:1.65}}>Every booking is verified by a human concierge before it goes out. Centurion members get a single named agent who handles every request, 24/7, on WhatsApp.</p>
-            </div>
-            <div style={{padding:"24px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd}}>
-              <h3 style={{...sf(16,600),color:C.s1,marginBottom:8}}>Direct relationships at every venue</h3>
-              <p style={{...sf(14,400),color:C.s4,lineHeight:1.65}}>We do not work through third-party APIs for our top venues. Our concierges have direct lines to managers at LIV, E11even, Zuma, Cipriani, Casa Tua, Raspoutine, Castel and the rest of our partner roster.</p>
-            </div>
-            <div style={{padding:"24px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd}}>
-              <h3 style={{...sf(16,600),color:C.s1,marginBottom:8}}>Member benefits that actually move the needle</h3>
-              <p style={{...sf(14,400),color:C.s4,lineHeight:1.65}}>Reduced minimum spends, waived advance payments, VIP flags in venue systems, priority placement and complimentary upgrades — concrete benefits negotiated on behalf of members, not vague "perks."</p>
-            </div>
-            <div style={{padding:"24px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd}}>
-              <h3 style={{...sf(16,600),color:C.s1,marginBottom:8}}>One app, four cities, one team</h3>
-              <p style={{...sf(14,400),color:C.s4,lineHeight:1.65}}>Miami, Paris, Dubai and London under a single membership. No regional sub-services, no separate apps, no handoffs between teams when you cross a border.</p>
-            </div>
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
+
+      {/* Differentiator grid */}
+      <DifferentiatorSection mobile={mobile}/>
+
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
+
+      <ProseSection
+        mobile={mobile}
+        kicker="Where we operate"
+        title="Four cities. One team. Same app."
+        paragraphs={[
+          "Alfred operates a curated catalogue across four cities. Miami is the home market, with the deepest catalogue across dining, nightlife, yacht charters out of Miami Beach and Biscayne Bay, and exotic car rentals delivered anywhere from South Beach to Star Island. Paris covers Michelin and bistronomy reservations, the top nightclubs of the 8th and 1st arrondissements, hotel partnerships from the Costes group through to the Bristol, and the spa and beauty venues that define Parisian wellness. Dubai handles the supercar fleet, beach club access, helicopter transfers and the increasingly important off-season hospitality calendar. London covers private members' clubs, fine dining across Mayfair and Notting Hill, Royal Ascot hospitality and the city's best wellness and spa venues.",
+          "Members travelling between cities use the same app, the same concierge team and the same membership tier. There is no <span style=\"color:" + T_.text + "\">Alfred Paris</span> or <span style=\"color:" + T_.text + "\">Alfred Dubai</span> — there is just Alfred."
+        ]}
+      />
+
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
+
+      <ProseSection
+        mobile={mobile}
+        kicker="Membership and trust"
+        title="Three tiers, end-to-end encryption, no advertising"
+        paragraphs={[
+          "Alfred operates three membership tiers — <span style=\"color:" + T_.text + "\">Gold</span>, <span style=\"color:" + T_.text + "\">Platinum</span> and <span style=\"color:" + T_.text + "\">Centurion</span> — designed to match the way our members actually live. Gold gives full app access for $9.99 per month and is the right tier for someone who wants the catalogue, the AI concierge and access to the booking integrations. Platinum at $99 per month adds direct human concierge support, VIP venue placement, reduced minimum spends and the operational benefits that real luxury concierge work depends on. Centurion is invite-only and assigns a single named agent to handle every aspect of a member's life — from airport coordination to private event curation.",
+          "All plans are protected by end-to-end encryption, contain no advertising, and can be cancelled at any time. Members own their data; Alfred does not sell it, share it with venues without explicit consent, or use it to retarget for advertising."
+        ]}
+      />
+
+      {/* Final CTA */}
+      <section style={{
+        padding: mobile ? "40px 22px 100px" : "80px 56px 140px",
+        maxWidth:1200, margin:"0 auto"
+      }}>
+        <GlassCard featured sheen padded={false} style={{
+          padding: mobile ? "40px 28px" : "64px 56px",
+          textAlign:"center"
+        }}>
+          <Eyebrow color={T_.silver}>Ready to start</Eyebrow>
+          <h2 style={{
+            ...type.sectionSerif(), fontSize: mobile ? 28 : 34,
+            color:T_.text, marginTop:14, marginBottom:14, lineHeight:1.15
+          }}>
+            The fastest way to understand Alfred is{" "}
+            <SilverText style={{fontStyle:"italic"}}>to use it.</SilverText>
+          </h2>
+          <p style={{
+            ...type.bodyLg(), color:T_.textMid, maxWidth:560, margin:"0 auto 28px"
+          }}>
+            Browse the catalogue, see how it works, or compare membership tiers.
+          </p>
+          <div style={{display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap"}}>
+            <PrimaryCTA href="/pricing">Compare memberships</PrimaryCTA>
+            <GhostCTA href="/contact">Talk to Alfred</GhostCTA>
           </div>
-        </section>
-
-        <section style={{marginBottom:48}}>
-          <h2 style={{...sf(28,600),color:C.s1,marginBottom:18,letterSpacing:-0.5}}>Where we operate</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Alfred operates a curated catalogue across four cities. Miami is the home market, with the deepest catalogue across dining, nightlife, yacht charters out of Miami Beach and Biscayne Bay, and exotic car rentals delivered anywhere from South Beach to Star Island. Paris covers Michelin and bistronomy reservations, the top nightclubs of the 8th and 1st arrondissements, hotel partnerships from the Costes group through to the Bristol, and the spa and beauty venues that define Parisian wellness. Dubai handles the supercar fleet, beach club access, helicopter transfers and the increasingly important off-season hospitality calendar. London covers private members' clubs, fine dining across Mayfair and Notting Hill, Royal Ascot hospitality and the city's best wellness and spa venues.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>Members travelling between cities use the same app, the same concierge team and the same membership tier. There is no "Alfred Paris" or "Alfred Dubai" — there is just Alfred.</p>
-        </section>
-
-        <section style={{marginBottom:48}}>
-          <h2 style={{...sf(28,600),color:C.s1,marginBottom:18,letterSpacing:-0.5}}>Membership and trust</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Alfred operates three membership tiers — Gold, Platinum and Centurion — designed to match the way our members actually live. Gold gives full app access for $9.99 per month and is the right tier for someone who wants the catalogue, the AI concierge and access to the booking integrations. Platinum at $99 per month adds direct human concierge support, VIP venue placement, reduced minimum spends and the operational benefits that real luxury concierge work depends on. Centurion is invite-only and assigns a single named agent to handle every aspect of a member's life — from airport coordination to private event curation.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>All plans are protected by end-to-end encryption, contain no advertising, and can be cancelled at any time. Members own their data; Alfred does not sell it, share it with venues without explicit consent, or use it to retarget for advertising.</p>
-        </section>
-
-        <section style={{marginBottom:24}}>
-          <h2 style={{...sf(28,600),color:C.s1,marginBottom:18,letterSpacing:-0.5}}>Ready to start</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:24}}>The fastest way to understand Alfred is to use it. Browse the <a href="/catalog" style={{color:C.s1,textDecoration:"underline"}}>catalogue</a>, see how <a href="/how-it-works" style={{color:C.s1,textDecoration:"underline"}}>it works</a>, or compare <a href="/pricing" style={{color:C.s1,textDecoration:"underline"}}>membership tiers</a>. For event hospitality and direct enquiries, the <a href="/contact" style={{color:C.s1,textDecoration:"underline"}}>contact page</a> has the fastest channels into the team.</p>
-          <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-            <a href="/pricing" style={{display:"inline-flex",alignItems:"center",padding:"14px 22px",borderRadius:12,background:C.s1,color:C.bg,...sf(14,600),textDecoration:"none"}}>Compare memberships</a>
-            <a href="/contact" style={{display:"inline-flex",alignItems:"center",padding:"14px 22px",borderRadius:12,border:"1px solid "+C.bd,color:C.s1,...sf(14,600),textDecoration:"none"}}>Talk to Alfred</a>
-          </div>
-        </section>
-      </article>
+        </GlassCard>
+      </section>
     </div>
+  );
+}
+
+function DifferentiatorSection({mobile}){
+  var r = useReveal();
+  return (
+    <section ref={r.ref} style={{
+      padding: mobile ? "60px 22px" : "100px 56px",
+      maxWidth:1100, margin:"0 auto",
+      ...revealStyle(r.visible)
+    }}>
+      <SectionHeader
+        kicker="How we are different"
+        title="The four things that change the experience"
+        align="center"
+      />
+      <div style={{
+        display:"grid",
+        gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
+        gap: mobile ? 14 : 18
+      }}>
+        {DIFFERENTIATORS.map(function(d, i){
+          return <GlassCard key={i} style={{padding: mobile ? "28px 24px" : "36px 32px"}}>
+            <Eyebrow color={T_.silverDim}>{("0" + (i+1)).slice(-2)}</Eyebrow>
+            <h3 style={{...type.cardSerif(22), color:T_.text, margin:"12px 0 12px"}}>{d.title}</h3>
+            <p style={{...type.body(), color:T_.textMid}}>{d.body}</p>
+          </GlassCard>;
+        })}
+      </div>
+    </section>
   );
 }

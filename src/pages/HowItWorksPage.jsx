@@ -1,18 +1,17 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import SEOHead from "../components/SEOHead";
+import { T, type } from "../lib/brand";
+import {
+  Hero, BrandNav, SilverText, SectionHeader, PrimaryCTA, GhostCTA,
+  GlassCard, Eyebrow, Divider, useReveal, revealStyle, useMobile
+} from "../components/brand";
 
-var sf = function(size, weight){
-  return {fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
-};
-var C = {bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gold:"#FFD60A"};
-
-function Mark(p){var sw=Math.max(p.size*0.06,1.5);return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><line x1="20" y1="80" x2="40" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="80" y1="80" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="40" y1="18" x2="60" y2="18" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/><line x1="32" y1="56" x2="68" y2="56" stroke={p.color||C.s1} strokeWidth={sw} strokeLinecap="round"/></svg>)}
+var T_ = T;
 
 var STEPS = [
   {n:"01", title:"Download Alfred and choose your tier", body:"Install Alfred from the App Store or Google Play, pick a membership tier — Gold, Platinum or Centurion — and complete a one-time onboarding (preferences, dietary, your usual cities, dress sizes for stylist work, partner names, allergies). The full catalogue unlocks immediately."},
   {n:"02", title:"Browse or ask", body:"Open the catalogue to browse 200+ Michelin restaurants, the top nightclubs in each city, the supercar fleet, the yacht lineup, the jet partners and the spa list. Or just open the chat and ask: \"book me a table for four at Carbone Miami Friday at 8.\" Both work."},
-  {n:"03", title:"A real concierge confirms", body:"Every request is verified by a human concierge before it is booked. For partner venues we hold inventory; for everything else we work the back channels — manager calls, host relationships, restaurant management software direct lines. You get a confirmation when it is real, not a 'submitting…' spinner."},
+  {n:"03", title:"A real concierge confirms", body:"Every request is verified by a human concierge before it is booked. For partner venues we hold inventory; for everything else we work the back channels — manager calls, host relationships, restaurant management software direct lines. You get a confirmation when it is real, not a 'submitting...' spinner."},
   {n:"04", title:"Show up", body:"Walk in. The host knows your name, the manager knows your tier, the table is set. For Platinum and Centurion members, valet is waived, the 15-minute grace period is removed, and the VIP flag is on your reservation across the venue's system."},
   {n:"05", title:"Alfred handles the rest", body:"Need a car back to your hotel at 2am? Want to extend the yacht charter for another two hours? Lost your wallet? Alfred is on WhatsApp. Centurion members have a single dedicated agent for every request, every time, no rotation."}
 ];
@@ -54,12 +53,51 @@ var JSONLD = [
   }
 ];
 
+function StepCard({step, mobile}){
+  var r = useReveal(0.05);
+  return (
+    <div ref={r.ref} style={{...revealStyle(r.visible)}}>
+      <div style={{
+        display:"grid", gridTemplateColumns: mobile ? "auto 1fr" : "120px 1fr",
+        gap: mobile ? 18 : 32,
+        padding: mobile ? "32px 0" : "44px 0",
+        borderBottom: `0.5px solid ${T_.border}`
+      }}>
+        <div style={{
+          ...type.italicSerif(mobile ? 36 : 56), color:T_.silverDim,
+          letterSpacing:-1
+        }}>{step.n}</div>
+        <div>
+          <h3 style={{...type.cardSerif(mobile ? 22 : 26), color:T_.text, marginBottom:14, letterSpacing:-0.4}}>{step.title}</h3>
+          <p style={{...type.bodyLg(), color:T_.textMid, maxWidth:680}}>{step.body}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FaqItem({q, a, mobile}){
+  return (
+    <details style={{borderBottom:`0.5px solid ${T_.border2}`, padding: mobile ? "20px 0" : "24px 0"}}>
+      <summary style={{
+        ...type.cardSerif(mobile ? 17 : 19),
+        color:T_.text, cursor:"pointer", listStyle:"none",
+        display:"flex", justifyContent:"space-between", alignItems:"center", gap:16
+      }}>
+        <span>{q}</span>
+        <span aria-hidden style={{...type.kicker(), color:T_.silverDim, flexShrink:0}}>+</span>
+      </summary>
+      <p style={{...type.bodyLg(), color:T_.textMid, marginTop:14, maxWidth:680}}>{a}</p>
+    </details>
+  );
+}
+
 export default function HowItWorksPage(){
-  var navigate = useNavigate();
+  var mobile = useMobile();
   useEffect(function(){ window.scrollTo(0,0); }, []);
 
   return (
-    <div style={{background:C.bg, minHeight:"100vh", color:C.s1}}>
+    <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
         title="How Alfred Works — From Download to First Booking | Alfred Concierge"
         description="See exactly how Alfred Concierge works: download the app, choose a tier, browse 200+ venues or ask for what you need, get a real human concierge to handle it. Booking confirmations in under 15 minutes."
@@ -69,74 +107,123 @@ export default function HowItWorksPage(){
         jsonLd={JSONLD}
       />
 
-      <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(10,10,11,0.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid "+C.bd,padding:"0 40px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div onClick={function(){navigate("/")}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
-          <Mark size={20} color={C.s1}/>
-          <span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span>
+      <BrandNav mobile={mobile} links={[
+        {label:"About", href:"/about"},
+        {label:"How it Works", href:"/how-it-works", active:true},
+        {label:"Pricing", href:"/pricing"},
+        {label:"Contact", href:"/contact"}
+      ]}/>
+
+      <Hero mobile={mobile} height={mobile ? 480 : 620}>
+        <div style={{
+          height:"100%", display:"flex", flexDirection:"column", justifyContent:"flex-end",
+          padding: mobile ? "0 22px 56px" : "0 56px 80px", maxWidth:1200, margin:"0 auto"
+        }}>
+          <Eyebrow dot accent={T_.warm}>How it Works</Eyebrow>
+          <h1 style={{
+            ...(mobile ? type.heroSerifMobile() : type.heroSerif()),
+            color:T_.text, marginTop:18, maxWidth:980
+          }}>
+            One app. One concierge team.{" "}
+            <SilverText style={{fontStyle:"italic"}}>Every door open.</SilverText>
+          </h1>
+          <p style={{...type.bodyLg(), color:T_.textMid, marginTop:18, maxWidth:580}}>
+            Five steps from downloading Alfred to walking into the table that "wasn't available" thirty minutes ago.
+          </p>
         </div>
-        <div style={{display:"flex",gap:24,alignItems:"center"}}>
-          <a href="/about" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>About</a>
-          <a href="/pricing" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>Pricing</a>
-          <a href="/contact" style={{...sf(13,400),color:C.s5,textDecoration:"none"}}>Contact</a>
+      </Hero>
+
+      {/* Steps */}
+      <section style={{
+        padding: mobile ? "40px 22px 60px" : "80px 56px 100px",
+        maxWidth:980, margin:"0 auto"
+      }}>
+        {STEPS.map(function(s){ return <StepCard key={s.n} step={s} mobile={mobile}/>; })}
+      </section>
+
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
+
+      {/* Two layers section */}
+      <ProseSection
+        mobile={mobile}
+        kicker="The two layers"
+        title="App layer and human layer, working as one"
+        paragraphs={[
+          "Alfred runs on two stacks at once. The app layer holds the catalogue, the AI concierge that triages every request, the integrations with restaurant management systems (Resy, OpenTable, SevenRooms, Tock), the payment rails and the receipts. The human layer is the concierge team itself — operators in Miami, Paris, Dubai and London with direct phone numbers for the venue managers, hosts and operators that decide whether a member walks straight in or waits at the desk.",
+          "The app handles speed and inventory. The humans handle judgement, recovery and the impossible-reservation cases that no API will solve. When you ask Alfred for a 9pm Friday table at Carbone in Miami Beach the week of F1, you do not need an algorithm — you need someone who knows the manager.",
+          "This is why every Alfred booking has a name attached on our side, even at the Gold tier. If something goes wrong, there is a human to escalate to — not a support ticket queue."
+        ]}
+      />
+
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
+
+      <ProseSection
+        mobile={mobile}
+        kicker="Real concierge"
+        title="What real human concierge actually means"
+        paragraphs={[
+          "<span style=\"color:" + T_.text + "\">Concierge</span> is a word that has been diluted by every neobank, credit card and lifestyle app that bolts on a chat window. At Alfred we use it in the original sense: a human who knows the city, has personal relationships at the venues, and gets paid to make problems disappear. Our concierge team has worked the front desks at Le Bristol Paris, the management offices at LIV Miami, the booking desks of major superyacht charter brokers, the dispatch teams of the world's top private jet operators, and the host stands of Michelin-starred kitchens.",
+          "That background is the difference between a <span style=\"color:" + T_.text + "\">request submitted</span> notification and a Friday-night table at a venue that closed its book three weeks ago."
+        ]}
+      />
+
+      <Divider margin={mobile ? "0 22px" : "0 56px"}/>
+
+      {/* FAQ */}
+      <section style={{
+        padding: mobile ? "60px 22px 80px" : "100px 56px 120px",
+        maxWidth:880, margin:"0 auto"
+      }}>
+        <SectionHeader kicker="FAQ" title="Questions before you sign up"/>
+        <div>
+          {FAQ.map(function(f, i){ return <FaqItem key={i} q={f.q} a={f.a} mobile={mobile}/>; })}
         </div>
-      </nav>
+      </section>
 
-      <article style={{maxWidth:780,margin:"0 auto",padding:"80px 40px 120px"}}>
-        <header style={{marginBottom:64}}>
-          <p style={{...sf(11,600),color:C.s7,letterSpacing:4,textTransform:"uppercase",marginBottom:16}}>How it Works</p>
-          <h1 style={{...sf(56,700),letterSpacing:-2,lineHeight:1.05,marginBottom:24,color:C.s1}}>One app. One concierge team. Every door open.</h1>
-          <p style={{...sf(20,400),color:C.s4,lineHeight:1.55}}>Five steps from downloading Alfred to walking into the table that "wasn't available" 30 minutes ago.</p>
-        </header>
-
-        <section style={{marginBottom:72}}>
-          {STEPS.map(function(s){
-            return <div key={s.n} style={{display:"grid",gridTemplateColumns:"60px 1fr",gap:24,marginBottom:40,paddingBottom:40,borderBottom:"1px solid "+C.bd}}>
-              <div style={{...sf(28,300),color:C.s7,letterSpacing:-1}}>{s.n}</div>
-              <div>
-                <h3 style={{...sf(20,600),color:C.s1,marginBottom:10,letterSpacing:-0.3}}>{s.title}</h3>
-                <p style={{...sf(15,400),color:C.s4,lineHeight:1.7}}>{s.body}</p>
-              </div>
-            </div>;
-          })}
-        </section>
-
-        <section style={{marginBottom:72}}>
-          <h2 style={{...sf(32,600),color:C.s1,marginBottom:24,letterSpacing:-0.7}}>The two layers behind every booking</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>Alfred runs on two stacks at once. The app layer holds the catalogue, the AI concierge that triages every request, the integrations with restaurant management systems (Resy, OpenTable, SevenRooms, Tock), the payment rails and the receipts. The human layer is the concierge team itself — operators in Miami, Paris, Dubai and London with direct phone numbers for the venue managers, hosts and operators that decide whether a member walks straight in or waits at the desk.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>The app handles speed and inventory. The humans handle judgement, recovery and the impossible-reservation cases that no API will solve. When you ask Alfred for a 9pm Friday table at Carbone in Miami Beach the week of F1, you do not need an algorithm — you need someone who knows the manager.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>This is why every Alfred booking has a name attached on our side, even at the Gold tier. If something goes wrong, there is a human to escalate to — not a support ticket queue.</p>
-        </section>
-
-        <section style={{marginBottom:72}}>
-          <h2 style={{...sf(32,600),color:C.s1,marginBottom:24,letterSpacing:-0.7}}>What real human concierge actually means</h2>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75,marginBottom:18}}>"Concierge" is a word that has been diluted by every neobank, credit card and lifestyle app that bolts on a chat window. At Alfred we use it in the original sense: a human who knows the city, has personal relationships at the venues, and gets paid to make problems disappear. Our concierge team has worked the front desks at Le Bristol Paris, the management offices at LIV Miami, the booking desks of major superyacht charter brokers, the dispatch teams of the world's top private jet operators, and the host stands of Michelin-starred kitchens.</p>
-          <p style={{...sf(16,400),color:C.s3,lineHeight:1.75}}>That background is the difference between a "request submitted" notification and a Friday-night table at a venue that closed its book three weeks ago.</p>
-        </section>
-
-        <section style={{marginBottom:48}}>
-          <h2 style={{...sf(32,600),color:C.s1,marginBottom:32,letterSpacing:-0.7}}>FAQ</h2>
-          {FAQ.map(function(f,i){
-            return <details key={i} style={{borderBottom:"1px solid "+C.bd,padding:"22px 0"}}>
-              <summary style={{...sf(16,500),color:C.s1,cursor:"pointer",listStyle:"none",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <span>{f.q}</span>
-                <span style={{...sf(20,300),color:C.s5}}>+</span>
-              </summary>
-              <p style={{...sf(15,400),color:C.s4,lineHeight:1.7,marginTop:14}}>{f.a}</p>
-            </details>;
-          })}
-        </section>
-
-        <section>
-          <div style={{padding:"36px 32px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,textAlign:"center"}}>
-            <h3 style={{...sf(24,600),color:C.s1,marginBottom:12,letterSpacing:-0.3}}>Ready to see it in action?</h3>
-            <p style={{...sf(15,400),color:C.s4,lineHeight:1.6,marginBottom:24,maxWidth:480,margin:"0 auto 24px"}}>Compare membership tiers or talk to Alfred directly to scope an event, a trip, or a one-off booking.</p>
-            <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
-              <a href="/pricing" style={{display:"inline-flex",alignItems:"center",padding:"14px 22px",borderRadius:12,background:C.s1,color:C.bg,...sf(14,600),textDecoration:"none"}}>Compare memberships</a>
-              <a href="/contact" style={{display:"inline-flex",alignItems:"center",padding:"14px 22px",borderRadius:12,border:"1px solid "+C.bd,color:C.s1,...sf(14,600),textDecoration:"none"}}>Talk to Alfred</a>
-            </div>
+      {/* Final CTA */}
+      <section style={{
+        padding: mobile ? "40px 22px 100px" : "60px 56px 140px",
+        maxWidth:1200, margin:"0 auto"
+      }}>
+        <GlassCard featured sheen padded={false} style={{
+          padding: mobile ? "40px 28px" : "64px 56px",
+          textAlign:"center"
+        }}>
+          <Eyebrow color={T_.silver}>Ready to see it</Eyebrow>
+          <h2 style={{
+            ...type.sectionSerif(), fontSize: mobile ? 28 : 34,
+            color:T_.text, marginTop:14, marginBottom:14, lineHeight:1.15
+          }}>
+            Compare tiers or talk to{" "}
+            <SilverText style={{fontStyle:"italic"}}>Alfred</SilverText>{" "}directly.
+          </h2>
+          <p style={{...type.bodyLg(), color:T_.textMid, maxWidth:520, margin:"0 auto 28px"}}>
+            Scope an event, a trip, or a one-off booking with the concierge team.
+          </p>
+          <div style={{display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap"}}>
+            <PrimaryCTA href="/pricing">Compare memberships</PrimaryCTA>
+            <GhostCTA href="/contact">Talk to Alfred</GhostCTA>
           </div>
-        </section>
-      </article>
+        </GlassCard>
+      </section>
     </div>
+  );
+}
+
+function ProseSection({kicker, title, paragraphs, mobile}){
+  var r = useReveal();
+  return (
+    <section ref={r.ref} style={{
+      padding: mobile ? "60px 22px" : "100px 56px",
+      maxWidth: 880, margin: "0 auto",
+      ...revealStyle(r.visible)
+    }}>
+      <SectionHeader kicker={kicker} title={title}/>
+      <div style={{display:"flex", flexDirection:"column", gap:22}}>
+        {paragraphs.map(function(p, i){
+          return <p key={i} style={{...type.bodyLg(), color:T_.textMid}} dangerouslySetInnerHTML={{__html:p}}/>;
+        })}
+      </div>
+    </section>
   );
 }
