@@ -5,6 +5,12 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import SEOHead, { SEO } from "./components/SEOHead";
 import SiteAnalytics from "./components/SiteAnalytics";
 
+/* Apple App Store deep-link for Alfred Concierge. Universal URL (no
+ * country code) so users land on their regional storefront and
+ * Smart App Banners can deep-link if they already have the app. */
+const APP_STORE_URL = "https://apps.apple.com/app/id6759160130";
+const openAppStore = function(){ window.open(APP_STORE_URL,"_blank","noopener,noreferrer"); };
+
 /* ═══ CATEGORY PAGE IMPORTS — v2 ═══ */
 /* Place each file in src/pages/ and uncomment these imports: */
 import DiningPage from "./pages/DiningPage";
@@ -36,6 +42,7 @@ import AboutPage from "./pages/AboutPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import PricingPage from "./pages/PricingPage";
 import ContactPage from "./pages/ContactPage";
+import SupportPage from "./pages/SupportPage";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -451,6 +458,7 @@ export default function App(){
         <Route path="/how-it-works" element={<HowItWorksPage/>}/>
         <Route path="/pricing" element={<PricingPage/>}/>
         <Route path="/contact" element={<ContactPage/>}/>
+        <Route path="/support" element={<SupportPage/>}/>
         <Route path="/admin" element={<AdminPage/>}/>
         <Route path="/proposal" element={<ProposalBuilderPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
@@ -695,7 +703,7 @@ function AlfredSite(){
         "url":"https://alfredconcierge.app",
         "logo":"https://alfredconcierge.app/logo.png",
         "description":"Luxury concierge app for restaurants, nightlife, wellness, private chefs, luxury cars, yachts and jets in Miami and Paris.",
-        "sameAs":["https://instagram.com/alfred","https://x.com/alfredconcierge","https://tiktok.com/@alfred"],
+        "sameAs":["https://www.instagram.com/askalfred.app","https://www.tiktok.com/@alfred.app"],
         "contactPoint":{"@type":"ContactPoint","contactType":"customer service","availableLanguage":["English","French"]},
         "areaServed":[{"@type":"City","name":"Miami"},{"@type":"City","name":"Paris"}]
       })}}/>
@@ -896,7 +904,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             <CityCarousel loaded={loaded}/>
             <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
             <div className="hero-cta" style={{marginTop:48,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
-              <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 28px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",...sf(14,600),color:hoverCta?C.bg:C.s1}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
+              <div onClick={openAppStore} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 28px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",...sf(14,600),color:hoverCta?C.bg:C.s1}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
                 <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
                 Download on the App Store
               </div>
@@ -933,7 +941,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
         {/* Bottom CTA */}
         <div style={{padding:"0 36px 48px",opacity:0,animation:"menuFadeUp 0.5s ease 0.6s forwards"}}>
-          <div onClick={function(){setMobileMenu(false);setShowWaitlist(true)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,cursor:"pointer",width:"100%",transition:"transform 0.3s"}}>
+          <div onClick={function(){setMobileMenu(false);openAppStore()}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,cursor:"pointer",width:"100%",transition:"transform 0.3s"}}>
             <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
             Download on the App Store
           </div>
@@ -1118,7 +1126,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
           {/* App Store button */}
           <div style={{opacity:ctaVis?1:0,transition:"all 0.8s ease 0.55s",marginBottom:32}}>
-            <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 36px",borderRadius:16,background:hoverFinal?C.s1:C.el,border:"1px solid "+(hoverFinal?C.s1:C.bd),cursor:"pointer",transform:hoverFinal?"translateY(-3px)":"translateY(0)",boxShadow:hoverFinal?"0 12px 40px rgba(244,244,245,0.1)":"none",transition:"all 0.4s ease",...sf(16,600),color:hoverFinal?C.bg:C.s1}} onMouseEnter={function(){setHoverFinal(true)}} onMouseLeave={function(){setHoverFinal(false)}}>
+            <div onClick={openAppStore} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 36px",borderRadius:16,background:hoverFinal?C.s1:C.el,border:"1px solid "+(hoverFinal?C.s1:C.bd),cursor:"pointer",transform:hoverFinal?"translateY(-3px)":"translateY(0)",boxShadow:hoverFinal?"0 12px 40px rgba(244,244,245,0.1)":"none",transition:"all 0.4s ease",...sf(16,600),color:hoverFinal?C.bg:C.s1}} onMouseEnter={function(){setHoverFinal(true)}} onMouseLeave={function(){setHoverFinal(false)}}>
               <svg width="18" height="18" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
               Download on the App Store
             </div>
@@ -1148,10 +1156,9 @@ input::placeholder{color:#52525B}input:focus{outline:none}
               <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Follow us</div>
               <div style={{display:"flex",flexDirection:"column",gap:12}}>
                 {[
-                  {name:"@alfred",platform:"Instagram",icon:<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke={C.s5} strokeWidth="1.5"/><circle cx="12" cy="12" r="5" stroke={C.s5} strokeWidth="1.5"/><circle cx="18" cy="6" r="1.2" fill={C.s5}/></svg>},
-                  {name:"@alfredconcierge",platform:"X",icon:<svg width="14" height="14" viewBox="0 0 24 24" fill={C.s5}><path d="M4 4L10.5 12.5L4 20H6L11.5 13.7L16 20H20L13.2 11L19.3 4H17.3L12.2 9.8L8 4H4Z"/></svg>},
-                  {name:"@alfred",platform:"TikTok",icon:<svg width="14" height="14" viewBox="0 0 24 24" fill={C.s5}><path d="M9 12C9 13.66 7.66 15 6 15C4.34 15 3 13.66 3 12C3 10.34 4.34 9 6 9V7C3.24 7 1 9.24 1 12C1 14.76 3.24 17 6 17C8.76 17 11 14.76 11 12V6C12.5 7.5 14.5 8 17 8V6C14.5 6 12 4 12 1H10V12C10 12 10 12 9 12Z"/></svg>},
-                ].map(function(s){return <a key={s.platform} href="#" style={{display:"flex",alignItems:"center",gap:10,...sf(13,400),color:C.s5,transition:"color 0.2s"}} onMouseEnter={function(e){e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.color=C.s5}}>{s.icon}<span>{s.name}</span></a>})}
+                  {name:"@askalfred.app",platform:"Instagram",href:"https://www.instagram.com/askalfred.app",icon:<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke={C.s5} strokeWidth="1.5"/><circle cx="12" cy="12" r="5" stroke={C.s5} strokeWidth="1.5"/><circle cx="18" cy="6" r="1.2" fill={C.s5}/></svg>},
+                  {name:"@alfred.app",platform:"TikTok",href:"https://www.tiktok.com/@alfred.app",icon:<svg width="14" height="14" viewBox="0 0 24 24" fill={C.s5}><path d="M9 12C9 13.66 7.66 15 6 15C4.34 15 3 13.66 3 12C3 10.34 4.34 9 6 9V7C3.24 7 1 9.24 1 12C1 14.76 3.24 17 6 17C8.76 17 11 14.76 11 12V6C12.5 7.5 14.5 8 17 8V6C14.5 6 12 4 12 1H10V12C10 12 10 12 9 12Z"/></svg>},
+                ].map(function(s){return <a key={s.platform} href={s.href} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:10,...sf(13,400),color:C.s5,textDecoration:"none",transition:"color 0.2s"}} onMouseEnter={function(e){e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.color=C.s5}}>{s.icon}<span>{s.name}</span></a>})}
               </div>
             </div>
 
@@ -1165,7 +1172,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
               </div>
 
               {/* App Store */}
-              <div onClick={function(){setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s",...sf(13,600),color:C.s1}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+              <div onClick={openAppStore} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s",...sf(13,600),color:C.s1}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
                 <svg width="14" height="14" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
                 Download on the App Store
               </div>
@@ -1222,7 +1229,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* CTA at bottom of modal */}
             <div style={{marginTop:24,textAlign:"center"}}>
               <div style={{...sf(13,400),color:C.s5,marginBottom:16}}>Download Alfred to book any venue</div>
-              <div onClick={function(){setModalCat(null);setShowWaitlist(true)}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg}}>
+              <div onClick={function(){setModalCat(null);openAppStore()}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 24px",borderRadius:12,background:C.s1,cursor:"pointer",...sf(13,600),color:C.bg}}>
                 <svg width="14" height="14" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
                 Download on the App Store
               </div>
@@ -2118,7 +2125,7 @@ body::-webkit-scrollbar{width:0}
           <CDrawMark size={32} color={C.s5}/>
           <h2 style={{...sf(32,600),letterSpacing:-1,marginTop:24,marginBottom:14}}>Ready to experience it all?</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Download Alfred and get access to every venue, every service, every experience — through one concierge.</p>
-          <a href="/" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,...sf(14,500),color:C.s1,transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg;e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1;e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+          <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 28px",borderRadius:16,background:C.el,border:"1px solid "+C.bd,...sf(14,500),color:C.s1,textDecoration:"none",transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.s1;e.currentTarget.style.color=C.bg;e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.background=C.el;e.currentTarget.style.color=C.s1;e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
             Download on the App Store
           </a>
