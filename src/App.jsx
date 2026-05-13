@@ -482,91 +482,6 @@ var COUNTRY_CODES=[
   {code:"+90",flag:"\u{1F1F9}\u{1F1F7}",name:"Turkey"},{code:"+972",flag:"\u{1F1EE}\u{1F1F1}",name:"Israel"},{code:"+234",flag:"\u{1F1F3}\u{1F1EC}",name:"Nigeria"},
 ];
 
-function WaitlistModal(p){
-  var [formData,setFormData]=useState({name:"",whatsapp:"",email:""});
-  var [countryCode,setCountryCode]=useState("+1");
-  var [showCodes,setShowCodes]=useState(false);
-  var [formSent,setFormSent]=useState(false);
-  var [formLoading,setFormLoading]=useState(false);
-  function submitWaitlist(){
-    if(!formData.name.trim()||!formData.whatsapp.trim())return;
-    setFormLoading(true);
-    fetch("https://a.klaviyo.com/client/subscriptions/?company_id=RcviU7",{
-      method:"POST",headers:{"Content-Type":"application/json","revision":"2024-02-15"},
-      body:JSON.stringify({data:{type:"subscription",attributes:{custom_source:"Alfred Waitlist",profile:{data:{type:"profile",attributes:{first_name:formData.name,phone_number:countryCode+formData.whatsapp.replace(/\D/g,""),email:formData.email||undefined,properties:{waitlist:true,source:"website"}}}}},relationships:{list:{data:{type:"list",id:"WeK9YR"}}}}})
-    }).catch(function(e){console.log("Klaviyo error:",e)}).finally(function(){setFormLoading(false);setFormSent(true)});
-  }
-  if(!p.open)return null;
-  return(
-    <div onClick={function(){p.onClose()}} style={{position:"fixed",inset:0,zIndex:10000,display:"flex",alignItems:"center",justifyContent:"center",padding:20,animation:"modalBgIn 0.3s ease both"}}>
-      <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(12px)"}}/>
-      <div onClick={function(e){e.stopPropagation()}} style={{width:420,maxWidth:"100%",borderRadius:24,background:C.el,border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 40px 120px rgba(0,0,0,0.6)",position:"relative",overflow:"hidden",animation:"modalIn 0.5s cubic-bezier(0.16,1,0.3,1) both"}}>
-        <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
-        <div onClick={function(){p.onClose()}} style={{position:"absolute",top:16,right:16,width:32,height:32,borderRadius:10,background:"rgba(244,244,245,0.06)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"background 0.3s",zIndex:2}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </div>
-        {!formSent?(
-          <div style={{padding:"40px 32px 36px"}}>
-            <div style={{marginBottom:24}}><DrawMark size={20} color={C.s5} active={true} delay={0} id="wl"/></div>
-            <h3 style={{...sf(24,700),letterSpacing:-0.5,marginBottom:6}}>Join the waitlist</h3>
-            <p style={{...sf(13,400),color:C.s5,lineHeight:1.6,marginBottom:32}}>Get early access to Alfred. We'll reach out on WhatsApp when it's your turn.</p>
-            <div style={{marginBottom:16}}>
-              <label style={{...sf(10,500),color:C.s6,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:8}}>Name</label>
-              <input value={formData.name} onChange={function(e){setFormData({...formData,name:e.target.value})}} placeholder="Your name" style={{width:"100%",padding:"14px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,400),outline:"none",transition:"border-color 0.3s"}} onFocus={function(e){e.target.style.borderColor=C.s5}} onBlur={function(e){e.target.style.borderColor=C.bd}}/>
-            </div>
-            <div style={{marginBottom:16}}>
-              <label style={{...sf(10,500),color:C.s6,letterSpacing:2,textTransform:"uppercase",display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                <span>WhatsApp</span>
-              </label>
-              <div style={{display:"flex",gap:8}}>
-                <div style={{position:"relative",flexShrink:0}}>
-                  <div onClick={function(){setShowCodes(!showCodes)}} style={{display:"flex",alignItems:"center",gap:6,padding:"14px 12px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.3s",minWidth:90}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){if(!showCodes)e.currentTarget.style.borderColor=C.bd}}>
-                    <span style={{fontSize:16}}>{(COUNTRY_CODES.find(function(c){return c.code===countryCode})||{}).flag}</span>
-                    <span style={{...sf(14,500),color:C.s1}}>{countryCode}</span>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round" style={{marginLeft:"auto",transform:showCodes?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s"}}><path d="M6 9l6 6 6-6"/></svg>
-                  </div>
-                  {showCodes&&(
-                    <div className="code-list" style={{position:"absolute",top:"calc(100% + 4px)",left:0,width:240,maxHeight:240,overflowY:"auto",borderRadius:14,background:C.el,border:"1px solid "+C.bd,boxShadow:"0 20px 60px rgba(0,0,0,0.5)",zIndex:20,padding:"6px"}}>
-                      {COUNTRY_CODES.map(function(c){return(
-                        <div key={c.code} onClick={function(){setCountryCode(c.code);setShowCodes(false)}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:8,cursor:"pointer",transition:"background 0.2s",...sf(13,400),color:c.code===countryCode?C.s1:C.s4}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}} onMouseLeave={function(e){e.currentTarget.style.background="transparent"}}>
-                          <span style={{fontSize:16}}>{c.flag}</span>
-                          <span style={{...sf(13,500),color:C.s1}}>{c.name}</span>
-                          <span style={{...sf(12,400),color:C.s5,marginLeft:"auto"}}>{c.code}</span>
-                        </div>
-                      )})}
-                    </div>
-                  )}
-                </div>
-                <input value={formData.whatsapp} onChange={function(e){setFormData({...formData,whatsapp:e.target.value})}} placeholder="305 555 0000" type="tel" style={{flex:1,padding:"14px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,400),outline:"none",transition:"border-color 0.3s"}} onFocus={function(e){e.target.style.borderColor=C.s5}} onBlur={function(e){e.target.style.borderColor=C.bd}}/>
-              </div>
-            </div>
-            <div style={{marginBottom:28}}>
-              <label style={{...sf(10,500),color:C.s6,letterSpacing:2,textTransform:"uppercase",display:"block",marginBottom:8}}>Email <span style={{color:C.s7,fontWeight:400,letterSpacing:0,textTransform:"none"}}>(optional)</span></label>
-              <input value={formData.email} onChange={function(e){setFormData({...formData,email:e.target.value})}} placeholder="you@email.com" type="email" style={{width:"100%",padding:"14px 16px",borderRadius:12,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,400),outline:"none",transition:"border-color 0.3s"}} onFocus={function(e){e.target.style.borderColor=C.s5}} onBlur={function(e){e.target.style.borderColor=C.bd}}/>
-            </div>
-            <div onClick={submitWaitlist} style={{width:"100%",padding:"16px",borderRadius:14,background:(!formData.name.trim()||!formData.whatsapp.trim())?C.bd:C.s1,cursor:(!formData.name.trim()||!formData.whatsapp.trim())?"not-allowed":"pointer",textAlign:"center",...sf(14,700),color:(!formData.name.trim()||!formData.whatsapp.trim())?C.s6:C.bg,transition:"all 0.3s",opacity:formLoading?0.6:1}}>
-              {formLoading?"Joining...":"Get Early Access"}
-            </div>
-            <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,lineHeight:1.5}}>Your concierge will message you on WhatsApp within 24 hours.</p>
-          </div>
-        ):(
-          <div style={{padding:"56px 32px 48px",textAlign:"center"}}>
-            <div style={{width:56,height:56,borderRadius:"50%",background:"rgba(52,199,89,0.1)",border:"1.5px solid rgba(52,199,89,0.3)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px"}}>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray:24,animation:"checkDraw 0.5s ease 0.2s both"}}><path d="M20 6L9 17l-5-5"/></svg>
-            </div>
-            <h3 style={{...sf(24,700),letterSpacing:-0.5,marginBottom:8}}>You're on the list</h3>
-            <p style={{...sf(14,400),color:C.s5,lineHeight:1.6,marginBottom:8}}>Welcome, {formData.name}.</p>
-            <p style={{...sf(13,400),color:C.s6,lineHeight:1.6}}>A concierge will reach out to you on WhatsApp shortly. In the meantime, keep scrolling.</p>
-            <div onClick={function(){p.onClose()}} style={{display:"inline-block",marginTop:28,padding:"14px 32px",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.1)",cursor:"pointer",...sf(13,600),color:C.s1,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)"}}>
-              Continue Exploring
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function AlfredSite(){
   var [loaded,setLoaded]=useState(false);
@@ -584,7 +499,6 @@ function AlfredSite(){
   var [hoverFinal,setHoverFinal]=useState(false);
   var [annual,setAnnual]=useState(false);
   var [modalCat,setModalCat]=useState(null);
-  var [showWaitlist,setShowWaitlist]=useState(false);
   var [mobileMenu,setMobileMenu]=useState(false);
 
   var stepsRef=useRef(null);
@@ -1237,9 +1151,6 @@ input::placeholder{color:#52525B}input:focus{outline:none}
           </div>
         </div>
       </div>}
-
-      {/* Waitlist Modal */}
-      <WaitlistModal open={showWaitlist} onClose={function(){setShowWaitlist(false)}}/>
     </div>
   );
 }
