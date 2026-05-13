@@ -79,7 +79,9 @@ const STATIC_ROUTES = [
   '/about',
   '/how-it-works',
   '/pricing',
-  '/contact'
+  '/contact',
+  // Long-tail landing pages (config in src/data/longtail.js — keep in sync)
+  '/best/italian-restaurants-miami'
 ];
 
 const DIST_DIR = path.join(__dirname, 'dist');

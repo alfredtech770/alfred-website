@@ -116,7 +116,7 @@ export function restaurantJsonLd(r, slug){
     "telephone": r.phone || undefined,
     "geo": (r.latitude && r.longitude) ? clean({"@type":"GeoCoordinates","latitude":r.latitude,"longitude":r.longitude}) : undefined,
     "aggregateRating": r.rating ? clean({"@type":"AggregateRating","ratingValue": String(r.rating), "reviewCount": String(r.review_count || r.reviews || 1)}) : undefined,
-    "acceptsReservations": "True",
+    "acceptsReservations": true,
     "potentialAction": {"@type":"ReserveAction","target":url,"name":"Reserve through Alfred Concierge"},
     "broker": ORG
   });
