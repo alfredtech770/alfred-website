@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["S33MH59G79.com.6Labs.AlfredApp"],
+        "components": [
+          { "/": "/*", "comment": "Match every path on alfredconcierge.app" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["S33MH59G79.com.6Labs.AlfredApp"]
+  }
+}
