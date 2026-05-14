@@ -127,14 +127,15 @@ var CATS = [
       {k:"instagram_url",l:"Instagram",t:"text"},
       {k:"booking_platform",l:"Booking Platform",t:"text"},
       {k:"time_slots",l:"Available Booking Time Slots",t:"timeslots",wide:true},
+      {k:"vip_slots",l:"VIP / Peak Slots (premium-priced)",t:"vipslots",wide:true},
+      {k:"peak_price_per_person",l:"Premium / VIP Price Per Person ($)",t:"number"},
+      {k:"peak_perks",l:"Premium Perks (comma-separated)",t:"tags",wide:true},
       {k:"hours_lunch",l:"Lunch Hours (display)",t:"text"},
       {k:"hours_dinner",l:"Dinner Hours (display)",t:"text"},
       {k:"opening_hours",l:"Opening Hours (display)",t:"text",wide:true},
       {k:"hours_closed",l:"Closed Days (display)",t:"text"},
       {k:"closed_weekdays",l:"Closed Weekdays (date validation)",t:"weekdays",wide:true},
       {k:"closed_months",l:"Closed Months (seasonal)",t:"months",wide:true},
-      {k:"peak_price_per_person",l:"Premium / VIP Price Per Person ($)",t:"number"},
-      {k:"peak_perks",l:"Premium Perks (comma-separated)",t:"tags",wide:true},
       {k:"category",l:"Category",t:"select",opts:["restaurant","bar","cafe","bakery","lounge"]},
       {k:"chef_name",l:"Chef Name",t:"text"},
       {k:"alfred_note",l:"Alfred Note",t:"textarea",wide:true},
@@ -656,7 +657,7 @@ function ImageGalleryManager({record,cat,onUpdate}){
 }
 
 /* ═══ Field Input ═══ */
-function FieldInput({field,value,onChange}){
+function FieldInput({field,value,record,onChange}){
   var inputStyle={
     width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,
     borderRadius:10,padding:"10px 14px",...sf(14),color:C.s1,outline:"none",
@@ -766,6 +767,57 @@ function FieldInput({field,value,onChange}){
         {renderGroup("Lunch",LUNCH)}
         {renderGroup("Dinner",DINNER)}
         <p style={{...sf(11),color:C.s5,marginTop:4}}>{slots.length} slot{slots.length!==1?"s":""} selected</p>
+      </div>
+    );
+  }
+  if(field.t==="vipslots"){
+    // VIP slot picker — subset of the venue's `time_slots`. Each chip
+    // is a slot that's already bookable; toggling it marks the slot
+    // as premium-priced (`peak_price_per_person`). If `time_slots` is
+    // empty we tell the user to set those first so we don't end up
+    // with VIP slots that aren't actually offered.
+    var bookable=(record&&Array.isArray(record.time_slots))?record.time_slots:[];
+    if(typeof bookable==="string")try{bookable=JSON.parse(bookable)}catch(e){bookable=[];}
+    var vip=value||[];
+    if(typeof vip==="string")try{vip=JSON.parse(vip)}catch(e){vip=[];}
+    if(!Array.isArray(vip))vip=[];
+    if(!bookable.length){
+      return <p style={{...sf(12),color:C.s5,margin:0,padding:"10px 14px",border:"1px dashed "+C.bd,borderRadius:10}}>
+        Set "Available Booking Time Slots" first — VIP slots are chosen from that list.
+      </p>;
+    }
+    function toggleVip(s){
+      var arr=vip.slice();
+      var idx=arr.indexOf(s);
+      if(idx>=0)arr.splice(idx,1);else arr.push(s);
+      arr.sort();
+      onChange(arr);
+    }
+    // Drop any VIP slot that's no longer in time_slots so the array
+    // never stores orphans. Fires on every render — cheap enough.
+    var orphans=vip.filter(function(s){return bookable.indexOf(s)<0;});
+    if(orphans.length){
+      var cleaned=vip.filter(function(s){return bookable.indexOf(s)>=0;});
+      setTimeout(function(){onChange(cleaned);},0);
+    }
+    return(
+      <div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          {bookable.map(function(s){
+            var active=vip.indexOf(s)>=0;
+            return <button key={s} type="button" onClick={function(){toggleVip(s);}}
+              style={{padding:"6px 12px",borderRadius:8,border:"1px solid "+(active?C.gd+"80":C.bd),
+                background:active?"rgba(245,197,76,0.14)":C.srf,...sf(12,active?600:400),
+                color:active?C.gd:C.s5,cursor:"pointer",transition:"all 0.15s",minWidth:52,textAlign:"center"}}>
+              {s}{active&&" ★"}
+            </button>;
+          })}
+        </div>
+        <p style={{...sf(11),color:C.s5,marginTop:6}}>
+          {vip.length===0
+            ? "All slots are standard-priced"
+            : vip.length+" VIP slot"+(vip.length===1?"":"s")+" — charged at premium price"}
+        </p>
       </div>
     );
   }
@@ -972,7 +1024,7 @@ function EditModal({cat,record,onClose,onSave}){
                     <label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>
                       {field.l}{field.req&&<span style={{color:C.rd}}> *</span>}
                     </label>
-                    <FieldInput field={field} value={form[field.k]} onChange={function(v){setField(field.k,v);}}/>
+                    <FieldInput field={field} value={form[field.k]} record={form} onChange={function(v){setField(field.k,v);}}/>
                   </div>
                 );
               })}
