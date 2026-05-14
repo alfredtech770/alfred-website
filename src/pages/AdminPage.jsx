@@ -108,7 +108,7 @@ var CATS = [
     id:"restaurants", label:"Restaurants", table:"restaurants", icon:"restaurant",
     bucket:"restaurant-photos", imgField:"hero_image_url", galleryField:"gallery_photos",
     orderField:"photos_order",
-    cols:["name","cuisine","city","price_level","reservation_required","rating","is_active"],
+    cols:["name","city","time_slots","peak_price_per_person","reservation_required","is_active"],
     fields:[
       {k:"name",l:"Name",t:"text",req:true},
       {k:"slug",l:"Slug",t:"text"},
@@ -126,12 +126,15 @@ var CATS = [
       {k:"website_url",l:"Website",t:"text"},
       {k:"instagram_url",l:"Instagram",t:"text"},
       {k:"booking_platform",l:"Booking Platform",t:"text"},
-      {k:"opening_hours",l:"Available Time Slots",t:"timeslots",wide:true},
-      {k:"hours_lunch",l:"Lunch Hours (text)",t:"text"},
-      {k:"hours_dinner",l:"Dinner Hours (text)",t:"text"},
-      {k:"hours_closed",l:"Closed Days",t:"text"},
-      {k:"peak_price_per_person",l:"Peak Price / Person",t:"number"},
-      {k:"peak_perks",l:"Peak Perks (comma-separated)",t:"tags",wide:true},
+      {k:"time_slots",l:"Available Booking Time Slots",t:"timeslots",wide:true},
+      {k:"hours_lunch",l:"Lunch Hours (display)",t:"text"},
+      {k:"hours_dinner",l:"Dinner Hours (display)",t:"text"},
+      {k:"opening_hours",l:"Opening Hours (display)",t:"text",wide:true},
+      {k:"hours_closed",l:"Closed Days (display)",t:"text"},
+      {k:"closed_weekdays",l:"Closed Weekdays (date validation)",t:"weekdays",wide:true},
+      {k:"closed_months",l:"Closed Months (seasonal)",t:"months",wide:true},
+      {k:"peak_price_per_person",l:"Premium / VIP Price Per Person ($)",t:"number"},
+      {k:"peak_perks",l:"Premium Perks (comma-separated)",t:"tags",wide:true},
       {k:"category",l:"Category",t:"select",opts:["restaurant","bar","cafe","bakery","lounge"]},
       {k:"chef_name",l:"Chef Name",t:"text"},
       {k:"alfred_note",l:"Alfred Note",t:"textarea",wide:true},
@@ -766,6 +769,78 @@ function FieldInput({field,value,onChange}){
       </div>
     );
   }
+  if(field.t==="weekdays"){
+    // closed_weekdays — int[] where 0=Sunday .. 6=Saturday. Drives both
+    // the iOS DateChip disable + the Postgres booking-insert trigger.
+    var picked=value||[];
+    if(typeof picked==="string")try{picked=JSON.parse(picked)}catch(e){picked=[];}
+    if(!Array.isArray(picked))picked=[];
+    var WEEKDAYS=[
+      {n:0,label:"Sun"},{n:1,label:"Mon"},{n:2,label:"Tue"},
+      {n:3,label:"Wed"},{n:4,label:"Thu"},{n:5,label:"Fri"},{n:6,label:"Sat"}
+    ];
+    function toggleDay(n){
+      var arr=picked.slice();
+      var idx=arr.indexOf(n);
+      if(idx>=0)arr.splice(idx,1);else arr.push(n);
+      arr.sort(function(a,b){return a-b;});
+      onChange(arr);
+    }
+    return(
+      <div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          {WEEKDAYS.map(function(d){
+            var active=picked.indexOf(d.n)>=0;
+            return <button key={d.n} type="button" onClick={function(){toggleDay(d.n);}}
+              style={{padding:"8px 14px",borderRadius:8,border:"1px solid "+(active?C.rd+"80":C.bd),
+                background:active?"rgba(255,69,58,0.12)":C.srf,...sf(12,active?600:400),
+                color:active?C.rd:C.s5,cursor:"pointer",transition:"all 0.15s",minWidth:54,textAlign:"center"}}>
+              {d.label}
+            </button>;
+          })}
+        </div>
+        <p style={{...sf(11),color:C.s5,marginTop:6}}>
+          {picked.length===0?"Open every day":"Closed: "+picked.map(function(n){return WEEKDAYS[n].label;}).join(", ")}
+        </p>
+      </div>
+    );
+  }
+  if(field.t==="months"){
+    // closed_months — int[] 1=Jan .. 12=Dec. Seasonal closures.
+    var pickedM=value||[];
+    if(typeof pickedM==="string")try{pickedM=JSON.parse(pickedM)}catch(e){pickedM=[];}
+    if(!Array.isArray(pickedM))pickedM=[];
+    var MONTHS=[
+      {n:1,label:"Jan"},{n:2,label:"Feb"},{n:3,label:"Mar"},{n:4,label:"Apr"},
+      {n:5,label:"May"},{n:6,label:"Jun"},{n:7,label:"Jul"},{n:8,label:"Aug"},
+      {n:9,label:"Sep"},{n:10,label:"Oct"},{n:11,label:"Nov"},{n:12,label:"Dec"}
+    ];
+    function toggleMonth(n){
+      var arr=pickedM.slice();
+      var idx=arr.indexOf(n);
+      if(idx>=0)arr.splice(idx,1);else arr.push(n);
+      arr.sort(function(a,b){return a-b;});
+      onChange(arr);
+    }
+    return(
+      <div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          {MONTHS.map(function(m){
+            var active=pickedM.indexOf(m.n)>=0;
+            return <button key={m.n} type="button" onClick={function(){toggleMonth(m.n);}}
+              style={{padding:"6px 12px",borderRadius:8,border:"1px solid "+(active?C.rd+"80":C.bd),
+                background:active?"rgba(255,69,58,0.12)":C.srf,...sf(12,active?600:400),
+                color:active?C.rd:C.s5,cursor:"pointer",transition:"all 0.15s",minWidth:48,textAlign:"center"}}>
+              {m.label}
+            </button>;
+          })}
+        </div>
+        <p style={{...sf(11),color:C.s5,marginTop:6}}>
+          {pickedM.length===0?"Open year-round":"Closed in: "+pickedM.map(function(n){return MONTHS[n-1].label;}).join(", ")}
+        </p>
+      </div>
+    );
+  }
   if(field.t==="rooms"){
     var rooms=value||[];
     if(typeof rooms==="string")try{rooms=JSON.parse(rooms)}catch(e){rooms=[];}
@@ -953,6 +1028,19 @@ function DeleteModal({table,id,name,onCancel,onDone}){
 /* ═══ Cell Value Renderer ═══ */
 function CellVal({col,row}){
   var v=row[col];
+  // Special-case before the null check so an empty array still renders
+  // as "Not set" rather than blanking.
+  if(col==="time_slots"){
+    var n=Array.isArray(v)?v.length:0;
+    return n>0
+      ? <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:"rgba(52,199,89,0.1)",color:C.gn,letterSpacing:0.4}}>{n} slot{n===1?"":"s"}</span>
+      : <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:"rgba(255,149,0,0.10)",color:C.or,letterSpacing:0.4}}>Not set</span>;
+  }
+  if(col==="peak_price_per_person"){
+    return v>0
+      ? <span style={{color:C.gd,...sf(13,600)}}>${v}</span>
+      : <span style={{...sf(11),color:C.s5}}>—</span>;
+  }
   if(v===undefined||v===null)return <span style={{color:C.s6}}>-</span>;
   if(col==="is_active"||col==="available")return(
     <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,letterSpacing:0.5,
@@ -979,6 +1067,10 @@ function CategoryView({cat}){
   var [search,setSearch]=useState("");
   var [cityFilter,setCityFilter]=useState("");
   var [activeFilter,setActiveFilter]=useState("");
+  // Restaurants-only: lets ops triage which venues still need their
+  // booking-config filled in (time_slots empty, closed_weekdays empty
+  // on a restaurant that should have closures, no peak price set, etc.)
+  var [configFilter,setConfigFilter]=useState("");
   var [sortCol,setSortCol]=useState("name");
   var [sortDir,setSortDir]=useState("asc");
   var [editRec,setEditRec]=useState(null);
@@ -1008,6 +1100,15 @@ function CategoryView({cat}){
     if(cityFilter&&r.city!==cityFilter)return false;
     if(activeFilter==="active"&&!r.is_active)return false;
     if(activeFilter==="inactive"&&r.is_active)return false;
+    if(cat.id==="restaurants"&&configFilter){
+      var hasSlots=Array.isArray(r.time_slots)&&r.time_slots.length>0;
+      var hasPeak=r.peak_price_per_person!=null&&r.peak_price_per_person>0;
+      var hasHours=(r.hours_dinner&&r.hours_dinner.length)||(r.hours_lunch&&r.hours_lunch.length);
+      if(configFilter==="needs_slots"&&hasSlots)return false;
+      if(configFilter==="needs_peak"&&hasPeak)return false;
+      if(configFilter==="needs_hours"&&hasHours)return false;
+      if(configFilter==="walk_in"&&r.reservation_required!==false)return false;
+    }
     return true;
   }).sort(function(a,b){
     var av=a[sortCol],bv=b[sortCol];
@@ -1045,6 +1146,7 @@ function CategoryView({cat}){
 
   var colLabels={name:"Name",cuisine:"Cuisine",city:"City",price_level:"Price",rating:"Rating",is_active:"Status",
     reservation_required:"Booking",
+    time_slots:"Slots",peak_price_per_person:"Premium $",
     brand:"Brand",max_passengers:"Guests",price_4hr:"4hr Rate",price_per_day:"$/Day",price_1_day:"Day Rate",
     type:"Type",capacity:"Capacity",location:"Location",door_policy:"Door"};
 
@@ -1079,6 +1181,17 @@ function CategoryView({cat}){
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
+        {cat.id==="restaurants"&&(
+          <select value={configFilter} onChange={function(e){setConfigFilter(e.target.value);}}
+            style={{background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(13),color:C.s3,outline:"none",appearance:"auto"}}
+            title="Triage restaurants by booking-config completeness">
+            <option value="">All Configs</option>
+            <option value="needs_slots">Missing time slots</option>
+            <option value="needs_hours">Missing display hours</option>
+            <option value="needs_peak">No premium price</option>
+            <option value="walk_in">Walk-in only (no reservation)</option>
+          </select>
+        )}
         <span style={{...sf(13),color:C.s5}}>{filtered.length} record{filtered.length!==1?"s":""}</span>
       </div>
 
@@ -1567,6 +1680,11 @@ function ClientsView(){
   var [users,setUsers]=useState([]);
   var [loading,setLoading]=useState(true);
   var [search,setSearch]=useState("");
+  // Filter chips: tier (free/gold/plat/cent) and reachability
+  // ("missing WhatsApp" — directly tied to the May 2026 incident where
+  // Alfred couldn't tell a user a restaurant was closed).
+  var [tierFilter,setTierFilter]=useState("");
+  var [reachableFilter,setReachableFilter]=useState("");
 
   async function load(){
     setLoading(true);
@@ -1576,16 +1694,49 @@ function ClientsView(){
   }
   useEffect(function(){load();},[]);
 
+  function tierLabel(t){
+    if(!t)return "Free";
+    switch(t){case "gold":return "Gold";case "plat":case "platinum":return "Platinum";case "cent":case "centurion":return "Centurion";case "free":return "Free";default:return t;}
+  }
+  function tierColor(t){
+    switch(t){case "gold":return C.gd;case "plat":case "platinum":return C.s2;case "cent":case "centurion":return C.s1;default:return C.s5;}
+  }
+  function hasWhatsApp(u){
+    return !!(u.whatsapp_number&&String(u.whatsapp_number).trim().length>=5);
+  }
+
   var filtered=users.filter(function(u){
-    if(!search)return true;
-    var s=search.toLowerCase();
-    return (u.first_name||"").toLowerCase().includes(s)||(u.last_name||"").toLowerCase().includes(s)||(u.email||"").toLowerCase().includes(s)||(u.preferred_city||"").toLowerCase().includes(s);
+    if(search){
+      var s=search.toLowerCase();
+      var match=(u.first_name||"").toLowerCase().includes(s)||(u.last_name||"").toLowerCase().includes(s)||(u.email||"").toLowerCase().includes(s)||(u.preferred_city||"").toLowerCase().includes(s);
+      if(!match)return false;
+    }
+    if(tierFilter){
+      var t=(u.tier||"free").toLowerCase();
+      if(tierFilter==="free"&&t!=="free")return false;
+      if(tierFilter==="paid"&&t==="free")return false;
+      if(tierFilter==="gold"&&t!=="gold")return false;
+      if(tierFilter==="plat"&&!(t==="plat"||t==="platinum"))return false;
+      if(tierFilter==="cent"&&!(t==="cent"||t==="centurion"))return false;
+    }
+    if(reachableFilter==="missing_whatsapp"&&hasWhatsApp(u))return false;
+    if(reachableFilter==="has_whatsapp"&&!hasWhatsApp(u))return false;
+    return true;
   });
+
+  // Headline counts so ops see at a glance how many members are
+  // unreachable. Drives the "missing WhatsApp" chip's badge count.
+  var missingWA=users.filter(function(u){return !hasWhatsApp(u);}).length;
 
   return(
     <div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:24}}>
         <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Members ({users.length})</h2>
+        {missingWA>0&&(
+          <span style={{...sf(11,600),padding:"5px 12px",borderRadius:20,background:"rgba(255,149,0,0.12)",color:C.or,letterSpacing:0.4}}>
+            ⚠ {missingWA} unreachable (no WhatsApp)
+          </span>
+        )}
       </div>
 
       <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:20,alignItems:"center"}}>
@@ -1594,6 +1745,21 @@ function ClientsView(){
           <input placeholder="Search members..." value={search} onChange={function(e){setSearch(e.target.value);}}
             style={{width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px 10px 36px",...sf(14),color:C.s1,outline:"none"}}/>
         </div>
+        <select value={tierFilter} onChange={function(e){setTierFilter(e.target.value);}}
+          style={{background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
+          <option value="">All Tiers</option>
+          <option value="free">Free</option>
+          <option value="paid">All paid</option>
+          <option value="gold">Gold</option>
+          <option value="plat">Platinum</option>
+          <option value="cent">Centurion</option>
+        </select>
+        <select value={reachableFilter} onChange={function(e){setReachableFilter(e.target.value);}}
+          style={{background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
+          <option value="">All</option>
+          <option value="has_whatsapp">Has WhatsApp</option>
+          <option value="missing_whatsapp">Missing WhatsApp</option>
+        </select>
         <span style={{...sf(13),color:C.s5}}>{filtered.length} member{filtered.length!==1?"s":""}</span>
       </div>
 
@@ -1610,25 +1776,34 @@ function ClientsView(){
             <table style={{width:"100%",borderCollapse:"collapse"}}>
               <thead>
                 <tr style={{borderBottom:"1px solid "+C.bd}}>
-                  {["Name","Email","City","Instagram","Referral Code","Referrals","Joined"].map(function(h){
+                  {["Name","Tier","WhatsApp","Email","City","Instagram","Joined"].map(function(h){
                     return <th key={h} style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>{h}</th>;
                   })}
                 </tr>
               </thead>
               <tbody>
                 {filtered.map(function(u){
+                  var tier=u.tier||"free";
+                  var wa=hasWhatsApp(u);
+                  var waDisplay=wa?((u.whatsapp_country_code?u.whatsapp_country_code+" ":"")+(u.whatsapp_number||"")):"";
                   return(
                     <tr key={u.id} style={{borderBottom:"1px solid "+C.bd}}
                       onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
                       onMouseLeave={function(e){e.currentTarget.style.background="transparent";}}>
                       <td style={{...sf(13,500),color:C.s1,padding:"12px 14px"}}>{(u.first_name||"")+" "+(u.last_name||"")}</td>
+                      <td style={{padding:"12px 14px"}}>
+                        <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:tier==="free"?C.bd+"40":tierColor(tier)+"22",color:tierColor(tier),letterSpacing:0.4}}>
+                          {tierLabel(tier)}
+                        </span>
+                      </td>
+                      <td style={{padding:"12px 14px"}}>
+                        {wa
+                          ? <span style={{...sf(12),color:C.s3,fontFamily:"monospace"}}>{waDisplay}</span>
+                          : <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:"rgba(255,149,0,0.12)",color:C.or,letterSpacing:0.4}}>Missing</span>}
+                      </td>
                       <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.email||"-"}</td>
                       <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.preferred_city||"-"}</td>
                       <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.instagram_handle?"@"+u.instagram_handle:"-"}</td>
-                      <td style={{padding:"12px 14px"}}>
-                        {u.referral_code?<span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:C.gd+"15",color:C.gd,fontFamily:"monospace"}}>{u.referral_code}</span>:"-"}
-                      </td>
-                      <td style={{...sf(13,600),color:u.referral_count>0?C.gn:C.s5,padding:"12px 14px"}}>{u.referral_count||0}</td>
                       <td style={{...sf(12),color:C.s5,padding:"12px 14px"}}>{u.created_at?u.created_at.slice(0,10):"-"}</td>
                     </tr>
                   );
