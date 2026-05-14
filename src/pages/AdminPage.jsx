@@ -108,7 +108,7 @@ var CATS = [
     id:"restaurants", label:"Restaurants", table:"restaurants", icon:"restaurant",
     bucket:"restaurant-photos", imgField:"hero_image_url", galleryField:"gallery_photos",
     orderField:"photos_order",
-    cols:["name","cuisine","city","price_level","rating","is_active"],
+    cols:["name","cuisine","city","price_level","reservation_required","rating","is_active"],
     fields:[
       {k:"name",l:"Name",t:"text",req:true},
       {k:"slug",l:"Slug",t:"text"},
@@ -140,6 +140,7 @@ var CATS = [
       {k:"is_featured",l:"Featured",t:"bool"},
       {k:"available_tonight",l:"Available Tonight",t:"bool"},
       {k:"instant_booking_available",l:"Instant Booking",t:"bool"},
+      {k:"reservation_required",l:"Reservation Required (off = walk-in)",t:"bool"},
     ]
   },
   {
@@ -959,6 +960,12 @@ function CellVal({col,row}){
       {v?"Active":"Inactive"}
     </span>
   );
+  if(col==="reservation_required")return(
+    <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,letterSpacing:0.5,
+      background:v?"rgba(52,199,89,0.1)":"rgba(245,197,76,0.12)",color:v?C.gn:C.gd}}>
+      {v?"Reserve":"Walk-in"}
+    </span>
+  );
   if(col==="price_level")return <span style={{color:C.gd}}>{"$".repeat(Number(v))||"-"}</span>;
   if(col==="rating"&&v>0)return <span style={{color:C.gd}}>{"★ "+v}</span>;
   if(typeof v==="number"&&(col.includes("price")||col.includes("deposit")))return <span>${v.toLocaleString()}</span>;
@@ -1037,6 +1044,7 @@ function CategoryView({cat}){
   }
 
   var colLabels={name:"Name",cuisine:"Cuisine",city:"City",price_level:"Price",rating:"Rating",is_active:"Status",
+    reservation_required:"Booking",
     brand:"Brand",max_passengers:"Guests",price_4hr:"4hr Rate",price_per_day:"$/Day",price_1_day:"Day Rate",
     type:"Type",capacity:"Capacity",location:"Location",door_policy:"Door"};
 
