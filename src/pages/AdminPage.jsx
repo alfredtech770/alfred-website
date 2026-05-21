@@ -1734,44 +1734,42 @@ function BookingsView(){
                     var userName=(user.first_name||b.guest_name||"")+" "+(user.last_name||"");
                     var meta=svcMeta(b.service_type);
                     return(
-                      <div key={b.id} style={{display:"flex",gap:14,padding:"14px 18px",background:C.el,border:"1px solid "+C.bd,borderRadius:14,alignItems:"center",borderLeft:"3px solid "+sc,cursor:"pointer",transition:"background 0.15s"}}
+                      <div key={b.id} style={{display:"flex",gap:10,padding:"12px 14px",background:C.el,border:"1px solid "+C.bd,borderRadius:14,alignItems:"center",borderLeft:"3px solid "+sc,cursor:"pointer",transition:"background 0.15s",flexWrap:"wrap",rowGap:8}}
                         onClick={function(){setSelectedBooking(b);}}
                         onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
                         onMouseLeave={function(e){e.currentTarget.style.background=C.el;}}>
-                        <div style={{minWidth:50,textAlign:"center",flexShrink:0}}>
-                          <p style={{...sf(16,700),color:C.s1,margin:0}}>{b.reservation_time?(b.reservation_time.slice(0,5)):"—"}</p>
+                        <div style={{width:46,textAlign:"center",flexShrink:0}}>
+                          <p style={{...sf(15,700),color:C.s1,margin:0}}>{b.reservation_time?(b.reservation_time.slice(0,5)):"—"}</p>
                         </div>
-                        <div title={meta.label} style={{width:32,height:32,borderRadius:8,background:meta.color+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                          <Icon name={meta.icon} size={16} color={meta.color}/>
+                        <div title={meta.label} style={{width:30,height:30,borderRadius:8,background:meta.color+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                          <Icon name={meta.icon} size={15} color={meta.color}/>
                         </div>
-                        <div style={{flex:1,minWidth:0}}>
-                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3,flexWrap:"wrap"}}>
-                            <p style={{...sf(14,600),color:C.s1,margin:0}}>{b.restaurant_name||"—"}</p>
-                            <span style={{...sf(11),color:C.s5}}>· {b.party_size} guest{b.party_size!==1?"s":""}</span>
+                        <div style={{flex:"1 1 200px",minWidth:0,overflow:"hidden"}}>
+                          <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:2,flexWrap:"wrap"}}>
+                            <p style={{...sf(14,600),color:C.s1,margin:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{b.restaurant_name||"—"}</p>
+                            <span style={{...sf(11),color:C.s5,whiteSpace:"nowrap"}}>{b.party_size} guest{b.party_size!==1?"s":""}{b.city?" · "+b.city:""}</span>
                           </div>
                           <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-                            <span style={{...sf(12),color:C.s3}}>{userName.trim()||"Walk-in"}</span>
-                            {user.email&&<span style={{...sf(11),color:C.s5}}>{user.email}</span>}
-                            {b.occasion&&<span style={{...sf(10,500),padding:"2px 8px",borderRadius:6,background:C.srf,border:"1px solid "+C.bd,color:C.s4}}>{b.occasion}</span>}
-                            {b.seating_preference&&<span style={{...sf(10,500),padding:"2px 8px",borderRadius:6,background:C.srf,border:"1px solid "+C.bd,color:C.s4}}>{b.seating_preference}</span>}
+                            <span style={{...sf(12),color:C.s3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>{userName.trim()||"Walk-in"}{user.email?" · "+user.email:""}</span>
+                            {b.occasion&&<span style={{...sf(10,500),padding:"2px 8px",borderRadius:6,background:C.srf,border:"1px solid "+C.bd,color:C.s4,whiteSpace:"nowrap"}}>{b.occasion}</span>}
+                            {b.seating_preference&&<span style={{...sf(10,500),padding:"2px 8px",borderRadius:6,background:C.srf,border:"1px solid "+C.bd,color:C.s4,whiteSpace:"nowrap"}}>{b.seating_preference}</span>}
                           </div>
-                          {b.notes&&<p style={{...sf(11),color:C.gd,margin:"4px 0 0",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Note: {b.notes}</p>}
+                          {b.notes&&<p style={{...sf(11),color:C.gd,margin:"4px 0 0",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>Note: {b.notes}</p>}
                         </div>
-                        <div style={{minWidth:110,textAlign:"right",flexShrink:0}}>
+                        <div style={{textAlign:"right",flexShrink:0,whiteSpace:"nowrap"}}>
                           {b.commission_amount?(
                             <div>
                               <p style={{...sf(14,700),color:C.gd,margin:0}}>{money(b.commission_amount)}</p>
-                              {b.gross_amount&&<p style={{...sf(10),color:C.s5,margin:"2px 0 0"}}>of {money(b.gross_amount)} gross</p>}
+                              {b.gross_amount&&<p style={{...sf(10),color:C.s5,margin:"2px 0 0"}}>of {money(b.gross_amount)}</p>}
                             </div>
                           ):b.gross_amount?(
-                            <p style={{...sf(13,600),color:C.s3,margin:0}}>{money(b.gross_amount)} gross</p>
+                            <p style={{...sf(13,600),color:C.s3,margin:0}}>{money(b.gross_amount)}</p>
                           ):b.payment_amount?(
-                            <p style={{...sf(12,500),color:C.s5,margin:0}}>{money(b.payment_amount)} dep.</p>
+                            <p style={{...sf(12,500),color:C.s5,margin:0}}>{money(b.payment_amount)}</p>
                           ):<p style={{...sf(11),color:C.s6,margin:0}}>—</p>}
                         </div>
-                        <span style={{...sf(11),color:C.s5,flexShrink:0,minWidth:50,textAlign:"right"}}>{b.city||""}</span>
                         <select value={b.status||"pending"} onChange={function(e){e.stopPropagation();updateStatus(b.id,e.target.value);}} onClick={function(e){e.stopPropagation();}}
-                          style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:8,padding:"5px 10px",...sf(11,600),color:sc,outline:"none",appearance:"auto",flexShrink:0,cursor:"pointer"}}>
+                          style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:8,padding:"5px 8px",...sf(11,600),color:sc,outline:"none",appearance:"auto",flexShrink:0,cursor:"pointer",maxWidth:120}}>
                           {STATUSES.map(function(s){return <option key={s} value={s}>{s.replace("_"," ")}</option>;})}
                         </select>
                         <button title="Delete reservation" onClick={function(e){e.stopPropagation();setConfirmDelete(b);}}
@@ -3136,7 +3134,7 @@ function AdminDashboard({onLogout}){
   return(
     <div style={{display:"flex",minHeight:"100vh",background:C.bg}}>
       <Sidebar active={page} onNav={setPage} onLogout={onLogout} collapsed={collapsed} onToggle={function(){setCollapsed(!collapsed);}}/>
-      <div style={{flex:1,padding:"28px 32px",overflowY:"auto"}}>
+      <div style={{flex:1,minWidth:0,padding:"28px 32px",overflowY:"auto",overflowX:"hidden"}}>
         {renderContent()}
       </div>
     </div>
