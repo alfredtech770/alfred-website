@@ -1349,17 +1349,54 @@ function CategoryView({cat}){
 }
 
 /* ═══ Bookings View ═══ */
+// Service-type metadata for the Bookings tab. `id` matches the
+// `service_type` column in public.bookings.
+var SERVICE_TYPES=[
+  {id:"Dining",         label:"Dining",     icon:"restaurant", color:"#FF9500"},
+  {id:"Nightlife",      label:"Nightlife",  icon:"nightlife",  color:"#AF52DE"},
+  {id:"Yachts",         label:"Yachts",     icon:"yacht",      color:"#007AFF"},
+  {id:"Wellness",       label:"Wellness",   icon:"wellness",   color:"#34C759"},
+  {id:"Cars",           label:"Cars",       icon:"car",        color:"#FF3B30"},
+  {id:"Jets",           label:"Jets",       icon:"yacht",      color:"#5AC8FA"},
+  {id:"Accommodations", label:"Hotels",     icon:"star",       color:"#FFD60A"}
+];
+var STATUSES=["pending","requested","confirmed","completed","cancelled","no_show"];
+
+function svcMeta(svc){
+  for(var i=0;i<SERVICE_TYPES.length;i++){if(SERVICE_TYPES[i].id===svc)return SERVICE_TYPES[i];}
+  return {id:svc||"Dining",label:svc||"Dining",icon:"bookings",color:C.s5};
+}
+function money(n){
+  var v=Number(n)||0;
+  return "$"+v.toLocaleString("en-US",{minimumFractionDigits:v%1?2:0,maximumFractionDigits:2});
+}
+function csvEscape(s){
+  if(s==null)return "";
+  var v=String(s);
+  if(v.indexOf(",")<0&&v.indexOf("\"")<0&&v.indexOf("\n")<0)return v;
+  return "\""+v.replace(/"/g,"\"\"")+"\"";
+}
+function downloadCSV(rows,filename){
+  var blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
 function BookingsView(){
   var [bookings,setBookings]=useState([]);
   var [users,setUsers]=useState([]);
   var [loading,setLoading]=useState(true);
-  var [filter,setFilter]=useState("");
-  var [dateFilter,setDateFilter]=useState("");
+  var [statusFilter,setStatusFilter]=useState("");
+  var [categoryFilter,setCategoryFilter]=useState("");
   var [cityFilter,setCityFilter]=useState("");
+  var [dateFrom,setDateFrom]=useState("");
+  var [dateTo,setDateTo]=useState("");
   var [search,setSearch]=useState("");
-  var [viewMode,setViewMode]=useState("day");
   var [selectedBooking,setSelectedBooking]=useState(null);
   var [showAdd,setShowAdd]=useState(false);
+  var [confirmDelete,setConfirmDelete]=useState(null);
 
   async function load(){
     setLoading(true);
@@ -1381,29 +1418,66 @@ function BookingsView(){
   },[]);
 
   function getUser(userId){return users.find(function(u){return u.id===userId;})||{};}
+  function num(v){return Number(v)||0;}
 
-  var statusColors={pending:C.or,confirmed:C.gn,completed:C.bl,cancelled:C.rd,requested:C.bl};
-  var statusIcons={pending:"⏳",confirmed:"✅",completed:"✓",cancelled:"✕",requested:"📩"};
+  var statusColors={pending:C.or,requested:C.bl,confirmed:C.gn,completed:C.s2,cancelled:C.rd,no_show:"#8E8E93"};
 
+  // Apply filters
   var filtered=bookings.filter(function(b){
-    if(filter&&b.status!==filter)return false;
-    if(dateFilter&&b.reservation_date!==dateFilter)return false;
+    if(statusFilter&&b.status!==statusFilter)return false;
+    if(categoryFilter&&(b.service_type||"Dining")!==categoryFilter)return false;
     if(cityFilter&&b.city!==cityFilter)return false;
+    if(dateFrom&&(b.reservation_date||"")<dateFrom)return false;
+    if(dateTo&&(b.reservation_date||"")>dateTo)return false;
     if(search){
       var s=search.toLowerCase();
       var user=getUser(b.user_id);
       var userName=((user.first_name||"")+" "+(user.last_name||"")).toLowerCase();
-      if(!(b.restaurant_name||"").toLowerCase().includes(s)&&!userName.includes(s)&&!(user.email||"").toLowerCase().includes(s))return false;
+      if(!(b.restaurant_name||"").toLowerCase().includes(s)&&!userName.includes(s)&&!(user.email||"").toLowerCase().includes(s)&&!(b.notes||"").toLowerCase().includes(s))return false;
     }
     return true;
   });
 
-  var dates=[...new Set(bookings.map(function(b){return b.reservation_date;}))].sort().reverse();
-  var cities=[...new Set(bookings.map(function(b){return b.city;}).filter(Boolean))].sort();
-  var counts={all:bookings.length,pending:0,confirmed:0,completed:0,cancelled:0,requested:0};
-  bookings.forEach(function(b){if(counts[b.status]!==undefined)counts[b.status]++;});
+  // ===== Revenue & operational metrics (scoped to filtered set) =====
+  var metrics={
+    count:filtered.length,confirmedCount:0,completedCount:0,cancelledCount:0,noShowCount:0,pendingCount:0,
+    totalGross:0,totalCommission:0,totalGuests:0,
+    byCategory:{},byCity:{},byVenue:{},byMember:{}
+  };
+  filtered.forEach(function(b){
+    var s=b.status||"pending";
+    if(s==="confirmed")metrics.confirmedCount++;
+    else if(s==="completed")metrics.completedCount++;
+    else if(s==="cancelled")metrics.cancelledCount++;
+    else if(s==="no_show")metrics.noShowCount++;
+    else if(s==="pending"||s==="requested")metrics.pendingCount++;
+    var gross=num(b.gross_amount);
+    var commission=num(b.commission_amount);
+    metrics.totalGross+=gross;
+    metrics.totalCommission+=commission;
+    metrics.totalGuests+=num(b.party_size);
+    var cat=b.service_type||"Dining";
+    var city=b.city||"Unknown";
+    var venue=b.restaurant_name||"—";
+    if(!metrics.byCategory[cat])metrics.byCategory[cat]={count:0,gross:0,commission:0};
+    metrics.byCategory[cat].count++;metrics.byCategory[cat].gross+=gross;metrics.byCategory[cat].commission+=commission;
+    if(!metrics.byCity[city])metrics.byCity[city]={count:0,gross:0,commission:0};
+    metrics.byCity[city].count++;metrics.byCity[city].gross+=gross;metrics.byCity[city].commission+=commission;
+    if(!metrics.byVenue[venue])metrics.byVenue[venue]={count:0,gross:0,commission:0};
+    metrics.byVenue[venue].count++;metrics.byVenue[venue].gross+=gross;metrics.byVenue[venue].commission+=commission;
+    if(b.user_id){
+      var u=getUser(b.user_id);
+      var name=((u.first_name||"")+" "+(u.last_name||"")).trim()||u.email||"Member";
+      if(!metrics.byMember[b.user_id])metrics.byMember[b.user_id]={name:name,count:0,gross:0,commission:0};
+      metrics.byMember[b.user_id].count++;metrics.byMember[b.user_id].gross+=gross;metrics.byMember[b.user_id].commission+=commission;
+    }
+  });
+  var avgCommission=metrics.count?metrics.totalCommission/metrics.count:0;
+  var avgGross=metrics.count?metrics.totalGross/metrics.count:0;
+  var conversionRate=metrics.count?(metrics.confirmedCount+metrics.completedCount)/metrics.count*100:0;
+  var noShowRate=metrics.count?metrics.noShowCount/metrics.count*100:0;
 
-  // Group by date
+  // Group by date (descending)
   var byDate={};
   filtered.forEach(function(b){
     var d=b.reservation_date||"Unknown";
@@ -1412,11 +1486,14 @@ function BookingsView(){
   });
   var sortedDates=Object.keys(byDate).sort().reverse();
 
-  // Today's bookings
   var today=new Date().toISOString().slice(0,10);
-  var todayBookings=bookings.filter(function(b){return b.reservation_date===today;});
   var tomorrowDate=new Date(Date.now()+86400000).toISOString().slice(0,10);
-  var tomorrowBookings=bookings.filter(function(b){return b.reservation_date===tomorrowDate;});
+
+  // Status counts across ALL bookings (chip badges)
+  var statusCountsAll={"":bookings.length};
+  bookings.forEach(function(b){var s=b.status||"pending";statusCountsAll[s]=(statusCountsAll[s]||0)+1;});
+
+  var cities=[...new Set(bookings.map(function(b){return b.city;}).filter(Boolean))].sort();
 
   async function updateStatus(id,status){
     var booking=bookings.find(function(b){return b.id===id;});
@@ -1425,93 +1502,213 @@ function BookingsView(){
     notifySlack("booking","Bookings",(user.first_name||"")+" "+(user.last_name||""),"*Status changed to:* "+status+" | *Venue:* "+(booking?booking.restaurant_name:"")+" | *Guest:* "+(user.email||booking&&booking.user_id||"unknown")+" | *Date:* "+(booking?booking.reservation_date:"")+" "+(booking?booking.reservation_time?"at "+(booking.reservation_time.slice(0,5)):"":""));
     load();
   }
-
   async function addNote(id,note){
     await supabase.from("bookings").update({notes:note,updated_at:new Date().toISOString()}).eq("id",id);
     load();
   }
-
   async function saveBooking(form){
-    if(form.id){
-      var id=form.id;delete form.id;delete form.created_at;
-      form.updated_at=new Date().toISOString();
-      await supabase.from("bookings").update(form).eq("id",id);
+    var clean={...form};
+    if(clean.party_size!==undefined&&clean.party_size!=="")clean.party_size=Number(clean.party_size);
+    clean.gross_amount=(clean.gross_amount===""||clean.gross_amount==null)?null:Number(clean.gross_amount);
+    clean.commission_amount=(clean.commission_amount===""||clean.commission_amount==null)?null:Number(clean.commission_amount);
+    if(clean.payment_amount!==undefined&&clean.payment_amount!=="")clean.payment_amount=Number(clean.payment_amount);
+    if(!clean.user_id)delete clean.user_id;
+    var isUpdate=!!clean.id;
+    if(isUpdate){
+      var id=clean.id;delete clean.id;delete clean.created_at;
+      clean.updated_at=new Date().toISOString();
+      var r1=await supabase.from("bookings").update(clean).eq("id",id);
+      if(r1.error){alert("Update failed: "+r1.error.message);return;}
+      notifySlack("updated","Bookings",clean.restaurant_name||"","Reservation updated · "+(clean.reservation_date||"")+" "+(clean.reservation_time||"")+" · status: "+(clean.status||""));
     }else{
-      form.created_at=new Date().toISOString();
-      form.updated_at=new Date().toISOString();
-      await supabase.from("bookings").insert(form);
+      clean.created_at=new Date().toISOString();
+      clean.updated_at=new Date().toISOString();
+      var r2=await supabase.from("bookings").insert(clean);
+      if(r2.error){alert("Insert failed: "+r2.error.message);return;}
+      notifySlack("created","Bookings",clean.restaurant_name||"","New reservation · "+(clean.service_type||"Dining")+" · "+(clean.reservation_date||"")+" "+(clean.reservation_time||""));
     }
     setSelectedBooking(null);setShowAdd(false);load();
   }
+  async function deleteBooking(id){
+    var b=bookings.find(function(x){return x.id===id;});
+    var r=await supabase.from("bookings").delete().eq("id",id);
+    if(r.error){alert("Delete failed: "+r.error.message);return;}
+    notifySlack("deleted","Bookings",b?b.restaurant_name||"":"","Reservation deleted"+(b?" · "+(b.reservation_date||"")+" "+(b.reservation_time||""):""));
+    setConfirmDelete(null);setSelectedBooking(null);load();
+  }
+
+  function exportCSV(){
+    var headers=["id","status","service_type","reservation_date","reservation_time","venue","city","party_size","gross_amount","commission_amount","payment_amount","guest_name","guest_email","occasion","seating_preference","notes","created_at"];
+    var lines=[headers.join(",")];
+    filtered.forEach(function(b){
+      var u=getUser(b.user_id);
+      var name=((u.first_name||b.guest_name||"")+" "+(u.last_name||"")).trim();
+      var row=[b.id,b.status||"",b.service_type||"",b.reservation_date||"",b.reservation_time?b.reservation_time.slice(0,5):"",b.restaurant_name||"",b.city||"",b.party_size||"",b.gross_amount||"",b.commission_amount||"",b.payment_amount||"",name,u.email||b.guest_email||"",b.occasion||"",b.seating_preference||"",(b.notes||"").replace(/\n/g," "),b.created_at||""];
+      lines.push(row.map(csvEscape).join(","));
+    });
+    downloadCSV(lines,"alfred-bookings-"+today+".csv");
+  }
+
+  var categoryRows=Object.keys(metrics.byCategory).map(function(k){return {k:k,count:metrics.byCategory[k].count,gross:metrics.byCategory[k].gross,commission:metrics.byCategory[k].commission};}).sort(function(a,b){return b.commission-a.commission||b.count-a.count;});
+  var topVenues=Object.keys(metrics.byVenue).map(function(k){return {k:k,count:metrics.byVenue[k].count,gross:metrics.byVenue[k].gross,commission:metrics.byVenue[k].commission};}).sort(function(a,b){return b.commission-a.commission||b.count-a.count;}).slice(0,5);
+  var topMembers=Object.keys(metrics.byMember).map(function(k){return metrics.byMember[k];}).sort(function(a,b){return b.commission-a.commission||b.count-a.count;}).slice(0,5);
+  var maxCatCommission=categoryRows.reduce(function(m,r){return Math.max(m,r.commission);},1);
+
+  function clearFilters(){setStatusFilter("");setCategoryFilter("");setCityFilter("");setDateFrom("");setDateTo("");setSearch("");}
+  var anyFilter=!!(statusFilter||categoryFilter||cityFilter||dateFrom||dateTo||search);
 
   return(
     <div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:20}}>
-        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Reservations</h2>
-        <button onClick={function(){setShowAdd(true);}} style={{...btn(C.gd,"#000"),fontWeight:700}}>+ New Reservation</button>
-      </div>
-
-      {/* Stats Row */}
-      <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:20}}>
-        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"14px 18px",flex:"1 1 100px",textAlign:"center"}}>
-          <p style={{...sf(22,700),color:C.gd,margin:0}}>{todayBookings.length}</p>
-          <p style={{...sf(10,500),color:C.s5,margin:"2px 0 0",letterSpacing:1}}>TODAY</p>
+        <div>
+          <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Reservations</h2>
+          <p style={{...sf(12),color:C.s5,margin:"4px 0 0"}}>{filtered.length} of {bookings.length} reservation{bookings.length!==1?"s":""}{anyFilter?" · filtered":""}</p>
         </div>
-        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"14px 18px",flex:"1 1 100px",textAlign:"center"}}>
-          <p style={{...sf(22,700),color:C.bl,margin:0}}>{tomorrowBookings.length}</p>
-          <p style={{...sf(10,500),color:C.s5,margin:"2px 0 0",letterSpacing:1}}>TOMORROW</p>
-        </div>
-        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"14px 18px",flex:"1 1 100px",textAlign:"center"}}>
-          <p style={{...sf(22,700),color:C.or,margin:0}}>{counts.pending+counts.requested}</p>
-          <p style={{...sf(10,500),color:C.s5,margin:"2px 0 0",letterSpacing:1}}>PENDING</p>
-        </div>
-        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"14px 18px",flex:"1 1 100px",textAlign:"center"}}>
-          <p style={{...sf(22,700),color:C.gn,margin:0}}>{counts.confirmed}</p>
-          <p style={{...sf(10,500),color:C.s5,margin:"2px 0 0",letterSpacing:1}}>CONFIRMED</p>
-        </div>
-        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:12,padding:"14px 18px",flex:"1 1 100px",textAlign:"center"}}>
-          <p style={{...sf(22,700),color:C.s1,margin:0}}>{counts.all}</p>
-          <p style={{...sf(10,500),color:C.s5,margin:"2px 0 0",letterSpacing:1}}>TOTAL</p>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <button onClick={exportCSV} style={btn(C.srf,C.s2,{bd:C.bd})} title="Download filtered reservations as CSV">
+            <Icon name="down" size={14} color={C.s3}/> Export CSV
+          </button>
+          <button onClick={function(){setShowAdd(true);}} style={{...btn(C.gd,"#000"),fontWeight:700}}>
+            <Icon name="add" size={14} color="#000"/> New Reservation
+          </button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12,alignItems:"center"}}>
-        {["","pending","requested","confirmed","completed","cancelled"].map(function(s){
-          var active=filter===s;var label=s||"All";var count=s?counts[s]||0:counts.all;
-          return <button key={s} onClick={function(){setFilter(s);}}
-            style={{padding:"7px 14px",background:active?C.srf:"none",border:"1px solid "+(active?C.bd:"transparent"),
-              borderRadius:10,...sf(12,active?600:400),color:active?C.s1:C.s5,cursor:"pointer",textTransform:"capitalize",display:"flex",alignItems:"center",gap:6}}>
-            {label}<span style={{...sf(10,600),color:active?C.gd:C.s6,background:active?C.gd+"15":C.srf,padding:"1px 6px",borderRadius:10}}>{count}</span>
+      {/* Revenue Cards */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:12,marginBottom:16}}>
+        <RevCard label="Revenue (Commission)" value={money(metrics.totalCommission)} sub={metrics.count+" booking"+(metrics.count!==1?"s":"")} color={C.gd} hi/>
+        <RevCard label="Gross Booking Value" value={money(metrics.totalGross)} sub={"Avg "+money(avgGross)+"/booking"} color={C.bl}/>
+        <RevCard label="Avg Commission" value={money(avgCommission)} sub="per booking" color={C.gn}/>
+        <RevCard label="Confirmed / Completed" value={String(metrics.confirmedCount+metrics.completedCount)} sub={conversionRate.toFixed(0)+"% conversion"} color={C.gn}/>
+        <RevCard label="Pending / Requested" value={String(metrics.pendingCount)} sub="awaiting action" color={C.or}/>
+        <RevCard label="Cancelled / No-show" value={String(metrics.cancelledCount+metrics.noShowCount)} sub={noShowRate.toFixed(0)+"% no-show"} color={C.rd}/>
+      </div>
+
+      {/* Insights Panel */}
+      {metrics.count>0&&(
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:20}}>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,padding:"16px 18px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",margin:"0 0 12px"}}>Revenue by Category</p>
+          {categoryRows.length===0?<p style={{...sf(12),color:C.s5,margin:0}}>No revenue recorded</p>:categoryRows.map(function(r){
+            var meta=svcMeta(r.k);
+            var pct=maxCatCommission?r.commission/maxCatCommission*100:0;
+            return(
+              <div key={r.k} style={{marginBottom:10}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                  <span style={{...sf(12,500),color:C.s2,display:"flex",alignItems:"center",gap:6}}>
+                    <Icon name={meta.icon} size={12} color={meta.color}/> {meta.label}
+                    <span style={{...sf(10),color:C.s5}}>({r.count})</span>
+                  </span>
+                  <span style={{...sf(12,600),color:C.gd}}>{money(r.commission)}</span>
+                </div>
+                <div style={{height:6,background:C.srf,borderRadius:3,overflow:"hidden"}}>
+                  <div style={{width:pct+"%",height:"100%",background:meta.color,borderRadius:3}}/>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,padding:"16px 18px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",margin:"0 0 12px"}}>Top Venues by Revenue</p>
+          {topVenues.length===0?<p style={{...sf(12),color:C.s5,margin:0}}>No venues</p>:topVenues.map(function(r,i){
+            return(
+              <div key={r.k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:i<topVenues.length-1?"1px solid "+C.bd:"none"}}>
+                <div style={{minWidth:0,flex:1}}>
+                  <p style={{...sf(13,500),color:C.s2,margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{r.k}</p>
+                  <p style={{...sf(10),color:C.s5,margin:"2px 0 0"}}>{r.count} booking{r.count!==1?"s":""} · {money(r.gross)} gross</p>
+                </div>
+                <span style={{...sf(13,600),color:C.gd,marginLeft:10,flexShrink:0}}>{money(r.commission)}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,padding:"16px 18px"}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",margin:"0 0 12px"}}>Top Members by Spend</p>
+          {topMembers.length===0?<p style={{...sf(12),color:C.s5,margin:0}}>No member spend recorded</p>:topMembers.map(function(r,i){
+            return(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:i<topMembers.length-1?"1px solid "+C.bd:"none"}}>
+                <div style={{minWidth:0,flex:1}}>
+                  <p style={{...sf(13,500),color:C.s2,margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{r.name}</p>
+                  <p style={{...sf(10),color:C.s5,margin:"2px 0 0"}}>{r.count} booking{r.count!==1?"s":""} · {money(r.gross)} gross</p>
+                </div>
+                <span style={{...sf(13,600),color:C.gd,marginLeft:10,flexShrink:0}}>{money(r.commission)}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      )}
+
+      {/* Status chips */}
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
+        {["","pending","requested","confirmed","completed","cancelled","no_show"].map(function(s){
+          var active=statusFilter===s;
+          var label=s?s.replace("_"," "):"All Status";
+          var count=statusCountsAll[s]||0;
+          var color=s?(statusColors[s]||C.s5):C.s2;
+          return <button key={s||"all"} onClick={function(){setStatusFilter(s);}}
+            style={{padding:"6px 12px",background:active?C.srf:"none",border:"1px solid "+(active?color+"50":"transparent"),
+              borderRadius:8,...sf(12,active?600:500),color:active?C.s1:C.s5,cursor:"pointer",textTransform:"capitalize",display:"flex",alignItems:"center",gap:6}}>
+            {label}<span style={{...sf(10,600),color:active?color:C.s6,background:active?color+"15":C.srf,padding:"1px 6px",borderRadius:8}}>{count}</span>
           </button>;
         })}
       </div>
+
+      {/* Category chips */}
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
+        <button onClick={function(){setCategoryFilter("");}}
+          style={{padding:"6px 12px",background:categoryFilter===""?C.srf:"none",border:"1px solid "+(categoryFilter===""?C.bd:"transparent"),borderRadius:8,...sf(12,categoryFilter===""?600:500),color:categoryFilter===""?C.s1:C.s5,cursor:"pointer"}}>
+          All Categories
+        </button>
+        {SERVICE_TYPES.map(function(t){
+          var active=categoryFilter===t.id;
+          var count=bookings.filter(function(b){return (b.service_type||"Dining")===t.id;}).length;
+          if(count===0&&!active)return null;
+          return <button key={t.id} onClick={function(){setCategoryFilter(t.id);}}
+            style={{padding:"6px 12px",background:active?C.srf:"none",border:"1px solid "+(active?t.color+"50":"transparent"),borderRadius:8,...sf(12,active?600:500),color:active?C.s1:C.s5,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+            <Icon name={t.icon} size={11} color={t.color}/>{t.label}
+            <span style={{...sf(10,600),color:active?t.color:C.s6,background:active?t.color+"15":C.srf,padding:"1px 6px",borderRadius:8}}>{count}</span>
+          </button>;
+        })}
+      </div>
+
+      {/* Search + date range + city */}
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20,alignItems:"center"}}>
-        <div style={{position:"relative",flex:"1 1 180px",maxWidth:280}}>
+        <div style={{position:"relative",flex:"1 1 220px",maxWidth:320}}>
           <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)"}}><Icon name="search" size={14} color={C.s5}/></div>
-          <input placeholder="Search by guest, venue, email..." value={search} onChange={function(e){setSearch(e.target.value);}}
+          <input placeholder="Search guest, venue, email, notes..." value={search} onChange={function(e){setSearch(e.target.value);}}
             style={{width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"9px 12px 9px 32px",...sf(13),color:C.s1,outline:"none"}}/>
         </div>
-        <select value={dateFilter} onChange={function(e){setDateFilter(e.target.value);}}
-          style={{padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,...sf(12),color:C.s3,outline:"none",appearance:"auto"}}>
-          <option value="">All Dates</option>
-          <option value={today}>Today ({today})</option>
-          <option value={tomorrowDate}>Tomorrow</option>
-          {dates.slice(0,20).map(function(d){return <option key={d} value={d}>{d}</option>;})}
-        </select>
+        <div style={{display:"flex",gap:6,alignItems:"center",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"4px 10px"}}>
+          <span style={{...sf(11),color:C.s5}}>From</span>
+          <input type="date" value={dateFrom} onChange={function(e){setDateFrom(e.target.value);}}
+            style={{background:"transparent",border:"none",...sf(12),color:C.s1,outline:"none",colorScheme:"dark"}}/>
+          <span style={{...sf(11),color:C.s5}}>To</span>
+          <input type="date" value={dateTo} onChange={function(e){setDateTo(e.target.value);}}
+            style={{background:"transparent",border:"none",...sf(12),color:C.s1,outline:"none",colorScheme:"dark"}}/>
+        </div>
+        <button onClick={function(){setDateFrom(today);setDateTo(today);}} style={btn("none",C.s4,{sm:true,bd:C.bd})}>Today</button>
+        <button onClick={function(){
+          var d=new Date();d.setDate(d.getDate()-7);
+          setDateFrom(d.toISOString().slice(0,10));setDateTo(today);
+        }} style={btn("none",C.s4,{sm:true,bd:C.bd})}>Last 7d</button>
+        <button onClick={function(){
+          var d=new Date();d.setDate(d.getDate()-30);
+          setDateFrom(d.toISOString().slice(0,10));setDateTo(today);
+        }} style={btn("none",C.s4,{sm:true,bd:C.bd})}>Last 30d</button>
         <select value={cityFilter} onChange={function(e){setCityFilter(e.target.value);}}
           style={{padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,...sf(12),color:C.s3,outline:"none",appearance:"auto"}}>
           <option value="">All Cities</option>
           {cities.map(function(c){return <option key={c} value={c}>{c}</option>;})}
         </select>
-        <span style={{...sf(12),color:C.s5}}>{filtered.length} reservation{filtered.length!==1?"s":""}</span>
+        {anyFilter&&<button onClick={clearFilters} style={btn("none",C.s4,{sm:true,bd:C.bd})}>Clear filters</button>}
       </div>
 
       {/* Bookings grouped by date */}
       {loading?<div style={{padding:"60px",textAlign:"center",color:C.s5}}>Loading reservations...</div>:filtered.length===0?(
         <div style={{textAlign:"center",padding:"60px 20px",background:C.el,borderRadius:16,border:"1px solid "+C.bd}}>
           <p style={{...sf(16,500),color:C.s3,margin:"0 0 8px"}}>No reservations found</p>
-          <p style={{...sf(13),color:C.s5}}>Try adjusting your filters or add a new reservation.</p>
+          <p style={{...sf(13),color:C.s5}}>{anyFilter?"Try adjusting your filters or ":""}<button onClick={function(){setShowAdd(true);}} style={{background:"none",border:"none",color:C.gd,cursor:"pointer",...sf(13),textDecoration:"underline"}}>add a new reservation</button>.</p>
         </div>
       ):(
         <div style={{display:"grid",gap:20}}>
@@ -1521,50 +1718,68 @@ function BookingsView(){
             var isTomorrow=date===tomorrowDate;
             var dayLabel=isToday?"Today":isTomorrow?"Tomorrow":new Date(date+"T12:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
             var totalGuests=dayBookings.reduce(function(s,b){return s+(b.party_size||0);},0);
+            var dayCommission=dayBookings.reduce(function(s,b){return s+num(b.commission_amount);},0);
 
             return(
               <div key={date}>
-                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12,flexWrap:"wrap"}}>
                   <h3 style={{...sf(16,600),color:isToday?C.gd:isTomorrow?C.bl:C.s2,margin:0}}>{dayLabel}</h3>
-                  <span style={{...sf(11),color:C.s5}}>{dayBookings.length} reservation{dayBookings.length!==1?"s":""} · {totalGuests} guests</span>
+                  <span style={{...sf(11),color:C.s5}}>{dayBookings.length} reservation{dayBookings.length!==1?"s":""} · {totalGuests} guests{dayCommission>0?" · "+money(dayCommission)+" commission":""}</span>
                   {isToday&&<span style={{...sf(10,600),padding:"2px 8px",borderRadius:20,background:C.gd+"15",color:C.gd}}>TODAY</span>}
                 </div>
                 <div style={{display:"grid",gap:8}}>
                   {dayBookings.sort(function(a,b){return (a.reservation_time||"").localeCompare(b.reservation_time||"");}).map(function(b){
                     var user=getUser(b.user_id);
-                    var sc=statusColors[b.status]||C.s5;
-                    var userName=(user.first_name||"")+" "+(user.last_name||"");
+                    var sc=statusColors[b.status||"pending"]||C.s5;
+                    var userName=(user.first_name||b.guest_name||"")+" "+(user.last_name||"");
+                    var meta=svcMeta(b.service_type);
                     return(
                       <div key={b.id} style={{display:"flex",gap:14,padding:"14px 18px",background:C.el,border:"1px solid "+C.bd,borderRadius:14,alignItems:"center",borderLeft:"3px solid "+sc,cursor:"pointer",transition:"background 0.15s"}}
                         onClick={function(){setSelectedBooking(b);}}
                         onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
                         onMouseLeave={function(e){e.currentTarget.style.background=C.el;}}>
-                        {/* Time */}
                         <div style={{minWidth:50,textAlign:"center",flexShrink:0}}>
-                          <p style={{...sf(16,700),color:C.s1,margin:0}}>{b.reservation_time?(b.reservation_time.slice(0,5)):"-"}</p>
+                          <p style={{...sf(16,700),color:C.s1,margin:0}}>{b.reservation_time?(b.reservation_time.slice(0,5)):"—"}</p>
                         </div>
-                        {/* Venue + Guest info */}
+                        <div title={meta.label} style={{width:32,height:32,borderRadius:8,background:meta.color+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                          <Icon name={meta.icon} size={16} color={meta.color}/>
+                        </div>
                         <div style={{flex:1,minWidth:0}}>
-                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
-                            <p style={{...sf(14,600),color:C.s1,margin:0}}>{b.restaurant_name}</p>
+                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3,flexWrap:"wrap"}}>
+                            <p style={{...sf(14,600),color:C.s1,margin:0}}>{b.restaurant_name||"—"}</p>
                             <span style={{...sf(11),color:C.s5}}>· {b.party_size} guest{b.party_size!==1?"s":""}</span>
                           </div>
                           <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-                            <span style={{...sf(12),color:C.s3}}>{userName.trim()||"Unknown"}</span>
+                            <span style={{...sf(12),color:C.s3}}>{userName.trim()||"Walk-in"}</span>
                             {user.email&&<span style={{...sf(11),color:C.s5}}>{user.email}</span>}
-                            {user.instagram_handle&&<span style={{...sf(11),color:C.s5}}>@{user.instagram_handle}</span>}
                             {b.occasion&&<span style={{...sf(10,500),padding:"2px 8px",borderRadius:6,background:C.srf,border:"1px solid "+C.bd,color:C.s4}}>{b.occasion}</span>}
                             {b.seating_preference&&<span style={{...sf(10,500),padding:"2px 8px",borderRadius:6,background:C.srf,border:"1px solid "+C.bd,color:C.s4}}>{b.seating_preference}</span>}
                           </div>
-                          {b.notes&&<p style={{...sf(11),color:C.gd,margin:"4px 0 0"}}>Note: {b.notes}</p>}
+                          {b.notes&&<p style={{...sf(11),color:C.gd,margin:"4px 0 0",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Note: {b.notes}</p>}
                         </div>
-                        {/* City */}
-                        <span style={{...sf(11),color:C.s5,flexShrink:0}}>{b.city||""}</span>
-                        {/* Status */}
+                        <div style={{minWidth:110,textAlign:"right",flexShrink:0}}>
+                          {b.commission_amount?(
+                            <div>
+                              <p style={{...sf(14,700),color:C.gd,margin:0}}>{money(b.commission_amount)}</p>
+                              {b.gross_amount&&<p style={{...sf(10),color:C.s5,margin:"2px 0 0"}}>of {money(b.gross_amount)} gross</p>}
+                            </div>
+                          ):b.gross_amount?(
+                            <p style={{...sf(13,600),color:C.s3,margin:0}}>{money(b.gross_amount)} gross</p>
+                          ):b.payment_amount?(
+                            <p style={{...sf(12,500),color:C.s5,margin:0}}>{money(b.payment_amount)} dep.</p>
+                          ):<p style={{...sf(11),color:C.s6,margin:0}}>—</p>}
+                        </div>
+                        <span style={{...sf(11),color:C.s5,flexShrink:0,minWidth:50,textAlign:"right"}}>{b.city||""}</span>
                         <select value={b.status||"pending"} onChange={function(e){e.stopPropagation();updateStatus(b.id,e.target.value);}} onClick={function(e){e.stopPropagation();}}
                           style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:8,padding:"5px 10px",...sf(11,600),color:sc,outline:"none",appearance:"auto",flexShrink:0,cursor:"pointer"}}>
-                          {["pending","requested","confirmed","completed","cancelled"].map(function(s){return <option key={s} value={s}>{s}</option>;})}
+                          {STATUSES.map(function(s){return <option key={s} value={s}>{s.replace("_"," ")}</option>;})}
                         </select>
+                        <button title="Delete reservation" onClick={function(e){e.stopPropagation();setConfirmDelete(b);}}
+                          style={{background:"transparent",border:"none",cursor:"pointer",padding:6,borderRadius:6,flexShrink:0,opacity:0.5,transition:"opacity 0.15s"}}
+                          onMouseEnter={function(e){e.currentTarget.style.opacity="1";}}
+                          onMouseLeave={function(e){e.currentTarget.style.opacity="0.5";}}>
+                          <Icon name="del" size={14} color={C.rd}/>
+                        </button>
                       </div>
                     );
                   })}
@@ -1575,21 +1790,52 @@ function BookingsView(){
         </div>
       )}
 
-      {/* Booking Detail Modal */}
-      {selectedBooking&&<BookingDetailModal booking={selectedBooking} user={getUser(selectedBooking.user_id)} statusColors={statusColors} onClose={function(){setSelectedBooking(null);}} onUpdateStatus={updateStatus} onAddNote={addNote} onLoad={load}/>}
-
-      {/* Add Reservation Modal */}
+      {selectedBooking&&<BookingDetailModal booking={selectedBooking} user={getUser(selectedBooking.user_id)} users={users} statusColors={statusColors} onClose={function(){setSelectedBooking(null);}} onUpdateStatus={updateStatus} onAddNote={addNote} onSave={saveBooking} onDelete={function(){setConfirmDelete(selectedBooking);}} onLoad={load}/>}
       {showAdd&&<BookingAddModal users={users} onClose={function(){setShowAdd(false);}} onSave={saveBooking}/>}
+      {confirmDelete&&<DeleteBookingConfirm booking={confirmDelete} onCancel={function(){setConfirmDelete(null);}} onConfirm={function(){deleteBooking(confirmDelete.id);}}/>}
     </div>
   );
 }
 
-function BookingDetailModal({booking,user,statusColors,onClose,onUpdateStatus,onAddNote,onLoad}){
+function RevCard({label,value,sub,color,hi}){
+  return(
+    <div style={{background:hi?"linear-gradient(135deg,"+C.el+","+(color||C.gd)+"08)":C.el,border:"1px solid "+(hi?(color||C.gd)+"40":C.bd),borderRadius:14,padding:"16px 18px"}}>
+      <p style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",margin:"0 0 8px"}}>{label}</p>
+      <p style={{...sf(24,700),color:hi?(color||C.gd):C.s1,margin:0,letterSpacing:-0.5}}>{value}</p>
+      {sub&&<p style={{...sf(11),color:C.s5,margin:"4px 0 0"}}>{sub}</p>}
+    </div>
+  );
+}
+
+function DeleteBookingConfirm({booking,onCancel,onConfirm}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1100,padding:16,backdropFilter:"blur(8px)"}}
+      onClick={function(e){if(e.target===e.currentTarget)onCancel();}}>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:18,padding:"28px 32px",width:"100%",maxWidth:420}}>
+        <div style={{width:48,height:48,borderRadius:12,background:C.rd+"15",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:16}}>
+          <Icon name="del" size={22} color={C.rd}/>
+        </div>
+        <h3 style={{...sf(18,600),color:C.s1,margin:"0 0 8px"}}>Delete reservation?</h3>
+        <p style={{...sf(13),color:C.s4,margin:"0 0 20px",lineHeight:1.5}}>
+          {booking.restaurant_name||"This booking"} · {booking.reservation_date||"—"}{booking.reservation_time?" at "+booking.reservation_time.slice(0,5):""}. This cannot be undone.
+        </p>
+        <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+          <button onClick={onCancel} style={btn("none",C.s3,{bd:C.bd})}>Cancel</button>
+          <button onClick={onConfirm} style={btn(C.rd,"#FFF")}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BookingDetailModal({booking,user,users,statusColors,onClose,onUpdateStatus,onAddNote,onSave,onDelete,onLoad}){
   var b=booking;
-  var sc=statusColors[b.status]||"#71717A";
+  var sc=statusColors[b.status||"pending"]||"#71717A";
   var [note,setNote]=useState(b.notes||"");
-  
-  // Get booking link for the restaurant
+  var [editMode,setEditMode]=useState(false);
+  var [form,setForm]=useState({...b,reservation_time:b.reservation_time?b.reservation_time.slice(0,5):""});
+  function set(k,v){setForm(function(p){var n={};for(var key in p)n[key]=p[key];n[k]=v;return n;});}
+
   var bookingLinks={
     "Carbone":"https://www.exploretock.com/carbone",
     "Zuma":"https://www.sevenrooms.com/reservations/zumamia",
@@ -1604,15 +1850,11 @@ function BookingDetailModal({booking,user,statusColors,onClose,onUpdateStatus,on
     "Cecconis":"https://www.opentable.com/r/cecconis-miami-beach",
     "Casa Tua":"https://www.casatualife.com/miami-beach",
   };
-  
-  // Try to find a booking link by partial match
   var venueLink=null;
   var venueName=b.restaurant_name||"";
   Object.keys(bookingLinks).forEach(function(key){
     if(venueName.toLowerCase().includes(key.toLowerCase()))venueLink=bookingLinks[key];
   });
-  
-  // Also check Supabase for the restaurant's booking_platform and website_url
   var [venueData,setVenueData]=useState(null);
   useEffect(function(){
     if(b.restaurant_id){
@@ -1622,69 +1864,153 @@ function BookingDetailModal({booking,user,statusColors,onClose,onUpdateStatus,on
     }
   },[b.restaurant_id]);
 
+  var meta=svcMeta(b.service_type);
+  var inputStyle={width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(14),color:C.s1,outline:"none"};
+  var labelStyle={...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6};
+
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}}
       onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
-      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:580,maxHeight:"90vh",overflow:"auto"}}>
-        <div style={{padding:"24px",borderBottom:"1px solid "+C.bd,display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-          <div>
-            <h2 style={{...sf(20,600),color:C.s1,margin:"0 0 4px"}}>{b.restaurant_name}</h2>
-            <p style={{...sf(13),color:C.s5,margin:0}}>{b.reservation_date} at {b.reservation_time?b.reservation_time.slice(0,5):"-"} · {b.city}</p>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:620,maxHeight:"90vh",overflow:"auto"}}>
+        <div style={{padding:"24px",borderBottom:"1px solid "+C.bd,display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:12}}>
+          <div style={{display:"flex",gap:12,alignItems:"center",minWidth:0,flex:1}}>
+            <div style={{width:40,height:40,borderRadius:10,background:meta.color+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <Icon name={meta.icon} size={20} color={meta.color}/>
+            </div>
+            <div style={{minWidth:0}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                <span style={{...sf(10,600),padding:"2px 8px",borderRadius:6,background:meta.color+"15",color:meta.color,textTransform:"uppercase",letterSpacing:0.6}}>{meta.label}</span>
+              </div>
+              <h2 style={{...sf(20,600),color:C.s1,margin:"0 0 4px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{b.restaurant_name||"—"}</h2>
+              <p style={{...sf(13),color:C.s5,margin:0}}>{b.reservation_date||"—"}{b.reservation_time?" at "+b.reservation_time.slice(0,5):""} · {b.city||"—"}</p>
+            </div>
           </div>
-          <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:22}}>×</button>
+          <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:22,padding:0,lineHeight:1}}>×</button>
         </div>
+
         <div style={{padding:"24px",display:"grid",gap:20}}>
-          {/* Quick Actions */}
-          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-            {venueLink&&<a href={venueLink} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.gd+"15",border:"1px solid "+C.gd+"30",...sf(12,600),color:C.gd,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:6}}>Book on Platform</a>}
-            {venueData&&venueData.website_url&&<a href={venueData.website_url} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Website</a>}
-            {venueData&&venueData.phone_number&&<a href={"tel:"+venueData.phone_number} style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Call {venueData.phone_number}</a>}
-            {!venueLink&&!venueData&&<a href={"https://www.google.com/search?q="+encodeURIComponent(b.restaurant_name+" "+b.city+" reservations")} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Search Booking</a>}
-          </div>
-          {/* Status */}
-          <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <span style={{...sf(12,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",width:80}}>Status</span>
-            <select value={b.status} onChange={function(e){onUpdateStatus(b.id,e.target.value);}}
-              style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:10,padding:"8px 14px",...sf(14,600),color:sc,outline:"none",appearance:"auto",flex:1}}>
-              {["pending","requested","confirmed","completed","cancelled"].map(function(s){return <option key={s} value={s}>{s}</option>;})}
-            </select>
-          </div>
-          {/* Guest Info */}
-          <div style={{background:C.srf,borderRadius:14,padding:"16px 20px",border:"1px solid "+C.bd}}>
-            <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>Guest Information</p>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              <div><span style={{...sf(10),color:C.s5}}>Name</span><p style={{...sf(14,600),color:C.s1,margin:"2px 0 0"}}>{((user.first_name||"")+" "+(user.last_name||"")).trim()||b.guest_name||"—"}</p></div>
-              <div><span style={{...sf(10),color:C.s5}}>Email</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.email||b.guest_email||"—"}</p></div>
-              <div><span style={{...sf(10),color:C.s5}}>Instagram</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.instagram_handle?"@"+user.instagram_handle:b.guest_instagram?"@"+b.guest_instagram:"—"}</p></div>
-              <div><span style={{...sf(10),color:C.s5}}>Phone</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.phone_number||b.guest_phone||"—"}</p></div>
-              <div><span style={{...sf(10),color:C.s5}}>City</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.preferred_city||b.city||"—"}</p></div>
-              {b.user_id&&<div><span style={{...sf(10),color:C.s5}}>User ID</span><p style={{...sf(10),color:C.s6,margin:"2px 0 0",fontFamily:"monospace",wordBreak:"break-all"}}>{b.user_id}</p></div>}
+          {editMode?(
+            <div style={{display:"grid",gap:16}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+                <div style={{gridColumn:"1/-1"}}>
+                  <label style={labelStyle}>Category</label>
+                  <select value={form.service_type||"Dining"} onChange={function(e){set("service_type",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+                    {SERVICE_TYPES.map(function(t){return <option key={t.id} value={t.id}>{t.label}</option>;})}
+                  </select>
+                </div>
+                <div style={{gridColumn:"1/-1"}}>
+                  <label style={labelStyle}>Venue / item</label>
+                  <input value={form.restaurant_name||""} onChange={function(e){set("restaurant_name",e.target.value);}} style={inputStyle}/>
+                </div>
+                <div>
+                  <label style={labelStyle}>Guest</label>
+                  <select value={form.user_id||""} onChange={function(e){set("user_id",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+                    <option value="">Walk-in / no member</option>
+                    {(users||[]).map(function(u){return <option key={u.id} value={u.id}>{(u.first_name||"")+" "+(u.last_name||"")+" ("+(u.email||"")+")"}</option>;})}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Status</label>
+                  <select value={form.status||"pending"} onChange={function(e){set("status",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+                    {STATUSES.map(function(s){return <option key={s} value={s}>{s.replace("_"," ")}</option>;})}
+                  </select>
+                </div>
+                <div><label style={labelStyle}>Date</label><input type="date" value={form.reservation_date||""} onChange={function(e){set("reservation_date",e.target.value);}} style={inputStyle}/></div>
+                <div><label style={labelStyle}>Time</label><input type="time" value={form.reservation_time||""} onChange={function(e){set("reservation_time",e.target.value);}} style={inputStyle}/></div>
+                <div><label style={labelStyle}>Party size</label><input type="number" min="1" value={form.party_size||1} onChange={function(e){set("party_size",e.target.value);}} style={inputStyle}/></div>
+                <div>
+                  <label style={labelStyle}>City</label>
+                  <select value={form.city||"Miami"} onChange={function(e){set("city",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+                    <option>Miami</option><option>Paris</option><option>Dubai</option><option>London</option><option>New York</option><option>Monaco</option><option>Other</option>
+                  </select>
+                </div>
+                <div><label style={labelStyle}>Gross amount (customer pays)</label><input type="number" step="0.01" min="0" value={form.gross_amount==null?"":form.gross_amount} onChange={function(e){set("gross_amount",e.target.value);}} placeholder="892.00" style={inputStyle}/></div>
+                <div><label style={labelStyle}>Commission (our revenue)</label><input type="number" step="0.01" min="0" value={form.commission_amount==null?"":form.commission_amount} onChange={function(e){set("commission_amount",e.target.value);}} placeholder="250.00" style={inputStyle}/></div>
+                <div><label style={labelStyle}>Stripe deposit</label><input type="number" step="0.01" min="0" value={form.payment_amount==null?"":form.payment_amount} onChange={function(e){set("payment_amount",e.target.value);}} style={inputStyle}/></div>
+                <div>
+                  <label style={labelStyle}>Payment status</label>
+                  <select value={form.payment_status||""} onChange={function(e){set("payment_status",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+                    <option value="">—</option><option value="pending">pending</option><option value="paid">paid</option><option value="refunded">refunded</option><option value="failed">failed</option>
+                  </select>
+                </div>
+                <div><label style={labelStyle}>Occasion</label><input value={form.occasion||""} onChange={function(e){set("occasion",e.target.value);}} style={inputStyle}/></div>
+                <div><label style={labelStyle}>Seating / setup</label><input value={form.seating_preference||""} onChange={function(e){set("seating_preference",e.target.value);}} style={inputStyle}/></div>
+                <div style={{gridColumn:"1/-1"}}><label style={labelStyle}>Notes</label><textarea rows={3} value={form.notes||""} onChange={function(e){set("notes",e.target.value);}} style={{...inputStyle,resize:"vertical"}}/></div>
+              </div>
+              <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
+                <button onClick={onDelete} style={btn("transparent",C.rd,{bd:C.rd+"40"})}>
+                  <Icon name="del" size={13} color={C.rd}/> Delete reservation
+                </button>
+                <div style={{display:"flex",gap:8}}>
+                  <button onClick={function(){setEditMode(false);setForm({...b,reservation_time:b.reservation_time?b.reservation_time.slice(0,5):""});}} style={btn("none",C.s3,{bd:C.bd})}>Cancel</button>
+                  <button onClick={function(){onSave({...form,reservation_time:form.reservation_time||null});}} style={{...btn(C.gd,"#000"),fontWeight:700}}>Save changes</button>
+                </div>
+              </div>
             </div>
-            {!user.id&&<p style={{...sf(11),color:C.or,marginTop:8,marginBottom:0}}>⚠ No user profile found — user may not have completed onboarding yet.</p>}
-          </div>
-          {/* Reservation Details */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Party Size</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.party_size} guest{b.party_size!==1?"s":""}</p></div>
-            <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Time</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.reservation_time?b.reservation_time.slice(0,5):"-"}</p></div>
-            {b.occasion&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Occasion</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.occasion}</p></div>}
-            {b.seating_preference&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Seating</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.seating_preference}</p></div>}
-            {b.payment_amount&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Payment</span><p style={{...sf(14,600),color:C.gd,margin:"4px 0 0"}}>${b.payment_amount}</p></div>}
-          </div>
-          {/* Notes */}
-          <div>
-            <span style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",display:"block",marginBottom:6}}>Concierge Notes</span>
-            <div style={{display:"flex",gap:8}}>
-              <textarea value={note} onChange={function(e){setNote(e.target.value);}} rows={2} placeholder="Add a note about this reservation..."
-                style={{flex:1,background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(13),color:C.s1,outline:"none",resize:"vertical"}}/>
-              <button onClick={function(){onAddNote(b.id,note);}} style={{padding:"8px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer",alignSelf:"flex-end"}}>Save</button>
+          ):(
+            <div style={{display:"grid",gap:20}}>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                <button onClick={function(){setEditMode(true);}} style={btn(C.gd+"15",C.gd,{bd:C.gd+"30"})}>
+                  <Icon name="edit" size={13} color={C.gd}/> Edit reservation
+                </button>
+                {venueLink&&<a href={venueLink} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Book on Platform</a>}
+                {venueData&&venueData.website_url&&<a href={venueData.website_url} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Website</a>}
+                {venueData&&venueData.phone_number&&<a href={"tel:"+venueData.phone_number} style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Call {venueData.phone_number}</a>}
+                {!venueLink&&!venueData&&<a href={"https://www.google.com/search?q="+encodeURIComponent((b.restaurant_name||"")+" "+(b.city||"")+" reservations")} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12,500),color:C.s3,textDecoration:"none"}}>Search Booking</a>}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{...sf(12,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",width:80}}>Status</span>
+                <select value={b.status||"pending"} onChange={function(e){onUpdateStatus(b.id,e.target.value);}}
+                  style={{background:sc+"15",border:"1px solid "+sc+"30",borderRadius:10,padding:"8px 14px",...sf(14,600),color:sc,outline:"none",appearance:"auto",flex:1}}>
+                  {STATUSES.map(function(s){return <option key={s} value={s}>{s.replace("_"," ")}</option>;})}
+                </select>
+              </div>
+              <div style={{background:C.srf,borderRadius:14,padding:"16px 20px",border:"1px solid "+C.bd}}>
+                <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>Revenue</p>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                  <div><span style={{...sf(10),color:C.s5}}>Gross</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.gross_amount?money(b.gross_amount):"—"}</p></div>
+                  <div><span style={{...sf(10),color:C.s5}}>Commission</span><p style={{...sf(18,700),color:C.gd,margin:"4px 0 0"}}>{b.commission_amount?money(b.commission_amount):"—"}</p></div>
+                  <div><span style={{...sf(10),color:C.s5}}>Stripe deposit</span><p style={{...sf(14,600),color:C.s3,margin:"4px 0 0"}}>{b.payment_amount?money(b.payment_amount):"—"}{b.payment_status?" · "+b.payment_status:""}</p></div>
+                </div>
+              </div>
+              <div style={{background:C.srf,borderRadius:14,padding:"16px 20px",border:"1px solid "+C.bd}}>
+                <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>Guest Information</p>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  <div><span style={{...sf(10),color:C.s5}}>Name</span><p style={{...sf(14,600),color:C.s1,margin:"2px 0 0"}}>{((user.first_name||"")+" "+(user.last_name||"")).trim()||b.guest_name||"—"}</p></div>
+                  <div><span style={{...sf(10),color:C.s5}}>Email</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.email||b.guest_email||"—"}</p></div>
+                  <div><span style={{...sf(10),color:C.s5}}>Instagram</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.instagram_handle?"@"+user.instagram_handle:b.guest_instagram?"@"+b.guest_instagram:"—"}</p></div>
+                  <div><span style={{...sf(10),color:C.s5}}>Phone</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.phone_number||b.guest_phone||"—"}</p></div>
+                  <div><span style={{...sf(10),color:C.s5}}>City</span><p style={{...sf(13),color:C.s3,margin:"2px 0 0"}}>{user.preferred_city||b.city||"—"}</p></div>
+                  {b.user_id&&<div><span style={{...sf(10),color:C.s5}}>User ID</span><p style={{...sf(10),color:C.s6,margin:"2px 0 0",fontFamily:"monospace",wordBreak:"break-all"}}>{b.user_id}</p></div>}
+                </div>
+                {!user.id&&b.user_id&&<p style={{...sf(11),color:C.or,marginTop:8,marginBottom:0}}>⚠ No user profile found — user may not have completed onboarding yet.</p>}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Party Size</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.party_size} guest{b.party_size!==1?"s":""}</p></div>
+                <div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Time</span><p style={{...sf(18,700),color:C.s1,margin:"4px 0 0"}}>{b.reservation_time?b.reservation_time.slice(0,5):"—"}</p></div>
+                {b.occasion&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Occasion</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.occasion}</p></div>}
+                {b.seating_preference&&<div><span style={{...sf(10),color:C.s5,textTransform:"uppercase",letterSpacing:1}}>Seating</span><p style={{...sf(14),color:C.s3,margin:"4px 0 0"}}>{b.seating_preference}</p></div>}
+              </div>
+              <div>
+                <span style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",display:"block",marginBottom:6}}>Concierge Notes</span>
+                <div style={{display:"flex",gap:8}}>
+                  <textarea value={note} onChange={function(e){setNote(e.target.value);}} rows={2} placeholder="Add a note about this reservation..."
+                    style={{flex:1,background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(13),color:C.s1,outline:"none",resize:"vertical"}}/>
+                  <button onClick={function(){onAddNote(b.id,note);}} style={{padding:"8px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer",alignSelf:"flex-end"}}>Save</button>
+                </div>
+              </div>
+              <div style={{borderTop:"1px solid "+C.bd,paddingTop:12,display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:12,flexWrap:"wrap"}}>
+                <div>
+                  <p style={{...sf(11),color:C.s6,margin:0}}>Created: {b.created_at?new Date(b.created_at).toLocaleString():"-"}</p>
+                  <p style={{...sf(11),color:C.s6,margin:"2px 0 0"}}>Updated: {b.updated_at?new Date(b.updated_at).toLocaleString():"-"}</p>
+                  <p style={{...sf(10),color:C.s6,margin:"2px 0 0"}}>ID: {b.id}</p>
+                </div>
+                <button onClick={onDelete} style={btn("transparent",C.rd,{bd:C.rd+"40",sm:true})}>
+                  <Icon name="del" size={12} color={C.rd}/> Delete
+                </button>
+              </div>
             </div>
-          </div>
-          {/* Timestamps */}
-          <div style={{borderTop:"1px solid "+C.bd,paddingTop:12}}>
-            <p style={{...sf(11),color:C.s6,margin:0}}>Created: {b.created_at?new Date(b.created_at).toLocaleString():"-"}</p>
-            <p style={{...sf(11),color:C.s6,margin:"2px 0 0"}}>Updated: {b.updated_at?new Date(b.updated_at).toLocaleString():"-"}</p>
-            <p style={{...sf(10),color:C.s6,margin:"2px 0 0"}}>ID: {b.id}</p>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -1692,35 +2018,85 @@ function BookingDetailModal({booking,user,statusColors,onClose,onUpdateStatus,on
 }
 
 function BookingAddModal({users,onClose,onSave}){
-  var [form,setForm]=useState({restaurant_name:"",party_size:2,reservation_date:new Date().toISOString().slice(0,10),reservation_time:"19:00",status:"confirmed",city:"Miami",occasion:"",seating_preference:"",notes:"",user_id:""});
-  function set(k,v){setForm(function(p){return{...p,[k]:v};});}
+  var [form,setForm]=useState({
+    restaurant_name:"",
+    service_type:"Dining",
+    party_size:2,
+    reservation_date:new Date().toISOString().slice(0,10),
+    reservation_time:"19:00",
+    status:"confirmed",
+    city:"Miami",
+    occasion:"",
+    seating_preference:"",
+    notes:"",
+    user_id:"",
+    gross_amount:"",
+    commission_amount:""
+  });
+  function set(k,v){setForm(function(p){var n={};for(var key in p)n[key]=p[key];n[k]=v;return n;});}
   var inputStyle={width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(14),color:C.s1,outline:"none"};
+  var labelStyle={...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6};
+  var venueLabel=form.service_type==="Cars"?"Vehicle":form.service_type==="Yachts"?"Yacht":form.service_type==="Jets"?"Jet":form.service_type==="Accommodations"?"Hotel":form.service_type==="Wellness"?"Spa / Wellness venue":form.service_type==="Nightlife"?"Club / Bar":"Restaurant";
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}} onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
-      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:560}}>
-        <div style={{padding:"20px 24px",borderBottom:"1px solid "+C.bd,display:"flex",justifyContent:"space-between"}}>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:620,maxHeight:"90vh",overflow:"auto"}}>
+        <div style={{padding:"20px 24px",borderBottom:"1px solid "+C.bd,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <h2 style={{...sf(18,600),color:C.s1,margin:0}}>New Reservation</h2>
           <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:20}}>×</button>
         </div>
         <div style={{padding:"20px 24px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-          <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Guest</label>
+          <div style={{gridColumn:"1/-1"}}>
+            <label style={labelStyle}>Category</label>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {SERVICE_TYPES.map(function(t){
+                var active=form.service_type===t.id;
+                return <button key={t.id} type="button" onClick={function(){set("service_type",t.id);}}
+                  style={{padding:"8px 12px",border:"1px solid "+(active?t.color+"60":C.bd),background:active?t.color+"15":C.srf,borderRadius:10,...sf(12,active?600:500),color:active?t.color:C.s3,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+                  <Icon name={t.icon} size={12} color={active?t.color:C.s5}/>{t.label}
+                </button>;
+              })}
+            </div>
+          </div>
+          <div style={{gridColumn:"1/-1"}}>
+            <label style={labelStyle}>Guest (member)</label>
             <select value={form.user_id} onChange={function(e){set("user_id",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
-              <option value="">Select guest...</option>
-              {users.map(function(u){return <option key={u.id} value={u.id}>{(u.first_name||"")+" "+(u.last_name||"")+" ("+u.email+")"}</option>;})}
+              <option value="">Select member...</option>
+              {users.map(function(u){return <option key={u.id} value={u.id}>{(u.first_name||"")+" "+(u.last_name||"")+" ("+(u.email||"")+")"}</option>;})}
             </select>
           </div>
-          <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Venue</label><input value={form.restaurant_name} onChange={function(e){set("restaurant_name",e.target.value);}} placeholder="Restaurant name" style={inputStyle}/></div>
-          <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Date</label><input type="date" value={form.reservation_date} onChange={function(e){set("reservation_date",e.target.value);}} style={inputStyle}/></div>
-          <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Time</label><input type="time" value={form.reservation_time} onChange={function(e){set("reservation_time",e.target.value);}} style={inputStyle}/></div>
-          <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Guests</label><input type="number" value={form.party_size} onChange={function(e){set("party_size",Number(e.target.value));}} style={inputStyle}/></div>
-          <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>City</label><select value={form.city} onChange={function(e){set("city",e.target.value);}} style={{...inputStyle,appearance:"auto"}}><option>Miami</option><option>Paris</option><option>Dubai</option><option>London</option></select></div>
-          <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Occasion</label><input value={form.occasion} onChange={function(e){set("occasion",e.target.value);}} placeholder="Birthday, Date night..." style={inputStyle}/></div>
-          <div><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Seating</label><input value={form.seating_preference} onChange={function(e){set("seating_preference",e.target.value);}} placeholder="Outdoor, Private room..." style={inputStyle}/></div>
-          <div style={{gridColumn:"1/-1"}}><label style={{...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6}}>Notes</label><textarea value={form.notes} onChange={function(e){set("notes",e.target.value);}} rows={2} placeholder="Special requests, allergies..." style={{...inputStyle,resize:"vertical"}}/></div>
+          <div style={{gridColumn:"1/-1"}}>
+            <label style={labelStyle}>{venueLabel}</label>
+            <input value={form.restaurant_name} onChange={function(e){set("restaurant_name",e.target.value);}} placeholder="e.g. Carbone Miami / Ferrari Portofino / 1 Hotel South Beach" style={inputStyle}/>
+          </div>
+          <div><label style={labelStyle}>Date</label><input type="date" value={form.reservation_date} onChange={function(e){set("reservation_date",e.target.value);}} style={inputStyle}/></div>
+          <div><label style={labelStyle}>Time</label><input type="time" value={form.reservation_time} onChange={function(e){set("reservation_time",e.target.value);}} style={inputStyle}/></div>
+          <div><label style={labelStyle}>Guests / pax</label><input type="number" min="1" value={form.party_size} onChange={function(e){set("party_size",Number(e.target.value));}} style={inputStyle}/></div>
+          <div>
+            <label style={labelStyle}>City</label>
+            <select value={form.city} onChange={function(e){set("city",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+              <option>Miami</option><option>Paris</option><option>Dubai</option><option>London</option><option>New York</option><option>Monaco</option><option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Status</label>
+            <select value={form.status} onChange={function(e){set("status",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
+              {STATUSES.map(function(s){return <option key={s} value={s}>{s.replace("_"," ")}</option>;})}
+            </select>
+          </div>
+          <div></div>
+          <div><label style={labelStyle}>Gross amount</label><input type="number" step="0.01" min="0" value={form.gross_amount} onChange={function(e){set("gross_amount",e.target.value);}} placeholder="What customer pays · e.g. 892" style={inputStyle}/></div>
+          <div><label style={labelStyle}>Commission (our cut)</label><input type="number" step="0.01" min="0" value={form.commission_amount} onChange={function(e){set("commission_amount",e.target.value);}} placeholder="e.g. 250" style={inputStyle}/></div>
+          <div><label style={labelStyle}>Occasion</label><input value={form.occasion} onChange={function(e){set("occasion",e.target.value);}} placeholder="Birthday, Date night..." style={inputStyle}/></div>
+          <div><label style={labelStyle}>Seating / setup</label><input value={form.seating_preference} onChange={function(e){set("seating_preference",e.target.value);}} placeholder="Outdoor, Private room..." style={inputStyle}/></div>
+          <div style={{gridColumn:"1/-1"}}><label style={labelStyle}>Notes</label><textarea value={form.notes} onChange={function(e){set("notes",e.target.value);}} rows={2} placeholder="Special requests, allergies..." style={{...inputStyle,resize:"vertical"}}/></div>
         </div>
         <div style={{padding:"16px 24px",borderTop:"1px solid "+C.bd,display:"flex",gap:10,justifyContent:"flex-end"}}>
           <button onClick={onClose} style={btn("none",C.s3,{bd:C.bd})}>Cancel</button>
-          <button onClick={function(){if(!form.restaurant_name)return;onSave(form);}} style={{...btn(C.gd,"#000"),fontWeight:700}}>Create Reservation</button>
+          <button onClick={function(){
+            if(!form.restaurant_name){alert("Please enter a venue / item name");return;}
+            if(!form.user_id){alert("Please select a guest member (required by the bookings table).");return;}
+            onSave(form);
+          }} style={{...btn(C.gd,"#000"),fontWeight:700}}>Create Reservation</button>
         </div>
       </div>
     </div>
