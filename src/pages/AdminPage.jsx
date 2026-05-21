@@ -376,7 +376,7 @@ function StatCard({label,value,icon,color}){
 
 /* ═══ Dashboard View ═══ */
 function DashboardView({counts,onNav}){
-  var [analytics,setAnalytics]=useState({users:0,bookings:[],recentBookings:[],revenue:0,confirmedBookings:0,cancelledBookings:0,avgPartySize:0,topRestaurants:[],citySplit:{}});
+  var [analytics,setAnalytics]=useState({users:0,bookings:[],recentBookings:[],totalCommission:0,totalGross:0,monthCommission:0,monthGross:0,confirmedBookings:0,cancelledBookings:0,avgPartySize:0,topRestaurants:[],citySplit:{},byCategory:{}});
 
   useEffect(function(){
     async function load(){
@@ -384,9 +384,24 @@ function DashboardView({counts,onNav}){
       var {data:users}=await supabase.from("users").select("*").order("created_at",{ascending:false});
       bookings=bookings||[];users=users||[];
 
-      var revenue=bookings.reduce(function(s,b){return s+(Number(b.payment_amount)||0);},0);
-      var confirmed=bookings.filter(function(b){return b.status==="confirmed";}).length;
-      var cancelled=bookings.filter(function(b){return b.status==="cancelled";}).length;
+      var totalCommission=0,totalGross=0,monthCommission=0,monthGross=0;
+      var now=new Date();
+      var monthStart=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-01";
+      var nextMonthStart=(now.getMonth()===11?(now.getFullYear()+1):now.getFullYear())+"-"+String((now.getMonth()+2-1)%12+1).padStart(2,"0")+"-01";
+      var byCategory={}; // {svc:{count,commission,gross}}
+      bookings.forEach(function(b){
+        var c=Number(b.commission_amount)||0;
+        var g=Number(b.gross_amount)||0;
+        totalCommission+=c;totalGross+=g;
+        if(b.reservation_date&&b.reservation_date>=monthStart&&b.reservation_date<nextMonthStart){
+          monthCommission+=c;monthGross+=g;
+        }
+        var cat=b.service_type||"Dining";
+        if(!byCategory[cat])byCategory[cat]={count:0,commission:0,gross:0};
+        byCategory[cat].count++;byCategory[cat].commission+=c;byCategory[cat].gross+=g;
+      });
+      var confirmed=bookings.filter(function(b){return b.status==="confirmed"||b.status==="completed";}).length;
+      var cancelled=bookings.filter(function(b){return b.status==="cancelled"||b.status==="no_show";}).length;
       var avgParty=bookings.length?Math.round(bookings.reduce(function(s,b){return s+(b.party_size||0);},0)/bookings.length*10)/10:0;
 
       var restCount={};
@@ -396,26 +411,75 @@ function DashboardView({counts,onNav}){
       var citySplit={};
       bookings.forEach(function(b){if(b.city){citySplit[b.city]=(citySplit[b.city]||0)+1;}});
 
-      setAnalytics({users:users.length,bookings:bookings,recentBookings:bookings.slice(0,5),revenue:revenue,confirmedBookings:confirmed,cancelledBookings:cancelled,avgPartySize:avgParty,topRestaurants:topRestaurants,citySplit:citySplit,usersList:users});
+      setAnalytics({users:users.length,bookings:bookings,recentBookings:bookings.slice(0,5),totalCommission:totalCommission,totalGross:totalGross,monthCommission:monthCommission,monthGross:monthGross,confirmedBookings:confirmed,cancelledBookings:cancelled,avgPartySize:avgParty,topRestaurants:topRestaurants,citySplit:citySplit,byCategory:byCategory,usersList:users});
     }
     load();
   },[]);
 
   var a=analytics;
+  var monthLabel=new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"});
+  var avgCommission=a.bookings.length?a.totalCommission/a.bookings.length:0;
+  var categoryRows=Object.keys(a.byCategory).map(function(k){return {k:k,count:a.byCategory[k].count,commission:a.byCategory[k].commission,gross:a.byCategory[k].gross};}).sort(function(x,y){return y.commission-x.commission||y.count-x.count;});
+  var maxCatCommission=categoryRows.reduce(function(m,r){return Math.max(m,r.commission);},1);
 
   return(
     <div>
       <h2 style={{...sf(24,600),color:C.s1,marginBottom:8,marginTop:0}}>Dashboard</h2>
       <p style={{...sf(14),color:C.s5,marginBottom:28}}>Alfred Admin — real-time platform overview</p>
 
+      {/* Revenue Row (highlighted) */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,marginBottom:16}}>
+        <RevCard label="Revenue (Commission)" value={money(a.totalCommission)} sub={a.bookings.length+" booking"+(a.bookings.length!==1?"s":"")+" all-time"} color={C.gd} hi/>
+        <RevCard label="Gross Booking Value" value={money(a.totalGross)} sub={"Avg "+money(avgCommission)+" commission/booking"} color={C.bl}/>
+        <RevCard label={"This Month — "+monthLabel.split(" ")[0]} value={money(a.monthCommission)} sub={"of "+money(a.monthGross)+" gross"} color={C.gn}/>
+        <button onClick={function(){onNav("bookings");}} style={{background:C.el,border:"1px dashed "+C.bd2,borderRadius:14,padding:"16px 18px",cursor:"pointer",textAlign:"left",transition:"all 0.15s"}}
+          onMouseEnter={function(e){e.currentTarget.style.borderColor=C.gd;}}
+          onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd2;}}>
+          <p style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",margin:"0 0 8px"}}>Bookings & Revenue</p>
+          <p style={{...sf(20,700),color:C.gd,margin:0,display:"flex",alignItems:"center",gap:8}}>Open tab <Icon name="bookings" size={18} color={C.gd}/></p>
+          <p style={{...sf(11),color:C.s5,margin:"6px 0 0"}}>Filter, edit, export, add manual reservations</p>
+        </button>
+      </div>
+
       {/* Top Stats Row */}
       <div style={{display:"flex",flexWrap:"wrap",gap:16,marginBottom:24}}>
-        <StatCard label="Total Users" value={a.users} icon="clients" color={C.gd}/>
+        <StatCard label="Total Members" value={a.users} icon="clients" color={C.gd}/>
         <StatCard label="Bookings" value={a.bookings.length} icon="bookings" color={C.bl}/>
-        <StatCard label="Confirmed" value={a.confirmedBookings} icon="check" color={C.gn}/>
-        <StatCard label="Cancelled" value={a.cancelledBookings} icon="close" color={C.rd}/>
+        <StatCard label="Confirmed / Completed" value={a.confirmedBookings} icon="check" color={C.gn}/>
+        <StatCard label="Cancelled / No-show" value={a.cancelledBookings} icon="close" color={C.rd}/>
         <StatCard label="Avg Party" value={a.avgPartySize} icon="clients" color={C.or}/>
       </div>
+
+      {/* Revenue by Category */}
+      {categoryRows.length>0&&(
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 24px",marginBottom:24}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+            <h3 style={{...sf(15,600),color:C.s2,margin:0}}>Revenue by Category</h3>
+            <span style={{...sf(11),color:C.s5}}>{money(a.totalCommission)} total commission</span>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}}>
+            {categoryRows.map(function(r){
+              var meta=svcMeta(r.k);
+              var pct=maxCatCommission?r.commission/maxCatCommission*100:0;
+              return(
+                <div key={r.k}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+                    <span style={{...sf(12,500),color:C.s2,display:"flex",alignItems:"center",gap:6}}>
+                      <Icon name={meta.icon} size={13} color={meta.color}/>{meta.label}
+                      <span style={{...sf(10),color:C.s5}}>({r.count})</span>
+                    </span>
+                    <span style={{...sf(13,700),color:C.gd}}>{money(r.commission)}</span>
+                  </div>
+                  <div style={{height:6,background:C.srf,borderRadius:3,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:pct+"%",background:meta.color,borderRadius:3,transition:"width 0.4s"}}/>
+                  </div>
+                  {r.gross>0&&<p style={{...sf(10),color:C.s5,margin:"3px 0 0"}}>{money(r.gross)} gross</p>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Inventory Stats */}
       <div style={{display:"flex",flexWrap:"wrap",gap:16,marginBottom:32}}>
@@ -435,14 +499,19 @@ function DashboardView({counts,onNav}){
           </div>
           {a.recentBookings.length===0?<p style={{...sf(13),color:C.s5}}>No bookings yet</p>:
           a.recentBookings.map(function(b,i){
-            var sc={confirmed:C.gn,cancelled:C.rd,pending:C.or}[b.status]||C.s5;
+            var sc={confirmed:C.gn,completed:C.s2,cancelled:C.rd,pending:C.or,requested:C.bl,no_show:"#8E8E93"}[b.status]||C.s5;
+            var meta=svcMeta(b.service_type);
             return(
-              <div key={b.id||i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:i<a.recentBookings.length-1?"1px solid "+C.bd:"none"}}>
-                <div>
-                  <p style={{...sf(13,500),color:C.s2,margin:0}}>{b.restaurant_name}</p>
-                  <p style={{...sf(11),color:C.s5,margin:"2px 0 0"}}>{b.reservation_date} · {b.party_size} guests · {b.city}</p>
+              <div key={b.id||i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderBottom:i<a.recentBookings.length-1?"1px solid "+C.bd:"none"}}>
+                <div title={meta.label} style={{width:28,height:28,borderRadius:8,background:meta.color+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <Icon name={meta.icon} size={13} color={meta.color}/>
                 </div>
-                <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:sc+"15",color:sc,textTransform:"capitalize"}}>{b.status}</span>
+                <div style={{minWidth:0,flex:1,overflow:"hidden"}}>
+                  <p style={{...sf(13,500),color:C.s2,margin:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.restaurant_name}</p>
+                  <p style={{...sf(11),color:C.s5,margin:"2px 0 0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.reservation_date} · {b.party_size||1} {b.party_size===1?"guest":"guests"}{b.city?" · "+b.city:""}</p>
+                </div>
+                {b.commission_amount?<span style={{...sf(12,700),color:C.gd,flexShrink:0,whiteSpace:"nowrap"}}>{money(b.commission_amount)}</span>:null}
+                <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,background:sc+"15",color:sc,textTransform:"capitalize",flexShrink:0,whiteSpace:"nowrap"}}>{(b.status||"pending").replace("_"," ")}</span>
               </div>
             );
           })}
