@@ -1740,8 +1740,20 @@ function BookingsView(){
                         onMouseLeave={function(e){e.currentTarget.style.background=C.el;}}>
                         {/* Time — col 1, rows 1-2 */}
                         <div style={{gridRow:"1 / span 2",textAlign:"center"}}>
-                          <p style={{...sf(15,700),color:C.s1,margin:0,lineHeight:1.1}}>{b.reservation_time?(b.reservation_time.slice(0,5)):"—"}</p>
-                          {b.party_size&&<p style={{...sf(10,500),color:C.s5,margin:"3px 0 0"}}>{b.party_size} pax</p>}
+                          {b.end_date&&b.end_date!==b.reservation_date?(
+                            <div style={{lineHeight:1.1}}>
+                              <p style={{...sf(11,700),color:C.s2,margin:0}}>{new Date(b.reservation_date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</p>
+                              <p style={{...sf(9,500),color:C.s6,margin:"2px 0"}}>↓</p>
+                              <p style={{...sf(11,700),color:C.s2,margin:0}}>{new Date(b.end_date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}</p>
+                            </div>
+                          ):(b.reservation_time&&b.reservation_time.slice(0,5)!=="00:00")?(
+                            <>
+                              <p style={{...sf(15,700),color:C.s1,margin:0,lineHeight:1.1}}>{b.reservation_time.slice(0,5)}</p>
+                              {b.party_size>1&&<p style={{...sf(10,500),color:C.s5,margin:"3px 0 0"}}>{b.party_size} pax</p>}
+                            </>
+                          ):(
+                            <p style={{...sf(13,600),color:C.s4,margin:0,lineHeight:1.1}}>—</p>
+                          )}
                         </div>
                         {/* Category icon — col 2, rows 1-2 */}
                         <div title={meta.label} style={{gridRow:"1 / span 2",width:36,height:36,borderRadius:9,background:meta.color+"15",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -1890,7 +1902,7 @@ function BookingDetailModal({booking,user,users,statusColors,onClose,onUpdateSta
                 <span style={{...sf(10,600),padding:"2px 8px",borderRadius:6,background:meta.color+"15",color:meta.color,textTransform:"uppercase",letterSpacing:0.6}}>{meta.label}</span>
               </div>
               <h2 style={{...sf(20,600),color:C.s1,margin:"0 0 4px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{b.restaurant_name||"—"}</h2>
-              <p style={{...sf(13),color:C.s5,margin:0}}>{b.reservation_date||"—"}{b.reservation_time?" at "+b.reservation_time.slice(0,5):""} · {b.city||"—"}</p>
+              <p style={{...sf(13),color:C.s5,margin:0}}>{b.reservation_date||"—"}{b.end_date&&b.end_date!==b.reservation_date?" → "+b.end_date:""}{b.reservation_time&&b.reservation_time.slice(0,5)!=="00:00"?" at "+b.reservation_time.slice(0,5):""} · {b.city||"—"}</p>
             </div>
           </div>
           <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:22,padding:0,lineHeight:1}}>×</button>
@@ -1911,9 +1923,9 @@ function BookingDetailModal({booking,user,users,statusColors,onClose,onUpdateSta
                   <input value={form.restaurant_name||""} onChange={function(e){set("restaurant_name",e.target.value);}} style={inputStyle}/>
                 </div>
                 <div>
-                  <label style={labelStyle}>Guest</label>
+                  <label style={labelStyle}>Member (optional)</label>
                   <select value={form.user_id||""} onChange={function(e){set("user_id",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
-                    <option value="">Walk-in / no member</option>
+                    <option value="">— Walk-in / off-app —</option>
                     {(users||[]).map(function(u){return <option key={u.id} value={u.id}>{(u.first_name||"")+" "+(u.last_name||"")+" ("+(u.email||"")+")"}</option>;})}
                   </select>
                 </div>
@@ -1923,9 +1935,16 @@ function BookingDetailModal({booking,user,users,statusColors,onClose,onUpdateSta
                     {STATUSES.map(function(s){return <option key={s} value={s}>{s.replace("_"," ")}</option>;})}
                   </select>
                 </div>
-                <div><label style={labelStyle}>Date</label><input type="date" value={form.reservation_date||""} onChange={function(e){set("reservation_date",e.target.value);}} style={inputStyle}/></div>
+                {!form.user_id&&(
+                  <>
+                    <div><label style={labelStyle}>Guest name</label><input value={form.guest_name||""} onChange={function(e){set("guest_name",e.target.value);}} placeholder="e.g. Dan Sebban" style={inputStyle}/></div>
+                    <div><label style={labelStyle}>Guest email / phone</label><input value={form.guest_email||form.guest_phone||""} onChange={function(e){set("guest_email",e.target.value);}} placeholder="optional" style={inputStyle}/></div>
+                  </>
+                )}
+                <div><label style={labelStyle}>Start date</label><input type="date" value={form.reservation_date||""} onChange={function(e){set("reservation_date",e.target.value);}} style={inputStyle}/></div>
+                <div><label style={labelStyle}>End date (multi-day)</label><input type="date" value={form.end_date||""} onChange={function(e){set("end_date",e.target.value);}} style={inputStyle}/></div>
                 <div><label style={labelStyle}>Time</label><input type="time" value={form.reservation_time||""} onChange={function(e){set("reservation_time",e.target.value);}} style={inputStyle}/></div>
-                <div><label style={labelStyle}>Party size</label><input type="number" min="1" value={form.party_size||1} onChange={function(e){set("party_size",e.target.value);}} style={inputStyle}/></div>
+                <div><label style={labelStyle}>Pax / party</label><input type="number" min="1" value={form.party_size||1} onChange={function(e){set("party_size",e.target.value);}} style={inputStyle}/></div>
                 <div>
                   <label style={labelStyle}>City</label>
                   <select value={form.city||"Miami"} onChange={function(e){set("city",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
@@ -2029,25 +2048,30 @@ function BookingAddModal({users,onClose,onSave}){
   var [form,setForm]=useState({
     restaurant_name:"",
     service_type:"Dining",
-    party_size:2,
+    party_size:1,
     reservation_date:new Date().toISOString().slice(0,10),
-    reservation_time:"19:00",
+    end_date:"",
+    reservation_time:"",
     status:"confirmed",
     city:"Miami",
     occasion:"",
     seating_preference:"",
     notes:"",
     user_id:"",
+    guest_name:"",
+    guest_email:"",
+    guest_phone:"",
     gross_amount:"",
     commission_amount:""
   });
   function set(k,v){setForm(function(p){var n={};for(var key in p)n[key]=p[key];n[k]=v;return n;});}
   var inputStyle={width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",...sf(14),color:C.s1,outline:"none"};
   var labelStyle={...sf(11,500),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",display:"block",marginBottom:6};
-  var venueLabel=form.service_type==="Cars"?"Vehicle":form.service_type==="Yachts"?"Yacht":form.service_type==="Jets"?"Jet":form.service_type==="Accommodations"?"Hotel":form.service_type==="Wellness"?"Spa / Wellness venue":form.service_type==="Nightlife"?"Club / Bar":"Restaurant";
+  var venueLabel=form.service_type==="Cars"?"Vehicle":form.service_type==="Yachts"?"Yacht / Trip":form.service_type==="Jets"?"Jet":form.service_type==="Accommodations"?"Hotel":form.service_type==="Wellness"?"Spa / Wellness venue":form.service_type==="Nightlife"?"Club / Bar":"Restaurant";
+  var isMultiDay=form.service_type==="Cars"||form.service_type==="Yachts"||form.service_type==="Jets"||form.service_type==="Accommodations";
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16,backdropFilter:"blur(6px)"}} onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
-      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:620,maxHeight:"90vh",overflow:"auto"}}>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:640,maxHeight:"90vh",overflow:"auto"}}>
         <div style={{padding:"20px 24px",borderBottom:"1px solid "+C.bd,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <h2 style={{...sf(18,600),color:C.s1,margin:0}}>New Reservation</h2>
           <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",fontSize:20}}>×</button>
@@ -2066,23 +2090,35 @@ function BookingAddModal({users,onClose,onSave}){
             </div>
           </div>
           <div style={{gridColumn:"1/-1"}}>
-            <label style={labelStyle}>Guest (member)</label>
+            <label style={labelStyle}>Member (optional — leave blank for walk-in / off-app)</label>
             <select value={form.user_id} onChange={function(e){set("user_id",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
-              <option value="">Select member...</option>
+              <option value="">— Walk-in / off-app —</option>
               {users.map(function(u){return <option key={u.id} value={u.id}>{(u.first_name||"")+" "+(u.last_name||"")+" ("+(u.email||"")+")"}</option>;})}
             </select>
           </div>
+          {!form.user_id&&(
+            <>
+              <div><label style={labelStyle}>Guest name</label><input value={form.guest_name} onChange={function(e){set("guest_name",e.target.value);}} placeholder="e.g. Dan Sebban" style={inputStyle}/></div>
+              <div><label style={labelStyle}>Guest email / phone (optional)</label><input value={form.guest_email} onChange={function(e){set("guest_email",e.target.value);}} placeholder="email or phone" style={inputStyle}/></div>
+            </>
+          )}
           <div style={{gridColumn:"1/-1"}}>
             <label style={labelStyle}>{venueLabel}</label>
-            <input value={form.restaurant_name} onChange={function(e){set("restaurant_name",e.target.value);}} placeholder="e.g. Carbone Miami / Ferrari Portofino / 1 Hotel South Beach" style={inputStyle}/>
+            <input value={form.restaurant_name} onChange={function(e){set("restaurant_name",e.target.value);}} placeholder="e.g. Carbone Miami / Porsche Macan / 1 Hotel South Beach" style={inputStyle}/>
           </div>
-          <div><label style={labelStyle}>Date</label><input type="date" value={form.reservation_date} onChange={function(e){set("reservation_date",e.target.value);}} style={inputStyle}/></div>
-          <div><label style={labelStyle}>Time</label><input type="time" value={form.reservation_time} onChange={function(e){set("reservation_time",e.target.value);}} style={inputStyle}/></div>
-          <div><label style={labelStyle}>Guests / pax</label><input type="number" min="1" value={form.party_size} onChange={function(e){set("party_size",Number(e.target.value));}} style={inputStyle}/></div>
+          <div><label style={labelStyle}>{isMultiDay?"Start date":"Date"}</label><input type="date" value={form.reservation_date} onChange={function(e){set("reservation_date",e.target.value);}} style={inputStyle}/></div>
+          <div>
+            <label style={labelStyle}>{isMultiDay?"End date (multi-day)":"Time"}</label>
+            {isMultiDay?
+              <input type="date" value={form.end_date} onChange={function(e){set("end_date",e.target.value);}} style={inputStyle}/>
+              :<input type="time" value={form.reservation_time} onChange={function(e){set("reservation_time",e.target.value);}} style={inputStyle}/>
+            }
+          </div>
+          <div><label style={labelStyle}>Pax / party</label><input type="number" min="1" value={form.party_size} onChange={function(e){set("party_size",Number(e.target.value));}} style={inputStyle}/></div>
           <div>
             <label style={labelStyle}>City</label>
             <select value={form.city} onChange={function(e){set("city",e.target.value);}} style={{...inputStyle,appearance:"auto"}}>
-              <option>Miami</option><option>Paris</option><option>Dubai</option><option>London</option><option>New York</option><option>Monaco</option><option>Other</option>
+              <option>Miami</option><option>Paris</option><option>Dubai</option><option>London</option><option>New York</option><option>Monaco</option><option>Bahamas</option><option>Other</option>
             </select>
           </div>
           <div>
@@ -2092,18 +2128,21 @@ function BookingAddModal({users,onClose,onSave}){
             </select>
           </div>
           <div></div>
-          <div><label style={labelStyle}>Gross amount</label><input type="number" step="0.01" min="0" value={form.gross_amount} onChange={function(e){set("gross_amount",e.target.value);}} placeholder="What customer pays · e.g. 892" style={inputStyle}/></div>
-          <div><label style={labelStyle}>Commission (our cut)</label><input type="number" step="0.01" min="0" value={form.commission_amount} onChange={function(e){set("commission_amount",e.target.value);}} placeholder="e.g. 250" style={inputStyle}/></div>
+          <div><label style={labelStyle}>Gross amount</label><input type="number" step="0.01" min="0" value={form.gross_amount} onChange={function(e){set("gross_amount",e.target.value);}} placeholder="What customer pays · e.g. 1710" style={inputStyle}/></div>
+          <div><label style={labelStyle}>Commission (our cut)</label><input type="number" step="0.01" min="0" value={form.commission_amount} onChange={function(e){set("commission_amount",e.target.value);}} placeholder="e.g. 220" style={inputStyle}/></div>
           <div><label style={labelStyle}>Occasion</label><input value={form.occasion} onChange={function(e){set("occasion",e.target.value);}} placeholder="Birthday, Date night..." style={inputStyle}/></div>
           <div><label style={labelStyle}>Seating / setup</label><input value={form.seating_preference} onChange={function(e){set("seating_preference",e.target.value);}} placeholder="Outdoor, Private room..." style={inputStyle}/></div>
-          <div style={{gridColumn:"1/-1"}}><label style={labelStyle}>Notes</label><textarea value={form.notes} onChange={function(e){set("notes",e.target.value);}} rows={2} placeholder="Special requests, allergies..." style={{...inputStyle,resize:"vertical"}}/></div>
+          <div style={{gridColumn:"1/-1"}}><label style={labelStyle}>Notes</label><textarea value={form.notes} onChange={function(e){set("notes",e.target.value);}} rows={2} placeholder="Special requests, referrer, daily rate..." style={{...inputStyle,resize:"vertical"}}/></div>
         </div>
         <div style={{padding:"16px 24px",borderTop:"1px solid "+C.bd,display:"flex",gap:10,justifyContent:"flex-end"}}>
           <button onClick={onClose} style={btn("none",C.s3,{bd:C.bd})}>Cancel</button>
           <button onClick={function(){
             if(!form.restaurant_name){alert("Please enter a venue / item name");return;}
-            if(!form.user_id){alert("Please select a guest member (required by the bookings table).");return;}
-            onSave(form);
+            if(!form.user_id&&!form.guest_name){alert("Pick a member, or enter a guest name for this walk-in.");return;}
+            var payload={...form};
+            if(!payload.reservation_time)payload.reservation_time="00:00";
+            if(!payload.end_date)delete payload.end_date;
+            onSave(payload);
           }} style={{...btn(C.gd,"#000"),fontWeight:700}}>Create Reservation</button>
         </div>
       </div>
