@@ -136,7 +136,7 @@ var CATS = [
       {k:"hours_closed",l:"Closed Days (display)",t:"text"},
       {k:"closed_weekdays",l:"Closed Weekdays (date validation)",t:"weekdays",wide:true},
       {k:"closed_months",l:"Closed Months (seasonal)",t:"months",wide:true},
-      {k:"category",l:"Category",t:"select",opts:["restaurant","bar","cafe","bakery","lounge"]},
+      {k:"category",l:"Category",t:"select",opts:["restaurant","cafe","brunch","bakery","beach_club","bar","lounge"]},
       {k:"chef_name",l:"Chef Name",t:"text"},
       {k:"alfred_note",l:"Alfred Note",t:"textarea",wide:true},
       {k:"alfred_tip",l:"Alfred Tip",t:"textarea",wide:true},
@@ -1198,6 +1198,12 @@ function CategoryView({cat}){
   // booking-config filled in (time_slots empty, closed_weekdays empty
   // on a restaurant that should have closures, no peak price set, etc.)
   var [configFilter,setConfigFilter]=useState("");
+  // Restaurants: dining sub-category chip filter.
+  // ""=all | "restaurant" | "cafe" | "brunch" | "bakery" | "beach_club"
+  var [diningTypeFilter,setDiningTypeFilter]=useState("");
+  // Restaurants + Hotels: kosher pill filter.
+  // ""=all | "kosher" | "non_kosher"
+  var [kosherFilter,setKosherFilter]=useState("");
   var [sortCol,setSortCol]=useState("name");
   var [sortDir,setSortDir]=useState("asc");
   var [editRec,setEditRec]=useState(null);
@@ -1235,6 +1241,11 @@ function CategoryView({cat}){
       if(configFilter==="needs_peak"&&hasPeak)return false;
       if(configFilter==="needs_hours"&&hasHours)return false;
       if(configFilter==="walk_in"&&r.reservation_required!==false)return false;
+    }
+    if(cat.id==="restaurants"&&diningTypeFilter&&r.category!==diningTypeFilter)return false;
+    if((cat.id==="restaurants"||cat.id==="accommodations")&&kosherFilter){
+      if(kosherFilter==="kosher"&&r.kosher!==true)return false;
+      if(kosherFilter==="non_kosher"&&r.kosher===true)return false;
     }
     return true;
   }).sort(function(a,b){
@@ -1321,6 +1332,53 @@ function CategoryView({cat}){
         )}
         <span style={{...sf(13),color:C.s5}}>{filtered.length} record{filtered.length!==1?"s":""}</span>
       </div>
+
+      {/* Dining sub-category chips (restaurants only) */}
+      {cat.id==="restaurants"&&(
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14,alignItems:"center"}}>
+          <span style={{...sf(10,600),color:C.s6,letterSpacing:1,textTransform:"uppercase",marginRight:4}}>Type</span>
+          {[
+            {v:"",l:"All"},
+            {v:"restaurant",l:"Restaurant"},
+            {v:"cafe",l:"Coffee shop"},
+            {v:"brunch",l:"Breakfast"},
+            {v:"bakery",l:"Bakery"},
+            {v:"beach_club",l:"Beach club"},
+          ].map(function(opt){
+            var on=diningTypeFilter===opt.v;
+            return(
+              <button key={opt.v||"all"} onClick={function(){setDiningTypeFilter(opt.v);}}
+                style={{...sf(12,600),padding:"6px 12px",borderRadius:20,border:"1px solid "+(on?C.gd:C.bd),
+                  background:on?"rgba(245,197,76,0.12)":"transparent",color:on?C.gd:C.s3,
+                  cursor:"pointer",letterSpacing:0.3,transition:"all 0.15s"}}>
+                {opt.l}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Kosher chips (restaurants + hotels) */}
+      {(cat.id==="restaurants"||cat.id==="accommodations")&&(
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20,alignItems:"center"}}>
+          <span style={{...sf(10,600),color:C.s6,letterSpacing:1,textTransform:"uppercase",marginRight:4}}>Kosher</span>
+          {[
+            {v:"",l:"All"},
+            {v:"kosher",l:"Kosher only"},
+            {v:"non_kosher",l:"Non-kosher only"},
+          ].map(function(opt){
+            var on=kosherFilter===opt.v;
+            return(
+              <button key={opt.v||"all"} onClick={function(){setKosherFilter(opt.v);}}
+                style={{...sf(12,600),padding:"6px 12px",borderRadius:20,border:"1px solid "+(on?"#5AC8FA":C.bd),
+                  background:on?"rgba(90,200,250,0.12)":"transparent",color:on?"#5AC8FA":C.s3,
+                  cursor:"pointer",letterSpacing:0.3,transition:"all 0.15s"}}>
+                {opt.l}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Bulk Actions */}
       {selected.length>0&&(
