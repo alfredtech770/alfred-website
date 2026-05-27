@@ -108,12 +108,12 @@ var CATS = [
     id:"restaurants", label:"Restaurants", table:"restaurants", icon:"restaurant",
     bucket:"restaurant-photos", imgField:"hero_image_url", galleryField:"gallery_photos",
     orderField:"photos_order",
-    cols:["name","city","time_slots","peak_price_per_person","reservation_required","is_active"],
+    cols:["name","city","time_slots","peak_price_per_person","reservation_required","kosher","is_active"],
     fields:[
       {k:"name",l:"Name",t:"text",req:true},
       {k:"slug",l:"Slug",t:"text"},
       {k:"cuisine",l:"Cuisine",t:"text"},
-      {k:"city",l:"City",t:"select",opts:["Miami","Paris","New York","Los Angeles","London"]},
+      {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","New York","Los Angeles","London","Monaco","Miami Beach"]},
       {k:"vibe",l:"Vibe",t:"text"},
       {k:"tagline",l:"Tagline",t:"text",wide:true},
       {k:"description",l:"Description",t:"textarea",wide:true},
@@ -145,6 +145,7 @@ var CATS = [
       {k:"available_tonight",l:"Available Tonight",t:"bool"},
       {k:"instant_booking_available",l:"Instant Booking",t:"bool"},
       {k:"reservation_required",l:"Reservation Required (off = walk-in)",t:"bool"},
+      {k:"kosher",l:"Kosher / Cacher",t:"bool"},
     ]
   },
   {
@@ -155,7 +156,7 @@ var CATS = [
     fields:[
       {k:"name",l:"Name",t:"text",req:true},
       {k:"category",l:"Category",t:"select",opts:["nightclub","bar","lounge","rooftop"]},
-      {k:"city",l:"City",t:"select",opts:["Miami","Paris","Dubai","London","New York"]},
+      {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","London","New York","Dubai","Miami Beach"]},
       {k:"vibe",l:"Vibe",t:"text"},
       {k:"music",l:"Music",t:"text"},
       {k:"description",l:"Description",t:"textarea",wide:true},
@@ -187,7 +188,7 @@ var CATS = [
       {k:"name",l:"Name",t:"text",req:true},
       {k:"brand",l:"Brand",t:"text"},
       {k:"yacht_type",l:"Type",t:"text"},
-      {k:"city",l:"City",t:"select",opts:["Miami","Paris","Monaco","Ibiza","Cannes"]},
+      {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","Monaco","Cannes"]},
       {k:"location",l:"Location",t:"text"},
       {k:"size_ft",l:"Size (ft)",t:"number"},
       {k:"max_passengers",l:"Max Guests",t:"number"},
@@ -217,7 +218,7 @@ var CATS = [
       {k:"name",l:"Name",t:"text",req:true},
       {k:"slug",l:"Slug",t:"text"},
       {k:"type",l:"Type",t:"text"},
-      {k:"city",l:"City",t:"select",opts:["Miami","Paris","New York","Los Angeles"]},
+      {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","New York","Los Angeles"]},
       {k:"description",l:"Description",t:"textarea",wide:true},
       {k:"address",l:"Address",t:"text",wide:true},
       {k:"rating",l:"Rating",t:"number"},
@@ -239,7 +240,7 @@ var CATS = [
       {k:"brand",l:"Brand",t:"text"},
       {k:"category",l:"Category",t:"text"},
       {k:"type",l:"Type",t:"text"},
-      {k:"city",l:"City",t:"select",opts:["Miami","Paris","Los Angeles","New York","Dubai"]},
+      {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","Los Angeles","New York","Dubai"]},
       {k:"hp",l:"HP",t:"number"},
       {k:"acceleration",l:"0-60",t:"text"},
       {k:"top_speed",l:"Top Speed",t:"text"},
@@ -261,11 +262,11 @@ var CATS = [
     id:"accommodations", label:"Hotels", table:"accommodations", icon:"star",
     bucket:"venue-photos", imgField:"hero_image_url", galleryField:"photos_order",
     orderField:"photos_order",
-    cols:["name","neighborhood","star_rating","status","is_active"],
+    cols:["name","city","neighborhood","star_rating","kosher","status","is_active"],
     fields:[
       {k:"name",l:"Hotel Name",t:"text",req:true},
       {k:"slug",l:"Slug",t:"text"},
-      {k:"city",l:"City",t:"select",opts:["Miami","Paris","Dubai","London","New York"]},
+      {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","London","New York","Dubai"]},
       {k:"neighborhood",l:"Neighborhood",t:"text"},
       {k:"address",l:"Address",t:"text",wide:true},
       {k:"category",l:"Category",t:"select",opts:["hotel","resort","boutique","residence"]},
@@ -284,6 +285,7 @@ var CATS = [
       {k:"is_active",l:"Active",t:"bool"},
       {k:"is_featured",l:"Featured",t:"bool"},
       {k:"is_partner",l:"Partner",t:"bool"},
+      {k:"kosher",l:"Kosher / Cacher",t:"bool"},
     ]
   },
   {
@@ -1175,6 +1177,10 @@ function CellVal({col,row}){
       {v?"Reserve":"Walk-in"}
     </span>
   );
+  if(col==="kosher")return v?(
+    <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,letterSpacing:0.5,
+      background:"rgba(0,122,255,0.12)",color:"#5AC8FA"}}>Kosher</span>
+  ):<span style={{color:C.s6}}>—</span>;
   if(col==="price_level")return <span style={{color:C.gd}}>{"$".repeat(Number(v))||"-"}</span>;
   if(col==="rating"&&v>0)return <span style={{color:C.gd}}>{"★ "+v}</span>;
   if(typeof v==="number"&&(col.includes("price")||col.includes("deposit")))return <span>${v.toLocaleString()}</span>;
@@ -1266,7 +1272,7 @@ function CategoryView({cat}){
   }
 
   var colLabels={name:"Name",cuisine:"Cuisine",city:"City",price_level:"Price",rating:"Rating",is_active:"Status",
-    reservation_required:"Booking",
+    reservation_required:"Booking",kosher:"Kosher",
     time_slots:"Slots",peak_price_per_person:"Premium $",
     brand:"Brand",max_passengers:"Guests",price_4hr:"4hr Rate",price_per_day:"$/Day",price_1_day:"Day Rate",
     type:"Type",capacity:"Capacity",location:"Location",door_policy:"Door"};
