@@ -1189,6 +1189,177 @@ function CellVal({col,row}){
   return <span style={{maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",display:"inline-block"}}>{String(v)}</span>;
 }
 
+/* ═══ City Overview ═══
+ *
+ * Single-page summary of every venue category in one city. Triggered when
+ * the operator clicks a city in the sidebar — pre-filtered counts, top
+ * venues per category, with one-click drill-into the full filtered list.
+ *
+ * Loads each table in parallel with .eq("city",city). For "Other cities"
+ * we invert the match against the 5 primary markets so the bucket shows
+ * everything outside our active merchandising. */
+function CityOverviewView({city,onOpenCategory,onClearCity}){
+  var [data,setData]=useState({});
+  var [loading,setLoading]=useState(true);
+  var [editRec,setEditRec]=useState(null);
+  var [editCat,setEditCat]=useState(null);
+
+  // Pretty label for "__other__" — the synthetic "everything else" bucket.
+  var cityLabel=city==="__other__"?"Other cities":city;
+
+  useEffect(function(){
+    async function load(){
+      setLoading(true);
+      var promises=CATS.map(function(c){
+        var q=supabase.from(c.table).select("id,name,city,"+(c.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
+        if(city==="__other__"){
+          // Postgrest's `not.in` wants a parenthesized list.
+          q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
+        }else{
+          q=q.eq("city",city);
+        }
+        return q.then(function(r){return{catId:c.id,rows:r.data||[],error:r.error};});
+      });
+      var results=await Promise.all(promises);
+      var byId={};
+      results.forEach(function(r){byId[r.catId]=r.rows;});
+      setData(byId);
+      setLoading(false);
+    }
+    if(city)load();
+  },[city]);
+
+  function renderVenueRow(c,row){
+    var img=row[c.imgField||"hero_image_url"];
+    var meta=[
+      row.neighborhood,
+      row.category,
+      row.cuisine,
+      row.brand,
+      row.type,
+    ].filter(Boolean).slice(0,2).join(" · ");
+    return(
+      <button key={row.id} onClick={function(){setEditCat(c);setEditRec(row);}}
+        style={{display:"flex",alignItems:"center",gap:12,width:"100%",
+          padding:"10px 12px",background:"transparent",border:"none",borderRadius:10,
+          cursor:"pointer",textAlign:"left",transition:"background 0.12s"}}
+        onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
+        onMouseLeave={function(e){e.currentTarget.style.background="transparent";}}>
+        {img?(
+          <img src={img} alt="" style={{width:48,height:48,borderRadius:8,objectFit:"cover",border:"1px solid "+C.bd,flexShrink:0}}/>
+        ):(
+          <div style={{width:48,height:48,borderRadius:8,background:C.srf,border:"1px dashed "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <Icon name="images" size={16} color={C.s6}/>
+          </div>
+        )}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{...sf(13,600),color:C.s1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{row.name}</div>
+          {meta&&<div style={{...sf(11),color:C.s5,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{meta}</div>}
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+          {row.rating>0&&<span style={{...sf(11,600),color:C.gd}}>★ {row.rating}</span>}
+          {row.is_active===false&&<span style={{...sf(10,600),padding:"2px 7px",borderRadius:10,background:"rgba(255,59,48,0.08)",color:C.rd}}>OFF</span>}
+        </div>
+      </button>
+    );
+  }
+
+  return(
+    <div>
+      {/* Header */}
+      <div style={{display:"flex",alignItems:"baseline",gap:14,flexWrap:"wrap",marginBottom:8}}>
+        <h2 style={{...sf(28,700),color:C.s1,margin:0,letterSpacing:-0.5}}>{cityLabel}</h2>
+        <span style={{...sf(13),color:C.s5}}>City overview</span>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:24}}>
+        <span style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 10px 6px 12px",
+          borderRadius:20,background:"rgba(212,168,83,0.10)",border:"1px solid rgba(212,168,83,0.30)",
+          ...sf(12,600),color:C.gd,letterSpacing:0.3}}>
+          <Icon name="pin" size={12} color={C.gd}/>
+          {cityLabel}
+          <button onClick={onClearCity}
+            style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",borderRadius:10,marginLeft:2}}
+            title="Clear city filter">
+            <Icon name="close" size={14} color={C.gd}/>
+          </button>
+        </span>
+        <span style={{...sf(12),color:C.s5}}>
+          {loading?"Loading...":(
+            Object.keys(data).reduce(function(t,k){return t+data[k].length;},0)+" venues across "+
+            Object.keys(data).filter(function(k){return data[k].length>0;}).length+" categories"
+          )}
+        </span>
+      </div>
+
+      {loading?(
+        <div style={{padding:"60px 20px",textAlign:"center",color:C.s5,...sf(14)}}>Loading {cityLabel} venues...</div>
+      ):(
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(360px,1fr))",gap:18}}>
+          {CATS.map(function(c){
+            var rows=data[c.id]||[];
+            return(
+              <div key={c.id} style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,padding:16,minHeight:120}}>
+                {/* Section header */}
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <Icon name={c.icon} size={18} color={C.gd}/>
+                    <span style={{...sf(15,600),color:C.s1}}>{c.label}</span>
+                    <span style={{...sf(12,500),color:C.s5}}>({rows.length})</span>
+                  </div>
+                  {rows.length>0&&(
+                    <button onClick={function(){onOpenCategory(c.id);}}
+                      style={{background:"none",border:"none",cursor:"pointer",...sf(12,600),color:C.gd,padding:"4px 8px",borderRadius:8}}
+                      onMouseEnter={function(e){e.currentTarget.style.background="rgba(212,168,83,0.10)";}}
+                      onMouseLeave={function(e){e.currentTarget.style.background="none";}}>
+                      View all →
+                    </button>
+                  )}
+                </div>
+                {/* Venue rows (top 6) */}
+                {rows.length===0?(
+                  <div style={{padding:"20px 12px",textAlign:"center",...sf(12),color:C.s6}}>
+                    No {c.label.toLowerCase()} in {cityLabel}
+                  </div>
+                ):(
+                  <div>
+                    {rows.slice(0,6).map(function(r){return renderVenueRow(c,r);})}
+                    {rows.length>6&&(
+                      <button onClick={function(){onOpenCategory(c.id);}}
+                        style={{...sf(12,500),color:C.s5,background:"none",border:"none",cursor:"pointer",padding:"8px 12px",width:"100%",textAlign:"left"}}>
+                        + {rows.length-6} more {c.label.toLowerCase()}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Edit modal — reuses the existing one. We pass the venue's cat
+          config so the form knows which fields to render. */}
+      {editRec&&editCat&&(
+        <EditModal cat={editCat} record={editRec}
+          onClose={function(){setEditRec(null);setEditCat(null);}}
+          onSave={function(){
+            // Refresh just that category to avoid re-fetching all 6.
+            setEditRec(null);setEditCat(null);
+            var q=supabase.from(editCat.table).select("id,name,city,"+(editCat.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
+            if(city==="__other__"){
+              q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
+            }else{
+              q=q.eq("city",city);
+            }
+            q.then(function(r){
+              setData(function(p){var n={...p};n[editCat.id]=r.data||[];return n;});
+            });
+          }}/>
+      )}
+    </div>
+  );
+}
+
 /* ═══ Category View ═══ */
 function CategoryView({cat,globalCity,onClearCity}){
   var [records,setRecords]=useState([]);
@@ -3340,7 +3511,7 @@ function MobileDrawer({active,onNav,onClose,globalCity,setGlobalCity,cityCounts}
             if(item.cityRow){
               var cityActive=(globalCity||"")===item.key;
               return(
-                <button key={item.id} onClick={function(){setGlobalCity(cityActive?"":item.key);}}
+                <button key={item.id} onClick={function(){setGlobalCity(cityActive?"":item.key);onClose();}}
                   style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"12px 16px 12px 28px",
                     background:cityActive?"rgba(212,168,83,0.10)":"none",border:"none",borderRadius:10,cursor:"pointer",marginBottom:2}}>
                   <span style={{display:"flex",alignItems:"center",gap:12}}>
@@ -3434,6 +3605,11 @@ function AdminDashboard({onLogout}){
 
   function renderContent(){
     if(page==="dashboard")return <DashboardView counts={counts} onNav={setPage}/>;
+    if(page==="city_overview"&&globalCity){
+      return <CityOverviewView key={globalCity} city={globalCity}
+        onOpenCategory={function(catId){setPage(catId);}}
+        onClearCity={function(){setGlobalCity("");setPage("dashboard");}}/>;
+    }
     if(page==="bookings")return <BookingsView/>;
     if(page==="clients")return <ClientsView/>;
     if(page==="images")return <ImageBrowserView/>;
@@ -3445,11 +3621,26 @@ function AdminDashboard({onLogout}){
     return <DashboardView counts={counts} onNav={setPage}/>;
   }
 
+  // When the operator picks a city in the sidebar, jump straight to the
+  // City Overview (a single page showing every venue category in that
+  // city). If they then drill into a specific category, the global city
+  // stays applied as a filter.
+  function handleCityNav(cityKey){
+    if(!cityKey){
+      // "All cities" — clear the filter and go home.
+      setGlobalCity("");
+      if(page==="city_overview")setPage("dashboard");
+      return;
+    }
+    setGlobalCity(cityKey);
+    setPage("city_overview");
+  }
+
   if(isMobile){
     return(
       <div style={{minHeight:"100vh",background:C.bg}}>
         <MobileHeader onMenuToggle={function(){setDrawer(true);}} onLogout={onLogout}/>
-        {drawer&&<MobileDrawer active={page} onNav={setPage} onClose={function(){setDrawer(false);}} globalCity={globalCity} setGlobalCity={setGlobalCity} cityCounts={cityCounts}/>}
+        {drawer&&<MobileDrawer active={page} onNav={setPage} onClose={function(){setDrawer(false);}} globalCity={globalCity} setGlobalCity={handleCityNav} cityCounts={cityCounts}/>}
         <div style={{padding:"20px 16px"}}>
           {renderContent()}
         </div>
@@ -3461,7 +3652,7 @@ function AdminDashboard({onLogout}){
     <div style={{display:"flex",minHeight:"100vh",background:C.bg}}>
       <Sidebar active={page} onNav={setPage} onLogout={onLogout}
         collapsed={collapsed} onToggle={function(){setCollapsed(!collapsed);}}
-        globalCity={globalCity} setGlobalCity={setGlobalCity}
+        globalCity={globalCity} setGlobalCity={handleCityNav}
         cityCounts={cityCounts} catCounts={counts}/>
       <div style={{flex:1,minWidth:0,padding:"28px 32px",overflowY:"auto",overflowX:"hidden"}}>
         {renderContent()}
