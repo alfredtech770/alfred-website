@@ -3348,9 +3348,9 @@ function FinanceView(){
   );
 }
 
-function Sidebar({active,onNav,onLogout,collapsed,onToggle,globalCity,setGlobalCity,cityCounts,catCounts}){
-  var topItems=[{id:"dashboard",label:"Dashboard",icon:"dashboard"}];
-  var venueCats=CATS.map(function(c){return{id:c.id,label:c.label,icon:c.icon,count:catCounts&&catCounts[c.id]};});
+function Sidebar({active,onNav,onLogout,collapsed,onToggle,
+  globalCity,expandedCity,onCityClick,onCityCategoryClick,onAllCategoryClick,
+  cityCounts,catCounts}){
   var opsItems=[
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
@@ -3360,42 +3360,45 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,globalCity,setGlobalC
     {id:"notifications",label:"Notifications",icon:"star"},
     {id:"finance",label:"Finance",icon:"star"},
   ];
-  // The 5 markets we actively merchandise, plus an "Other cities" bucket
-  // for everything else that exists in the DB but isn't a primary market.
-  var cityRows=[{key:"",label:"All cities",count:(cityCounts||{}).__all__}]
-    .concat(PRIMARY_CITIES.map(function(c){return{key:c,label:c,count:(cityCounts||{})[c]};}))
-    .concat([{key:"__other__",label:"Other cities",count:(cityCounts||{}).__other__,muted:true}]);
-
-  function NavBtn({id,label,icon,count,isActive,onClick,indent}){
-    return(
-      <button key={id} onClick={onClick}
-        style={{
-          width:"100%",display:"flex",alignItems:"center",gap:12,
-          padding:collapsed?"10px":("8px "+(indent?"12px 8px 28px":"16px")),
-          background:isActive?"rgba(212,168,83,0.10)":"none",
-          border:"none",borderRadius:10,cursor:"pointer",
-          transition:"all 0.15s",marginBottom:2,
-          justifyContent:collapsed?"center":"space-between"
-        }}
-        onMouseEnter={function(e){if(!isActive)e.currentTarget.style.background=C.srf;}}
-        onMouseLeave={function(e){if(!isActive)e.currentTarget.style.background=isActive?"rgba(212,168,83,0.10)":"none";}}>
-        <span style={{display:"flex",alignItems:"center",gap:12,minWidth:0}}>
-          {icon&&<Icon name={icon} size={18} color={isActive?C.gd:C.s5}/>}
-          {!collapsed&&<span style={{...sf(13,isActive?600:400),color:isActive?C.s1:C.s4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>}
-        </span>
-        {!collapsed&&typeof count==="number"&&<span style={{...sf(11,500),color:isActive?C.gd:C.s6,paddingLeft:6}}>{count}</span>}
-      </button>
-    );
-  }
+  // Primary-city ordering for the tree, plus the "Other cities" bucket.
+  var cityKeys=PRIMARY_CITIES.concat(["__other__"]);
 
   function SectionLabel({text}){
     if(collapsed)return <div style={{height:1,background:C.bd,margin:"10px 12px 6px"}}/>;
     return <div style={{...sf(10,700),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",padding:"14px 16px 6px"}}>{text}</div>;
   }
 
+  // One row in the sidebar — used for top-level items, city nodes, and
+  // sub-rows under an expanded city.
+  function Row({label,icon,count,isActive,onClick,depth,leadingArrow,muted}){
+    var leftPad=collapsed?"10px":(depth===1?"7px 12px 7px 32px":"8px 14px");
+    return(
+      <button onClick={onClick}
+        style={{
+          width:"100%",display:"flex",alignItems:"center",gap:10,
+          padding:collapsed?"10px":leftPad,
+          background:isActive?"rgba(212,168,83,0.10)":"none",
+          border:"none",borderRadius:10,cursor:"pointer",
+          transition:"all 0.12s",marginBottom:1,
+          justifyContent:collapsed?"center":"space-between"
+        }}
+        onMouseEnter={function(e){if(!isActive)e.currentTarget.style.background=C.srf;}}
+        onMouseLeave={function(e){e.currentTarget.style.background=isActive?"rgba(212,168,83,0.10)":"none";}}>
+        <span style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
+          {leadingArrow&&!collapsed&&(
+            <span style={{...sf(10),color:C.s5,width:10,display:"inline-flex",justifyContent:"center"}}>{leadingArrow}</span>
+          )}
+          {icon&&<Icon name={icon} size={depth===1?15:18} color={isActive?C.gd:(muted?C.s6:C.s5)}/>}
+          {!collapsed&&<span style={{...sf(depth===1?12:13,isActive?600:400),color:isActive?C.s1:(muted?C.s5:C.s4),whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>}
+        </span>
+        {!collapsed&&typeof count==="number"&&<span style={{...sf(11,500),color:isActive?C.gd:C.s6,paddingLeft:6}}>{count}</span>}
+      </button>
+    );
+  }
+
   return(
     <div style={{
-      width:collapsed?64:240,minHeight:"100vh",background:C.bg2,
+      width:collapsed?64:248,minHeight:"100vh",background:C.bg2,
       borderRight:"1px solid "+C.bd,display:"flex",flexDirection:"column",
       transition:"width 0.25s cubic-bezier(0.16,1,0.3,1)",overflow:"hidden",flexShrink:0
     }}>
@@ -3414,31 +3417,61 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,globalCity,setGlobalC
 
       {/* Nav Items */}
       <div style={{flex:1,padding:"12px 8px",overflowY:"auto"}}>
-        {topItems.map(function(item){
-          return <NavBtn key={item.id} id={item.id} label={item.label} icon={item.icon}
-            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
-        })}
+        {/* Dashboard */}
+        <Row label="Dashboard" icon="dashboard"
+          isActive={active==="dashboard"} onClick={function(){onNav("dashboard");}}/>
 
-        {/* Cities — global filter persists across category switches */}
+        {/* Cities — hierarchical. Click a city to expand AND open its
+            overview. Click a nested category to drill into the filtered list. */}
         <SectionLabel text="Cities"/>
-        {cityRows.map(function(row){
-          var isActive=(globalCity||"")===row.key;
-          return <NavBtn key={"city_"+(row.key||"all")} id={"city_"+row.key} label={row.label}
-            icon={row.key?"pin":"globe"} count={row.count} isActive={isActive} indent
-            onClick={function(){setGlobalCity(isActive?"":row.key);}}/>;
+        <Row label="All cities" icon="globe"
+          count={(cityCounts.__all__||{}).__all__}
+          isActive={!globalCity&&active==="city_overview"}
+          onClick={function(){onCityClick("");}}/>
+        {cityKeys.map(function(key){
+          var label=key==="__other__"?"Other cities":key;
+          var bucket=cityCounts[key]||{};
+          var isExpanded=expandedCity===key;
+          var isActive=globalCity===key&&active==="city_overview";
+          return(
+            <div key={"city_"+key}>
+              <Row label={label} icon="pin"
+                count={bucket.__all__||0}
+                isActive={isActive}
+                leadingArrow={isExpanded?"▾":"▸"}
+                muted={key==="__other__"}
+                onClick={function(){onCityClick(key);}}/>
+              {isExpanded&&!collapsed&&CATS.map(function(c){
+                var n=bucket[c.id]||0;
+                if(n===0)return null;
+                var subActive=globalCity===key&&active===c.id;
+                return(
+                  <Row key={c.id} label={c.label} icon={c.icon}
+                    count={n} depth={1} isActive={subActive}
+                    onClick={function(){onCityCategoryClick(key,c.id);}}/>
+                );
+              })}
+            </div>
+          );
         })}
 
-        {/* Venue categories — same as before, now with badge counts */}
-        <SectionLabel text="Venues"/>
-        {venueCats.map(function(item){
-          return <NavBtn key={item.id} id={item.id} label={item.label} icon={item.icon} count={item.count}
-            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
+        {/* All venues — flat access to each category regardless of city.
+            Useful for bulk operations / cross-city merchandising. */}
+        <SectionLabel text="All venues"/>
+        {CATS.map(function(c){
+          var isActive=!globalCity&&active===c.id;
+          return(
+            <Row key={c.id} label={c.label} icon={c.icon}
+              count={catCounts&&catCounts[c.id]}
+              isActive={isActive}
+              onClick={function(){onAllCategoryClick(c.id);}}/>
+          );
         })}
 
         {/* Operations */}
         <SectionLabel text="Operations"/>
         {opsItems.map(function(item){
-          return <NavBtn key={item.id} id={item.id} label={item.label} icon={item.icon}
+          return <Row key={item.id} label={item.label} icon={item.icon}
             isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
         })}
       </div>
@@ -3477,16 +3510,29 @@ function MobileHeader({onMenuToggle,onLogout}){
 }
 
 /* ═══ Mobile Drawer ═══ */
-function MobileDrawer({active,onNav,onClose,globalCity,setGlobalCity,cityCounts}){
-  var items=[
-    {id:"dashboard",label:"Dashboard",icon:"dashboard"},
-    {id:"_cities_section",sectionLabel:"Cities"},
-    {id:"city_",cityRow:true,key:"",label:"All cities",icon:"globe",count:(cityCounts||{}).__all__},
-    ...PRIMARY_CITIES.map(function(c){return{id:"city_"+c,cityRow:true,key:c,label:c,icon:"pin",count:(cityCounts||{})[c]};}),
-    {id:"city___other__",cityRow:true,key:"__other__",label:"Other cities",icon:"pin",count:(cityCounts||{}).__other__},
-    {id:"_venues_section",sectionLabel:"Venues"},
-    ...CATS.map(function(c){return{id:c.id,label:c.label,icon:c.icon};}),
-    {id:"_ops_section",sectionLabel:"Operations"},
+function DrawerSection({text}){
+  return <div style={{...sf(10,700),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",padding:"14px 16px 6px"}}>{text}</div>;
+}
+function DrawerRow({label,icon,count,isActive,onClick,depth,leadingArrow}){
+  var pad=depth===1?"10px 16px 10px 36px":"12px 16px";
+  return(
+    <button onClick={onClick}
+      style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,
+        padding:pad,background:isActive?"rgba(212,168,83,0.10)":"none",
+        border:"none",borderRadius:10,cursor:"pointer",marginBottom:1}}>
+      <span style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
+        {leadingArrow&&<span style={{...sf(10),color:C.s5,width:10,display:"inline-flex",justifyContent:"center"}}>{leadingArrow}</span>}
+        <Icon name={icon} size={depth===1?15:18} color={isActive?C.gd:C.s5}/>
+        <span style={{...sf(depth===1?12:14,isActive?600:400),color:isActive?C.s1:C.s4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>
+      </span>
+      {typeof count==="number"&&<span style={{...sf(11,500),color:isActive?C.gd:C.s6}}>{count}</span>}
+    </button>
+  );
+}
+function MobileDrawer({active,onNav,onClose,globalCity,expandedCity,
+  onCityClick,onCityCategoryClick,onAllCategoryClick,cityCounts,catCounts}){
+  var cityKeys=PRIMARY_CITIES.concat(["__other__"]);
+  var opsItems=[
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
@@ -3504,32 +3550,62 @@ function MobileDrawer({active,onNav,onClose,globalCity,setGlobalCity,cityCounts}
           <div style={{...sf(12,700),letterSpacing:3,background:C.gdGrad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>ALFRED ADMIN</div>
         </div>
         <div style={{flex:1,padding:"12px 8px",overflowY:"auto"}}>
-          {items.map(function(item){
-            if(item.sectionLabel){
-              return <div key={item.id} style={{...sf(10,700),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",padding:"14px 16px 6px"}}>{item.sectionLabel}</div>;
-            }
-            if(item.cityRow){
-              var cityActive=(globalCity||"")===item.key;
-              return(
-                <button key={item.id} onClick={function(){setGlobalCity(cityActive?"":item.key);onClose();}}
-                  style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"12px 16px 12px 28px",
-                    background:cityActive?"rgba(212,168,83,0.10)":"none",border:"none",borderRadius:10,cursor:"pointer",marginBottom:2}}>
-                  <span style={{display:"flex",alignItems:"center",gap:12}}>
-                    <Icon name={item.icon} size={18} color={cityActive?C.gd:C.s5}/>
-                    <span style={{...sf(14,cityActive?600:400),color:cityActive?C.s1:C.s4}}>{item.label}</span>
-                  </span>
-                  {typeof item.count==="number"&&<span style={{...sf(11,500),color:cityActive?C.gd:C.s6}}>{item.count}</span>}
-                </button>
-              );
-            }
+          {/* Dashboard */}
+          <DrawerRow label="Dashboard" icon="dashboard"
+            isActive={active==="dashboard"}
+            onClick={function(){onNav("dashboard");onClose();}}/>
+
+          {/* Cities */}
+          <DrawerSection text="Cities"/>
+          <DrawerRow label="All cities" icon="globe"
+            count={(cityCounts.__all__||{}).__all__}
+            isActive={!globalCity&&active==="city_overview"}
+            onClick={function(){onCityClick("");onClose();}}/>
+          {cityKeys.map(function(key){
+            var label=key==="__other__"?"Other cities":key;
+            var bucket=cityCounts[key]||{};
+            var isExpanded=expandedCity===key;
+            var cityActive=globalCity===key&&active==="city_overview";
+            return(
+              <div key={"city_"+key}>
+                <DrawerRow label={label} icon="pin" count={bucket.__all__||0}
+                  isActive={cityActive}
+                  leadingArrow={isExpanded?"▾":"▸"}
+                  onClick={function(){onCityClick(key);if(isExpanded){onClose();}}}/>
+                {isExpanded&&CATS.map(function(c){
+                  var n=bucket[c.id]||0;
+                  if(n===0)return null;
+                  var subActive=globalCity===key&&active===c.id;
+                  return(
+                    <DrawerRow key={c.id} label={c.label} icon={c.icon} count={n}
+                      depth={1} isActive={subActive}
+                      onClick={function(){onCityCategoryClick(key,c.id);onClose();}}/>
+                  );
+                })}
+              </div>
+            );
+          })}
+
+          {/* All venues */}
+          <DrawerSection text="All venues"/>
+          {CATS.map(function(c){
+            var isActive=!globalCity&&active===c.id;
+            return(
+              <DrawerRow key={c.id} label={c.label} icon={c.icon}
+                count={catCounts&&catCounts[c.id]}
+                isActive={isActive}
+                onClick={function(){onAllCategoryClick(c.id);onClose();}}/>
+            );
+          })}
+
+          {/* Operations */}
+          <DrawerSection text="Operations"/>
+          {opsItems.map(function(item){
             var isActive=active===item.id;
             return(
-              <button key={item.id} onClick={function(){onNav(item.id);onClose();}}
-                style={{width:"100%",display:"flex",alignItems:"center",gap:12,padding:"12px 16px",
-                  background:isActive?"rgba(212,168,83,0.08)":"none",border:"none",borderRadius:10,cursor:"pointer",marginBottom:2}}>
-                <Icon name={item.icon} size={18} color={isActive?C.gd:C.s5}/>
-                <span style={{...sf(14,isActive?600:400),color:isActive?C.s1:C.s4}}>{item.label}</span>
-              </button>
+              <DrawerRow key={item.id} label={item.label} icon={item.icon}
+                isActive={isActive}
+                onClick={function(){onNav(item.id);onClose();}}/>
             );
           })}
         </div>
@@ -3557,6 +3633,13 @@ function AdminDashboard({onLogout}){
   // "" means "no global filter, show everything".
   // "__other__" is the synthetic bucket for any city not in PRIMARY_CITIES.
   var [globalCity,setGlobalCity]=useState("");
+  // Sidebar tree: which city node is currently expanded to show its
+  // categories beneath it. Independent of globalCity so a city can be
+  // expanded for browsing without becoming the active filter (e.g. when
+  // the operator wants to glance at counts).
+  var [expandedCity,setExpandedCity]=useState("");
+  // Nested counts: cityCounts[city] = { __all__: 337, restaurants: 128, accommodations: 70, ... }
+  // Plus cityCounts.__all__ = totals across all cities.
   var [cityCounts,setCityCounts]=useState({});
 
   useEffect(function(){
@@ -3567,9 +3650,9 @@ function AdminDashboard({onLogout}){
 
   useEffect(function(){
     async function loadCounts(){
+      // Per-category totals (used by Dashboard tiles + the "All venues"
+      // section in the sidebar).
       var c={};
-      // Per-category total counts (used by both the sidebar badge next to
-      // each category and the Dashboard tiles).
       for(var i=0;i<CATS.length;i++){
         var {count}=await supabase.from(CATS[i].table).select("id",{count:"exact",head:true});
         c[CATS[i].id]=count||0;
@@ -3578,20 +3661,25 @@ function AdminDashboard({onLogout}){
       c.bookings=bc||0;
       setCounts(c);
 
-      // City totals across every venue category. We pull just the `city`
-      // column from each table in parallel, bucket the 5 primary cities,
-      // and lump everything else under "Other". One query per table beats
-      // a Postgres aggregate that would need a union.
-      var perCity={};
-      PRIMARY_CITIES.forEach(function(c){perCity[c]=0;});
-      perCity.__other__=0;perCity.__all__=0;
+      // Per-city, per-category counts. One query per table — pull just
+      // the `city` column, bucket client-side. Cheaper than 6 cities × 6
+      // categories = 36 head requests.
+      function emptyBucket(){
+        var b={__all__:0};
+        CATS.forEach(function(c){b[c.id]=0;});
+        return b;
+      }
+      var perCity={__all__:emptyBucket(),__other__:emptyBucket()};
+      PRIMARY_CITIES.forEach(function(c){perCity[c]=emptyBucket();});
       var promises=CATS.map(function(cat){
         return supabase.from(cat.table).select("city").then(function(r){
           (r.data||[]).forEach(function(row){
             var city=row.city||"";
-            perCity.__all__+=1;
-            if(PRIMARY_CITIES.indexOf(city)>=0)perCity[city]+=1;
-            else perCity.__other__+=1;
+            var bucket=PRIMARY_CITIES.indexOf(city)>=0?city:"__other__";
+            perCity.__all__.__all__+=1;
+            perCity.__all__[cat.id]+=1;
+            perCity[bucket].__all__+=1;
+            perCity[bucket][cat.id]+=1;
           });
         });
       });
@@ -3621,26 +3709,59 @@ function AdminDashboard({onLogout}){
     return <DashboardView counts={counts} onNav={setPage}/>;
   }
 
-  // When the operator picks a city in the sidebar, jump straight to the
-  // City Overview (a single page showing every venue category in that
-  // city). If they then drill into a specific category, the global city
-  // stays applied as a filter.
+  // City-click behaviour, Notion-style:
+  //   1. expand that city in the sidebar tree (collapse the previous one)
+  //   2. set it as the global filter
+  //   3. open the City Overview page so the operator sees every category
+  //      for that city side-by-side
+  // Clicking the SAME city again just toggles the expansion (filter +
+  // page persist) so you can still browse its categories without leaving.
   function handleCityNav(cityKey){
     if(!cityKey){
-      // "All cities" — clear the filter and go home.
+      setGlobalCity("");
+      setExpandedCity("");
+      if(page==="city_overview")setPage("dashboard");
+      return;
+    }
+    if(expandedCity===cityKey){
+      // Already expanded — collapse it. Filter clears too, since the
+      // visual "I'm in this city" state goes away.
+      setExpandedCity("");
       setGlobalCity("");
       if(page==="city_overview")setPage("dashboard");
       return;
     }
+    setExpandedCity(cityKey);
     setGlobalCity(cityKey);
     setPage("city_overview");
+  }
+
+  // Click on a category nested under an expanded city in the sidebar.
+  // Sets both the filter and the active page in one go so the right
+  // pane jumps straight into the filtered list.
+  function handleCityCategoryNav(cityKey,catId){
+    setGlobalCity(cityKey);
+    setExpandedCity(cityKey);
+    setPage(catId);
+  }
+
+  // Click on a category in the "All venues" section (no city scope).
+  function handleAllCategoryNav(catId){
+    setGlobalCity("");
+    setExpandedCity("");
+    setPage(catId);
   }
 
   if(isMobile){
     return(
       <div style={{minHeight:"100vh",background:C.bg}}>
         <MobileHeader onMenuToggle={function(){setDrawer(true);}} onLogout={onLogout}/>
-        {drawer&&<MobileDrawer active={page} onNav={setPage} onClose={function(){setDrawer(false);}} globalCity={globalCity} setGlobalCity={handleCityNav} cityCounts={cityCounts}/>}
+        {drawer&&<MobileDrawer active={page} onNav={setPage} onClose={function(){setDrawer(false);}}
+          globalCity={globalCity} expandedCity={expandedCity}
+          onCityClick={handleCityNav}
+          onCityCategoryClick={handleCityCategoryNav}
+          onAllCategoryClick={handleAllCategoryNav}
+          cityCounts={cityCounts} catCounts={counts}/>}
         <div style={{padding:"20px 16px"}}>
           {renderContent()}
         </div>
@@ -3652,7 +3773,11 @@ function AdminDashboard({onLogout}){
     <div style={{display:"flex",minHeight:"100vh",background:C.bg}}>
       <Sidebar active={page} onNav={setPage} onLogout={onLogout}
         collapsed={collapsed} onToggle={function(){setCollapsed(!collapsed);}}
-        globalCity={globalCity} setGlobalCity={handleCityNav}
+        globalCity={globalCity}
+        expandedCity={expandedCity}
+        onCityClick={handleCityNav}
+        onCityCategoryClick={handleCityCategoryNav}
+        onAllCategoryClick={handleAllCategoryNav}
         cityCounts={cityCounts} catCounts={counts}/>
       <div style={{flex:1,minWidth:0,padding:"28px 32px",overflowY:"auto",overflowX:"hidden"}}>
         {renderContent()}
