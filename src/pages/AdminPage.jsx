@@ -3590,17 +3590,19 @@ function FinanceView(){
 
 function Sidebar({active,onNav,onLogout,collapsed,onToggle,
   globalCity,onCityClick,cityCounts}){
-  // Operations live at the top of the sidebar — these are the everyday
-  // workflow items (taking bookings, reviewing members, etc.).
+  // Operations — daily workflow items at the top of the sidebar.
   var opsItems=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
+    {id:"finance",label:"Finance",icon:"star"},
+  ];
+  // Content & lifecycle tools — used less often, parked at the bottom.
+  var bottomItems=[
     {id:"images",label:"Images",icon:"images"},
     {id:"featured",label:"Featured",icon:"star"},
     {id:"blog",label:"Blog",icon:"edit"},
     {id:"notifications",label:"Notifications",icon:"star"},
-    {id:"finance",label:"Finance",icon:"star"},
   ];
   var cityKeys=PRIMARY_CITIES.concat(["__other__"]);
 
@@ -3678,6 +3680,15 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
             muted={key==="__other__"}
             onClick={function(){onCityClick(key);}}/>;
         })}
+
+        {/* Content tools — Images, Featured, Blog, Notifications. Used
+            less often than the city/booking workflows, so they live at
+            the bottom of the scrollable area, above Sign Out. */}
+        <SectionLabel text="Content"/>
+        {bottomItems.map(function(item){
+          return <Row key={item.id} label={item.label} icon={item.icon}
+            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
+        })}
       </div>
 
       {/* Logout */}
@@ -3739,11 +3750,13 @@ function MobileDrawer({active,onNav,onClose,globalCity,onCityClick,cityCounts}){
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
+    {id:"finance",label:"Finance",icon:"star"},
+  ];
+  var bottomItems=[
     {id:"images",label:"Images",icon:"images"},
     {id:"featured",label:"Featured",icon:"star"},
     {id:"blog",label:"Blog",icon:"edit"},
     {id:"notifications",label:"Notifications",icon:"star"},
-    {id:"finance",label:"Finance",icon:"star"},
   ];
   return(
     <div style={{position:"fixed",inset:0,zIndex:200,display:"flex"}}>
@@ -3779,6 +3792,17 @@ function MobileDrawer({active,onNav,onClose,globalCity,onCityClick,cityCounts}){
               <DrawerRow key={"city_"+key} label={label} icon="pin" count={bucket.__all__||0}
                 isActive={cityActive}
                 onClick={function(){onCityClick(key);onClose();}}/>
+            );
+          })}
+
+          {/* Content tools at the bottom */}
+          <DrawerSection text="Content"/>
+          {bottomItems.map(function(item){
+            var isActive=active===item.id;
+            return(
+              <DrawerRow key={item.id} label={item.label} icon={item.icon}
+                isActive={isActive}
+                onClick={function(){onNav(item.id);onClose();}}/>
             );
           })}
         </div>
