@@ -3817,7 +3817,7 @@ function MobileDrawer({active,onNav,onClose,globalCity,onCityClick,cityCounts}){
 // under "Other cities" so the sidebar stays focused on the markets we
 // actually merchandise. Saint-Tropez uses the exact spelling already in
 // public.accommodations so the filter matches existing rows.
-var PRIMARY_CITIES=["Paris","Miami","New York","Ibiza","Saint-Tropez","Mykonos"];
+var PRIMARY_CITIES=["Paris","Miami","New York","Monaco","Ibiza","Saint-Tropez","Mykonos"];
 
 // Categories shown on the City Overview page, in display order. Every
 // city always shows the same six cards — even when empty — so the
