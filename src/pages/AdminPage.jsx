@@ -1207,18 +1207,24 @@ function CityOverviewView({city,onOpenCategory,onClearCity}){
   // Pretty label for "__other__" — the synthetic "everything else" bucket.
   var cityLabel=city==="__other__"?"Other cities":city;
 
+  // Pull each category's venues for this city in parallel. We only
+  // query the categories that show up in CITY_CATEGORIES — the same six
+  // every time — so the layout stays consistent city to city.
   useEffect(function(){
     async function load(){
       setLoading(true);
-      var promises=CATS.map(function(c){
+      var cityCats=CITY_CATEGORIES.map(function(cc){
+        return{cc,cat:CATS.find(function(c){return c.id===cc.catId;})};
+      }).filter(function(x){return x.cat;});
+      var promises=cityCats.map(function(x){
+        var c=x.cat;
         var q=supabase.from(c.table).select("id,name,city,"+(c.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
         if(city==="__other__"){
-          // Postgrest's `not.in` wants a parenthesized list.
           q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
         }else{
           q=q.eq("city",city);
         }
-        return q.then(function(r){return{catId:c.id,rows:r.data||[],error:r.error};});
+        return q.then(function(r){return{catId:c.id,rows:r.data||[]};});
       });
       var results=await Promise.all(promises);
       var byId={};
@@ -1295,15 +1301,21 @@ function CityOverviewView({city,onOpenCategory,onClearCity}){
         <div style={{padding:"60px 20px",textAlign:"center",color:C.s5,...sf(14)}}>Loading {cityLabel} venues...</div>
       ):(
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(360px,1fr))",gap:18}}>
-          {CATS.map(function(c){
+          {/* Always render every CITY_CATEGORIES card, in order, even if
+              empty. Keeps the layout identical from one city to the next
+              so the operator never has to hunt for a section. */}
+          {CITY_CATEGORIES.map(function(cc){
+            var c=CATS.find(function(x){return x.id===cc.catId;});
+            if(!c)return null;
             var rows=data[c.id]||[];
+            var label=cc.label;
             return(
-              <div key={c.id} style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,padding:16,minHeight:120}}>
+              <div key={c.id} style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,padding:16,minHeight:140}}>
                 {/* Section header */}
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
                   <div style={{display:"flex",alignItems:"center",gap:10}}>
                     <Icon name={c.icon} size={18} color={C.gd}/>
-                    <span style={{...sf(15,600),color:C.s1}}>{c.label}</span>
+                    <span style={{...sf(15,600),color:C.s1}}>{label}</span>
                     <span style={{...sf(12,500),color:C.s5}}>({rows.length})</span>
                   </div>
                   {rows.length>0&&(
@@ -1315,10 +1327,17 @@ function CityOverviewView({city,onOpenCategory,onClearCity}){
                     </button>
                   )}
                 </div>
-                {/* Venue rows (top 6) */}
+                {/* Venue rows (top 6) — or a placeholder + "Add" button
+                    when this category is empty in this city. */}
                 {rows.length===0?(
-                  <div style={{padding:"20px 12px",textAlign:"center",...sf(12),color:C.s6}}>
-                    No {c.label.toLowerCase()} in {cityLabel}
+                  <div style={{padding:"24px 12px",textAlign:"center",...sf(12),color:C.s6}}>
+                    No {label.toLowerCase()} in {cityLabel} yet
+                    <div style={{marginTop:10}}>
+                      <button onClick={function(){onOpenCategory(c.id);}}
+                        style={{...sf(11,600),color:C.gd,background:"rgba(212,168,83,0.10)",border:"1px solid rgba(212,168,83,0.30)",padding:"6px 12px",borderRadius:14,cursor:"pointer"}}>
+                        + Add {label.toLowerCase().slice(0,-1)||label.toLowerCase()}
+                      </button>
+                    </div>
                   </div>
                 ):(
                   <div>
@@ -1326,7 +1345,7 @@ function CityOverviewView({city,onOpenCategory,onClearCity}){
                     {rows.length>6&&(
                       <button onClick={function(){onOpenCategory(c.id);}}
                         style={{...sf(12,500),color:C.s5,background:"none",border:"none",cursor:"pointer",padding:"8px 12px",width:"100%",textAlign:"left"}}>
-                        + {rows.length-6} more {c.label.toLowerCase()}
+                        + {rows.length-6} more {label.toLowerCase()}
                       </button>
                     )}
                   </div>
@@ -3349,9 +3368,11 @@ function FinanceView(){
 }
 
 function Sidebar({active,onNav,onLogout,collapsed,onToggle,
-  globalCity,expandedCity,onCityClick,onCityCategoryClick,onAllCategoryClick,
-  cityCounts,catCounts}){
+  globalCity,onCityClick,cityCounts}){
+  // Operations live at the top of the sidebar — these are the everyday
+  // workflow items (taking bookings, reviewing members, etc.).
   var opsItems=[
+    {id:"dashboard",label:"Dashboard",icon:"dashboard"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
@@ -3360,7 +3381,6 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
     {id:"notifications",label:"Notifications",icon:"star"},
     {id:"finance",label:"Finance",icon:"star"},
   ];
-  // Primary-city ordering for the tree, plus the "Other cities" bucket.
   var cityKeys=PRIMARY_CITIES.concat(["__other__"]);
 
   function SectionLabel({text}){
@@ -3368,15 +3388,12 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
     return <div style={{...sf(10,700),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",padding:"14px 16px 6px"}}>{text}</div>;
   }
 
-  // One row in the sidebar — used for top-level items, city nodes, and
-  // sub-rows under an expanded city.
-  function Row({label,icon,count,isActive,onClick,depth,leadingArrow,muted}){
-    var leftPad=collapsed?"10px":(depth===1?"7px 12px 7px 32px":"8px 14px");
+  function Row({label,icon,count,isActive,onClick,muted}){
     return(
       <button onClick={onClick}
         style={{
           width:"100%",display:"flex",alignItems:"center",gap:10,
-          padding:collapsed?"10px":leftPad,
+          padding:collapsed?"10px":"9px 14px",
           background:isActive?"rgba(212,168,83,0.10)":"none",
           border:"none",borderRadius:10,cursor:"pointer",
           transition:"all 0.12s",marginBottom:1,
@@ -3385,11 +3402,8 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
         onMouseEnter={function(e){if(!isActive)e.currentTarget.style.background=C.srf;}}
         onMouseLeave={function(e){e.currentTarget.style.background=isActive?"rgba(212,168,83,0.10)":"none";}}>
         <span style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
-          {leadingArrow&&!collapsed&&(
-            <span style={{...sf(10),color:C.s5,width:10,display:"inline-flex",justifyContent:"center"}}>{leadingArrow}</span>
-          )}
-          {icon&&<Icon name={icon} size={depth===1?15:18} color={isActive?C.gd:(muted?C.s6:C.s5)}/>}
-          {!collapsed&&<span style={{...sf(depth===1?12:13,isActive?600:400),color:isActive?C.s1:(muted?C.s5:C.s4),whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>}
+          {icon&&<Icon name={icon} size={18} color={isActive?C.gd:(muted?C.s6:C.s5)}/>}
+          {!collapsed&&<span style={{...sf(13,isActive?600:400),color:isActive?C.s1:(muted?C.s5:C.s4),whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>}
         </span>
         {!collapsed&&typeof count==="number"&&<span style={{...sf(11,500),color:isActive?C.gd:C.s6,paddingLeft:6}}>{count}</span>}
       </button>
@@ -3417,12 +3431,17 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
 
       {/* Nav Items */}
       <div style={{flex:1,padding:"12px 8px",overflowY:"auto"}}>
-        {/* Dashboard */}
-        <Row label="Dashboard" icon="dashboard"
-          isActive={active==="dashboard"} onClick={function(){onNav("dashboard");}}/>
+        {/* Operations — daily workflow, kept at the top so it's always
+            one click away. */}
+        <SectionLabel text="Operations"/>
+        {opsItems.map(function(item){
+          return <Row key={item.id} label={item.label} icon={item.icon}
+            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
+        })}
 
-        {/* Cities — hierarchical. Click a city to expand AND open its
-            overview. Click a nested category to drill into the filtered list. */}
+        {/* Cities — pick a city, the main pane shows the City Overview
+            with every venue category as a card. No tree expansion: the
+            categories live in the right pane, not the sidebar. */}
         <SectionLabel text="Cities"/>
         <Row label="All cities" icon="globe"
           count={(cityCounts.__all__||{}).__all__}
@@ -3431,48 +3450,12 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
         {cityKeys.map(function(key){
           var label=key==="__other__"?"Other cities":key;
           var bucket=cityCounts[key]||{};
-          var isExpanded=expandedCity===key;
-          var isActive=globalCity===key&&active==="city_overview";
-          return(
-            <div key={"city_"+key}>
-              <Row label={label} icon="pin"
-                count={bucket.__all__||0}
-                isActive={isActive}
-                leadingArrow={isExpanded?"▾":"▸"}
-                muted={key==="__other__"}
-                onClick={function(){onCityClick(key);}}/>
-              {isExpanded&&!collapsed&&CATS.map(function(c){
-                var n=bucket[c.id]||0;
-                if(n===0)return null;
-                var subActive=globalCity===key&&active===c.id;
-                return(
-                  <Row key={c.id} label={c.label} icon={c.icon}
-                    count={n} depth={1} isActive={subActive}
-                    onClick={function(){onCityCategoryClick(key,c.id);}}/>
-                );
-              })}
-            </div>
-          );
-        })}
-
-        {/* All venues — flat access to each category regardless of city.
-            Useful for bulk operations / cross-city merchandising. */}
-        <SectionLabel text="All venues"/>
-        {CATS.map(function(c){
-          var isActive=!globalCity&&active===c.id;
-          return(
-            <Row key={c.id} label={c.label} icon={c.icon}
-              count={catCounts&&catCounts[c.id]}
-              isActive={isActive}
-              onClick={function(){onAllCategoryClick(c.id);}}/>
-          );
-        })}
-
-        {/* Operations */}
-        <SectionLabel text="Operations"/>
-        {opsItems.map(function(item){
-          return <Row key={item.id} label={item.label} icon={item.icon}
-            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
+          var isActive=globalCity===key;
+          return <Row key={"city_"+key} label={label} icon="pin"
+            count={bucket.__all__||0}
+            isActive={isActive}
+            muted={key==="__other__"}
+            onClick={function(){onCityClick(key);}}/>;
         })}
       </div>
 
@@ -3529,10 +3512,10 @@ function DrawerRow({label,icon,count,isActive,onClick,depth,leadingArrow}){
     </button>
   );
 }
-function MobileDrawer({active,onNav,onClose,globalCity,expandedCity,
-  onCityClick,onCityCategoryClick,onAllCategoryClick,cityCounts,catCounts}){
+function MobileDrawer({active,onNav,onClose,globalCity,onCityClick,cityCounts}){
   var cityKeys=PRIMARY_CITIES.concat(["__other__"]);
   var opsItems=[
+    {id:"dashboard",label:"Dashboard",icon:"dashboard"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
@@ -3550,10 +3533,16 @@ function MobileDrawer({active,onNav,onClose,globalCity,expandedCity,
           <div style={{...sf(12,700),letterSpacing:3,background:C.gdGrad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>ALFRED ADMIN</div>
         </div>
         <div style={{flex:1,padding:"12px 8px",overflowY:"auto"}}>
-          {/* Dashboard */}
-          <DrawerRow label="Dashboard" icon="dashboard"
-            isActive={active==="dashboard"}
-            onClick={function(){onNav("dashboard");onClose();}}/>
+          {/* Operations — at the top, same as desktop */}
+          <DrawerSection text="Operations"/>
+          {opsItems.map(function(item){
+            var isActive=active===item.id;
+            return(
+              <DrawerRow key={item.id} label={item.label} icon={item.icon}
+                isActive={isActive}
+                onClick={function(){onNav(item.id);onClose();}}/>
+            );
+          })}
 
           {/* Cities */}
           <DrawerSection text="Cities"/>
@@ -3564,48 +3553,11 @@ function MobileDrawer({active,onNav,onClose,globalCity,expandedCity,
           {cityKeys.map(function(key){
             var label=key==="__other__"?"Other cities":key;
             var bucket=cityCounts[key]||{};
-            var isExpanded=expandedCity===key;
-            var cityActive=globalCity===key&&active==="city_overview";
+            var cityActive=globalCity===key;
             return(
-              <div key={"city_"+key}>
-                <DrawerRow label={label} icon="pin" count={bucket.__all__||0}
-                  isActive={cityActive}
-                  leadingArrow={isExpanded?"▾":"▸"}
-                  onClick={function(){onCityClick(key);if(isExpanded){onClose();}}}/>
-                {isExpanded&&CATS.map(function(c){
-                  var n=bucket[c.id]||0;
-                  if(n===0)return null;
-                  var subActive=globalCity===key&&active===c.id;
-                  return(
-                    <DrawerRow key={c.id} label={c.label} icon={c.icon} count={n}
-                      depth={1} isActive={subActive}
-                      onClick={function(){onCityCategoryClick(key,c.id);onClose();}}/>
-                  );
-                })}
-              </div>
-            );
-          })}
-
-          {/* All venues */}
-          <DrawerSection text="All venues"/>
-          {CATS.map(function(c){
-            var isActive=!globalCity&&active===c.id;
-            return(
-              <DrawerRow key={c.id} label={c.label} icon={c.icon}
-                count={catCounts&&catCounts[c.id]}
-                isActive={isActive}
-                onClick={function(){onAllCategoryClick(c.id);onClose();}}/>
-            );
-          })}
-
-          {/* Operations */}
-          <DrawerSection text="Operations"/>
-          {opsItems.map(function(item){
-            var isActive=active===item.id;
-            return(
-              <DrawerRow key={item.id} label={item.label} icon={item.icon}
-                isActive={isActive}
-                onClick={function(){onNav(item.id);onClose();}}/>
+              <DrawerRow key={"city_"+key} label={label} icon="pin" count={bucket.__all__||0}
+                isActive={cityActive}
+                onClick={function(){onCityClick(key);onClose();}}/>
             );
           })}
         </div>
@@ -3622,6 +3574,20 @@ function MobileDrawer({active,onNav,onClose,globalCity,expandedCity,
 // public.accommodations so the filter matches existing rows.
 var PRIMARY_CITIES=["Paris","Miami","Ibiza","Saint-Tropez","Mykonos"];
 
+// Categories shown on the City Overview page, in display order. Every
+// city always shows the same six cards — even when empty — so the
+// operator's mental map stays stable from one city to the next. We
+// override "Restaurants" → "Dining" because that's the public-facing
+// label members see in the app.
+var CITY_CATEGORIES=[
+  {catId:"restaurants",label:"Dining"},
+  {catId:"cars",label:"Cars"},
+  {catId:"wellness",label:"Wellness"},
+  {catId:"yachts",label:"Yachts"},
+  {catId:"accommodations",label:"Hotels"},
+  {catId:"nightlife",label:"Nightlife"},
+];
+
 function AdminDashboard({onLogout}){
   var [page,setPage]=useState("dashboard");
   var [collapsed,setCollapsed]=useState(false);
@@ -3633,11 +3599,6 @@ function AdminDashboard({onLogout}){
   // "" means "no global filter, show everything".
   // "__other__" is the synthetic bucket for any city not in PRIMARY_CITIES.
   var [globalCity,setGlobalCity]=useState("");
-  // Sidebar tree: which city node is currently expanded to show its
-  // categories beneath it. Independent of globalCity so a city can be
-  // expanded for browsing without becoming the active filter (e.g. when
-  // the operator wants to glance at counts).
-  var [expandedCity,setExpandedCity]=useState("");
   // Nested counts: cityCounts[city] = { __all__: 337, restaurants: 128, accommodations: 70, ... }
   // Plus cityCounts.__all__ = totals across all cities.
   var [cityCounts,setCityCounts]=useState({});
@@ -3709,46 +3670,25 @@ function AdminDashboard({onLogout}){
     return <DashboardView counts={counts} onNav={setPage}/>;
   }
 
-  // City-click behaviour, Notion-style:
-  //   1. expand that city in the sidebar tree (collapse the previous one)
-  //   2. set it as the global filter
-  //   3. open the City Overview page so the operator sees every category
-  //      for that city side-by-side
-  // Clicking the SAME city again just toggles the expansion (filter +
-  // page persist) so you can still browse its categories without leaving.
+  // Click a city in the sidebar → open its City Overview in the main
+  // pane. Always the same set of category cards (Dining, Cars, Wellness,
+  // Yachts, Hotels, Nightlife), each with the top venues for that city.
   function handleCityNav(cityKey){
     if(!cityKey){
-      setGlobalCity("");
-      setExpandedCity("");
-      if(page==="city_overview")setPage("dashboard");
-      return;
-    }
-    if(expandedCity===cityKey){
-      // Already expanded — collapse it. Filter clears too, since the
-      // visual "I'm in this city" state goes away.
-      setExpandedCity("");
+      // "All cities" — clear the filter and go home.
       setGlobalCity("");
       if(page==="city_overview")setPage("dashboard");
       return;
     }
-    setExpandedCity(cityKey);
     setGlobalCity(cityKey);
     setPage("city_overview");
   }
 
-  // Click on a category nested under an expanded city in the sidebar.
-  // Sets both the filter and the active page in one go so the right
-  // pane jumps straight into the filtered list.
+  // From the City Overview, when the operator clicks "View all" on a
+  // category card, drill into that category with the city filter
+  // preserved.
   function handleCityCategoryNav(cityKey,catId){
     setGlobalCity(cityKey);
-    setExpandedCity(cityKey);
-    setPage(catId);
-  }
-
-  // Click on a category in the "All venues" section (no city scope).
-  function handleAllCategoryNav(catId){
-    setGlobalCity("");
-    setExpandedCity("");
     setPage(catId);
   }
 
@@ -3757,11 +3697,9 @@ function AdminDashboard({onLogout}){
       <div style={{minHeight:"100vh",background:C.bg}}>
         <MobileHeader onMenuToggle={function(){setDrawer(true);}} onLogout={onLogout}/>
         {drawer&&<MobileDrawer active={page} onNav={setPage} onClose={function(){setDrawer(false);}}
-          globalCity={globalCity} expandedCity={expandedCity}
+          globalCity={globalCity}
           onCityClick={handleCityNav}
-          onCityCategoryClick={handleCityCategoryNav}
-          onAllCategoryClick={handleAllCategoryNav}
-          cityCounts={cityCounts} catCounts={counts}/>}
+          cityCounts={cityCounts}/>}
         <div style={{padding:"20px 16px"}}>
           {renderContent()}
         </div>
@@ -3774,11 +3712,8 @@ function AdminDashboard({onLogout}){
       <Sidebar active={page} onNav={setPage} onLogout={onLogout}
         collapsed={collapsed} onToggle={function(){setCollapsed(!collapsed);}}
         globalCity={globalCity}
-        expandedCity={expandedCity}
         onCityClick={handleCityNav}
-        onCityCategoryClick={handleCityCategoryNav}
-        onAllCategoryClick={handleAllCategoryNav}
-        cityCounts={cityCounts} catCounts={counts}/>
+        cityCounts={cityCounts}/>
       <div style={{flex:1,minWidth:0,padding:"28px 32px",overflowY:"auto",overflowX:"hidden"}}>
         {renderContent()}
       </div>
