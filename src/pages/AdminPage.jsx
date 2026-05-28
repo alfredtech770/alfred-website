@@ -1191,33 +1191,48 @@ function CellVal({col,row}){
 
 /* ═══ City Overview ═══
  *
- * Single-page summary of every venue category in one city. Triggered when
- * the operator clicks a city in the sidebar — pre-filtered counts, top
- * venues per category, with one-click drill-into the full filtered list.
+ * One city, one unified list. The operator sees every venue in (e.g.)
+ * Paris as a single scrollable list with category tabs above it that
+ * filter the list in-place. Click a venue row → edit modal opens with
+ * the right field set for that venue's category. Click "+ Add" → opens
+ * an empty form for the currently-selected category (or Dining when
+ * "All" is active so we never open an ambiguous picker).
  *
- * Loads each table in parallel with .eq("city",city). For "Other cities"
- * we invert the match against the 5 primary markets so the bucket shows
- * everything outside our active merchandising. */
-function CityOverviewView({city,onOpenCategory,onClearCity}){
+ * Data: one query per CITY_CATEGORIES table, in parallel. Merged into a
+ * single in-memory list keyed by category for cheap tab filtering. */
+function CityOverviewView({city,onClearCity}){
   var [data,setData]=useState({});
   var [loading,setLoading]=useState(true);
+  var [activeCat,setActiveCat]=useState("all");
+  var [search,setSearch]=useState("");
   var [editRec,setEditRec]=useState(null);
   var [editCat,setEditCat]=useState(null);
+  var [showAdd,setShowAdd]=useState(false);
 
-  // Pretty label for "__other__" — the synthetic "everything else" bucket.
   var cityLabel=city==="__other__"?"Other cities":city;
 
-  // Pull each category's venues for this city in parallel. We only
-  // query the categories that show up in CITY_CATEGORIES — the same six
-  // every time — so the layout stays consistent city to city.
+  // Build a flat list of every loaded venue, tagged with its category.
+  // We carry the resolved CAT config on each row so the edit modal can
+  // open against the right form even when "All" is the active tab.
+  function flatten(byCat){
+    var out=[];
+    CITY_CATEGORIES.forEach(function(cc){
+      var c=CATS.find(function(x){return x.id===cc.catId;});
+      if(!c)return;
+      (byCat[c.id]||[]).forEach(function(row){
+        out.push({row:row,cat:c,catLabel:cc.label});
+      });
+    });
+    return out;
+  }
+
   useEffect(function(){
     async function load(){
       setLoading(true);
       var cityCats=CITY_CATEGORIES.map(function(cc){
-        return{cc,cat:CATS.find(function(c){return c.id===cc.catId;})};
-      }).filter(function(x){return x.cat;});
-      var promises=cityCats.map(function(x){
-        var c=x.cat;
+        return CATS.find(function(c){return c.id===cc.catId;});
+      }).filter(Boolean);
+      var promises=cityCats.map(function(c){
         var q=supabase.from(c.table).select("id,name,city,"+(c.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
         if(city==="__other__"){
           q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
@@ -1235,36 +1250,79 @@ function CityOverviewView({city,onOpenCategory,onClearCity}){
     if(city)load();
   },[city]);
 
-  function renderVenueRow(c,row){
+  // Refetch just one category — used after a save so the list reflects
+  // the new state without re-querying the other 5 tables.
+  function refreshCategory(c){
+    var q=supabase.from(c.table).select("id,name,city,"+(c.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
+    if(city==="__other__"){
+      q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
+    }else{
+      q=q.eq("city",city);
+    }
+    q.then(function(r){
+      setData(function(p){var n={...p};n[c.id]=r.data||[];return n;});
+    });
+  }
+
+  // Tabs: All + one per CITY_CATEGORIES entry with live count.
+  var counts={};
+  CITY_CATEGORIES.forEach(function(cc){counts[cc.catId]=(data[cc.catId]||[]).length;});
+  var totalCount=CITY_CATEGORIES.reduce(function(t,cc){return t+(counts[cc.catId]||0);},0);
+  var tabs=[{key:"all",label:"All",count:totalCount}].concat(
+    CITY_CATEGORIES.map(function(cc){return{key:cc.catId,label:cc.label,count:counts[cc.catId]||0};})
+  );
+
+  // The currently visible list — filtered by tab + search.
+  var allRows=flatten(data);
+  var visible=allRows.filter(function(item){
+    if(activeCat!=="all"&&item.cat.id!==activeCat)return false;
+    if(search){
+      var s=search.toLowerCase();
+      var hay=(item.row.name+" "+(item.row.neighborhood||"")+" "+(item.row.cuisine||"")+" "+(item.row.brand||"")+" "+(item.row.type||"")).toLowerCase();
+      if(hay.indexOf(s)<0)return false;
+    }
+    return true;
+  });
+
+  // When "+ Add" is clicked, the form needs to know which category to
+  // open. If a specific tab is active, use that. Otherwise default to
+  // Dining so we never show a category-picker dialog before the form.
+  var addCatId=activeCat==="all"?"restaurants":activeCat;
+  var addCat=CATS.find(function(c){return c.id===addCatId;});
+
+  function renderRow(item){
+    var c=item.cat;
+    var row=item.row;
     var img=row[c.imgField||"hero_image_url"];
-    var meta=[
-      row.neighborhood,
-      row.category,
-      row.cuisine,
-      row.brand,
-      row.type,
-    ].filter(Boolean).slice(0,2).join(" · ");
+    var meta=[row.neighborhood,row.cuisine,row.brand,row.type].filter(Boolean).slice(0,2).join(" · ");
     return(
-      <button key={row.id} onClick={function(){setEditCat(c);setEditRec(row);}}
-        style={{display:"flex",alignItems:"center",gap:12,width:"100%",
-          padding:"10px 12px",background:"transparent",border:"none",borderRadius:10,
+      <button key={c.id+"_"+row.id} onClick={function(){setEditCat(c);setEditRec(row);}}
+        style={{display:"flex",alignItems:"center",gap:14,width:"100%",
+          padding:"12px 14px",background:"transparent",border:"none",borderBottom:"1px solid "+C.bd,
           cursor:"pointer",textAlign:"left",transition:"background 0.12s"}}
         onMouseEnter={function(e){e.currentTarget.style.background=C.srf;}}
         onMouseLeave={function(e){e.currentTarget.style.background="transparent";}}>
         {img?(
-          <img src={img} alt="" style={{width:48,height:48,borderRadius:8,objectFit:"cover",border:"1px solid "+C.bd,flexShrink:0}}/>
+          <img src={img} alt="" style={{width:56,height:56,borderRadius:10,objectFit:"cover",border:"1px solid "+C.bd,flexShrink:0}}/>
         ):(
-          <div style={{width:48,height:48,borderRadius:8,background:C.srf,border:"1px dashed "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <Icon name="images" size={16} color={C.s6}/>
+          <div style={{width:56,height:56,borderRadius:10,background:C.srf,border:"1px dashed "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <Icon name="images" size={18} color={C.s6}/>
           </div>
         )}
         <div style={{flex:1,minWidth:0}}>
-          <div style={{...sf(13,600),color:C.s1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{row.name}</div>
-          {meta&&<div style={{...sf(11),color:C.s5,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{meta}</div>}
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <span style={{...sf(14,600),color:C.s1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{row.name}</span>
+            <span style={{...sf(10,600),padding:"2px 8px",borderRadius:10,background:"rgba(212,168,83,0.10)",color:C.gd,letterSpacing:0.4,whiteSpace:"nowrap"}}>{item.catLabel}</span>
+          </div>
+          {meta&&<div style={{...sf(11),color:C.s5,marginTop:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{meta}</div>}
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-          {row.rating>0&&<span style={{...sf(11,600),color:C.gd}}>★ {row.rating}</span>}
-          {row.is_active===false&&<span style={{...sf(10,600),padding:"2px 7px",borderRadius:10,background:"rgba(255,59,48,0.08)",color:C.rd}}>OFF</span>}
+        <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+          {row.rating>0&&<span style={{...sf(12,600),color:C.gd}}>★ {row.rating}</span>}
+          {row.is_active===false?(
+            <span style={{...sf(10,600),padding:"3px 9px",borderRadius:12,background:"rgba(255,59,48,0.08)",color:C.rd,letterSpacing:0.4}}>OFF</span>
+          ):(
+            <span style={{...sf(10,600),padding:"3px 9px",borderRadius:12,background:"rgba(52,199,89,0.10)",color:C.gn,letterSpacing:0.4}}>Active</span>
+          )}
         </div>
       </button>
     );
@@ -1273,11 +1331,19 @@ function CityOverviewView({city,onOpenCategory,onClearCity}){
   return(
     <div>
       {/* Header */}
-      <div style={{display:"flex",alignItems:"baseline",gap:14,flexWrap:"wrap",marginBottom:8}}>
-        <h2 style={{...sf(28,700),color:C.s1,margin:0,letterSpacing:-0.5}}>{cityLabel}</h2>
-        <span style={{...sf(13),color:C.s5}}>City overview</span>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:6}}>
+        <div style={{display:"flex",alignItems:"baseline",gap:14,flexWrap:"wrap"}}>
+          <h2 style={{...sf(28,700),color:C.s1,margin:0,letterSpacing:-0.5}}>{cityLabel}</h2>
+          <span style={{...sf(13),color:C.s5}}>{loading?"Loading…":(totalCount+" venues")}</span>
+        </div>
+        <button onClick={function(){setShowAdd(true);}}
+          style={{...btn(C.gd,"#000"),fontWeight:700}}>
+          <Icon name="add" size={18} color="#000"/> Add {(activeCat==="all"?"venue":(tabs.find(function(t){return t.key===activeCat;})||{}).label||"venue")}
+        </button>
       </div>
-      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:24}}>
+
+      {/* Active-city pill */}
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}>
         <span style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 10px 6px 12px",
           borderRadius:20,background:"rgba(212,168,83,0.10)",border:"1px solid rgba(212,168,83,0.30)",
           ...sf(12,600),color:C.gd,letterSpacing:0.3}}>
@@ -1289,91 +1355,75 @@ function CityOverviewView({city,onOpenCategory,onClearCity}){
             <Icon name="close" size={14} color={C.gd}/>
           </button>
         </span>
-        <span style={{...sf(12),color:C.s5}}>
-          {loading?"Loading...":(
-            Object.keys(data).reduce(function(t,k){return t+data[k].length;},0)+" venues across "+
-            Object.keys(data).filter(function(k){return data[k].length>0;}).length+" categories"
-          )}
-        </span>
       </div>
 
+      {/* Category tabs */}
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18,padding:"4px",
+        background:C.bg2,border:"1px solid "+C.bd,borderRadius:14,width:"fit-content",maxWidth:"100%"}}>
+        {tabs.map(function(t){
+          var on=activeCat===t.key;
+          return(
+            <button key={t.key} onClick={function(){setActiveCat(t.key);}}
+              style={{...sf(13,on?600:500),padding:"8px 14px",borderRadius:10,border:"none",
+                background:on?C.srf:"transparent",color:on?C.s1:C.s4,
+                cursor:"pointer",letterSpacing:0.2,transition:"all 0.12s",
+                display:"flex",alignItems:"center",gap:7}}>
+              {t.label}
+              <span style={{...sf(11,500),color:on?C.gd:C.s5}}>{t.count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Search */}
+      <div style={{position:"relative",maxWidth:420,marginBottom:14}}>
+        <div style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)"}}>
+          <Icon name="search" size={16} color={C.s5}/>
+        </div>
+        <input placeholder={"Search "+cityLabel+" venues..."} value={search}
+          onChange={function(e){setSearch(e.target.value);}}
+          style={{width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px 10px 36px",...sf(14),color:C.s1,outline:"none"}}/>
+      </div>
+
+      {/* Unified venue list */}
       {loading?(
-        <div style={{padding:"60px 20px",textAlign:"center",color:C.s5,...sf(14)}}>Loading {cityLabel} venues...</div>
+        <div style={{padding:"60px 20px",textAlign:"center",color:C.s5,...sf(14)}}>Loading {cityLabel} venues…</div>
+      ):visible.length===0?(
+        <div style={{padding:"60px 20px",textAlign:"center",color:C.s5,...sf(14),background:C.el,border:"1px solid "+C.bd,borderRadius:14}}>
+          {search?("No venues match \""+search+"\" in "+cityLabel)
+            :(activeCat==="all"?"No venues in "+cityLabel+" yet":"No "+(tabs.find(function(t){return t.key===activeCat;})||{}).label+" in "+cityLabel+" yet")}
+          <div style={{marginTop:14}}>
+            <button onClick={function(){setShowAdd(true);}}
+              style={{...sf(12,600),color:"#000",background:C.gd,border:"none",padding:"8px 16px",borderRadius:16,cursor:"pointer"}}>
+              + Add first {(activeCat==="all"?"venue":(tabs.find(function(t){return t.key===activeCat;})||{}).label||"venue")}
+            </button>
+          </div>
+        </div>
       ):(
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(360px,1fr))",gap:18}}>
-          {/* Always render every CITY_CATEGORIES card, in order, even if
-              empty. Keeps the layout identical from one city to the next
-              so the operator never has to hunt for a section. */}
-          {CITY_CATEGORIES.map(function(cc){
-            var c=CATS.find(function(x){return x.id===cc.catId;});
-            if(!c)return null;
-            var rows=data[c.id]||[];
-            var label=cc.label;
-            return(
-              <div key={c.id} style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,padding:16,minHeight:140}}>
-                {/* Section header */}
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-                  <div style={{display:"flex",alignItems:"center",gap:10}}>
-                    <Icon name={c.icon} size={18} color={C.gd}/>
-                    <span style={{...sf(15,600),color:C.s1}}>{label}</span>
-                    <span style={{...sf(12,500),color:C.s5}}>({rows.length})</span>
-                  </div>
-                  {rows.length>0&&(
-                    <button onClick={function(){onOpenCategory(c.id);}}
-                      style={{background:"none",border:"none",cursor:"pointer",...sf(12,600),color:C.gd,padding:"4px 8px",borderRadius:8}}
-                      onMouseEnter={function(e){e.currentTarget.style.background="rgba(212,168,83,0.10)";}}
-                      onMouseLeave={function(e){e.currentTarget.style.background="none";}}>
-                      View all →
-                    </button>
-                  )}
-                </div>
-                {/* Venue rows (top 6) — or a placeholder + "Add" button
-                    when this category is empty in this city. */}
-                {rows.length===0?(
-                  <div style={{padding:"24px 12px",textAlign:"center",...sf(12),color:C.s6}}>
-                    No {label.toLowerCase()} in {cityLabel} yet
-                    <div style={{marginTop:10}}>
-                      <button onClick={function(){onOpenCategory(c.id);}}
-                        style={{...sf(11,600),color:C.gd,background:"rgba(212,168,83,0.10)",border:"1px solid rgba(212,168,83,0.30)",padding:"6px 12px",borderRadius:14,cursor:"pointer"}}>
-                        + Add {label.toLowerCase().slice(0,-1)||label.toLowerCase()}
-                      </button>
-                    </div>
-                  </div>
-                ):(
-                  <div>
-                    {rows.slice(0,6).map(function(r){return renderVenueRow(c,r);})}
-                    {rows.length>6&&(
-                      <button onClick={function(){onOpenCategory(c.id);}}
-                        style={{...sf(12,500),color:C.s5,background:"none",border:"none",cursor:"pointer",padding:"8px 12px",width:"100%",textAlign:"left"}}>
-                        + {rows.length-6} more {label.toLowerCase()}
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:14,overflow:"hidden"}}>
+          {visible.map(renderRow)}
         </div>
       )}
 
-      {/* Edit modal — reuses the existing one. We pass the venue's cat
-          config so the form knows which fields to render. */}
+      {/* Edit modal */}
       {editRec&&editCat&&(
         <EditModal cat={editCat} record={editRec}
           onClose={function(){setEditRec(null);setEditCat(null);}}
-          onSave={function(){
-            // Refresh just that category to avoid re-fetching all 6.
-            setEditRec(null);setEditCat(null);
-            var q=supabase.from(editCat.table).select("id,name,city,"+(editCat.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
-            if(city==="__other__"){
-              q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
-            }else{
-              q=q.eq("city",city);
-            }
-            q.then(function(r){
-              setData(function(p){var n={...p};n[editCat.id]=r.data||[];return n;});
-            });
-          }}/>
+          onSave={function(){setEditRec(null);setEditCat(null);refreshCategory(editCat);}}/>
+      )}
+
+      {/* Add modal — pre-fill the current city + the same is_active /
+          category defaults the EditModal would set for a blank record,
+          so the operator never re-types "Paris". For "Other cities" we
+          leave city undefined since the bucket isn't a single city. */}
+      {showAdd&&addCat&&(
+        <EditModal cat={addCat} record={{
+          is_active:true,
+          city:city==="__other__"?undefined:city,
+          category:addCat.id==="restaurants"?"restaurant":addCat.id==="nightlife"?"nightclub":undefined
+        }}
+          onClose={function(){setShowAdd(false);}}
+          onSave={function(){setShowAdd(false);refreshCategory(addCat);}}/>
       )}
     </div>
   );
@@ -3656,7 +3706,6 @@ function AdminDashboard({onLogout}){
     if(page==="dashboard")return <DashboardView counts={counts} onNav={setPage}/>;
     if(page==="city_overview"&&globalCity){
       return <CityOverviewView key={globalCity} city={globalCity}
-        onOpenCategory={function(catId){setPage(catId);}}
         onClearCity={function(){setGlobalCity("");setPage("dashboard");}}/>;
     }
     if(page==="bookings")return <BookingsView/>;
@@ -3671,25 +3720,18 @@ function AdminDashboard({onLogout}){
   }
 
   // Click a city in the sidebar → open its City Overview in the main
-  // pane. Always the same set of category cards (Dining, Cars, Wellness,
-  // Yachts, Hotels, Nightlife), each with the top venues for that city.
+  // pane. That page shows every Paris venue in one list with category
+  // tabs at the top to filter (Dining, Cars, Wellness, Yachts, Hotels,
+  // Nightlife). No separate per-category navigation — everything
+  // happens in one view.
   function handleCityNav(cityKey){
     if(!cityKey){
-      // "All cities" — clear the filter and go home.
       setGlobalCity("");
       if(page==="city_overview")setPage("dashboard");
       return;
     }
     setGlobalCity(cityKey);
     setPage("city_overview");
-  }
-
-  // From the City Overview, when the operator clicks "View all" on a
-  // category card, drill into that category with the city filter
-  // preserved.
-  function handleCityCategoryNav(cityKey,catId){
-    setGlobalCity(cityKey);
-    setPage(catId);
   }
 
   if(isMobile){
