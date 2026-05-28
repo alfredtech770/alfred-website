@@ -1233,7 +1233,7 @@ function CityOverviewView({city,onClearCity}){
         return CATS.find(function(c){return c.id===cc.catId;});
       }).filter(Boolean);
       var promises=cityCats.map(function(c){
-        var q=supabase.from(c.table).select("id,name,city,"+(c.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
+        var q=supabase.from(c.table).select("*").order("name");
         if(city==="__other__"){
           q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
         }else{
@@ -1253,7 +1253,7 @@ function CityOverviewView({city,onClearCity}){
   // Refetch just one category — used after a save so the list reflects
   // the new state without re-querying the other 5 tables.
   function refreshCategory(c){
-    var q=supabase.from(c.table).select("id,name,city,"+(c.imgField||"hero_image_url")+",is_active,is_featured,rating,price_level,category,cuisine,brand,type,star_rating,neighborhood").order("name");
+    var q=supabase.from(c.table).select("*").order("name");
     if(city==="__other__"){
       q=q.not("city","in","("+PRIMARY_CITIES.map(function(c){return'"'+c+'"';}).join(",")+")");
     }else{
