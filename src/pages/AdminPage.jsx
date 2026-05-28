@@ -97,7 +97,9 @@ function Icon({name,size,color}){
     logout:"M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z",
     slack:"M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zm-1.27 0a2.528 2.528 0 01-2.523 2.521 2.528 2.528 0 01-2.52-2.521V2.522A2.528 2.528 0 0115.163 0a2.528 2.528 0 012.523 2.522v6.312zM15.163 18.956a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.163 24a2.528 2.528 0 01-2.52-2.522v-2.522h2.52zm0-1.27a2.528 2.528 0 01-2.52-2.523 2.528 2.528 0 012.52-2.52h6.315A2.528 2.528 0 0124 15.163a2.528 2.528 0 01-2.522 2.523h-6.315z",
     filter:"M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z",
-    check:"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+    check:"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z",
+    pin:"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z",
+    globe:"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"
   };
   return <svg width={s} height={s} viewBox="0 0 24 24" fill={c}><path d={paths[name]||paths.dashboard}/></svg>;
 }
@@ -1188,10 +1190,13 @@ function CellVal({col,row}){
 }
 
 /* ═══ Category View ═══ */
-function CategoryView({cat}){
+function CategoryView({cat,globalCity,onClearCity}){
   var [records,setRecords]=useState([]);
   var [loading,setLoading]=useState(true);
   var [search,setSearch]=useState("");
+  // Local city dropdown still works for one-off picks (e.g. "Monaco"
+  // which isn't a sidebar shortcut). The global sidebar pick takes
+  // precedence — see the `globalCity` branch below.
   var [cityFilter,setCityFilter]=useState("");
   var [activeFilter,setActiveFilter]=useState("");
   // Restaurants-only: lets ops triage which venues still need their
@@ -1230,7 +1235,18 @@ function CategoryView({cat}){
         (r.type||"").toLowerCase().includes(s);
       if(!match)return false;
     }
-    if(cityFilter&&r.city!==cityFilter)return false;
+    // Sidebar global city filter — wins over the local dropdown.
+    // Empty = no filter. "__other__" = anything not in the 5 primary
+    // markets. Otherwise exact match on the city string.
+    if(globalCity){
+      if(globalCity==="__other__"){
+        if(PRIMARY_CITIES.indexOf(r.city)>=0)return false;
+      }else if(r.city!==globalCity){
+        return false;
+      }
+    }else if(cityFilter&&r.city!==cityFilter){
+      return false;
+    }
     if(activeFilter==="active"&&!r.is_active)return false;
     if(activeFilter==="inactive"&&r.is_active)return false;
     if(cat.id==="restaurants"&&configFilter){
@@ -1288,15 +1304,48 @@ function CategoryView({cat}){
     brand:"Brand",max_passengers:"Guests",price_4hr:"4hr Rate",price_per_day:"$/Day",price_1_day:"Day Rate",
     type:"Type",capacity:"Capacity",location:"Location",door_policy:"Door"};
 
+  // Pretty label for the global-city pill. "__other__" reads as a label,
+  // not a SQL marker, in the UI.
+  var globalCityLabel=globalCity==="__other__"?"Other cities":globalCity;
+
   return(
     <div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:24}}>
-        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>{cat.label}</h2>
+        <div style={{display:"flex",alignItems:"baseline",gap:14,flexWrap:"wrap"}}>
+          <h2 style={{...sf(24,600),color:C.s1,margin:0}}>{cat.label}</h2>
+          {globalCity&&(
+            <span style={{...sf(12,500),color:C.s5}}>
+              in <span style={{color:C.gd,fontWeight:600}}>{globalCityLabel}</span>
+            </span>
+          )}
+        </div>
         <button onClick={function(){setShowAdd(true);}}
           style={{...btn(C.gd,"#000"),fontWeight:700}}>
           <Icon name="add" size={18} color="#000"/> Add {cat.label.slice(0,-1)}
         </button>
       </div>
+
+      {/* Global city pill — only shows when the sidebar set a city. Clicking
+          the × clears the global filter and goes back to "All cities". */}
+      {globalCity&&(
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:18}}>
+          <span style={{...sf(10,700),color:C.s6,letterSpacing:1.2,textTransform:"uppercase"}}>Filtered by</span>
+          <span style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 10px 6px 12px",
+            borderRadius:20,background:"rgba(212,168,83,0.10)",border:"1px solid rgba(212,168,83,0.30)",
+            ...sf(12,600),color:C.gd,letterSpacing:0.3}}>
+            <Icon name="pin" size={12} color={C.gd}/>
+            {globalCityLabel}
+            <button onClick={onClearCity}
+              style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",borderRadius:10,marginLeft:2}}
+              title="Clear city filter"
+              onMouseEnter={function(e){e.currentTarget.style.background="rgba(0,0,0,0.2)";}}
+              onMouseLeave={function(e){e.currentTarget.style.background="none";}}>
+              <Icon name="close" size={14} color={C.gd}/>
+            </button>
+          </span>
+          <span style={{...sf(12),color:C.s5}}>· {filtered.length} {cat.label.toLowerCase()}</span>
+        </div>
+      )}
 
       {/* Filters */}
       <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:20,alignItems:"center"}}>
@@ -1404,8 +1453,8 @@ function CategoryView({cat}){
                     <input type="checkbox" checked={selected.length===filtered.length&&filtered.length>0}
                       onChange={selectAll} style={{accentColor:C.gd}}/>
                   </th>
-                  <th style={{padding:"12px 14px",textAlign:"left",width:48}}>
-                    <span style={{...sf(10,600),color:C.s6,letterSpacing:1}}>IMG</span>
+                  <th style={{padding:"12px 14px",textAlign:"left",width:80}}>
+                    <span style={{...sf(10,600),color:C.s6,letterSpacing:1}}>PHOTO</span>
                   </th>
                   {cat.cols.map(function(col){
                     var active=sortCol===col;
@@ -1434,12 +1483,12 @@ function CategoryView({cat}){
                       <td style={{padding:"10px 14px"}}>
                         <input type="checkbox" checked={sel} onChange={function(){toggleSelect(row.id);}} style={{accentColor:C.gd}}/>
                       </td>
-                      <td style={{padding:"10px 14px"}}>
+                      <td style={{padding:"10px 14px",cursor:"pointer"}} onClick={function(){setEditRec(row);}}>
                         {row[cat.imgField]?(
-                          <img src={row[cat.imgField]} alt="" style={{width:40,height:40,borderRadius:8,objectFit:"cover",display:"block"}}/>
+                          <img src={row[cat.imgField]} alt="" style={{width:64,height:64,borderRadius:10,objectFit:"cover",display:"block",border:"1px solid "+C.bd}}/>
                         ):(
-                          <div style={{width:40,height:40,borderRadius:8,background:C.srf,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                            <Icon name="images" size={16} color={C.s6}/>
+                          <div style={{width:64,height:64,borderRadius:10,background:C.srf,display:"flex",alignItems:"center",justifyContent:"center",border:"1px dashed "+C.bd}}>
+                            <Icon name="images" size={20} color={C.s6}/>
                           </div>
                         )}
                       </td>
@@ -3128,12 +3177,10 @@ function FinanceView(){
   );
 }
 
-function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
-  var items=[
-    {id:"dashboard",label:"Dashboard",icon:"dashboard"},
-    {id:"divider1",divider:true},
-    ...CATS.map(function(c){return{id:c.id,label:c.label,icon:c.icon};}),
-    {id:"divider2",divider:true},
+function Sidebar({active,onNav,onLogout,collapsed,onToggle,globalCity,setGlobalCity,cityCounts,catCounts}){
+  var topItems=[{id:"dashboard",label:"Dashboard",icon:"dashboard"}];
+  var venueCats=CATS.map(function(c){return{id:c.id,label:c.label,icon:c.icon,count:catCounts&&catCounts[c.id]};});
+  var opsItems=[
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
@@ -3142,6 +3189,38 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
     {id:"notifications",label:"Notifications",icon:"star"},
     {id:"finance",label:"Finance",icon:"star"},
   ];
+  // The 5 markets we actively merchandise, plus an "Other cities" bucket
+  // for everything else that exists in the DB but isn't a primary market.
+  var cityRows=[{key:"",label:"All cities",count:(cityCounts||{}).__all__}]
+    .concat(PRIMARY_CITIES.map(function(c){return{key:c,label:c,count:(cityCounts||{})[c]};}))
+    .concat([{key:"__other__",label:"Other cities",count:(cityCounts||{}).__other__,muted:true}]);
+
+  function NavBtn({id,label,icon,count,isActive,onClick,indent}){
+    return(
+      <button key={id} onClick={onClick}
+        style={{
+          width:"100%",display:"flex",alignItems:"center",gap:12,
+          padding:collapsed?"10px":("8px "+(indent?"12px 8px 28px":"16px")),
+          background:isActive?"rgba(212,168,83,0.10)":"none",
+          border:"none",borderRadius:10,cursor:"pointer",
+          transition:"all 0.15s",marginBottom:2,
+          justifyContent:collapsed?"center":"space-between"
+        }}
+        onMouseEnter={function(e){if(!isActive)e.currentTarget.style.background=C.srf;}}
+        onMouseLeave={function(e){if(!isActive)e.currentTarget.style.background=isActive?"rgba(212,168,83,0.10)":"none";}}>
+        <span style={{display:"flex",alignItems:"center",gap:12,minWidth:0}}>
+          {icon&&<Icon name={icon} size={18} color={isActive?C.gd:C.s5}/>}
+          {!collapsed&&<span style={{...sf(13,isActive?600:400),color:isActive?C.s1:C.s4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>}
+        </span>
+        {!collapsed&&typeof count==="number"&&<span style={{...sf(11,500),color:isActive?C.gd:C.s6,paddingLeft:6}}>{count}</span>}
+      </button>
+    );
+  }
+
+  function SectionLabel({text}){
+    if(collapsed)return <div style={{height:1,background:C.bd,margin:"10px 12px 6px"}}/>;
+    return <div style={{...sf(10,700),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",padding:"14px 16px 6px"}}>{text}</div>;
+  }
 
   return(
     <div style={{
@@ -3164,25 +3243,32 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle}){
 
       {/* Nav Items */}
       <div style={{flex:1,padding:"12px 8px",overflowY:"auto"}}>
-        {items.map(function(item,i){
-          if(item.divider)return <div key={item.id} style={{height:1,background:C.bd,margin:"8px 8px"}}/>;
-          var isActive=active===item.id;
-          return(
-            <button key={item.id} onClick={function(){onNav(item.id);}}
-              style={{
-                width:"100%",display:"flex",alignItems:"center",gap:12,
-                padding:collapsed?"10px":"10px 16px",
-                background:isActive?"rgba(212,168,83,0.08)":"none",
-                border:"none",borderRadius:10,cursor:"pointer",
-                transition:"all 0.15s",marginBottom:2,
-                justifyContent:collapsed?"center":"flex-start"
-              }}
-              onMouseEnter={function(e){if(!isActive)e.currentTarget.style.background=C.srf;}}
-              onMouseLeave={function(e){if(!isActive)e.currentTarget.style.background=isActive?"rgba(212,168,83,0.08)":"none";}}>
-              <Icon name={item.icon} size={18} color={isActive?C.gd:C.s5}/>
-              {!collapsed&&<span style={{...sf(13,isActive?600:400),color:isActive?C.s1:C.s4,whiteSpace:"nowrap"}}>{item.label}</span>}
-            </button>
-          );
+        {topItems.map(function(item){
+          return <NavBtn key={item.id} id={item.id} label={item.label} icon={item.icon}
+            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
+        })}
+
+        {/* Cities — global filter persists across category switches */}
+        <SectionLabel text="Cities"/>
+        {cityRows.map(function(row){
+          var isActive=(globalCity||"")===row.key;
+          return <NavBtn key={"city_"+(row.key||"all")} id={"city_"+row.key} label={row.label}
+            icon={row.key?"pin":"globe"} count={row.count} isActive={isActive} indent
+            onClick={function(){setGlobalCity(isActive?"":row.key);}}/>;
+        })}
+
+        {/* Venue categories — same as before, now with badge counts */}
+        <SectionLabel text="Venues"/>
+        {venueCats.map(function(item){
+          return <NavBtn key={item.id} id={item.id} label={item.label} icon={item.icon} count={item.count}
+            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
+        })}
+
+        {/* Operations */}
+        <SectionLabel text="Operations"/>
+        {opsItems.map(function(item){
+          return <NavBtn key={item.id} id={item.id} label={item.label} icon={item.icon}
+            isActive={active===item.id} onClick={function(){onNav(item.id);}}/>;
         })}
       </div>
 
@@ -3220,10 +3306,16 @@ function MobileHeader({onMenuToggle,onLogout}){
 }
 
 /* ═══ Mobile Drawer ═══ */
-function MobileDrawer({active,onNav,onClose}){
+function MobileDrawer({active,onNav,onClose,globalCity,setGlobalCity,cityCounts}){
   var items=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
+    {id:"_cities_section",sectionLabel:"Cities"},
+    {id:"city_",cityRow:true,key:"",label:"All cities",icon:"globe",count:(cityCounts||{}).__all__},
+    ...PRIMARY_CITIES.map(function(c){return{id:"city_"+c,cityRow:true,key:c,label:c,icon:"pin",count:(cityCounts||{})[c]};}),
+    {id:"city___other__",cityRow:true,key:"__other__",label:"Other cities",icon:"pin",count:(cityCounts||{}).__other__},
+    {id:"_venues_section",sectionLabel:"Venues"},
     ...CATS.map(function(c){return{id:c.id,label:c.label,icon:c.icon};}),
+    {id:"_ops_section",sectionLabel:"Operations"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"images",label:"Images",icon:"images"},
@@ -3242,6 +3334,23 @@ function MobileDrawer({active,onNav,onClose}){
         </div>
         <div style={{flex:1,padding:"12px 8px",overflowY:"auto"}}>
           {items.map(function(item){
+            if(item.sectionLabel){
+              return <div key={item.id} style={{...sf(10,700),color:C.s6,letterSpacing:1.5,textTransform:"uppercase",padding:"14px 16px 6px"}}>{item.sectionLabel}</div>;
+            }
+            if(item.cityRow){
+              var cityActive=(globalCity||"")===item.key;
+              return(
+                <button key={item.id} onClick={function(){setGlobalCity(cityActive?"":item.key);}}
+                  style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,padding:"12px 16px 12px 28px",
+                    background:cityActive?"rgba(212,168,83,0.10)":"none",border:"none",borderRadius:10,cursor:"pointer",marginBottom:2}}>
+                  <span style={{display:"flex",alignItems:"center",gap:12}}>
+                    <Icon name={item.icon} size={18} color={cityActive?C.gd:C.s5}/>
+                    <span style={{...sf(14,cityActive?600:400),color:cityActive?C.s1:C.s4}}>{item.label}</span>
+                  </span>
+                  {typeof item.count==="number"&&<span style={{...sf(11,500),color:cityActive?C.gd:C.s6}}>{item.count}</span>}
+                </button>
+              );
+            }
             var isActive=active===item.id;
             return(
               <button key={item.id} onClick={function(){onNav(item.id);onClose();}}
@@ -3259,12 +3368,25 @@ function MobileDrawer({active,onNav,onClose}){
 }
 
 /* ═══ Admin Dashboard (Main) ═══ */
+// The five live Alfred cities. The sidebar's "Cities" section pins these
+// at the top in this order. Any other city present in the DB is grouped
+// under "Other cities" so the sidebar stays focused on the markets we
+// actually merchandise. Saint-Tropez uses the exact spelling already in
+// public.accommodations so the filter matches existing rows.
+var PRIMARY_CITIES=["Paris","Miami","Ibiza","Saint-Tropez","Mykonos"];
+
 function AdminDashboard({onLogout}){
   var [page,setPage]=useState("dashboard");
   var [collapsed,setCollapsed]=useState(false);
   var [isMobile,setIsMobile]=useState(window.innerWidth<=768);
   var [drawer,setDrawer]=useState(false);
   var [counts,setCounts]=useState({});
+  // Global city filter — persists across category switches so flipping
+  // from Restaurants → Hotels with Paris selected keeps you in Paris.
+  // "" means "no global filter, show everything".
+  // "__other__" is the synthetic bucket for any city not in PRIMARY_CITIES.
+  var [globalCity,setGlobalCity]=useState("");
+  var [cityCounts,setCityCounts]=useState({});
 
   useEffect(function(){
     function onResize(){setIsMobile(window.innerWidth<=768);}
@@ -3275,6 +3397,8 @@ function AdminDashboard({onLogout}){
   useEffect(function(){
     async function loadCounts(){
       var c={};
+      // Per-category total counts (used by both the sidebar badge next to
+      // each category and the Dashboard tiles).
       for(var i=0;i<CATS.length;i++){
         var {count}=await supabase.from(CATS[i].table).select("id",{count:"exact",head:true});
         c[CATS[i].id]=count||0;
@@ -3282,6 +3406,26 @@ function AdminDashboard({onLogout}){
       var {count:bc}=await supabase.from("bookings").select("id",{count:"exact",head:true});
       c.bookings=bc||0;
       setCounts(c);
+
+      // City totals across every venue category. We pull just the `city`
+      // column from each table in parallel, bucket the 5 primary cities,
+      // and lump everything else under "Other". One query per table beats
+      // a Postgres aggregate that would need a union.
+      var perCity={};
+      PRIMARY_CITIES.forEach(function(c){perCity[c]=0;});
+      perCity.__other__=0;perCity.__all__=0;
+      var promises=CATS.map(function(cat){
+        return supabase.from(cat.table).select("city").then(function(r){
+          (r.data||[]).forEach(function(row){
+            var city=row.city||"";
+            perCity.__all__+=1;
+            if(PRIMARY_CITIES.indexOf(city)>=0)perCity[city]+=1;
+            else perCity.__other__+=1;
+          });
+        });
+      });
+      await Promise.all(promises);
+      setCityCounts(perCity);
     }
     loadCounts();
   },[]);
@@ -3297,7 +3441,7 @@ function AdminDashboard({onLogout}){
     if(page==="blog")return <BlogView/>;
     if(page==="notifications")return <NotificationsView/>;
     if(page==="finance")return <FinanceView/>;
-    if(activeCat)return <CategoryView key={activeCat.id} cat={activeCat}/>;
+    if(activeCat)return <CategoryView key={activeCat.id+"_"+globalCity} cat={activeCat} globalCity={globalCity} onClearCity={function(){setGlobalCity("");}}/>;
     return <DashboardView counts={counts} onNav={setPage}/>;
   }
 
@@ -3305,7 +3449,7 @@ function AdminDashboard({onLogout}){
     return(
       <div style={{minHeight:"100vh",background:C.bg}}>
         <MobileHeader onMenuToggle={function(){setDrawer(true);}} onLogout={onLogout}/>
-        {drawer&&<MobileDrawer active={page} onNav={setPage} onClose={function(){setDrawer(false);}}/>}
+        {drawer&&<MobileDrawer active={page} onNav={setPage} onClose={function(){setDrawer(false);}} globalCity={globalCity} setGlobalCity={setGlobalCity} cityCounts={cityCounts}/>}
         <div style={{padding:"20px 16px"}}>
           {renderContent()}
         </div>
@@ -3315,7 +3459,10 @@ function AdminDashboard({onLogout}){
 
   return(
     <div style={{display:"flex",minHeight:"100vh",background:C.bg}}>
-      <Sidebar active={page} onNav={setPage} onLogout={onLogout} collapsed={collapsed} onToggle={function(){setCollapsed(!collapsed);}}/>
+      <Sidebar active={page} onNav={setPage} onLogout={onLogout}
+        collapsed={collapsed} onToggle={function(){setCollapsed(!collapsed);}}
+        globalCity={globalCity} setGlobalCity={setGlobalCity}
+        cityCounts={cityCounts} catCounts={counts}/>
       <div style={{flex:1,minWidth:0,padding:"28px 32px",overflowY:"auto",overflowX:"hidden"}}>
         {renderContent()}
       </div>
