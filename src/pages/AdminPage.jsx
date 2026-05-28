@@ -1205,9 +1205,36 @@ function CityOverviewView({city,onClearCity}){
   var [loading,setLoading]=useState(true);
   var [activeCat,setActiveCat]=useState("all");
   var [search,setSearch]=useState("");
+  // Filters that apply to every list, regardless of category tab.
+  var [statusFilter,setStatusFilter]=useState("active");   // "all"|"active"|"inactive"
+  // Per-category filters — keyed by tab, reset when the tab changes.
+  // diningType: "all"|"restaurant"|"cafe"|"brunch"|"bakery"|"beach_club"
+  // kosher:     "all"|"kosher"|"non_kosher"   (applies on Dining + Hotels)
+  // walkIn:     "all"|"walk_in"|"reservation" (Dining only)
+  // starRating: 0 (all) | 5 | 4 | 3 ...       (Hotels only)
+  // hotelStatus:"all"|"open"|"coming_soon"|"closed"
+  // brand:      "" | exact match              (Cars + Yachts)
+  // wellnessType / nightlifeCat: exact match
+  var [diningType,setDiningType]=useState("all");
+  var [kosher,setKosher]=useState("all");
+  var [walkIn,setWalkIn]=useState("all");
+  var [starRating,setStarRating]=useState(0);
+  var [hotelStatus,setHotelStatus]=useState("all");
+  var [brand,setBrand]=useState("");
+  var [wellnessType,setWellnessType]=useState("");
+  var [nightlifeCat,setNightlifeCat]=useState("");
   var [editRec,setEditRec]=useState(null);
   var [editCat,setEditCat]=useState(null);
   var [showAdd,setShowAdd]=useState(false);
+
+  // Reset per-category filters when the tab changes so old chips don't
+  // silently hide rows in a category they don't apply to.
+  function resetCatFilters(){
+    setDiningType("all");setKosher("all");setWalkIn("all");
+    setStarRating(0);setHotelStatus("all");
+    setBrand("");setWellnessType("");setNightlifeCat("");
+  }
+  function switchTab(key){setActiveCat(key);resetCatFilters();}
 
   var cityLabel=city==="__other__"?"Other cities":city;
 
@@ -1272,23 +1299,91 @@ function CityOverviewView({city,onClearCity}){
     CITY_CATEGORIES.map(function(cc){return{key:cc.catId,label:cc.label,count:counts[cc.catId]||0};})
   );
 
-  // The currently visible list — filtered by tab + search.
+  // The currently visible list — filtered by tab + search + status +
+  // whichever per-category filters apply.
   var allRows=flatten(data);
   var visible=allRows.filter(function(item){
+    var r=item.row;
     if(activeCat!=="all"&&item.cat.id!==activeCat)return false;
     if(search){
       var s=search.toLowerCase();
-      var hay=(item.row.name+" "+(item.row.neighborhood||"")+" "+(item.row.cuisine||"")+" "+(item.row.brand||"")+" "+(item.row.type||"")).toLowerCase();
+      var hay=(r.name+" "+(r.neighborhood||"")+" "+(r.cuisine||"")+" "+(r.brand||"")+" "+(r.type||"")).toLowerCase();
       if(hay.indexOf(s)<0)return false;
     }
+    // Status — applies to every category. Default "active" matches
+    // most operator workflows (don't waste eyeballs on inactive rows).
+    if(statusFilter==="active"&&r.is_active===false)return false;
+    if(statusFilter==="inactive"&&r.is_active!==false)return false;
+    // Dining-specific
+    if(item.cat.id==="restaurants"){
+      if(diningType!=="all"&&r.category!==diningType)return false;
+      if(kosher==="kosher"&&r.kosher!==true)return false;
+      if(kosher==="non_kosher"&&r.kosher===true)return false;
+      if(walkIn==="walk_in"&&r.reservation_required!==false)return false;
+      if(walkIn==="reservation"&&r.reservation_required===false)return false;
+    }
+    // Hotel-specific
+    if(item.cat.id==="accommodations"){
+      if(kosher==="kosher"&&r.kosher!==true)return false;
+      if(kosher==="non_kosher"&&r.kosher===true)return false;
+      if(starRating>0&&Number(r.star_rating||0)!==starRating)return false;
+      if(hotelStatus!=="all"&&r.status!==hotelStatus)return false;
+    }
+    // Cars / Yachts — brand
+    if((item.cat.id==="cars"||item.cat.id==="yachts")&&brand&&r.brand!==brand)return false;
+    // Wellness — type
+    if(item.cat.id==="wellness"&&wellnessType&&r.type!==wellnessType)return false;
+    // Nightlife — sub-category
+    if(item.cat.id==="nightlife"&&nightlifeCat&&r.category!==nightlifeCat)return false;
     return true;
   });
+
+  // Build distinct option lists for brand / wellness type from loaded data.
+  function distinctValues(catId,key){
+    var seen={};
+    (data[catId]||[]).forEach(function(r){
+      var v=r[key];
+      if(v&&!seen[v])seen[v]=true;
+    });
+    return Object.keys(seen).sort();
+  }
+  var brandTable=activeCat==="yachts"?"yachts":"cars";
+  var brandOptions=distinctValues(brandTable,"brand");
+  var wellnessTypeOptions=distinctValues("wellness","type");
 
   // When "+ Add" is clicked, the form needs to know which category to
   // open. If a specific tab is active, use that. Otherwise default to
   // Dining so we never show a category-picker dialog before the form.
   var addCatId=activeCat==="all"?"restaurants":activeCat;
   var addCat=CATS.find(function(c){return c.id===addCatId;});
+
+  // Compact chip + label-prefixed row used by every filter group. Kept
+  // here (not extracted to a module-level helper) so the component
+  // closure can reference the parent's state setters directly.
+  function Chip({on,onClick,tone,children}){
+    var goldOn=tone!=="kosher";
+    var onBg=goldOn?"rgba(245,197,76,0.12)":"rgba(90,200,250,0.12)";
+    var onBorder=goldOn?C.gd:"#5AC8FA";
+    var onColor=goldOn?C.gd:"#5AC8FA";
+    return(
+      <button onClick={onClick}
+        style={{...sf(12,600),padding:"6px 11px",borderRadius:18,
+          border:"1px solid "+(on?onBorder:C.bd),
+          background:on?onBg:"transparent",
+          color:on?onColor:C.s3,
+          cursor:"pointer",letterSpacing:0.3,transition:"all 0.12s"}}>
+        {children}
+      </button>
+    );
+  }
+  function FilterRow({label,children}){
+    return(
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
+        <span style={{...sf(10,700),color:C.s6,letterSpacing:1.2,textTransform:"uppercase",marginRight:4,minWidth:80}}>{label}</span>
+        {children}
+      </div>
+    );
+  }
 
   function renderRow(item){
     var c=item.cat;
@@ -1363,7 +1458,7 @@ function CityOverviewView({city,onClearCity}){
         {tabs.map(function(t){
           var on=activeCat===t.key;
           return(
-            <button key={t.key} onClick={function(){setActiveCat(t.key);}}
+            <button key={t.key} onClick={function(){switchTab(t.key);}}
               style={{...sf(13,on?600:500),padding:"8px 14px",borderRadius:10,border:"none",
                 background:on?C.srf:"transparent",color:on?C.s1:C.s4,
                 cursor:"pointer",letterSpacing:0.2,transition:"all 0.12s",
@@ -1374,6 +1469,82 @@ function CityOverviewView({city,onClearCity}){
           );
         })}
       </div>
+
+      {/* Filters — universal (status + search) + per-category chips. */}
+      <FilterRow label="Status">
+        {[
+          {v:"all",l:"All"},{v:"active",l:"Active"},{v:"inactive",l:"Inactive"},
+        ].map(function(o){return(
+          <Chip key={o.v} on={statusFilter===o.v} onClick={function(){setStatusFilter(o.v);}}>{o.l}</Chip>
+        );})}
+      </FilterRow>
+
+      {activeCat==="restaurants"&&(
+        <FilterRow label="Type">
+          {[{v:"all",l:"All"},{v:"restaurant",l:"Restaurant"},{v:"cafe",l:"Coffee shop"},
+            {v:"brunch",l:"Breakfast"},{v:"bakery",l:"Bakery"},{v:"beach_club",l:"Beach club"}
+          ].map(function(o){return(
+            <Chip key={o.v} on={diningType===o.v} onClick={function(){setDiningType(o.v);}}>{o.l}</Chip>
+          );})}
+        </FilterRow>
+      )}
+
+      {(activeCat==="restaurants"||activeCat==="accommodations")&&(
+        <FilterRow label="Kosher">
+          {[{v:"all",l:"All"},{v:"kosher",l:"Kosher only"},{v:"non_kosher",l:"Non-kosher"}].map(function(o){return(
+            <Chip key={o.v} on={kosher===o.v} tone="kosher" onClick={function(){setKosher(o.v);}}>{o.l}</Chip>
+          );})}
+        </FilterRow>
+      )}
+
+      {activeCat==="restaurants"&&(
+        <FilterRow label="Reservation">
+          {[{v:"all",l:"All"},{v:"reservation",l:"Reservation required"},{v:"walk_in",l:"Walk-in only"}].map(function(o){return(
+            <Chip key={o.v} on={walkIn===o.v} onClick={function(){setWalkIn(o.v);}}>{o.l}</Chip>
+          );})}
+        </FilterRow>
+      )}
+
+      {activeCat==="accommodations"&&(
+        <>
+          <FilterRow label="Stars">
+            {[0,5,4,3].map(function(n){return(
+              <Chip key={n} on={starRating===n} onClick={function(){setStarRating(n);}}>{n===0?"All":(n+"★")}</Chip>
+            );})}
+          </FilterRow>
+          <FilterRow label="Status">
+            {[{v:"all",l:"All"},{v:"open",l:"Open"},{v:"coming_soon",l:"Coming soon"},{v:"closed",l:"Closed"}].map(function(o){return(
+              <Chip key={o.v} on={hotelStatus===o.v} onClick={function(){setHotelStatus(o.v);}}>{o.l}</Chip>
+            );})}
+          </FilterRow>
+        </>
+      )}
+
+      {(activeCat==="cars"||activeCat==="yachts")&&brandOptions.length>0&&(
+        <FilterRow label="Brand">
+          <Chip on={!brand} onClick={function(){setBrand("");}}>All</Chip>
+          {brandOptions.map(function(b){return(
+            <Chip key={b} on={brand===b} onClick={function(){setBrand(b);}}>{b}</Chip>
+          );})}
+        </FilterRow>
+      )}
+
+      {activeCat==="wellness"&&wellnessTypeOptions.length>0&&(
+        <FilterRow label="Type">
+          <Chip on={!wellnessType} onClick={function(){setWellnessType("");}}>All</Chip>
+          {wellnessTypeOptions.map(function(t){return(
+            <Chip key={t} on={wellnessType===t} onClick={function(){setWellnessType(t);}}>{t}</Chip>
+          );})}
+        </FilterRow>
+      )}
+
+      {activeCat==="nightlife"&&(
+        <FilterRow label="Type">
+          {[{v:"",l:"All"},{v:"nightclub",l:"Nightclub"},{v:"bar",l:"Bar"},{v:"lounge",l:"Lounge"},{v:"rooftop",l:"Rooftop"}].map(function(o){return(
+            <Chip key={o.v||"all"} on={nightlifeCat===o.v} onClick={function(){setNightlifeCat(o.v);}}>{o.l}</Chip>
+          );})}
+        </FilterRow>
+      )}
 
       {/* Search */}
       <div style={{position:"relative",maxWidth:420,marginBottom:14}}>
