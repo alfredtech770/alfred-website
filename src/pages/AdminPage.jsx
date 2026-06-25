@@ -100,6 +100,7 @@ function Icon({name,size,color}){
     check:"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z",
     pin:"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z",
     globe:"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"
+    , crop:"M7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7V17zm2-10h8v8h2V7c0-1.1-.9-2-2-2H9v2z"
   };
   return <svg width={s} height={s} viewBox="0 0 24 24" fill={c}><path d={paths[name]||paths.dashboard}/></svg>;
 }
@@ -123,7 +124,8 @@ var CATS = [
       {k:"rating",l:"Rating",t:"number"},
       {k:"avg_spend",l:"Avg Spend",t:"text"},
       {k:"dress_code",l:"Dress Code",t:"text"},
-      {k:"address",l:"Address",t:"text",wide:true},
+      {k:"address",l:"Address (primary)",t:"text",wide:true},
+      {k:"addresses",l:"Additional Addresses (for chains / multiple branches)",t:"addresses",wide:true},
       {k:"phone_number",l:"Phone",t:"text"},
       {k:"website_url",l:"Website",t:"text"},
       {k:"instagram_url",l:"Instagram",t:"text"},
@@ -661,10 +663,135 @@ function ImageUploadBtn({bucket,onUpload,multi}){
 }
 
 /* ═══ Image Gallery Manager ═══ */
+/* ═══ Image crop helpers ═══
+ * A crop is {zoom, x, y}: zoom is a scale multiplier (>=1); x/y are the
+ * focal point in percent (CSS object-position). One crop adapts to every
+ * shape the photo is shown in across the app — set it once and the hero,
+ * card and thumbnail all anchor to the same spot. Stored per image URL in
+ * the venue row's `image_crops` jsonb column. The website + iOS read the
+ * same {zoom,x,y} so the admin preview matches what ships. */
+function imgCropStyle(crop){
+  var base={width:"100%",height:"100%",objectFit:"cover",display:"block"};
+  if(!crop||typeof crop!=="object")return Object.assign(base,{objectPosition:"50% 50%"});
+  var x=(crop.x==null?50:crop.x), y=(crop.y==null?50:crop.y), z=(crop.zoom==null?1:crop.zoom);
+  base.objectPosition=x+"% "+y+"%";
+  if(z&&z>1){base.transform="scale("+z+")"; base.transformOrigin=x+"% "+y+"%";}
+  return base;
+}
+function isDefaultCrop(c){return !c||((c.zoom==null||c.zoom===1)&&(c.x==null||c.x===50)&&(c.y==null||c.y===50));}
+
+/* ═══ Crop Editor Modal ═══
+ * Manual reframe: drag to pan, slider to zoom. The big stage previews one
+ * app shape at a time (switch via the chips at top, each a live preview);
+ * whatever you set applies to every shape. Saves {zoom,x,y} — or null when
+ * left at default so the image_crops map stays clean. */
+var CROP_SHAPES=[
+  {id:"hero",label:"Hero",ratio:16/9},
+  {id:"card",label:"Card",ratio:4/5},
+  {id:"square",label:"Thumbnail",ratio:1}
+];
+function CropEditorModal({url,crop,onSave,onClose}){
+  var [zoom,setZoom]=useState(crop&&crop.zoom?crop.zoom:1);
+  var [x,setX]=useState(crop&&crop.x!=null?crop.x:50);
+  var [y,setY]=useState(crop&&crop.y!=null?crop.y:50);
+  var [shape,setShape]=useState("hero");
+  var stageRef=useRef(null);
+  var live={zoom:zoom,x:x,y:y};
+
+  function clamp(v){return Math.max(0,Math.min(100,v));}
+  function startDrag(e){
+    e.preventDefault();
+    var box=stageRef.current;
+    var w=box?box.clientWidth:400, h=box?box.clientHeight:300;
+    var sx0=e.clientX, sy0=e.clientY, bx=x, by=y;
+    function move(ev){
+      // Drag image right -> reveal its left edge -> object-position x drops.
+      // Divide by zoom so panning gets finer the more you've zoomed in.
+      setX(clamp(bx-((ev.clientX-sx0)/w)*100/zoom));
+      setY(clamp(by-((ev.clientY-sy0)/h)*100/zoom));
+    }
+    function up(){window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);}
+    window.addEventListener("pointermove",move);
+    window.addEventListener("pointerup",up);
+  }
+  function reset(){setZoom(1);setX(50);setY(50);}
+  function save(){
+    var c={zoom:Math.round(zoom*100)/100,x:Math.round(x),y:Math.round(y)};
+    onSave(isDefaultCrop(c)?null:c);
+  }
+
+  var active=CROP_SHAPES.find(function(s){return s.id===shape;})||CROP_SHAPES[0];
+  var stageW=440, stageH=Math.round(stageW/active.ratio);
+  if(stageH>460){stageH=460;stageW=Math.round(stageH*active.ratio);}
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1002,padding:16,backdropFilter:"blur(6px)"}}
+      onClick={function(e){if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:20,width:"100%",maxWidth:560,maxHeight:"94vh",overflowY:"auto"}}>
+        <div style={{padding:"18px 22px",borderBottom:"1px solid "+C.bd,display:"flex",alignItems:"flex-start",justifyContent:"space-between"}}>
+          <div>
+            <h2 style={{...sf(17,600),color:C.s1,margin:0}}>Reframe image</h2>
+            <p style={{...sf(12),color:C.s5,margin:"3px 0 0"}}>Drag to reposition · zoom to fill. Applies everywhere this photo appears in the app.</p>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",padding:4}}><Icon name="close" size={20} color={C.s5}/></button>
+        </div>
+
+        <div style={{padding:"18px 22px"}}>
+          <div style={{display:"flex",gap:14,marginBottom:16,justifyContent:"center"}}>
+            {CROP_SHAPES.map(function(s){
+              var on=s.id===shape; var w=46, h=Math.round(w/s.ratio);
+              return(
+                <div key={s.id} onClick={function(){setShape(s.id);}} style={{cursor:"pointer",textAlign:"center"}}>
+                  <div style={{width:w,height:h,borderRadius:6,overflow:"hidden",border:"2px solid "+(on?C.gd:C.bd),margin:"0 auto",background:C.srf}}>
+                    <img src={url} alt="" style={imgCropStyle(live)} draggable={false}/>
+                  </div>
+                  <span style={{...sf(10,on?600:400),color:on?C.gd:C.s5,display:"block",marginTop:5}}>{s.label}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div ref={stageRef} onPointerDown={startDrag}
+            style={{width:"100%",maxWidth:stageW,height:stageH,margin:"0 auto",borderRadius:12,overflow:"hidden",border:"1px solid "+C.bd,background:C.srf,cursor:"grab",touchAction:"none",position:"relative",userSelect:"none"}}>
+            <img src={url} alt="" style={imgCropStyle(live)} draggable={false}/>
+            <div style={{position:"absolute",inset:0,boxShadow:"inset 0 0 0 1px rgba(255,255,255,0.08)",pointerEvents:"none"}}/>
+          </div>
+
+          <div style={{display:"flex",alignItems:"center",gap:12,marginTop:16}}>
+            <Icon name="search" size={15} color={C.s5}/>
+            <input type="range" min={1} max={3} step={0.01} value={zoom}
+              onChange={function(e){setZoom(Number(e.target.value));}}
+              style={{flex:1,accentColor:C.gd}}/>
+            <span style={{...sf(12,600),color:C.s3,width:42,textAlign:"right"}}>{zoom.toFixed(2)}×</span>
+          </div>
+        </div>
+
+        <div style={{padding:"14px 22px",borderTop:"1px solid "+C.bd,display:"flex",gap:10,justifyContent:"space-between",alignItems:"center"}}>
+          <button onClick={reset} style={{background:"none",border:"1px solid "+C.bd,color:C.s4,borderRadius:9,padding:"9px 14px",...sf(13,500),cursor:"pointer"}}>Reset</button>
+          <div style={{display:"flex",gap:10}}>
+            <button onClick={onClose} style={{background:"none",border:"1px solid "+C.bd,color:C.s3,borderRadius:9,padding:"9px 16px",...sf(13,500),cursor:"pointer"}}>Cancel</button>
+            <button onClick={save} style={{background:C.gd,border:"none",color:"#000",borderRadius:9,padding:"9px 18px",...sf(13,700),cursor:"pointer"}}>Save crop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ImageGalleryManager({record,cat,onUpdate}){
+  var [cropUrl,setCropUrl]=useState(null);
   var hero=record[cat.imgField]||"";
   var gallery=(record[cat.galleryField]||record[cat.orderField]||[]).filter(Boolean);
   var allImages=[hero].concat(gallery).filter(function(v,i,a){return v&&a.indexOf(v)===i;});
+  var cropField=cat.cropField||"image_crops";
+  var crops=(record[cropField]&&typeof record[cropField]==="object")?record[cropField]:{};
+
+  function saveCrop(url,c){
+    var next={...crops};
+    if(c)next[url]=c; else delete next[url];
+    var up={}; up[cropField]=next; onUpdate(up);
+    setCropUrl(null);
+  }
 
   function setHero(url){
     var up={};
@@ -677,6 +804,7 @@ function ImageGalleryManager({record,cat,onUpdate}){
     up[cat.galleryField||cat.orderField]=newGallery;
     if(url===hero&&newGallery.length>0)up[cat.imgField]=newGallery[0];
     else if(url===hero)up[cat.imgField]="";
+    if(crops[url]){var nc={...crops};delete nc[url];up[cropField]=nc;}
     onUpdate(up);
   }
   function moveImage(url,dir){
@@ -721,9 +849,13 @@ function ImageGalleryManager({record,cat,onUpdate}){
           var isHero=url===hero;
           return(
             <div key={url+i} style={{position:"relative",borderRadius:12,overflow:"hidden",border:"2px solid "+(isHero?C.gd:"transparent"),background:C.srf,aspectRatio:"1"}}>
-              <img src={url} alt="" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+              <img src={url} alt="" style={imgCropStyle(crops[url])}/>
               {isHero&&<div style={{position:"absolute",top:6,left:6,background:C.gd,borderRadius:6,padding:"2px 8px",...sf(10,700),color:"#000"}}>HERO</div>}
-              <div style={{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(0,0,0,0.85))",padding:"24px 6px 6px",display:"flex",gap:4,justifyContent:"center"}}>
+              {!isDefaultCrop(crops[url])&&<div style={{position:"absolute",top:6,right:6,background:"rgba(0,0,0,0.62)",borderRadius:6,padding:"2px 7px",...sf(9,700),color:C.gd,display:"flex",alignItems:"center",gap:3,letterSpacing:0.4}}><Icon name="crop" size={10} color={C.gd}/>FRAMED</div>}
+              <div style={{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(0,0,0,0.85))",padding:"24px 6px 6px",display:"flex",gap:4,justifyContent:"center",flexWrap:"wrap"}}>
+                <button onClick={function(){setCropUrl(url);}} style={{width:26,height:26,borderRadius:6,background:"rgba(255,214,10,0.28)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Reframe / crop">
+                  <Icon name="crop" size={14} color={C.gd}/>
+                </button>
                 <button onClick={function(){moveImage(url,-1);}} style={{width:26,height:26,borderRadius:6,background:"rgba(255,255,255,0.15)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Move left">
                   <Icon name="up" size={14} color="#fff"/>
                 </button>
@@ -741,6 +873,7 @@ function ImageGalleryManager({record,cat,onUpdate}){
           );
         })}
       </div>
+      {cropUrl&&<CropEditorModal url={cropUrl} crop={crops[cropUrl]} onSave={function(c){saveCrop(cropUrl,c);}} onClose={function(){setCropUrl(null);}}/>}
     </div>
   );
 }
@@ -1044,6 +1177,46 @@ function FieldInput({field,value,record,onChange}){
       </div>
     );
   }
+  if(field.t==="addresses"){
+    // Repeatable list of full addresses for venues with more than one
+    // branch (chains). Stored as a Postgres text[] in the `addresses`
+    // column; the singular `address` field above stays the primary one
+    // the iOS app + site read today. Each row is inline-editable so a
+    // typo is a one-character fix, not a delete-and-retype.
+    var addrs=value||[];
+    if(typeof addrs==="string")try{addrs=JSON.parse(addrs)}catch(e){addrs=addrs.trim()?[addrs]:[];}
+    if(!Array.isArray(addrs))addrs=[];
+    function updateAddr(i,val){var a=addrs.slice();a[i]=val;onChange(a);}
+    function removeAddr(i){var a=addrs.slice();a.splice(i,1);onChange(a);}
+    function addAddr(){onChange(addrs.concat(""));}
+    return(
+      <div>
+        {addrs.length>0&&(
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
+            {addrs.map(function(addr,i){
+              return(
+                <div key={i} style={{display:"flex",gap:8,alignItems:"center"}}>
+                  <span style={{...sf(11,600),color:C.s5,width:16,textAlign:"right",flexShrink:0}}>{i+1}</span>
+                  <input value={addr||""} onChange={function(e){updateAddr(i,e.target.value);}}
+                    placeholder={"Branch "+(i+1)+" — e.g. 123 Ocean Dr, Miami Beach"}
+                    style={{...inputStyle,flex:1}}
+                    onFocus={function(e){e.target.style.borderColor=C.gd;}}
+                    onBlur={function(e){e.target.style.borderColor=C.bd;}}/>
+                  <button type="button" onClick={function(){removeAddr(i);}}
+                    style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <button type="button" onClick={addAddr}
+          style={{padding:"8px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer"}}>
+          + Add {addrs.length?"another ":""}location
+        </button>
+        {addrs.length>0&&<p style={{...sf(11),color:C.s5,marginTop:6}}>{addrs.length} additional location{addrs.length!==1?"s":""}</p>}
+      </div>
+    );
+  }
   return(
     <input type={field.t==="number"?"number":"text"} value={value===undefined||value===null?"":value}
       onChange={function(e){onChange(field.t==="number"?(e.target.value===""?null:Number(e.target.value)):e.target.value);}}
@@ -1070,6 +1243,11 @@ function EditModal({cat,record,onClose,onSave}){
     delete payload.id;delete payload.created_at;delete payload.updated_at;
     // Strip empty strings to null so DB doesn't reject optional fields
     Object.keys(payload).forEach(function(k){if(payload[k]==="")payload[k]=null;});
+    // Drop blank entries from array fields (e.g. an empty extra-address row
+    // the operator added but never filled). Number arrays are untouched.
+    Object.keys(payload).forEach(function(k){
+      if(Array.isArray(payload[k]))payload[k]=payload[k].filter(function(el){return !(typeof el==="string"&&el.trim()==="");});
+    });
     // Ensure city is never null
     if(!payload.city){payload.city=defaultCity;}
     var result;

@@ -4,6 +4,7 @@ import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
 import { supabase } from "../lib/supabase";
 import { restaurantJsonLd } from "../lib/jsonld";
+import { cropFor } from "../lib/imageCrop";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -82,6 +83,7 @@ export default function DiningDetailPage(){
           img:r.hero_image_url||r.image_url||r.img||"",tagline:r.tagline||"",
           slug:r.slug||(r.id?String(r.id):""),
           imgs:r.photos_order||r.gallery_photos||[r.hero_image_url||r.image_url||r.img].filter(Boolean),
+          crops:r.image_crops||{},
           available:r.available!==false,avg:r.avg_spend||r.avg||"",
           chefName:r.chef_name||"",chefTitle:r.chef_title||"",chefNote:r.chef_note||"",
           wineNote:r.wine_note||"",alfredNote:r.alfred_note||"",alfredTip:r.alfred_tip||"",
@@ -115,6 +117,7 @@ export default function DiningDetailPage(){
     priceLevel:_src.price,
     avgSpend:_src.avg,
     imgs:_src.imgs||[_src.img].filter(Boolean),
+    crops:_src.crops||_src.image_crops||{},
     hours:{lunch:_src.hoursLunch||"Check availability",dinner:_src.hoursDinner||"Check availability",closed:_src.hoursClosed||"Check availability"},
     dressCode:_src.dressCode==="formal"?"Smart Elegant":_src.dressCode==="smart casual"?"Smart Casual":_src.dressCode||"Smart Casual",
     michelin:_src.michelin||0,
@@ -221,7 +224,7 @@ export default function DiningDetailPage(){
       {/* Hero */}
       <section className="dd-hero" style={{height:520,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,transform:"translateY("+heroY+"px) scale("+heroScale+")"}}>
-          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease",cursor:"pointer"}}/>})}
+          {V.imgs.map(function(img,i){return <img key={i} src={img} alt="" onClick={function(){setLightbox(true)}} style={{position:"absolute",inset:0,width:"100%",height:"120%",objectFit:"cover",opacity:i===idx?1:0,transition:"opacity 0.8s ease",cursor:"pointer",...cropFor(V.crops,img)}}/>})}
         </div>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0.4) 0%,transparent 30%,rgba(10,10,11,0.5) 60%,#0A0A0B 100%)"}}/>
         {/* Left/Right arrows */}

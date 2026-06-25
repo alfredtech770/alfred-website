@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
+import { cropFor } from "../lib/imageCrop";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
@@ -60,7 +61,7 @@ function RestCard(p){
     <div onClick={function(){if(r.available){sessionStorage.setItem("alfred_restaurant_"+r.slug,JSON.stringify(r));window.location.href="/catalog/dining/"+r.slug}}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:r.available?"pointer":"default",transform:hover&&r.available?"translateY(-6px)":"translateY(0)",boxShadow:hover&&r.available?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
 
       <div style={{height:200,position:"relative",overflow:"hidden"}}>
-        <img src={r.img} alt={r.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:r.available?"none":"brightness(0.5)"}}/>
+        <img src={r.img} alt={r.name} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.6s ease",filter:r.available?"none":"brightness(0.5)",...cropFor(r.crops,r.img,hover?1.05:1)}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 30%,rgba(10,10,11,0.85) 100%)"}}/>
         {/* Michelin */}
         {r.michelin>0&&<div style={{position:"absolute",top:16,left:16}}>
@@ -147,6 +148,7 @@ export default function DiningPage(){
           img:r.hero_image_url||r.image_url||r.img||"",
           tagline:r.tagline||"",
           slug:r.slug||(r.id?String(r.id):""),imgs:r.photos_order||r.gallery_photos||[r.hero_image_url||r.image_url||r.img].filter(Boolean),
+          crops:r.image_crops||{},
           available:r.available!==false,
           avg:r.avg_spend||r.avg||"",
           chefName:r.chef_name||"",chefTitle:r.chef_title||"",chefNote:r.chef_note||"",
