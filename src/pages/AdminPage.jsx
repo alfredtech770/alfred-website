@@ -138,7 +138,8 @@ var CATS = [
       {k:"hours_closed",l:"Closed Days (display)",t:"text"},
       {k:"closed_weekdays",l:"Closed Weekdays (date validation)",t:"weekdays",wide:true},
       {k:"closed_months",l:"Closed Months (seasonal)",t:"months",wide:true},
-      {k:"category",l:"Category",t:"select",opts:["restaurant","cafe","brunch","bakery","beach_club","bar","lounge"]},
+      {k:"category",l:"Primary Category",t:"select",opts:["restaurant","cafe","brunch","bakery","beach_club","bar","lounge"]},
+      {k:"categories",l:"Categories (multiple — a venue can be several: breakfast, lunch, bar…)",t:"multiselect",wide:true,opts:["restaurant","breakfast","lunch","dinner","brunch","cafe","bakery","bar","beach_club","lounge","late_night","dessert","cocktails"]},
       {k:"chef_name",l:"Chef Name",t:"text"},
       {k:"alfred_note",l:"Alfred Note",t:"textarea",wide:true},
       {k:"alfred_tip",l:"Alfred Tip",t:"textarea",wide:true},
@@ -300,6 +301,8 @@ var CATS = [
       {k:"slug",l:"Slug",t:"text",req:true},
       {k:"tag",l:"Tag",t:"select",opts:["F1","Tennis","Racing","Nightlife","Football","Yachting","Golf","Festival"]},
       {k:"date",l:"Date (free text)",t:"text"},
+      {k:"city",l:"City (blank = shows in all cities)",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","New York","London","Monaco","Madrid"]},
+      {k:"end_date",l:"End Date (YYYY-MM-DD — auto-hides after this date)",t:"text"},
       {k:"location",l:"Location",t:"text"},
       {k:"venue",l:"Venue / Hospitality",t:"text",wide:true},
       {k:"description",l:"Description",t:"textarea",wide:true},
@@ -310,6 +313,19 @@ var CATS = [
       {k:"sort_order",l:"Sort Order",t:"number"},
       {k:"is_active",l:"Active",t:"bool"},
       {k:"is_featured",l:"Featured",t:"bool"},
+    ]
+  },
+  {
+    id:"membership_requests", label:"Membership Requests", table:"membership_requests", icon:"event",
+    bucket:null, imgField:null, galleryField:null, orderField:null,
+    cols:["full_name","phone","requested_tier","status","created_at"],
+    fields:[
+      {k:"full_name",l:"Name",t:"text"},
+      {k:"phone",l:"Phone / WhatsApp",t:"text"},
+      {k:"requested_tier",l:"Tier",t:"text"},
+      {k:"status",l:"Status — set to “approved” to grant the tier",t:"select",opts:["pending","approved","declined"]},
+      {k:"note",l:"Note (internal)",t:"textarea",wide:true},
+      {k:"created_at",l:"Requested At",t:"text"},
     ]
   }
 ];
@@ -756,6 +772,28 @@ function FieldInput({field,value,record,onChange}){
       </select>
     );
   }
+  if(field.t==="multiselect"){
+    var sel=value||[];
+    if(typeof sel==="string")try{sel=JSON.parse(sel)}catch(e){sel=sel.split(",").map(function(s){return s.trim();}).filter(Boolean);}
+    function toggleOpt(o){
+      var a=sel.slice();var i=a.indexOf(o);
+      if(i>=0)a.splice(i,1);else a.push(o);
+      onChange(a);
+    }
+    return(
+      <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+        {(field.opts||[]).map(function(o){
+          var on=sel.indexOf(o)>=0;
+          return <span key={o} onClick={function(){toggleOpt(o);}}
+            style={{...sf(12,500),padding:"6px 12px",borderRadius:8,cursor:"pointer",userSelect:"none",
+              background:on?C.gd+"22":C.srf,color:on?C.gd:C.s4,
+              border:"1px solid "+(on?C.gd:C.bd),transition:"all 0.15s"}}>
+            {on?"✓ ":""}{o}
+          </span>;
+        })}
+      </div>
+    );
+  }
   if(field.t==="textarea"){
     return <textarea value={value||""} onChange={function(e){onChange(e.target.value);}} rows={3}
       style={{...inputStyle,resize:"vertical"}}
@@ -1077,7 +1115,7 @@ function EditModal({cat,record,onClose,onSave}){
 
         {/* Tabs */}
         <div style={{display:"flex",gap:0,borderBottom:"1px solid "+C.bd,padding:"0 24px"}}>
-          {["details","images"].map(function(t){
+          {(cat.imgField?["details","images"]:["details"]).map(function(t){
             var active=tab===t;
             return <button key={t} onClick={function(){setTab(t);}}
               style={{padding:"12px 20px",background:"none",border:"none",borderBottom:"2px solid "+(active?C.gd:"transparent"),
