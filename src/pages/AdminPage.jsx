@@ -101,6 +101,7 @@ function Icon({name,size,color}){
     pin:"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z",
     globe:"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"
     , crop:"M7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7V17zm2-10h8v8h2V7c0-1.1-.9-2-2-2H9v2z"
+    , activities:"M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"
   };
   return <svg width={s} height={s} viewBox="0 0 24 24" fill={c}><path d={paths[name]||paths.dashboard}/></svg>;
 }
@@ -291,6 +292,34 @@ var CATS = [
       {k:"is_featured",l:"Featured",t:"bool"},
       {k:"is_partner",l:"Partner",t:"bool"},
       {k:"kosher",l:"Kosher / Cacher",t:"bool"},
+    ]
+  },
+  {
+    id:"activities", label:"Activities", singular:"Activity", table:"activities", icon:"activities",
+    bucket:"activity-photos", imgField:"hero_image_url", galleryField:"photos_order",
+    orderField:"photos_order",
+    cols:["name","city","type","price_level","rating","is_active"],
+    fields:[
+      {k:"name",l:"Name",t:"text",req:true},
+      {k:"slug",l:"Slug",t:"text"},
+      {k:"category",l:"Category",t:"select",opts:["experience"]},
+      {k:"type",l:"Type",t:"select",opts:["Experience","Tour","Museum","Gallery","Landmark","Spa","Sport","Shopping","Cinema","Cultural","Adventure","Water Sport","Nightlife","Family"]},
+      {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","New York","Los Angeles","London","Monaco","Dubai","Madrid","Miami Beach"]},
+      {k:"tagline",l:"Tagline",t:"text",wide:true},
+      {k:"description",l:"Description",t:"textarea",wide:true},
+      {k:"duration",l:"Duration (e.g. 2 hours)",t:"text"},
+      {k:"price_level",l:"Price Level",t:"select",opts:["1","2","3","4"]},
+      {k:"rating",l:"Rating",t:"number"},
+      {k:"address",l:"Address / Location",t:"text",wide:true},
+      {k:"latitude",l:"Latitude (map)",t:"number"},
+      {k:"longitude",l:"Longitude (map)",t:"number"},
+      {k:"website_url",l:"Website",t:"text"},
+      {k:"instagram_url",l:"Instagram",t:"text"},
+      {k:"opening_hours",l:"Opening Hours",t:"text",wide:true},
+      {k:"alfred_note",l:"Alfred Note",t:"textarea",wide:true},
+      {k:"alfred_tip",l:"Alfred Tip",t:"textarea",wide:true},
+      {k:"is_active",l:"Active",t:"bool"},
+      {k:"is_featured",l:"Featured",t:"bool"},
     ]
   },
   {
@@ -509,6 +538,7 @@ function DashboardView({counts,onNav}){
         <StatCard label="Yachts" value={counts.yachts||0} icon="yacht" color={C.bl}/>
         <StatCard label="Wellness" value={counts.wellness||0} icon="wellness" color={C.or}/>
         <StatCard label="Cars" value={counts.cars||0} icon="car" color={C.rd}/>
+        <StatCard label="Activities" value={counts.activities||0} icon="activities" color={C.gd}/>
       </div>
 
       {/* Two Column Layout */}
@@ -1230,7 +1260,7 @@ function FieldInput({field,value,record,onChange}){
 function EditModal({cat,record,onClose,onSave}){
   var defaultCity=(cat.fields.find(function(f){return f.k==="city";})||{}).opts;
   defaultCity=defaultCity?defaultCity[0]:"Paris";
-  var [form,setForm]=useState(record?{...record}:{is_active:true,city:defaultCity,category:cat.id==="restaurants"?"restaurant":cat.id==="nightlife"?"nightclub":undefined});
+  var [form,setForm]=useState(record?{...record}:{is_active:true,city:defaultCity,category:cat.id==="restaurants"?"restaurant":cat.id==="nightlife"?"nightclub":cat.id==="activities"?"experience":undefined});
   var [saving,setSaving]=useState(false);
   var [saveErr,setSaveErr]=useState("");
   var [tab,setTab]=useState("details");
@@ -1285,7 +1315,7 @@ function EditModal({cat,record,onClose,onSave}){
 
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:"1px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <h2 style={{...sf(18,600),color:C.s1,margin:0}}>{record?"Edit":"Add"} {cat.label.slice(0,-1)}</h2>
+          <h2 style={{...sf(18,600),color:C.s1,margin:0}}>{record?"Edit":"Add"} {cat.singular||cat.label.slice(0,-1)}</h2>
           <button onClick={onClose} style={{background:"none",border:"none",color:C.s5,cursor:"pointer",padding:4}}>
             <Icon name="close" size={20} color={C.s5}/>
           </button>
@@ -1948,7 +1978,7 @@ function CategoryView({cat,globalCity,onClearCity}){
         </div>
         <button onClick={function(){setShowAdd(true);}}
           style={{...btn(C.gd,"#000"),fontWeight:700}}>
-          <Icon name="add" size={18} color="#000"/> Add {cat.label.slice(0,-1)}
+          <Icon name="add" size={18} color="#000"/> Add {cat.singular||cat.label.slice(0,-1)}
         </button>
       </div>
 
@@ -4047,6 +4077,7 @@ var CITY_CATEGORIES=[
   {catId:"yachts",label:"Yachts"},
   {catId:"accommodations",label:"Hotels"},
   {catId:"nightlife",label:"Nightlife"},
+  {catId:"activities",label:"Activities"},
 ];
 
 function AdminDashboard({onLogout}){
