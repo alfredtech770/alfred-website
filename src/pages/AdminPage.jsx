@@ -303,7 +303,7 @@ var CATS = [
       {k:"name",l:"Name",t:"text",req:true},
       {k:"slug",l:"Slug",t:"text"},
       {k:"category",l:"Category",t:"select",opts:["experience"]},
-      {k:"type",l:"Type",t:"select",opts:["Experience","Tour","Museum","Gallery","Landmark","Spa","Sport","Shopping","Cinema","Cultural","Adventure","Water Sport","Nightlife","Family"]},
+      {k:"type",l:"Type",t:"select",opts:["Experience","Tour","Museum","Gallery","Landmark","Spa","Beach Club","Sport","Shopping","Cinema","Cultural","Adventure","Water Sport","Nightlife","Family"]},
       {k:"city",l:"City",t:"select",opts:["Paris","Miami","Ibiza","Saint-Tropez","Mykonos","New York","Los Angeles","London","Monaco","Dubai","Madrid","Miami Beach"]},
       {k:"tagline",l:"Tagline",t:"text",wide:true},
       {k:"description",l:"Description",t:"textarea",wide:true},
