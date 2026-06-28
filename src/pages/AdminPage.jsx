@@ -2999,6 +2999,8 @@ function ClientsView(){
   // Alfred couldn't tell a user a restaurant was closed).
   var [tierFilter,setTierFilter]=useState("");
   var [reachableFilter,setReachableFilter]=useState("");
+  var [busyId,setBusyId]=useState(null);             // member row mid-update
+  var [removeTarget,setRemoveTarget]=useState(null);  // member pending removal
 
   async function load(){
     setLoading(true);
@@ -3007,6 +3009,24 @@ function ClientsView(){
     setLoading(false);
   }
   useEffect(function(){load();},[]);
+
+  // Subscription tiers an operator can assign (DB uses these short codes).
+  var TIERS=[{v:"free",l:"Free"},{v:"gold",l:"Gold"},{v:"plat",l:"Platinum"},{v:"cent",l:"Centurion"}];
+  // Normalise a stored tier (which may be the full word) to the select value.
+  function tierVal(t){t=(t||"free").toLowerCase();return t==="platinum"?"plat":t==="centurion"?"cent":t;}
+  function memberName(u){return ((u.first_name||"")+" "+(u.last_name||"")).trim()||u.email||"this member";}
+
+  // Change a member's subscription. Optimistic local update; the deployed
+  // admin persists via the service key (anon is read-only under RLS).
+  async function changeTier(u,newTier){
+    if(newTier===tierVal(u.tier))return;
+    setBusyId(u.id);
+    var {error}=await supabase.from("users").update({tier:newTier}).eq("id",u.id);
+    setBusyId(null);
+    if(error){alert("Couldn't update subscription: "+error.message);return;}
+    setUsers(function(prev){return prev.map(function(x){return x.id===u.id?{...x,tier:newTier}:x;});});
+    notifySlack("updated","Member",memberName(u),"Subscription changed to "+tierLabel(newTier));
+  }
 
   function tierLabel(t){
     if(!t)return "Free";
@@ -3090,7 +3110,7 @@ function ClientsView(){
             <table style={{width:"100%",borderCollapse:"collapse"}}>
               <thead>
                 <tr style={{borderBottom:"1px solid "+C.bd}}>
-                  {["Name","Tier","WhatsApp","Email","City","Instagram","Joined"].map(function(h){
+                  {["Name","Tier","WhatsApp","Email","City","Instagram","Joined","Manage"].map(function(h){
                     return <th key={h} style={{...sf(11,600),color:C.s5,letterSpacing:0.8,textTransform:"uppercase",padding:"12px 14px",textAlign:"left"}}>{h}</th>;
                   })}
                 </tr>
@@ -3119,6 +3139,21 @@ function ClientsView(){
                       <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.preferred_city||"-"}</td>
                       <td style={{...sf(13),color:C.s4,padding:"12px 14px"}}>{u.instagram_handle?"@"+u.instagram_handle:"-"}</td>
                       <td style={{...sf(12),color:C.s5,padding:"12px 14px"}}>{u.created_at?u.created_at.slice(0,10):"-"}</td>
+                      <td style={{padding:"10px 14px"}}>
+                        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                          <select value={tierVal(tier)} disabled={busyId===u.id}
+                            onChange={function(e){changeTier(u,e.target.value);}}
+                            title="Change subscription"
+                            style={{background:C.srf,border:"1px solid "+C.bd,borderRadius:8,padding:"6px 10px",...sf(12),color:C.s2,outline:"none",cursor:busyId===u.id?"wait":"pointer",appearance:"auto"}}>
+                            {TIERS.map(function(t){return <option key={t.v} value={t.v}>{t.l}</option>;})}
+                          </select>
+                          <button onClick={function(){setRemoveTarget(u);}} disabled={busyId===u.id}
+                            title="Remove member"
+                            style={{background:"rgba(255,59,48,0.12)",border:"1px solid rgba(255,59,48,0.35)",color:C.rd,borderRadius:8,padding:"6px 12px",...sf(12,600),cursor:"pointer",whiteSpace:"nowrap"}}>
+                            Remove
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -3127,6 +3162,9 @@ function ClientsView(){
           </div>
         </div>
       )}
+      {removeTarget&&<DeleteModal table="users" id={removeTarget.id} name={memberName(removeTarget)}
+        onCancel={function(){setRemoveTarget(null);}}
+        onDone={function(){var id=removeTarget.id;setUsers(function(p){return p.filter(function(x){return x.id!==id;});});setRemoveTarget(null);}}/>}
     </div>
   );
 }
