@@ -995,6 +995,7 @@ function FieldInput({field,value,record,onChange}){
   if(field.t==="timeslots"){
     var slots=value||[];
     if(typeof slots==="string")try{slots=JSON.parse(slots)}catch(e){slots=[];}
+    var BREAKFAST=["08:00","08:30","09:00","09:30","10:00","10:30"];
     var LUNCH=["11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00"];
     var DINNER=["18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00","22:30","23:00","23:30"];
     var LATE=["00:00","00:30","01:00","01:30","02:00"];
@@ -1039,6 +1040,7 @@ function FieldInput({field,value,record,onChange}){
     }
     return(
       <div>
+        {renderGroup("Breakfast",BREAKFAST)}
         {renderGroup("Lunch",LUNCH)}
         {renderGroup("Dinner",DINNER)}
         {renderGroup("Late Night",LATE)}
