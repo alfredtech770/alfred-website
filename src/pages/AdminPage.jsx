@@ -2341,6 +2341,18 @@ function BookingsView(){
     notifySlack("booking","Bookings",(user.first_name||"")+" "+(user.last_name||""),"*Status changed to:* "+status+" | *Venue:* "+(booking?booking.restaurant_name:"")+" | *Guest:* "+(user.email||booking&&booking.user_id||"unknown")+" | *Date:* "+(booking?booking.reservation_date:"")+" "+(booking?booking.reservation_time?"at "+(booking.reservation_time.slice(0,5)):"":""));
     load();
   }
+  // Commission tracking on completed bookings: false = guest paid, commission
+  // not yet collected; true = commission received. Optimistic, reverts on error.
+  async function toggleCommission(b){
+    var next=!b.commission_received;
+    setBookings(function(prev){return prev.map(function(x){return x.id===b.id?{...x,commission_received:next}:x;});});
+    var {error}=await supabase.from("bookings").update({commission_received:next,updated_at:new Date().toISOString()}).eq("id",b.id);
+    if(error){
+      setBookings(function(prev){return prev.map(function(x){return x.id===b.id?{...x,commission_received:!next}:x;});});
+      alert("Couldn't update commission status: "+error.message);return;
+    }
+    notifySlack("booking","Bookings",b.restaurant_name||"",next?("Commission received ✅ "+money(b.commission_amount||0)):"Commission marked as awaiting");
+  }
   async function addNote(id,note){
     await supabase.from("bookings").update({notes:note,updated_at:new Date().toISOString()}).eq("id",id);
     load();
@@ -2621,6 +2633,16 @@ function BookingsView(){
                           </span>
                           {b.occasion&&<span style={{...sf(10,500),padding:"1px 7px",borderRadius:5,background:C.srf,border:"1px solid "+C.bd,color:C.s4,whiteSpace:"nowrap",flexShrink:0}}>{b.occasion}</span>}
                           {b.seating_preference&&<span style={{...sf(10,500),padding:"1px 7px",borderRadius:5,background:C.srf,border:"1px solid "+C.bd,color:C.s4,whiteSpace:"nowrap",flexShrink:0}}>{b.seating_preference}</span>}
+                          {b.status==="completed"&&(
+                            <span onClick={function(e){e.stopPropagation();toggleCommission(b);}}
+                              title={b.commission_received?"Commission received — click to mark as awaiting":"Guest paid; commission not yet collected — click when received"}
+                              style={{...sf(10,600),padding:"1px 8px",borderRadius:5,whiteSpace:"nowrap",flexShrink:0,cursor:"pointer",
+                                background:(b.commission_received?C.gn:C.or)+"18",
+                                border:"1px solid "+(b.commission_received?C.gn:C.or)+"55",
+                                color:b.commission_received?C.gn:C.or}}>
+                              {b.commission_received?"✓ Commission received":"Paid · awaiting commission"}
+                            </span>
+                          )}
                         </div>
                         {/* Status + delete — col 4, row 2 */}
                         <div style={{display:"flex",gap:4,alignItems:"center",justifyContent:"flex-end",whiteSpace:"nowrap"}}>
