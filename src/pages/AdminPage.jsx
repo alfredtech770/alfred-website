@@ -997,6 +997,7 @@ function FieldInput({field,value,record,onChange}){
     if(typeof slots==="string")try{slots=JSON.parse(slots)}catch(e){slots=[];}
     var LUNCH=["11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00"];
     var DINNER=["18:00","18:30","19:00","19:30","20:00","20:30","21:00","21:30","22:00","22:30","23:00","23:30"];
+    var LATE=["00:00","00:30","01:00","01:30","02:00"];
     function toggleSlot(s){
       var arr=slots.slice();
       var idx=arr.indexOf(s);
@@ -1040,6 +1041,7 @@ function FieldInput({field,value,record,onChange}){
       <div>
         {renderGroup("Lunch",LUNCH)}
         {renderGroup("Dinner",DINNER)}
+        {renderGroup("Late Night",LATE)}
         <p style={{...sf(11),color:C.s5,marginTop:4}}>{slots.length} slot{slots.length!==1?"s":""} selected</p>
       </div>
     );
