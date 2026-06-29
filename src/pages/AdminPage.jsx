@@ -286,7 +286,7 @@ var CATS = [
       {k:"phone_number",l:"Phone",t:"text"},
       {k:"instagram_url",l:"Instagram",t:"text"},
       {k:"opening_date",l:"Opening Date",t:"text"},
-      {k:"rooms",l:"Room Types & Prices",t:"rooms",wide:true},
+      {k:"rooms",l:"Room Types & Suites",t:"richrooms",bucket:"venue-photos",wide:true},
       {k:"status",l:"Status",t:"select",opts:["open","coming_soon","closed"]},
       {k:"is_active",l:"Active",t:"bool"},
       {k:"is_featured",l:"Featured",t:"bool"},
@@ -1208,6 +1208,57 @@ function FieldInput({field,value,record,onChange}){
           <button type="button" onClick={addRoom} style={{padding:"8px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer",whiteSpace:"nowrap"}}>+ Add</button>
         </div>
         {rooms.length>0&&<p style={{...sf(11),color:C.s5,marginTop:6}}>{rooms.length} room type{rooms.length!==1?"s":""}</p>}
+      </div>
+    );
+  }
+  if(field.t==="richrooms"){
+    // Full room-type editor for hotels. Each room is an object the site
+    // renders: {id,name,view,bed_config,max_guests,size_sqft,description,
+    // hero_image_url}. Edits spread over the existing object so seeded
+    // fields are preserved; new rooms get a generated id for the React key.
+    var rrooms=value||[];
+    if(typeof rrooms==="string")try{rrooms=JSON.parse(rrooms)}catch(e){rrooms=[];}
+    if(!Array.isArray(rrooms))rrooms=[];
+    var ri={width:"100%",boxSizing:"border-box",background:C.bg2,border:"1px solid "+C.bd,borderRadius:8,padding:"7px 10px",...sf(12),color:C.s1,outline:"none"};
+    function rUpd(i,k,v){onChange(rrooms.map(function(r,idx){return idx===i?{...r,[k]:v}:r;}));}
+    function rAdd(){onChange(rrooms.concat({id:"room-"+Date.now().toString(36),name:"",view:"",bed_config:"",max_guests:null,size_sqft:null,description:"",hero_image_url:""}));}
+    function rDel(i){onChange(rrooms.filter(function(_,idx){return idx!==i;}));}
+    function rMove(i,d){var j=i+d;if(j<0||j>=rrooms.length)return;var a=rrooms.slice();var t=a[i];a[i]=a[j];a[j]=t;onChange(a);}
+    return(
+      <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        {rrooms.map(function(room,i){
+          return(
+            <div key={i} style={{border:"1px solid "+C.bd,borderRadius:12,background:C.srf,padding:12}}>
+              <div style={{display:"flex",gap:12}}>
+                <div style={{flexShrink:0,width:96}}>
+                  <div style={{width:96,height:70,borderRadius:8,overflow:"hidden",border:"1px solid "+C.bd,background:C.bg2,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    {room.hero_image_url?<img src={room.hero_image_url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span style={{...sf(9),color:C.s6}}>No photo</span>}
+                  </div>
+                  <div style={{marginTop:6}}><ImageUploadBtn bucket={field.bucket||"venue-photos"} multi={false} onUpload={function(urls){if(urls&&urls[0])rUpd(i,"hero_image_url",urls[0]);}}/></div>
+                </div>
+                <div style={{flex:1,minWidth:0,display:"grid",gridTemplateColumns:"1fr 1fr",gap:7}}>
+                  <input placeholder="Room name (e.g. Deluxe King)" value={room.name||""} onChange={function(e){rUpd(i,"name",e.target.value);}} style={{...ri,gridColumn:"1 / -1"}}/>
+                  <input placeholder="Bed config (e.g. 1 King)" value={room.bed_config||""} onChange={function(e){rUpd(i,"bed_config",e.target.value);}} style={ri}/>
+                  <input placeholder="View (e.g. Ocean)" value={room.view||""} onChange={function(e){rUpd(i,"view",e.target.value);}} style={ri}/>
+                  <input type="number" placeholder="Max guests" value={room.max_guests==null?"":room.max_guests} onChange={function(e){rUpd(i,"max_guests",e.target.value===""?null:Number(e.target.value));}} style={ri}/>
+                  <input type="number" placeholder="Size (sq ft)" value={room.size_sqft==null?"":room.size_sqft} onChange={function(e){rUpd(i,"size_sqft",e.target.value===""?null:Number(e.target.value));}} style={ri}/>
+                </div>
+              </div>
+              <textarea placeholder="Description" value={room.description||""} onChange={function(e){rUpd(i,"description",e.target.value);}} rows={2} style={{...ri,marginTop:7,resize:"vertical"}}/>
+              <input placeholder="Image URL (or use Upload above)" value={room.hero_image_url||""} onChange={function(e){rUpd(i,"hero_image_url",e.target.value);}} style={{...ri,marginTop:7}}/>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}>
+                <span style={{...sf(11),color:C.s6}}>Room {i+1}</span>
+                <div style={{display:"flex",gap:6}}>
+                  <button type="button" onClick={function(){rMove(i,-1);}} title="Move up" style={{background:C.bg2,border:"1px solid "+C.bd,borderRadius:6,color:C.s4,cursor:"pointer",padding:"4px 9px"}}>↑</button>
+                  <button type="button" onClick={function(){rMove(i,1);}} title="Move down" style={{background:C.bg2,border:"1px solid "+C.bd,borderRadius:6,color:C.s4,cursor:"pointer",padding:"4px 9px"}}>↓</button>
+                  <button type="button" onClick={function(){rDel(i);}} title="Remove room" style={{background:"rgba(255,59,48,0.12)",border:"1px solid rgba(255,59,48,0.35)",borderRadius:6,color:C.rd,cursor:"pointer",padding:"4px 10px",...sf(11,600)}}>Remove</button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <button type="button" onClick={rAdd} style={{padding:"9px 14px",background:C.srf,border:"1px solid "+C.bd,borderRadius:8,...sf(12,500),color:C.s3,cursor:"pointer",alignSelf:"flex-start"}}>+ Add room type</button>
+        {rrooms.length>0&&<p style={{...sf(11),color:C.s5,margin:0}}>{rrooms.length} room type{rrooms.length!==1?"s":""}</p>}
       </div>
     );
   }
