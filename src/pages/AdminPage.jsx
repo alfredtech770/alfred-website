@@ -286,7 +286,7 @@ var CATS = [
       {k:"phone_number",l:"Phone",t:"text"},
       {k:"instagram_url",l:"Instagram",t:"text"},
       {k:"opening_date",l:"Opening Date",t:"text"},
-      {k:"room_types",l:"Room Types & Prices",t:"rooms",wide:true},
+      {k:"rooms",l:"Room Types & Prices",t:"rooms",wide:true},
       {k:"status",l:"Status",t:"select",opts:["open","coming_soon","closed"]},
       {k:"is_active",l:"Active",t:"bool"},
       {k:"is_featured",l:"Featured",t:"bool"},
