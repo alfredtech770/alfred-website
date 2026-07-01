@@ -70,8 +70,13 @@ const entry = (loc, prio) => `  <url><loc>${loc}</loc><changefreq>weekly</change
   const spas = await fetchAll('wellness', 'slug,is_active');
   const spaSlugs = [...new Set(spas.filter((r) => r.slug && r.is_active !== false).map((r) => r.slug))].sort();
 
+  // Restaurants: slugs are unique (backfilled), DiningDetailPage fetches by slug.
+  const rests = await fetchAll('restaurants', 'slug,is_active');
+  const restSlugs = [...new Set(rests.filter((r) => r.slug && r.is_active !== false).map((r) => r.slug))].sort();
+
   const block = [
     '  <!-- BEGIN generated: product detail pages (scripts/gen-product-sitemap.js) -->',
+    ...restSlugs.map((s) => entry(`${BASE}/catalog/dining/${s}`, '0.9')),
     ...carSlugs.map((s) => entry(`${BASE}/catalog/exotic-cars/${s}`, '0.8')),
     ...hotelSlugs.map((s) => entry(`${BASE}/catalog/hotels/${s}`, '0.7')),
     ...clubSlugs.map((s) => entry(`${BASE}/catalog/nightlife/${s}`, '0.8')),
@@ -84,6 +89,9 @@ const entry = (loc, prio) => `  <url><loc>${loc}</loc><changefreq>weekly</change
   // Drop legacy hand-written nightlife detail entries (pre-DB pretty slugs that
   // rendered a hardcoded placeholder); the generated block replaces them.
   xml = xml.replace(/\s*<url>\s*<loc>https:\/\/alfredconcierge\.app\/catalog\/nightlife\/[a-z0-9-]+<\/loc>[\s\S]*?<\/url>/g, '');
+  // Drop legacy dining detail entries too — they covered only 521 of the 741
+  // slugged restaurants; the generated block covers all active ones.
+  xml = xml.replace(/\s*<url>\s*<loc>https:\/\/alfredconcierge\.app\/catalog\/dining\/[^<]+<\/loc>[\s\S]*?<\/url>/g, '');
   xml = xml.replace(/<\/urlset>/, `${block}\n</urlset>`);
   fs.writeFileSync(SITEMAP, xml, 'utf8');
 
