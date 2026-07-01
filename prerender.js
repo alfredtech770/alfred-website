@@ -109,7 +109,15 @@ const STATIC_ROUTES = [
   '/pricing',
   '/contact',
   // Long-tail landing pages (config in src/data/longtail.js — keep in sync)
-  '/best/italian-restaurants-miami'
+  '/best/italian-restaurants-miami',
+  '/best/best-restaurants-miami',
+  '/best/steakhouses-miami',
+  '/best/sushi-restaurants-miami',
+  '/best/best-restaurants-paris',
+  '/best/exotic-car-rental-miami',
+  '/best/lamborghini-rental-miami',
+  '/best/ferrari-rental-miami',
+  '/best/rolls-royce-rental-miami'
 ];
 
 const DIST_DIR = path.join(__dirname, 'dist');

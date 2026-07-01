@@ -12,7 +12,44 @@ function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100
 var BASE = "https://alfredconcierge.app";
 var WHATSAPP = "https://wa.me/447449562204";
 
-function buildJsonLd(slug, cfg, restaurants){
+function slugify(n){return (n||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}
+// Cars: DB stores brand + name split; the catalog links use slugify(brand+name).
+function carFullName(r){
+  var name=(r.name||"").trim(), brand=(r.brand||"").trim();
+  return brand && name && name.toLowerCase().indexOf(brand.toLowerCase())!==0 ? brand+" "+name : name;
+}
+var dollars=function(n){return n?Array(Math.min(5,n)+1).join("$"):null};
+
+// Per-vertical adapters so one component powers /best/ pages for restaurants,
+// exotic cars and hotels. Config entries set `table` (default "restaurants").
+var VERTICALS = {
+  restaurants: {
+    type:"Restaurant", listNoun:"venues", cta:"a table",
+    crumb:{label:"Dining", href:"/catalog/dining"},
+    browse:{label:"restaurants", href:"/catalog/dining"},
+    detailUrl:function(r){return "/catalog/dining/"+(r.slug||"")},
+    displayName:function(r){return r.name},
+    subtitle:function(r){return [r.cuisine, r.neighborhood||r.city, dollars(r.price_level)].filter(Boolean).join(" · ")},
+  },
+  cars: {
+    type:"Product", listNoun:"cars", cta:"this car",
+    crumb:{label:"Exotic Cars", href:"/catalog/exotic-cars"},
+    browse:{label:"cars", href:"/catalog/exotic-cars"},
+    detailUrl:function(r){return "/catalog/exotic-cars/"+slugify(carFullName(r))},
+    displayName:function(r){return carFullName(r)},
+    subtitle:function(r){return [r.category||r.type, r.hp?r.hp+" hp":null, r.price_1_day?"$"+r.price_1_day+"/day":null].filter(Boolean).join(" · ")},
+  },
+  accommodations: {
+    type:"Hotel", listNoun:"hotels", cta:"this stay",
+    crumb:{label:"Hotels", href:"/catalog/hotels"},
+    browse:{label:"hotels", href:"/catalog/hotels"},
+    detailUrl:function(r){return "/catalog/hotels/"+(r.slug||r.id)},
+    displayName:function(r){return r.name},
+    subtitle:function(r){return [r.star_rating?r.star_rating+"-star":null, r.neighborhood||r.city, dollars(r.price_level)].filter(Boolean).join(" · ")},
+  },
+};
+
+function buildJsonLd(slug, cfg, vert, rows){
   var pageUrl = BASE + "/best/" + slug;
 
   var itemList = {
@@ -20,37 +57,37 @@ function buildJsonLd(slug, cfg, restaurants){
     "@type":"ItemList",
     "name": cfg.h1,
     "description": cfg.description,
-    "numberOfItems": restaurants.length,
+    "numberOfItems": rows.length,
     "itemListOrder":"https://schema.org/ItemListOrderAscending",
-    "itemListElement": restaurants.map(function(r, i){
-      var url = BASE + "/catalog/dining/" + (r.slug || "");
-      return {
-        "@type":"ListItem",
-        "position": i+1,
+    "itemListElement": rows.map(function(r, i){
+      var url = BASE + vert.detailUrl(r);
+      var item = {
+        "@type": vert.type,
+        "@id": url,
+        "name": vert.displayName(r),
         "url": url,
-        "item": {
-          "@type":"Restaurant",
-          "@id": url,
-          "name": r.name,
-          "url": url,
-          "image": r.hero_image_url || undefined,
-          "servesCuisine": r.cuisine || undefined,
-          "priceRange": r.price_level ? Array(r.price_level+1).join("$") || "$$$" : "$$$",
-          "address": {
-            "@type":"PostalAddress",
-            "addressLocality": r.city || cfg.city,
-            "addressRegion": r.region || (cfg.city==="Miami" ? "FL" : undefined),
-            "addressCountry": r.country || (cfg.city==="Paris" ? "FR" : "US")
-          },
-          "aggregateRating": r.rating ? {
-            "@type":"AggregateRating",
-            "ratingValue": String(r.rating),
-            "reviewCount": String(r.review_count || r.reviews || 1)
-          } : undefined,
-          "acceptsReservations": true,
-          "potentialAction": {"@type":"ReserveAction", "target": url, "name": "Reserve through Alfred Concierge"}
-        }
+        "image": r.hero_image_url || undefined,
+        "aggregateRating": r.rating ? {
+          "@type":"AggregateRating",
+          "ratingValue": String(r.rating),
+          "reviewCount": String(r.review_count || r.reviews || 1)
+        } : undefined
       };
+      if(vert.type==="Restaurant"){
+        item.servesCuisine = r.cuisine || undefined;
+        item.priceRange = dollars(r.price_level) || "$$$";
+        item.address = {"@type":"PostalAddress","addressLocality": r.city || cfg.city, "addressCountry": cfg.city==="Paris" ? "FR" : "US"};
+        item.acceptsReservations = true;
+      } else if(vert.type==="Product"){
+        item.brand = r.brand ? {"@type":"Brand","name": r.brand} : undefined;
+        item.category = "Luxury & Exotic Car Rental";
+        if(r.price_1_day){ item.offers = {"@type":"Offer","price": r.price_1_day, "priceCurrency":"USD","availability":"https://schema.org/InStock","url": url}; }
+      } else if(vert.type==="Hotel"){
+        if(r.star_rating){ item.starRating = {"@type":"Rating","ratingValue": r.star_rating}; }
+        item.priceRange = dollars(r.price_level) || "$$$$";
+        item.address = {"@type":"PostalAddress","addressLocality": r.city || cfg.city};
+      }
+      return {"@type":"ListItem","position": i+1, "url": url, "item": item};
     })
   };
 
@@ -67,7 +104,7 @@ function buildJsonLd(slug, cfg, restaurants){
     "@type":"BreadcrumbList",
     "itemListElement":[
       {"@type":"ListItem","position":1,"name":"Home","item": BASE},
-      {"@type":"ListItem","position":2,"name":"Dining","item": BASE+"/catalog/dining"},
+      {"@type":"ListItem","position":2,"name": vert.crumb.label,"item": BASE+vert.crumb.href},
       {"@type":"ListItem","position":3,"name": cfg.h1, "item": pageUrl}
     ]
   };
@@ -77,8 +114,8 @@ function buildJsonLd(slug, cfg, restaurants){
 
 function Row(props){
   var [hover, setHover] = useState(false);
-  var r = props.row;
-  var url = "/catalog/dining/" + (r.slug || "");
+  var r = props.row, vert = props.vert;
+  var url = vert.detailUrl(r);
   return (
     <Link
       to={url}
@@ -102,10 +139,10 @@ function Row(props){
       </span>
       <div style={{minWidth:0}}>
         <div style={{...sf(18,600), color: C.s1, marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>
-          {r.name}
+          {vert.displayName(r)}
         </div>
         <div style={{...sf(13), color: C.s5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>
-          {[r.cuisine, r.neighborhood || r.city, r.price_level ? Array(r.price_level+1).join("$") : null].filter(Boolean).join(" · ")}
+          {vert.subtitle(r)}
         </div>
       </div>
       <div style={{display:"flex", alignItems:"center", gap:14, flexShrink:0}}>
@@ -127,6 +164,7 @@ export default function LongTailPage(){
   var params = useParams();
   var slug = params.slug;
   var cfg = LONGTAIL[slug];
+  var vert = VERTICALS[(cfg && cfg.table) || "restaurants"];
 
   var [rows, setRows] = useState([]);
   var [loading, setLoading] = useState(true);
@@ -135,7 +173,7 @@ export default function LongTailPage(){
     if(!cfg){ setLoading(false); return; }
     var alive = true;
     (async function(){
-      var resp = await supabase.from("restaurants").select("*").neq("is_active", false);
+      var resp = await supabase.from(cfg.table || "restaurants").select("*").neq("is_active", false);
       if(!alive) return;
       var all = resp.data || [];
       var filtered = all.filter(cfg.filter);
@@ -145,7 +183,7 @@ export default function LongTailPage(){
         if(br !== ar) return br - ar;
         var arv = a.review_count || a.reviews || 0, brv = b.review_count || b.reviews || 0;
         if(brv !== arv) return brv - arv;
-        return (a.name||"").localeCompare(b.name||"");
+        return (vert.displayName(a)||"").localeCompare(vert.displayName(b)||"");
       });
       setRows(filtered);
       setLoading(false);
@@ -161,12 +199,12 @@ export default function LongTailPage(){
         <p style={{...sf(15), color: C.s5, marginTop: 16}}>
           We don't have a guide at <code style={{color:C.gold}}>/best/{slug}</code> yet.
         </p>
-        <Link to="/catalog/dining" style={{...sf(13,600), color: C.s1, marginTop: 24, display:"inline-block"}}>← Browse all restaurants</Link>
+        <Link to="/catalog/dining" style={{...sf(13,600), color: C.s1, marginTop: 24, display:"inline-block"}}>← Browse the catalog</Link>
       </div>
     );
   }
 
-  var jsonLd = buildJsonLd(slug, cfg, rows);
+  var jsonLd = buildJsonLd(slug, cfg, vert, rows);
 
   return (
     <div style={{minHeight:"100vh", background: C.bg, color: C.s1}}>
@@ -186,9 +224,9 @@ export default function LongTailPage(){
             <span style={{...sf(11,400), color: C.s4, letterSpacing: 6, textTransform:"uppercase"}}>Alfred</span>
           </Link>
           <div style={{display:"flex", gap:24, alignItems:"center"}}>
-            <Link to="/catalog/dining" style={{...sf(13,500), color: C.s4, textDecoration:"none"}}>Dining</Link>
+            <Link to={vert.crumb.href} style={{...sf(13,500), color: C.s4, textDecoration:"none"}}>{vert.crumb.label}</Link>
             <Link to="/city/miami" style={{...sf(13,500), color: C.s4, textDecoration:"none"}}>Miami</Link>
-            <a href={WHATSAPP+"?text="+encodeURIComponent("Hi Alfred, I'd like to book a restaurant in "+cfg.city+".")} target="_blank" rel="noopener noreferrer"
+            <a href={WHATSAPP+"?text="+encodeURIComponent("Hi Alfred, I'd like help with "+cfg.h1+".")} target="_blank" rel="noopener noreferrer"
                style={{...sf(13,600), color: C.bg, background: C.s1, padding:"10px 18px", borderRadius:10, textDecoration:"none"}}>
               Ask Alfred
             </a>
@@ -201,7 +239,7 @@ export default function LongTailPage(){
         <nav aria-label="Breadcrumb" style={{...sf(11,500), color: C.s5, letterSpacing: 2, textTransform:"uppercase", marginBottom: 28}}>
           <Link to="/" style={{color: C.s5, textDecoration:"none"}}>Home</Link>
           <span style={{margin:"0 8px", color: C.s7}}>/</span>
-          <Link to="/catalog/dining" style={{color: C.s5, textDecoration:"none"}}>Dining</Link>
+          <Link to={vert.crumb.href} style={{color: C.s5, textDecoration:"none"}}>{vert.crumb.label}</Link>
           <span style={{margin:"0 8px", color: C.s7}}>/</span>
           <span style={{color: C.s3}}>{cfg.city}</span>
         </nav>
@@ -221,7 +259,7 @@ export default function LongTailPage(){
       <section style={{maxWidth:880, margin:"0 auto", padding:"24px 24px 60px"}}>
         <div style={{display:"flex", alignItems:"baseline", justifyContent:"space-between", padding:"0 24px", marginBottom: 12}}>
           <h2 style={{...sf(13,600), color: C.s4, letterSpacing: 3, textTransform:"uppercase", margin: 0}}>
-            The list {rows.length ? "· "+rows.length+" venues" : ""}
+            The list {rows.length ? "· "+rows.length+" "+vert.listNoun : ""}
           </h2>
           <span style={{...sf(11,500), color: C.s6, letterSpacing: 1.5, textTransform:"uppercase"}}>
             Ranked by concierge team
@@ -232,10 +270,10 @@ export default function LongTailPage(){
             <div style={{padding:"60px 24px", textAlign:"center", color: C.s5, ...sf(14)}}>Loading...</div>
           ) : rows.length === 0 ? (
             <div style={{padding:"60px 24px", textAlign:"center", color: C.s5, ...sf(14)}}>
-              No matches yet. <a href={WHATSAPP} style={{color: C.s1}}>Message Alfred</a> and we'll handle the reservation directly.
+              No matches yet. <a href={WHATSAPP} style={{color: C.s1}}>Message Alfred</a> and we'll handle it directly.
             </div>
           ) : (
-            rows.map(function(r, i){ return <Row key={r.id || r.slug || i} row={r} index={i}/>; })
+            rows.map(function(r, i){ return <Row key={r.id || r.slug || i} row={r} index={i} vert={vert}/>; })
           )}
         </div>
       </section>
@@ -247,14 +285,14 @@ export default function LongTailPage(){
             Why book through Alfred
           </h2>
           <ul style={{...sf(15), color: C.s3, lineHeight: 1.7, paddingLeft: 20, margin: 0}}>
-            <li>Direct line to the GM at every venue on this list.</li>
-            <li>Same-night and "fully booked" reservations are routine for members.</li>
-            <li>Private dining rooms, wine pairings, dietary requests, and transport handled in one thread.</li>
+            <li>Direct relationships with every partner on this list.</li>
+            <li>Same-day and "fully booked" requests are routine for members.</li>
+            <li>Every detail — timing, delivery, extras, transport — handled in one thread.</li>
             <li>Real human concierge on WhatsApp, 24/7. No bots, no DMs into the void.</li>
           </ul>
-          <a href={WHATSAPP+"?text="+encodeURIComponent("Hi Alfred, I'd like a table — "+cfg.h1+".")} target="_blank" rel="noopener noreferrer"
+          <a href={WHATSAPP+"?text="+encodeURIComponent("Hi Alfred, I'd like "+vert.cta+" — "+cfg.h1+".")} target="_blank" rel="noopener noreferrer"
              style={{display:"inline-block", marginTop: 24, padding:"14px 28px", background: C.s1, color: C.bg, borderRadius: 12, textDecoration:"none", ...sf(14,600)}}>
-            Ask Alfred for a reservation →
+            Ask Alfred →
           </a>
         </div>
       </section>
