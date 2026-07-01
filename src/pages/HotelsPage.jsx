@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import SEOHead from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
@@ -77,6 +78,24 @@ export default function HotelsPage(){
 
   return(
     <div style={{minHeight:"100vh",background:C.bg}}>
+      <SEOHead
+        title="Best Luxury Hotels — Five-Star Stays with VIP Perks | Alfred Concierge"
+        description="Book the best five-star and palace hotels through Alfred. VIP perks, room upgrades, daily breakfast and hotel credits in Miami, Paris, Dubai, London and beyond."
+        keywords="luxury hotels, five-star hotels, palace hotels, hotel VIP perks, room upgrades, Miami hotels, Paris hotels, Dubai hotels, London hotels, Alfred concierge"
+        path="/catalog/hotels"
+        image="/og-hotels.jpg"
+        jsonLd={{
+          "@context":"https://schema.org",
+          "@type":"CollectionPage",
+          "name":"Luxury Hotels",
+          "url":"https://alfredconcierge.app/catalog/hotels",
+          "description":"Five-star and palace hotels booked with VIP perks through Alfred Concierge.",
+          "breadcrumb":{"@type":"BreadcrumbList","itemListElement":[
+            {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app/"},
+            {"@type":"ListItem","position":2,"name":"Hotels","item":"https://alfredconcierge.app/catalog/hotels"}
+          ]}
+        }}
+      />
       <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:isMobile?"16px 20px":"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(10,10,11,0.85)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(44,44,49,0.3)"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
         <a href="/catalog" style={{...sf(12,500),color:C.s4,textDecoration:"none",letterSpacing:1}}>Back to Catalog</a>

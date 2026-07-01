@@ -57,6 +57,7 @@ const STATIC_ROUTES = [
   '/catalog/jets',
   '/catalog/yachts',
   '/catalog/wellness',
+  '/catalog/hotels',
   '/events',
   '/events/monaco-grand-prix',
   '/events/miami-grand-prix',
