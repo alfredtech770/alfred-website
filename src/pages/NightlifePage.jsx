@@ -25,7 +25,7 @@ function mapNightclub(row){
     tableMin:row.price_level||"$$$$",
     img:row.hero_image_url||"",
     tagline:row.crowd_type||row.best_night||"",
-    slug:String(row.id),
+    slug:row.slug||String(row.id),
     available:row.is_active!==false,
     hours:row.opening_hours||"",
     capacity:String(row.capacity||""),

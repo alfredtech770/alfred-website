@@ -63,18 +63,30 @@ const entry = (loc, prio) => `  <url><loc>${loc}</loc><changefreq>weekly</change
     .filter((h) => h.slug && counts[h.slug] === 1 && h.is_active !== false)
     .map((h) => h.slug))].sort();
 
+  // Nightlife + wellness detail pages are data-driven (fetch by slug), and
+  // both tables have a unique index on slug — every slug resolves.
+  const clubs = await fetchAll('nightclubs', 'slug,is_active');
+  const clubSlugs = [...new Set(clubs.filter((r) => r.slug && r.is_active !== false).map((r) => r.slug))].sort();
+  const spas = await fetchAll('wellness', 'slug,is_active');
+  const spaSlugs = [...new Set(spas.filter((r) => r.slug && r.is_active !== false).map((r) => r.slug))].sort();
+
   const block = [
     '  <!-- BEGIN generated: product detail pages (scripts/gen-product-sitemap.js) -->',
     ...carSlugs.map((s) => entry(`${BASE}/catalog/exotic-cars/${s}`, '0.8')),
     ...hotelSlugs.map((s) => entry(`${BASE}/catalog/hotels/${s}`, '0.7')),
+    ...clubSlugs.map((s) => entry(`${BASE}/catalog/nightlife/${s}`, '0.8')),
+    ...spaSlugs.map((s) => entry(`${BASE}/catalog/wellness/${s}`, '0.7')),
     '  <!-- END generated -->',
   ].join('\n');
 
   let xml = fs.readFileSync(SITEMAP, 'utf8');
   xml = xml.replace(/\s*<!-- BEGIN generated:[\s\S]*?<!-- END generated -->/g, '');
+  // Drop legacy hand-written nightlife detail entries (pre-DB pretty slugs that
+  // rendered a hardcoded placeholder); the generated block replaces them.
+  xml = xml.replace(/\s*<url>\s*<loc>https:\/\/alfredconcierge\.app\/catalog\/nightlife\/[a-z0-9-]+<\/loc>[\s\S]*?<\/url>/g, '');
   xml = xml.replace(/<\/urlset>/, `${block}\n</urlset>`);
   fs.writeFileSync(SITEMAP, xml, 'utf8');
 
-  console.log(`cars: ${carSlugs.length} URLs, hotels (unique slugs): ${hotelSlugs.length} URLs`);
+  console.log(`cars: ${carSlugs.length}, hotels: ${hotelSlugs.length}, nightlife: ${clubSlugs.length}, wellness: ${spaSlugs.length}`);
   console.log(`total <loc>: ${(xml.match(/<loc>/g) || []).length}`);
 })();

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
 
@@ -8,33 +10,53 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var V={
-  name:"LIV",tagline:"Miami Beach's legendary main room",
-  type:"Nightclub",address:"4441 Collins Ave, Miami Beach, FL 33140",
-  music:"Hip Hop · EDM · Open Format",door:"Table Required",
-  rating:4.8,reviewCount:94,capacity:"1,200",
-  imgs:["https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=900&q=85","https://images.unsplash.com/photo-1571266028243-d220c6a8b0e7?w=900&q=80","https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=900&q=80","https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=900&q=80"],
-  hours:"Thursday – Sunday · 11 PM – 5 AM",dressCode:"Upscale · No athletic wear, no hats",
-  alfredNote:"LIV is about table placement. Ask for the DJ booth table or second-floor balcony for the best vantage point. Skip the main floor tables — you're paying for real estate, so get the view. And tip your waitress early, generously.",
-  alfredTip:"Thursday is industry night — lighter crowd, easier entry. Saturday is the main event.",
-  tables:[
-    {name:"Main Floor",min:"$2,000",capacity:"Up to 8",location:"Ground level, near dance floor",popular:true},
-    {name:"VIP Balcony",min:"$5,000",capacity:"Up to 10",location:"Elevated, full venue view",popular:false},
-    {name:"DJ Booth Table",min:"$8,000",capacity:"Up to 8",location:"Next to the DJ, center stage",popular:true},
-    {name:"Owner's Table",min:"$15,000",capacity:"Up to 15",location:"Private section, dedicated staff",popular:false},
-  ],
-  atmosphere:[{label:"Energy",value:95},{label:"Exclusivity",value:85},{label:"Volume",value:90},{label:"Scene",value:95}],
-  djs:["DJ Khaled (Resident)","David Guetta","Steve Aoki","Tiësto","Marshmello","Diplo"],
-  rules:["Photo ID required","21+ only","No athletic wear, hats, or sandals","Table minimums vary by night & event","Bottle service is not optional at tables","Management reserves all rights"],
-  bestFor:["Birthday","Celebration","Bachelor/ette","Networking","Date Night"],
-  reviews:[
-    {name:"Michael T.",tier:"Black",rating:5,text:"Alfred got us the DJ booth table on a Saturday. The energy was insane. Best night of the trip.",date:"1 week ago"},
-    {name:"Alessandra V.",tier:"Noir",rating:5,text:"They handled everything — table, bottles, even a birthday cake. We just showed up. Perfection.",date:"2 weeks ago"},
-    {name:"Tyler K.",tier:"Member",rating:4,text:"Great venue, loud as expected. The balcony table was worth the upgrade. Skip main floor.",date:"1 month ago"},
-  ],
-};
+var FALLBACK_IMGS=["https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=900&q=85","https://images.unsplash.com/photo-1571266028243-d220c6a8b0e7?w=900&q=80","https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=900&q=80"];
+var DEFAULT_TABLES=[{name:"VIP Table",min:"On request",capacity:"Any size",location:"Best available placement",popular:true}];
+function money(cents){if(cents==null)return null;return "$"+Math.round(cents/100).toLocaleString("en-US")}
+
+// Map a Supabase `nightclubs` row (+ its booking options) to the shape this
+// page renders. Every field has a sane fallback so partial rows still render.
+function mapClub(row,opts){
+  var imgs=[row.hero_image_url].concat(row.photos_order||[]).filter(Boolean);
+  imgs=imgs.filter(function(u,i){return imgs.indexOf(u)===i});
+  var tables=(opts||[]).filter(function(o){return o.is_available!==false}).map(function(o,i){
+    return {
+      name:o.label||"VIP Table",
+      min:money(o.min_spend_cents)||money(o.price_cents)||"On request",
+      capacity:o.capacity_label||(o.max_guests?"Up to "+o.max_guests:"Any size"),
+      location:o.subtitle||"",
+      popular:i===0
+    };
+  });
+  return {
+    slug:row.slug||String(row.id),
+    name:row.name||"Nightclub",
+    tagline:row.vibe||row.crowd_type||row.category||"VIP nightlife through Alfred",
+    type:row.category||"Nightclub",
+    address:row.address||row.city||"Miami",
+    city:row.city||"Miami",
+    music:row.music||(Array.isArray(row.tags)?row.tags.join(" · "):"Open Format"),
+    door:row.entry_type||row.reservation||"Table Required",
+    rating:row.rating||4.7,reviewCount:null,
+    imgs:imgs.length?imgs:FALLBACK_IMGS,
+    hours:row.opening_hours||"Ask Alfred for this week's schedule",
+    dressCode:row.dress_code||"Upscale · No athletic wear",
+    alfredNote:row.description||("Alfred books VIP tables, bottle service and guest list at "+(row.name||"this venue")+". Tell us the night and party size — we handle the door."),
+    alfredTip:row.best_night?("Best night: "+row.best_night+"."):"Message Alfred for this week's programming and table availability.",
+    tables:tables.length?tables:DEFAULT_TABLES,
+    atmosphere:[{label:"Energy",value:90},{label:"Exclusivity",value:Math.min(95,60+(row.price_level||3)*8)},{label:"Volume",value:85},{label:"Scene",value:88}],
+    djs:[],
+    rules:["Photo ID required",row.age_policy||"21+ only",row.dress_code||"No athletic wear, hats, or sandals","Table minimums vary by night & event","Management reserves all rights"],
+    bestFor:Array.isArray(row.tags)?row.tags:[],
+    reviews:[],
+  };
+}
 
 export default function NightlifeDetailPage(){
+  var params=useParams();
+  var slugParam=params.slug;
+  var [V,setVenue]=useState(null);
+  var [notFound,setNotFound]=useState(false);
   var [idx,setIdx]=useState(0);
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
@@ -43,6 +65,26 @@ export default function NightlifeDetailPage(){
   var [guests,setGuests]=useState("6");
   var [selTable,setSelTable]=useState(0);
   var [bookMode,setBookMode]=useState("table");
+
+  // Load the venue by slug (older links may use the numeric row id).
+  useEffect(function(){
+    var alive=true;
+    (async function(){
+      var row=null;
+      var bySlug=await supabase.from("nightclubs").select("*").eq("slug",slugParam).limit(1).maybeSingle();
+      row=bySlug.data;
+      if(!row&&/^\d+$/.test(slugParam||"")){
+        var byId=await supabase.from("nightclubs").select("*").eq("id",Number(slugParam)).limit(1).maybeSingle();
+        row=byId.data;
+      }
+      if(!alive)return;
+      if(!row||row.is_active===false){setNotFound(true);return}
+      var opts=await supabase.from("nightclub_booking_options").select("*").eq("nightclub_id",row.id).order("sort_order",{ascending:true});
+      if(!alive)return;
+      setVenue(mapClub(row,opts.data||[]));
+    })();
+    return function(){alive=false};
+  },[slugParam]);
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var tablesRef=useRef(null);var tablesVis=useVis(tablesRef);
@@ -54,16 +96,32 @@ export default function NightlifeDetailPage(){
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
-  useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},4500);return function(){clearInterval(t)}},[]);
+  useEffect(function(){if(!V)return;var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},4500);return function(){clearInterval(t)}},[V]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
 
+  if(notFound){
+    return(
+      <div style={{minHeight:"100vh",background:C.bg,color:C.s1,padding:"140px 24px",textAlign:"center",...sf(15)}}>
+        <SEOHead title="Venue Not Found | Alfred Concierge" path={"/catalog/nightlife/"+slugParam}/>
+        <h1 style={{...sf(34,700)}}>Venue not found</h1>
+        <p style={{...sf(14),color:C.s5,marginTop:14}}>We couldn't find this venue. Browse the full nightlife catalog instead.</p>
+        <a href="/catalog/nightlife" style={{...sf(13,600),color:C.s1,display:"inline-block",marginTop:22}}>← All venues</a>
+      </div>
+    );
+  }
+  if(!V){
+    return(
+      <div style={{minHeight:"100vh",background:C.bg,color:C.s5,display:"flex",alignItems:"center",justifyContent:"center",...sf(14)}}>Loading…</div>
+    );
+  }
+
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" Miami — Book VIP Table | Alfred Concierge"}
-        description={"Reserve a VIP table at "+V.name+" Miami. "+V.music+". Bottle service, guestlist & guaranteed entry through Alfred Concierge."}
+        title={V.name+" "+V.city+" — Book VIP Table | Alfred Concierge"}
+        description={"Reserve a VIP table at "+V.name+" in "+V.city+". "+V.music+". Bottle service, guestlist & guaranteed entry through Alfred Concierge."}
         image={V.imgs&&V.imgs[0]?V.imgs[0]:"/og-nightlife.jpg"}
         path={"/catalog/nightlife/"+V.slug}
         jsonLd={[
@@ -73,7 +131,8 @@ export default function NightlifeDetailPage(){
             "name":V.name,
             "description":"VIP tables and nightlife booking at "+V.name+". "+V.music+".",
             "image":V.imgs[0],
-            "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":"Miami Beach","addressRegion":"FL","postalCode":"33140","addressCountry":"US"},
+            "aggregateRating":V.rating?{"@type":"AggregateRating","ratingValue":String(V.rating),"reviewCount":String(V.reviewCount||1)}:undefined,
+            "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":V.city,"addressCountry":V.city==="Paris"?"FR":"US"},
             "url":"https://alfredconcierge.app/catalog/nightlife/"+V.slug
           },
           {
@@ -152,7 +211,7 @@ export default function NightlifeDetailPage(){
                 <div style={{display:"flex",alignItems:"center",gap:5}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                   <span style={{...sf(14,600),color:C.s1}}>{V.rating}</span>
-                  <span style={{...sf(12),color:C.s6}}>({V.reviewCount})</span>
+                  {V.reviewCount?<span style={{...sf(12),color:C.s6}}>({V.reviewCount})</span>:null}
                 </div>
                 <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13),color:C.s4}}>{V.music}</span>
@@ -299,8 +358,8 @@ export default function NightlifeDetailPage(){
 
       {/* ═══ FULL-WIDTH SECTIONS ═══ */}
 
-      {/* DJ Lineup */}
-      <div ref={djRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+      {/* DJ Lineup (only when we have real data) */}
+      {V.djs.length>0&&<div ref={djRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:djVis?1:0,transition:"all 0.8s ease"}}>DJ Lineup</p>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,opacity:djVis?1:0,transform:djVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
@@ -317,7 +376,7 @@ export default function NightlifeDetailPage(){
             </div>
           )})}
         </div>
-      </div>
+      </div>}
 
       {/* Table Options */}
       <div ref={tablesRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
@@ -392,12 +451,12 @@ export default function NightlifeDetailPage(){
         </div>
       </div>
 
-      {/* Reviews */}
-      <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
+      {/* Reviews (only when we have real ones) */}
+      {V.reviews.length>0&&<div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
         {secDiv}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:revVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
-          <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{V.reviewCount} reviews</span>
+          {V.reviewCount?<span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{V.reviewCount} reviews</span>:null}
         </div>
         <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
           {V.reviews.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(
@@ -411,7 +470,7 @@ export default function NightlifeDetailPage(){
             </div>
           )})}
         </div>
-      </div>
+      </div>}
 
       {/* CTA */}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>

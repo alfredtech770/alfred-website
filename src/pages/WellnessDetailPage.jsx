@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
 
@@ -8,33 +10,57 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var V={
-  name:"Dior Spa Cheval Blanc",tagline:"Dior skincare rituals overlooking the Seine",
-  type:"Luxury Spa",address:"8 Quai du Louvre, 75001 Paris",
-  rating:4.9,reviewCount:48,priceLevel:"€€€€",
-  imgs:["https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=900&q=85","https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=900&q=80","https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=900&q=80","https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=900&q=80"],
-  hours:{open:"Mon–Sun · 9 AM – 9 PM",lastBooking:"Last appointment at 7 PM"},
-  alfredNote:"This is the single best spa experience in Paris. Ask for Marie-Claire — she's been with Dior since the opening and knows the Prestige routine by heart. Book the 180-minute L'Or de Vie if you can. The private suite has a view of Pont Neuf that alone is worth the visit.",
-  alfredTip:"Tuesday and Wednesday mornings are the quietest. Weekend afternoons book out 2-3 weeks ahead.",
-  treatments:[
-    {name:"Dior Prestige Facial",desc:"Anti-aging, rose micro-pearls, LED therapy",price:"€400",duration:"90 min",popular:true,cat:"Facial"},
-    {name:"L'Or de Vie Ritual",desc:"Full body. Dior's most luxurious treatment.",price:"€650",duration:"180 min",popular:true,cat:"Ritual"},
-    {name:"Hydra Life Express",desc:"Deep hydration, express glow recovery",price:"€200",duration:"60 min",popular:false,cat:"Facial"},
-    {name:"Deep Tissue Massage",desc:"Therapeutic. Focus on back, neck, shoulders.",price:"€280",duration:"90 min",popular:false,cat:"Massage"},
-    {name:"Couples Ritual Suite",desc:"Side-by-side treatments, champagne, private suite",price:"€1,200",duration:"150 min",popular:true,cat:"Ritual"},
-  ],
-  atmosphere:[{label:"Luxury",value:98},{label:"Tranquility",value:95},{label:"Privacy",value:90},{label:"Exclusivity",value:92}],
-  facilities:["Private treatment suites","Hammam & steam room","Relaxation lounge with Seine views","Dior beauty boutique","Organic herbal tea bar","Heated marble beds"],
-  facts:[{icon:"💎",label:"Brand",value:"Dior Skincare"},{icon:"🕐",label:"Best time",value:"Weekday morning"},{icon:"⏱",label:"Sessions",value:"60–180 minutes"},{icon:"👥",label:"Capacity",value:"Couples suites available"}],
-  bestFor:["Self-Care","Anniversary","Birthday","Pre-Event","Recovery"],
-  reviews:[
-    {name:"Isabelle M.",tier:"Noir",rating:5,text:"The L'Or de Vie ritual was three hours of pure bliss. The suite overlooks Pont Neuf. I cried when it ended.",date:"1 week ago"},
-    {name:"Charlotte F.",tier:"Black",rating:5,text:"Alfred booked us the couples suite for our anniversary. Champagne, rose petals, the works. Flawless.",date:"2 weeks ago"},
-    {name:"Emma R.",tier:"Member",rating:5,text:"The Prestige facial changed my skin. I go once a month now. Marie-Claire is an artist.",date:"1 month ago"},
-  ],
-};
+var FALLBACK_IMGS=["https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=900&q=85","https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=900&q=80","https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=900&q=80"];
+function money(cents,cur){if(cents==null)return null;return (cur||"$")+Math.round(cents/100).toLocaleString("en-US")}
+
+// Map a Supabase `wellness` row (+ booking options) to the shape this page
+// renders. Every field has a fallback so partial rows still render.
+function mapSpa(row,opts){
+  var imgs=[row.hero_image_url].concat(row.photos_order||[]).filter(Boolean);
+  imgs=imgs.filter(function(u,i){return imgs.indexOf(u)===i});
+  var cur=row.city==="Paris"?"€":"$";
+  var treatments=(opts||[]).filter(function(o){return o.is_available!==false}).map(function(o,i){
+    return {
+      name:o.label||"Treatment",
+      desc:o.subtitle||(Array.isArray(o.includes)?o.includes.join(", "):""),
+      price:money(o.price_cents,cur)||"On request",
+      duration:o.capacity_label||row.duration||"",
+      popular:i===0,
+      cat:o.option_type||row.type||"Treatment"
+    };
+  });
+  return {
+    slug:row.slug||String(row.id),
+    name:row.name||"Wellness",
+    tagline:row.ambiance||row.mood||row.category||"Wellness through Alfred",
+    type:row.type||row.category||"Wellness",
+    address:row.address||row.city||"",
+    city:row.city||"Miami",
+    rating:row.rating||4.7,reviewCount:null,
+    priceLevel:new Array(Math.min(4,row.price_level||3)+1).join(cur),
+    imgs:imgs.length?imgs:FALLBACK_IMGS,
+    hours:{open:row.availability||"Daily — priority appointments through Alfred",lastBooking:"Ask Alfred for same-day availability"},
+    alfredNote:row.description||("Alfred books priority appointments at "+(row.name||"this venue")+". Tell us the treatment and the time you want — we handle the rest."),
+    alfredTip:row.energy_level?("Ambiance: "+(row.ambiance||row.energy_level)+"."):"Weekday mornings are typically the quietest.",
+    treatments:treatments.length?treatments:[{name:"Signature Treatment",desc:"Curated with the venue by your Alfred concierge",price:"On request",duration:row.duration||"60–120 min",popular:true,cat:row.type||"Treatment"}],
+    atmosphere:[{label:"Luxury",value:Math.min(96,70+(row.price_level||3)*6)},{label:"Tranquility",value:90},{label:"Privacy",value:86},{label:"Exclusivity",value:84}],
+    facilities:Array.isArray(row.amenities)&&row.amenities.length?row.amenities:(Array.isArray(row.tags)?row.tags:[]),
+    facts:[
+      {icon:"🕐",label:"Duration",value:row.duration||"60–120 min"},
+      {icon:"🌿",label:"Ambiance",value:row.ambiance||"Tranquil"},
+      {icon:"👥",label:"Group size",value:row.group_size||"Individual & couples"},
+      {icon:"📍",label:"Setting",value:row.indoor_outdoor||"Indoor"}
+    ],
+    bestFor:Array.isArray(row.mood)?row.mood:(Array.isArray(row.tags)?row.tags:[]),
+    reviews:[],
+  };
+}
 
 export default function WellnessDetailPage(){
+  var params=useParams();
+  var slugParam=params.slug;
+  var [V,setVenue]=useState(null);
+  var [notFound,setNotFound]=useState(false);
   var [idx,setIdx]=useState(0);
   var [lightbox,setLightbox]=useState(false);
   var [loaded,setLoaded]=useState(false);
@@ -43,6 +69,26 @@ export default function WellnessDetailPage(){
   var [time,setTime]=useState("10:00 AM");
   var [selTreat,setSelTreat]=useState(0);
   var [guests,setGuests]=useState("1");
+
+  // Load the venue by slug (older links may use the numeric row id).
+  useEffect(function(){
+    var alive=true;
+    (async function(){
+      var row=null;
+      var bySlug=await supabase.from("wellness").select("*").eq("slug",slugParam).limit(1).maybeSingle();
+      row=bySlug.data;
+      if(!row&&/^\d+$/.test(slugParam||"")){
+        var byId=await supabase.from("wellness").select("*").eq("id",Number(slugParam)).limit(1).maybeSingle();
+        row=byId.data;
+      }
+      if(!alive)return;
+      if(!row||row.is_active===false){setNotFound(true);return}
+      var opts=await supabase.from("wellness_booking_options").select("*").eq("wellness_id",row.id).order("sort_order",{ascending:true});
+      if(!alive)return;
+      setVenue(mapSpa(row,opts.data||[]));
+    })();
+    return function(){alive=false};
+  },[slugParam]);
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var factsRef=useRef(null);var factsVis=useVis(factsRef);
@@ -54,18 +100,35 @@ export default function WellnessDetailPage(){
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
-  useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},5000);return function(){clearInterval(t)}},[]);
+  useEffect(function(){if(!V)return;var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},5000);return function(){clearInterval(t)}},[V]);
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
-  var cur=V.treatments[selTreat];
+
+  if(notFound){
+    return(
+      <div style={{minHeight:"100vh",background:C.bg,color:C.s1,padding:"140px 24px",textAlign:"center",...sf(15)}}>
+        <SEOHead title="Venue Not Found | Alfred Concierge" path={"/catalog/wellness/"+slugParam}/>
+        <h1 style={{...sf(34,700)}}>Venue not found</h1>
+        <p style={{...sf(14),color:C.s5,marginTop:14}}>We couldn't find this venue. Browse the full wellness catalog instead.</p>
+        <a href="/catalog/wellness" style={{...sf(13,600),color:C.s1,display:"inline-block",marginTop:22}}>← All wellness</a>
+      </div>
+    );
+  }
+  if(!V){
+    return(
+      <div style={{minHeight:"100vh",background:C.bg,color:C.s5,display:"flex",alignItems:"center",justifyContent:"center",...sf(14)}}>Loading…</div>
+    );
+  }
+  var cur=V.treatments[selTreat]||V.treatments[0];
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" Paris — Book a Treatment | Alfred Concierge"}
-        description={"Book "+V.name+". "+V.type+" with premium treatments in Paris. "+V.priceLevel+" pricing. Full relaxation and rejuvenation."}
-        path={"/catalog/wellness/"+V.name.toLowerCase().replace(/\s+/g,"-")}
+        title={V.name+" "+V.city+" — Book a Treatment | Alfred Concierge"}
+        description={"Book "+V.name+" in "+V.city+". "+V.type+" with premium treatments. "+V.priceLevel+" pricing. Priority appointments through Alfred Concierge."}
+        image={V.imgs&&V.imgs[0]?V.imgs[0]:"/og-wellness.jpg"}
+        path={"/catalog/wellness/"+V.slug}
         jsonLd={[
           {
             "@context":"https://schema.org",
@@ -73,7 +136,8 @@ export default function WellnessDetailPage(){
             "name":V.name,
             "description":V.tagline||V.type,
             "image":V.imgs[0],
-            "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":"Paris","addressCountry":"FR"}
+            "aggregateRating":V.rating?{"@type":"AggregateRating","ratingValue":String(V.rating),"reviewCount":String(V.reviewCount||1)}:undefined,
+            "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":V.city,"addressCountry":V.city==="Paris"?"FR":"US"}
           },
           {
             "@context":"https://schema.org",
@@ -202,7 +266,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
                 <div style={{display:"flex",alignItems:"center",gap:5}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                   <span style={{...sf(14,600),color:C.s1}}>{V.rating}</span>
-                  <span style={{...sf(12),color:C.s6}}>({V.reviewCount})</span>
+                  {V.reviewCount?<span style={{...sf(12),color:C.s6}}>({V.reviewCount})</span>:null}
                 </div>
                 <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13),color:C.s4}}>{V.type}</span>
@@ -367,12 +431,12 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
         </div>
       </div>
 
-      {/* Reviews */}
-      <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
+      {/* Reviews (only when we have real ones) */}
+      {V.reviews.length>0&&<div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
         {secDiv}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:revVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
-          <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{V.reviewCount} reviews</span>
+          {V.reviewCount?<span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{V.reviewCount} reviews</span>:null}
         </div>
         <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
           {V.reviews.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(
@@ -386,7 +450,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             </div>
           )})}
         </div>
-      </div>
+      </div>}
 
       {/* CTA */}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
@@ -11,18 +12,24 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var VENUES=[
-  {name:"The Spa at Four Seasons",type:"Luxury Spa",loc:"Miami",treatment:"Full-Service",price:"€€€€",rating:4.9,reviews:62,from:"$350",img:"https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&h=400&fit=crop&q=80",tagline:"Oceanfront rituals. Signature stone therapy.",slug:"four-seasons-spa",available:true,duration:"60–120 min"},
-  {name:"Dior Spa Cheval Blanc",type:"Luxury Spa",loc:"Paris",treatment:"Full-Service",price:"€€€€",rating:4.9,reviews:48,from:"€400",img:"https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=600&h=400&fit=crop&q=80",tagline:"Dior skincare rituals overlooking the Seine",slug:"dior-spa",available:true,duration:"90–180 min"},
-  {name:"Anatomy",type:"Fitness",loc:"Miami",treatment:"Training",price:"€€€",rating:4.8,reviews:71,from:"$75",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop&q=80",tagline:"Miami's most elite fitness club",slug:"anatomy",available:true,duration:"60 min"},
-  {name:"Joanna Czech",type:"Facialist",loc:"Miami",treatment:"Facial",price:"€€€€",rating:4.9,reviews:34,from:"$500",img:"https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&h=400&fit=crop&q=80",tagline:"The facialist to the A-list. LED + lymphatic.",slug:"joanna-czech",available:false,duration:"75 min"},
-  {name:"Molitor Spa by Clarins",type:"Luxury Spa",loc:"Paris",treatment:"Full-Service",price:"€€€",rating:4.7,reviews:56,from:"€180",img:"https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&h=400&fit=crop&q=80",tagline:"Art Deco pool meets Clarins treatment rooms",slug:"molitor-spa",available:true,duration:"60–120 min"},
-  {name:"The Standard Spa",type:"Wellness Center",loc:"Miami",treatment:"Full-Service",price:"€€€",rating:4.6,reviews:45,from:"$200",img:"https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=600&h=400&fit=crop&q=80",tagline:"Hydrotherapy, sound baths, hammam",slug:"standard-spa",available:true,duration:"Half-day"},
-  {name:"Le Bristol Spa",type:"Luxury Spa",loc:"Paris",treatment:"Full-Service",price:"€€€€",rating:4.8,reviews:39,from:"€350",img:"https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=600&h=400&fit=crop&q=80",tagline:"La Prairie treatments in a palace setting",slug:"le-bristol-spa",available:true,duration:"90–150 min"},
-  {name:"Carillon Wellness",type:"Wellness Center",loc:"Miami",treatment:"Full-Service",price:"€€€€",rating:4.7,reviews:58,from:"$300",img:"https://images.unsplash.com/photo-1591343395082-e120087004b4?w=600&h=400&fit=crop&q=80",tagline:"70,000 sq ft. Thermal baths, cryotherapy, IV drips.",slug:"carillon",available:true,duration:"Full-day"},
-  {name:"Biologique Recherche",type:"Facialist",loc:"Paris",treatment:"Facial",price:"€€€€",rating:4.8,reviews:31,from:"€280",img:"https://images.unsplash.com/photo-1552693673-1bf958298935?w=600&h=400&fit=crop&q=80",tagline:"Clinical French skincare. The original.",slug:"biologique-recherche",available:true,duration:"60–90 min"},
-  {name:"Equinox",type:"Fitness",loc:"Miami",treatment:"Training",price:"€€€",rating:4.6,reviews:44,from:"$100",img:"https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&h=400&fit=crop&q=80",tagline:"Luxury fitness. SoulCycle, Pilates, Recovery.",slug:"equinox",available:true,duration:"60 min"},
-];
+// Map a Supabase `wellness` row to the card shape this page renders.
+function mapWellnessRow(row){
+  return {
+    name:row.name,
+    type:row.type||row.category||"Wellness",
+    loc:row.city||"Miami",
+    treatment:row.category||row.type||"Treatment",
+    price:new Array(Math.min(4,row.price_level||3)+1).join("€"),
+    rating:row.rating||4.7,
+    reviews:null,
+    from:null,
+    img:row.hero_image_url||"",
+    tagline:row.ambiance||(row.description?row.description.slice(0,64):""),
+    slug:row.slug||String(row.id),
+    available:row.is_active!==false,
+    duration:row.duration||""
+  };
+}
 
 var CITIES=["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"];
 var COMING_SOON_CITIES=["Paris","Ibiza","Monaco","New York","London"];
@@ -108,7 +115,7 @@ function WellCard(p){
           <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <span style={{...sf(13,600),color:C.s1}}>{v.rating}</span>
-            <span style={{...sf(10),color:C.s6}}>({v.reviews})</span>
+            {v.reviews?<span style={{...sf(10),color:C.s6}}>({v.reviews})</span>:null}
           </div>
         </div>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -117,7 +124,7 @@ function WellCard(p){
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <span style={{...sf(11),color:C.s5}}>{v.loc}</span>
             </div>
-            <span style={{...sf(11,600),color:C.s4}}>From {v.from}</span>
+            {v.from?<span style={{...sf(11,600),color:C.s4}}>From {v.from}</span>:null}
           </div>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{...sf(11,500),color:hover&&v.available?C.s1:C.s5,transition:"color 0.3s"}}>
@@ -158,9 +165,19 @@ export default function WellnessPage(){
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
 
+  // Live venues from Supabase (was a hardcoded list).
+  var [rows,setRows]=useState([]);
+  useEffect(function(){
+    var alive=true;
+    supabase.from("wellness").select("*").neq("is_active",false).order("is_featured",{ascending:false}).order("rating",{ascending:false}).then(function(res){
+      if(alive&&res.data)setRows(res.data.map(mapWellnessRow));
+    });
+    return function(){alive=false};
+  },[]);
+
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;
 
-  var filtered=VENUES.filter(function(v){
+  var filtered=rows.filter(function(v){
     if(city!=="All Cities"&&city==="Miami"){var vLoc=(v.loc||"").toLowerCase();if(vLoc&&vLoc!=="miami")return false;}
     if(type!=="Type"&&v.type!==type)return false;
     if(treatment!=="Treatment"&&v.treatment!==treatment)return false;
