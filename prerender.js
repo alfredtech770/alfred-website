@@ -7,14 +7,15 @@
  * Run after vite build: node prerender.js
  */
 
-// Prerender static routes to real HTML so non-JS crawlers and AI engines see
-// content without executing JS. On CI/Vercel we launch a serverless Chromium
-// via @sparticuz/chromium; locally we use full puppeteer. Best-effort and
-// fully fail-safe: any problem logs and exits 0, so the build always succeeds
-// and the site still works as a SPA. Set PRERENDER=off to skip entirely.
+// Prerender static routes to real HTML for non-JS crawlers, using local
+// puppeteer. Best-effort and fail-safe: any problem logs and exits 0 so the
+// build always succeeds and the site still works as a SPA.
 const IS_CI = !!(process.env.CI || process.env.VERCEL || process.env.NOW_BUILDER);
-if (process.env.PRERENDER === 'off') {
-  console.log('⚠ PRERENDER=off — skipping prerender.');
+// Chromium can't launch in Vercel's build sandbox (missing libnss3.so), so the
+// browser-based prerender only runs locally. Googlebot renders the SPA fine and
+// AEO discovery is covered by sitemap.xml + llms.txt. PRERENDER=off skips locally too.
+if (IS_CI || process.env.PRERENDER === 'off') {
+  console.log('⚠ Skipping browser prerender (Vercel/CI or PRERENDER=off) — SPA renders fine for search engines.');
   process.exit(0);
 }
 
@@ -28,20 +29,10 @@ try { handler = require('serve-handler'); } catch(e) { console.log('⚠ serve-ha
 async function launchBrowser() {
   const COMMON_ARGS = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
   try {
-    if (IS_CI) {
-      const chromium = require('@sparticuz/chromium');
-      const puppeteerCore = require('puppeteer-core');
-      return await puppeteerCore.launch({
-        args: [...chromium.args, ...COMMON_ARGS],
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
-      });
-    }
     const puppeteer = require('puppeteer');
     return await puppeteer.launch({ headless: 'new', args: COMMON_ARGS });
   } catch (e) {
-    console.log('⚠ Could not launch Chromium (' + e.message + ') — skipping prerender, SPA still works.');
+    console.log('⚠ Could not launch Chromium locally (' + e.message + ') — skipping prerender.');
     return null;
   }
 }
@@ -264,10 +255,7 @@ async function prerender() {
     ...restaurantSlugs.map(r => '/catalog/dining/'+r.slug),
     ...yachtIds.map(y => '/catalog/yachts/'+y.id),
   ];
-  // On CI/Vercel prerender only the high-value static routes to keep the build
-  // fast; detail pages stay client-rendered (Googlebot executes JS). Locally,
-  // prerender everything.
-  const ROUTES = IS_CI ? STATIC_ROUTES : [...STATIC_ROUTES, ...dynamicRoutes];
+  const ROUTES = [...STATIC_ROUTES, ...dynamicRoutes];
 
   // NOTE: sitemap.xml is now maintained by hand in public/sitemap.xml (correct
   // /catalog/* detail paths, XML-escaped, includes hotels). Don't overwrite it
