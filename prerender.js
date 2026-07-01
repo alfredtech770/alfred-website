@@ -7,17 +7,44 @@
  * Run after vite build: node prerender.js
  */
 
-// Skip prerender in CI/Vercel — Puppeteer can't launch Chrome there
-if (process.env.CI || process.env.VERCEL || process.env.NOW_BUILDER) {
-  console.log('⚠ CI/Vercel detected — skipping prerender. Site works fine as a SPA.');
+// Prerender static routes to real HTML so non-JS crawlers and AI engines see
+// content without executing JS. On CI/Vercel we launch a serverless Chromium
+// via @sparticuz/chromium; locally we use full puppeteer. Best-effort and
+// fully fail-safe: any problem logs and exits 0, so the build always succeeds
+// and the site still works as a SPA. Set PRERENDER=off to skip entirely.
+const IS_CI = !!(process.env.CI || process.env.VERCEL || process.env.NOW_BUILDER);
+if (process.env.PRERENDER === 'off') {
+  console.log('⚠ PRERENDER=off — skipping prerender.');
   process.exit(0);
 }
 
 const fs = require('fs');
 const path = require('path');
-let puppeteer, handler;
-try { puppeteer = require('puppeteer'); } catch(e) { console.log('⚠ Puppeteer not available — skipping prerender.'); process.exit(0); }
+let handler;
 try { handler = require('serve-handler'); } catch(e) { console.log('⚠ serve-handler not available — skipping prerender.'); process.exit(0); }
+
+// Launch a headless browser: serverless Chromium on CI/Vercel, full puppeteer
+// locally. Returns null (never throws) so callers can skip gracefully.
+async function launchBrowser() {
+  const COMMON_ARGS = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'];
+  try {
+    if (IS_CI) {
+      const chromium = require('@sparticuz/chromium');
+      const puppeteerCore = require('puppeteer-core');
+      return await puppeteerCore.launch({
+        args: [...chromium.args, ...COMMON_ARGS],
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+    }
+    const puppeteer = require('puppeteer');
+    return await puppeteer.launch({ headless: 'new', args: COMMON_ARGS });
+  } catch (e) {
+    console.log('⚠ Could not launch Chromium (' + e.message + ') — skipping prerender, SPA still works.');
+    return null;
+  }
+}
 const http = require('http');
 const https = require('https');
 
@@ -135,8 +162,18 @@ async function renderRoute(browser, route) {
       timeout: 30000
     });
 
-    // Wait for React to finish rendering
-    await page.waitForTimeout(1000);
+    // Wait for React to finish rendering (waitForTimeout was removed in newer
+    // puppeteer-core, so use a plain delay).
+    await new Promise(r => setTimeout(r, 1200));
+
+    // Only write if React actually rendered meaningful content — otherwise
+    // leave the route to the SPA fallback rather than shipping a blank shell.
+    const rootLen = await page.evaluate(() => (document.getElementById('root')?.innerHTML || '').length);
+    if (rootLen < 500) {
+      console.log(`  ⚠ Skipping ${route} — rendered content too small (${rootLen} chars)`);
+      await page.close();
+      return { route, success: true, skipped: true };
+    }
 
     // Get the full HTML content
     const html = await page.content();
@@ -219,13 +256,15 @@ async function prerender() {
     ...restaurantSlugs.map(r => '/catalog/dining/'+r.slug),
     ...yachtIds.map(y => '/catalog/yachts/'+y.id),
   ];
-  const ROUTES = [...STATIC_ROUTES, ...dynamicRoutes];
+  // On CI/Vercel prerender only the high-value static routes to keep the build
+  // fast; detail pages stay client-rendered (Googlebot executes JS). Locally,
+  // prerender everything.
+  const ROUTES = IS_CI ? STATIC_ROUTES : [...STATIC_ROUTES, ...dynamicRoutes];
 
-  // Generate and save updated sitemap
-  const sitemap = generateSitemap(restaurantSlugs, yachtIds);
-  fs.writeFileSync(path.join(DIST_DIR, 'sitemap.xml'), sitemap, 'utf8');
-  fs.writeFileSync(path.join(__dirname, 'sitemap.xml'), sitemap, 'utf8');
-  console.log(`✓ Sitemap updated with ${ROUTES.length} total pages\n`);
+  // NOTE: sitemap.xml is now maintained by hand in public/sitemap.xml (correct
+  // /catalog/* detail paths, XML-escaped, includes hotels). Don't overwrite it
+  // here — vite already copies public/sitemap.xml into dist during build.
+  console.log(`Prerendering ${ROUTES.length} routes (sitemap left as-is)\n`);
 
   // Start server
   const server = await startServer();
@@ -237,17 +276,14 @@ async function prerender() {
   const results = [];
 
   try {
-    // Launch Puppeteer
-    browser = await puppeteer.launch({
-      headless: 'new',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage'
-      ]
-    });
+    // Launch browser (serverless Chromium on CI, puppeteer locally)
+    browser = await launchBrowser();
+    if (!browser) {
+      console.log('No browser available — skipping prerender. SPA still works.');
+      return; // finally will close the server and exit 0
+    }
 
-    console.log('Puppeteer launched, rendering routes...\n');
+    console.log('Browser launched, rendering routes...\n');
 
     // Render all routes sequentially
     for (const route of ROUTES) {
@@ -273,16 +309,16 @@ async function prerender() {
     }
 
   } catch (error) {
-    console.error('Fatal error:', error);
-    process.exit(1);
+    // Prerendering is a best-effort enhancement — never fail the build.
+    console.error('Prerender error (continuing as SPA):', error.message);
   } finally {
-    // Cleanup
+    // Cleanup — always exit 0 so the build succeeds regardless.
     if (browser) {
-      await browser.close();
+      try { await browser.close(); } catch (e) {}
     }
     server.close(() => {
       console.log('\nServer stopped.');
-      process.exit(results.every(r => r.success) ? 0 : 1);
+      process.exit(0);
     });
   }
 }
