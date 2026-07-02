@@ -41,3 +41,4 @@ Pods/
 # One-off scripts & docs (not needed in production)
 PRERENDER_SETUP.md
 yachts_schema_upgrade.py
+.env.local

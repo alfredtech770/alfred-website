@@ -22,7 +22,8 @@ export default function HotelDetailPage(){
   var [lightbox,setLightbox]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [loaded,setLoaded]=useState(false);
-  var [date,setDate]=useState("2026-05-15");
+  // Default check-in: three weeks from today (was a hardcoded past date).
+  var [date,setDate]=useState(function(){var d=new Date();d.setDate(d.getDate()+21);return d.toISOString().slice(0,10)});
   var [nights,setNights]=useState("3");
   var [guests,setGuests]=useState("2");
 
@@ -42,6 +43,24 @@ export default function HotelDetailPage(){
       setLoading(false);
     });
   },[slug]);
+
+  // Live rates via LiteAPI — only for hotels mapped to a liteapi_id. The key
+  // stays server-side (Vercel function /api/hotel-rates; localhost proxy in dev).
+  var [rates,setRates]=useState(null);
+  var [ratesLoading,setRatesLoading]=useState(false);
+  useEffect(function(){
+    if(!hotel||!hotel.liteapi_id){setRates(null);return}
+    var n=nights==="7+"?7:Number(nights)||3;
+    var a=guests==="4+"?4:Number(guests)||2;
+    var co=(function(){var d=new Date(date+"T12:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)})();
+    var base=(typeof location!=="undefined"&&location.hostname==="localhost")?"http://localhost:4956/api/hotel-rates":"/api/hotel-rates";
+    var alive=true;setRatesLoading(true);
+    fetch(base+"?hotelId="+encodeURIComponent(hotel.liteapi_id)+"&checkin="+date+"&checkout="+co+"&adults="+a)
+      .then(function(r){return r.json()})
+      .then(function(j){if(alive){setRates(j&&j.offers&&j.offers.length?j:null);setRatesLoading(false)}})
+      .catch(function(){if(alive){setRates(null);setRatesLoading(false)}});
+    return function(){alive=false};
+  },[hotel,date,nights,guests]);
 
   // Title + meta description are handled by <SEOHead> below with the hotel's
   // real city — no separate document.title effect (it used to hardcode Miami).
@@ -73,7 +92,7 @@ export default function HotelDetailPage(){
   var heroY=scrollY*0.25;
   var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
-  var waMsg=encodeURIComponent("Hi Alfred, I'd like to arrange a stay at "+V.name+". Could you help with availability and the best rate?");
+  var waMsg=encodeURIComponent("Hi Alfred, I'd like to arrange a stay at "+V.name+" — check-in "+date+", "+nights+" night(s), "+guests+" guest(s)"+(rates&&rates.offers&&rates.offers[0]?" (I saw from $"+rates.offers[0].perNight+"/night)":"")+". Could you help with availability and the best rate?");
   var waHref="https://wa.me/447449562204?text="+waMsg;
   var stars=V.star_rating||5;
   var category=V.category==="resort"?"Resort":"Hotel";
@@ -254,6 +273,23 @@ export default function HotelDetailPage(){
                     {["1","2","3","4+"].map(function(g){var active=guests===g;return <div key={g} onClick={function(){setGuests(g)}} style={{flex:1,textAlign:"center",padding:"10px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",...sf(13,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{g}</div>})}
                   </div>
                 </div>
+
+                {/* Live rates (LiteAPI) */}
+                {ratesLoading&&<div style={{...sf(11),color:C.s6,textAlign:"center",marginBottom:14}}>Checking live rates…</div>}
+                {!ratesLoading&&rates&&rates.offers&&rates.offers.length>0&&<div style={{marginBottom:18}}>
+                  <div style={{display:"flex",alignItems:"baseline",gap:6,marginBottom:10}}>
+                    <span style={{...sf(20,700),color:C.s1}}>${rates.offers[0].perNight.toLocaleString("en-US")}</span>
+                    <span style={{...sf(11),color:C.s5}}>/ night · live rate</span>
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                    {rates.offers.slice(0,3).map(function(o,i){return(
+                      <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 12px",borderRadius:10,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd}}>
+                        <span style={{...sf(11,500),color:C.s4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:8}}>{o.name}</span>
+                        <span style={{...sf(12,600),color:C.s1,flexShrink:0}}>${o.total.toLocaleString("en-US")}<span style={{...sf(9,400),color:C.s6}}> / {rates.nights} nights</span></span>
+                      </div>
+                    )})}
+                  </div>
+                </div>}
 
                 {/* Primary CTA */}
                 <a href={waHref} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,textDecoration:"none",transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
