@@ -43,12 +43,8 @@ export default function HotelDetailPage(){
     });
   },[slug]);
 
-  useEffect(function(){
-    if(!hotel)return;
-    document.title=hotel.name+" — Luxury Hotel Miami | Alfred Concierge";
-    var meta=document.querySelector('meta[name="description"]');
-    if(meta)meta.setAttribute("content",(hotel.description||hotel.name+" — luxury hotel in "+hotel.neighborhood+", Miami. Book through Alfred Concierge for exclusive perks and upgrades.").slice(0,160));
-  },[hotel]);
+  // Title + meta description are handled by <SEOHead> below with the hotel's
+  // real city — no separate document.title effect (it used to hardcode Miami).
 
   // Build images list
   var imgs=hotel?[hotel.hero_image_url].concat(hotel.photos_order||[]).filter(function(v,i,a){return v&&a.indexOf(v)===i}):[];
@@ -84,7 +80,7 @@ export default function HotelDetailPage(){
 
   var facts=[
     {icon:"★",label:"Rating",value:stars+" stars"},
-    {icon:"◎",label:"Neighborhood",value:V.neighborhood||"Miami"},
+    {icon:"◎",label:"Neighborhood",value:V.neighborhood||V.city||"—"},
     {icon:"❖",label:"Category",value:category},
     {icon:V.status==="coming_soon"?"⏳":"●",label:V.status==="coming_soon"?"Opening":"Status",value:V.status==="coming_soon"?(V.opening_date||"Soon"):"Open now"},
   ];
@@ -93,7 +89,7 @@ export default function HotelDetailPage(){
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
         title={V.name+" — Luxury Hotel "+(V.city||"Miami")+" | Alfred Concierge"}
-        description={(V.description||V.name+" — luxury hotel in "+(V.neighborhood||"Miami")+". Book through Alfred Concierge for exclusive perks, room upgrades, and VIP treatment.").slice(0,160)}
+        description={(V.description||V.name+" — luxury hotel in "+(V.neighborhood||V.city||"Miami")+". Book through Alfred Concierge for exclusive perks, room upgrades, and VIP treatment.").slice(0,160)}
         image={imgs[0]}
         path={"/catalog/hotels/"+slug}
         jsonLd={(function(){
