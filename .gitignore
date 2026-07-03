@@ -42,3 +42,4 @@ Pods/
 PRERENDER_SETUP.md
 yachts_schema_upgrade.py
 .env.local
+scripts/.backfill-progress.ndjson
