@@ -43,3 +43,6 @@ PRERENDER_SETUP.md
 yachts_schema_upgrade.py
 .env.local
 scripts/.backfill-progress.ndjson
+scripts/.photo-updates/
+scripts/.photo-compact/
+scripts/.photo-fetch-done.txt
