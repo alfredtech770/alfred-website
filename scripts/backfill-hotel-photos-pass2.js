@@ -51,9 +51,12 @@ async function lite(pathname, attempt = 0) {
   return r;
 }
 async function supaGet(p) { const r = await request({ host: SUPA_HOST, path: p, headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY } }); return r.json || []; }
+// Verified write: RLS can silently update 0 rows while returning 204, so we
+// ask for the row back and only count it as success when it echoes.
+// (Requires the temporary backfill RLS policy to be active.)
 async function supaPatch(p, obj) {
-  const r = await request({ host: SUPA_HOST, path: p, method: 'PATCH', headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' } }, JSON.stringify(obj));
-  return r.status;
+  const r = await request({ host: SUPA_HOST, path: p + '&select=id', method: 'PATCH', headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', Prefer: 'return=representation' } }, JSON.stringify(obj));
+  return r.status >= 200 && r.status < 300 && r.json && r.json.length ? 204 : 0;
 }
 
 const STOP = new Set(['hotel', 'hotels', 'the', 'a', 'an', 'de', 'la', 'le', 'du', 'des', 'and', '&', 'by']);
@@ -75,8 +78,9 @@ function score(aTokens, bName) {
   // Latest status per id from the progress log
   const latest = {};
   fs.readFileSync(PROGRESS, 'utf8').split('\n').filter(Boolean).forEach((l) => { try { const o = JSON.parse(l); latest[o.id] = o.status; } catch (e) {} });
-  // ids are UUID strings — keep them as-is.
-  const retryIds = new Set(Object.entries(latest).filter(([, s]) => s === 'no-result' || s === 'ambiguous').map(([id]) => id));
+  // ids are UUID strings — keep them as-is. Also retry -p2 statuses so this
+  // same script can re-run against the production catalog (bigger inventory).
+  const retryIds = new Set(Object.entries(latest).filter(([, s]) => /^(no-result|ambiguous|no-photos)(-p2)?$/.test(s)).map(([id]) => id));
   const log = (o) => fs.appendFileSync(PROGRESS, JSON.stringify(o) + '\n');
 
   const hotels = [];

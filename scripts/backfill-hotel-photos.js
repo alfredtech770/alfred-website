@@ -66,10 +66,13 @@ async function supaGet(pathname) {
   return r.json || [];
 }
 
+// Verified write: RLS can silently update 0 rows while returning 204, so we
+// ask for the row back and only count it as success when it echoes.
+// (Requires the temporary backfill RLS policy to be active.)
 async function supaPatch(pathname, obj) {
   const body = JSON.stringify(obj);
-  const r = await request({ host: SUPA_HOST, path: pathname, method: 'PATCH', headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' } }, body);
-  return r.status;
+  const r = await request({ host: SUPA_HOST, path: pathname + '&select=id', method: 'PATCH', headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', Prefer: 'return=representation' } }, body);
+  return r.status >= 200 && r.status < 300 && r.json && r.json.length ? 204 : 0;
 }
 
 // ---- name matching ----
