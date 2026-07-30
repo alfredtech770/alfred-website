@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import posthog from "posthog-js";
 
 /**
  * Loads third-party analytics scripts when their respective env vars are set.
@@ -37,16 +38,36 @@ export function trackAppStoreClick(){
   if(window.gtag){
     window.gtag("event", "app_store_click", { page_path: window.location.pathname });
   }
+  if(posthog.__loaded){
+    posthog.capture("app_store_click", {source:"website", page_path:window.location.pathname});
+  }
 }
 
 export default function SiteAnalytics(){
   var location = useLocation();
   var firstRoute = useRef(true);
+  var routeStartedAt = useRef(Date.now());
+  var previousPath = useRef(null);
 
   useEffect(function(){
     var ga4 = import.meta.env.VITE_GA4_ID;
     var clarity = import.meta.env.VITE_CLARITY_ID;
     var metaPixel = import.meta.env.VITE_META_PIXEL_ID;
+    var posthogKey = import.meta.env.VITE_POSTHOG_KEY || "phc_kJpL4kERD6qwGercTjscu4jaCQBTRKQxuScmLt8XDGo6";
+    var posthogHost = import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com";
+
+    /* ── PostHog: one project shared by the website + native app ───── */
+    if(posthogKey && !posthog.__loaded){
+      posthog.init(posthogKey, {
+        api_host: posthogHost,
+        person_profiles: "identified_only",
+        capture_pageview: false,
+        capture_pageleave: false,
+        autocapture: true,
+        disable_session_recording: true,
+        persistence: "localStorage+cookie",
+      });
+    }
 
     /* ── Google Analytics 4 ─────────────────────────────────────────── */
     if(ga4 && /^G-[A-Z0-9]{6,}$/i.test(ga4)){
@@ -87,16 +108,59 @@ export default function SiteAnalytics(){
 
   /* ── SPA route-change page views ──────────────────────────────────── */
   useEffect(function(){
+    var path = location.pathname;
+    var excluded = path === "/admin" || path.startsWith("/proposal");
+
+    if(previousPath.current && posthog.__loaded){
+      posthog.capture("page_exited", {
+        page_path: previousPath.current,
+        duration_seconds: Math.max(0, Math.round((Date.now()-routeStartedAt.current)/1000)),
+        source: "website",
+      });
+    }
+    routeStartedAt.current = Date.now();
+    previousPath.current = path;
+
+    if(!excluded && posthog.__loaded){
+      posthog.capture("$pageview", {$current_url:window.location.href, page_path:path});
+      posthog.capture("page_viewed", {page_path:path, source:"website"});
+
+      var match = path.match(/^\/catalog\/(dining|nightlife|wellness|hotels|yachts|exotic-cars)\/([^/]+)\/?$/);
+      if(match){
+        posthog.capture("venue_detail_viewed", {
+          category:match[1],
+          venue_id:decodeURIComponent(match[2]),
+          venue_slug:decodeURIComponent(match[2]),
+          source:"website",
+        });
+      }
+    }
+
     if(firstRoute.current){ firstRoute.current = false; return; }
     if(window.fbq) window.fbq("track", "PageView");
-    if(window.gtag) window.gtag("event", "page_view", { page_path: location.pathname });
+    if(window.gtag) window.gtag("event", "page_view", { page_path:path });
   }, [location.pathname]);
 
   /* ── App Store outbound clicks (anchor + window.open CTAs, site-wide) ─ */
   useEffect(function(){
     function onClick(e){
-      var a = e.target && e.target.closest ? e.target.closest("a[href*='apps.apple.com']") : null;
-      if(a) trackAppStoreClick();
+      var el = e.target && e.target.closest ? e.target.closest("a,button") : null;
+      if(!el) return;
+      var href = el.tagName === "A" ? (el.href || "") : "";
+      var label = (el.innerText || el.getAttribute("aria-label") || "").trim().slice(0,120);
+      var props = {source:"website",page_path:window.location.pathname,label:label};
+
+      if(href.indexOf("apps.apple.com") !== -1){
+        trackAppStoreClick();
+      } else if(/wa\.me|whatsapp/i.test(href)){
+        if(posthog.__loaded) posthog.capture("concierge_chat_opened", {...props,context:"website"});
+      } else if(/opentable|thefork|resy|sevenrooms|zenchef|tock|quandoo|covermanager/i.test(href)){
+        if(posthog.__loaded) posthog.capture("reserve_button_tapped", {...props,booking_url:href});
+      } else if(el.tagName === "BUTTON" && /book|reserve|request|secure/i.test(label)){
+        if(posthog.__loaded) posthog.capture("cta_clicked", props);
+      } else if(href && new URL(href,window.location.href).host !== window.location.host){
+        if(posthog.__loaded) posthog.capture("outbound_link_clicked", {...props,destination:new URL(href,window.location.href).host});
+      }
     }
     document.addEventListener("click", onClick, true);
 
@@ -107,6 +171,13 @@ export default function SiteAnalytics(){
     };
 
     return function(){
+      if(previousPath.current && posthog.__loaded){
+        posthog.capture("page_exited", {
+          page_path:previousPath.current,
+          duration_seconds:Math.max(0,Math.round((Date.now()-routeStartedAt.current)/1000)),
+          source:"website",
+        });
+      }
       document.removeEventListener("click", onClick, true);
       window.open = origOpen;
     };

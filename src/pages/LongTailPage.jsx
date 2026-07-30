@@ -10,7 +10,7 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 
 var BASE = "https://alfredconcierge.app";
-var WHATSAPP = "https://wa.me/447449562204";
+var WHATSAPP = "https://wa.me/33743713649";
 
 function slugify(n){return (n||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}
 // Cars: DB stores brand + name split; the catalog links use slugify(brand+name).

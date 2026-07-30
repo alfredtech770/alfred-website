@@ -426,6 +426,725 @@ function StatCard({label,value,icon,color}){
 }
 
 /* ═══ Dashboard View ═══ */
+function InboxView(){
+  var [msgs,setMsgs]=useState([]);
+  var [users,setUsers]=useState([]);
+  var [loading,setLoading]=useState(true);
+  var [activePhone,setActivePhone]=useState(null);
+  var [draft,setDraft]=useState("");
+  var [sending,setSending]=useState(false);
+  var [sendMsg,setSendMsg]=useState(null);
+  var [search,setSearch]=useState("");
+  var [now,setNow]=useState(Date.now());
+  var threadRef=useRef(null);
+
+  async function load(){
+    var m=await supabase.from("whatsapp_messages")
+      .select("id,user_id,phone,direction,kind,body,status,created_at")
+      .order("created_at",{ascending:true}).limit(2000);
+    var u=await supabase.from("users").select("id,first_name,last_name,whatsapp_country_code,whatsapp_number");
+    setMsgs(m.data||[]); setUsers(u.data||[]); setLoading(false);
+  }
+  useEffect(function(){
+    load();
+    var t=setInterval(function(){load();setNow(Date.now());},10000); // live-ish refresh
+    return function(){clearInterval(t);};
+  },[]);
+
+  // phone -> member name (via user_id on the row, else digit match)
+  var byId={}; users.forEach(function(u){byId[u.id]=u;});
+  function digits(u){return ((u.whatsapp_country_code||"")+(u.whatsapp_number||"")).replace(/[^0-9]/g,"");}
+  function nameForPhone(phone,uid){
+    var u=uid?byId[uid]:null;
+    if(!u){ u=users.find(function(x){var d=digits(x);return d&&(phone.endsWith(d)||d.endsWith(phone));}); }
+    if(u){ var n=((u.first_name||"")+" "+(u.last_name||"")).trim(); if(n)return n; }
+    return null;
+  }
+
+  // Group into conversations keyed by phone.
+  var convos={};
+  msgs.forEach(function(m){
+    if(!m.phone)return;
+    if(!convos[m.phone])convos[m.phone]={phone:m.phone,items:[],last:null,lastInbound:null,name:null,uid:null};
+    var c=convos[m.phone];
+    c.items.push(m);
+    c.last=m;
+    if(m.user_id)c.uid=m.user_id;
+    if(m.direction==="inbound")c.lastInbound=m.created_at;
+  });
+  var convoList=Object.values(convos).map(function(c){
+    c.name=nameForPhone(c.phone,c.uid);
+    return c;
+  }).sort(function(a,b){return new Date(b.last.created_at)-new Date(a.last.created_at);});
+
+  var filtered=convoList.filter(function(c){
+    if(!search)return true;
+    var q=search.toLowerCase();
+    return ((c.name||"")+" "+c.phone+" "+(c.last.body||"")).toLowerCase().indexOf(q)>=0;
+  });
+
+  var active=convos[activePhone]||null;
+  // 24h window: reply allowed if the member sent something in the last 24h.
+  var windowOpen=active&&active.lastInbound&&(now-new Date(active.lastInbound).getTime())<24*3600*1000;
+
+  useEffect(function(){
+    if(threadRef.current)threadRef.current.scrollTop=threadRef.current.scrollHeight;
+  },[activePhone,msgs.length]);
+
+  async function send(){
+    if(!active||!draft.trim()||sending)return;
+    setSending(true); setSendMsg(null);
+    try{
+      var s=await supabase.auth.getSession();
+      var token=s.data&&s.data.session?s.data.session.access_token:null;
+      var resp=await fetch(SUPA_URL+"/functions/v1/whatsapp-admin-reply",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","apikey":SUPA_KEY,"Authorization":"Bearer "+token},
+        body:JSON.stringify({to:active.phone,text:draft.trim()})
+      });
+      var d=await resp.json().catch(function(){return {};});
+      if(resp.ok&&d.ok){
+        setDraft(""); load();
+      } else if(d.reason==="missing_env"||d.skipped){
+        setSendMsg("WhatsApp isn't fully connected yet (pending business verification) — the message wasn't sent. It will work once WhatsApp goes live.");
+      } else if(d.error==="outside_window"){
+        setSendMsg("Outside the 24-hour window — you'll need to send an approved template to re-open this chat.");
+      } else {
+        setSendMsg("Couldn't send: "+(d.detail||d.error||("HTTP "+resp.status)));
+      }
+    }catch(e){ setSendMsg("Couldn't send: "+String((e&&e.message)||e)); }
+    setSending(false);
+  }
+
+  function timeAgo(ts){
+    var s=Math.floor((now-new Date(ts).getTime())/1000);
+    if(s<60)return "now";
+    if(s<3600)return Math.floor(s/60)+"m";
+    if(s<86400)return Math.floor(s/3600)+"h";
+    return Math.floor(s/86400)+"d";
+  }
+  var kindLabel={welcome:"Welcome",booking_confirmation:"Confirmation",booking_reminder:"Reminder",
+    verification:"Code",auto_ack:"Auto-reply",agent_reply:"You",post_visit_checkin:"Check-in",campaign:"Offer"};
+
+  if(loading)return <div style={{padding:"60px",textAlign:"center",color:C.s5}}>Loading conversations…</div>;
+
+  return(
+    <div>
+      <div style={{display:"flex",alignItems:"baseline",gap:12,marginBottom:16,flexWrap:"wrap"}}>
+        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>WhatsApp Inbox</h2>
+        <span style={{...sf(12),color:C.s5}}>{convoList.length} conversation{convoList.length===1?"":"s"}</span>
+      </div>
+
+      <div style={{display:"flex",gap:16,height:"calc(100vh - 200px)",minHeight:480}}>
+        {/* ── Conversation list ── */}
+        <div style={{width:320,flexShrink:0,background:C.el,border:"1px solid "+C.bd,borderRadius:16,
+          display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          <div style={{padding:12,borderBottom:"1px solid "+C.bd}}>
+            <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="Search chats…"
+              style={{width:"100%",padding:"8px 12px",borderRadius:10,border:"1px solid "+C.bd,
+                background:C.srf,color:C.s2,...sf(12)}}/>
+          </div>
+          <div style={{flex:1,overflowY:"auto"}}>
+            {filtered.map(function(c){
+              var on=c.phone===activePhone;
+              var inbound=c.last.direction==="inbound";
+              return(
+                <div key={c.phone} onClick={function(){setActivePhone(c.phone);setSendMsg(null);}}
+                  style={{padding:"11px 14px",cursor:"pointer",borderBottom:"1px solid "+C.bd,
+                    background:on?"rgba(212,168,83,0.10)":"none",display:"flex",gap:10,alignItems:"center"}}>
+                  <div style={{width:34,height:34,borderRadius:"50%",background:C.srf,flexShrink:0,
+                    display:"flex",alignItems:"center",justifyContent:"center",...sf(13,600),color:C.s3}}>
+                    {(c.name||"?").slice(0,1).toUpperCase()}
+                  </div>
+                  <div style={{minWidth:0,flex:1}}>
+                    <div style={{display:"flex",justifyContent:"space-between",gap:6}}>
+                      <span style={{...sf(13,on?600:500),color:C.s1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        {c.name||("+"+c.phone)}</span>
+                      <span style={{...sf(10),color:C.s6,flexShrink:0}}>{timeAgo(c.last.created_at)}</span>
+                    </div>
+                    <div style={{...sf(11),color:inbound?C.s3:C.s5,overflow:"hidden",textOverflow:"ellipsis",
+                      whiteSpace:"nowrap",marginTop:2}}>
+                      {c.last.direction==="outbound"?"↩ ":""}{c.last.body||"—"}</div>
+                  </div>
+                </div>
+              );
+            })}
+            {!filtered.length&&<p style={{...sf(12),color:C.s5,padding:16,textAlign:"center"}}>
+              No conversations yet. They'll appear here when members message your WhatsApp line.</p>}
+          </div>
+        </div>
+
+        {/* ── Thread ── */}
+        <div style={{flex:1,background:C.el,border:"1px solid "+C.bd,borderRadius:16,
+          display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          {!active?(
+            <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",...sf(13),color:C.s5}}>
+              Select a conversation
+            </div>
+          ):(
+            <>
+              <div style={{padding:"14px 18px",borderBottom:"1px solid "+C.bd}}>
+                <div style={{...sf(14,600),color:C.s1}}>{active.name||("+"+active.phone)}</div>
+                <div style={{...sf(11),color:C.s5}}>+{active.phone}{active.name?"":" · unrecognised number"}</div>
+              </div>
+
+              <div ref={threadRef} style={{flex:1,overflowY:"auto",padding:"16px 18px",display:"flex",flexDirection:"column",gap:8}}>
+                {active.items.map(function(m){
+                  var out=m.direction==="outbound";
+                  return(
+                    <div key={m.id} style={{alignSelf:out?"flex-end":"flex-start",maxWidth:"72%"}}>
+                      <div style={{padding:"9px 13px",borderRadius:14,
+                        background:out?"rgba(212,168,83,0.16)":C.srf,
+                        border:"1px solid "+(out?"rgba(212,168,83,0.25)":C.bd),
+                        ...sf(13),color:C.s1,whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
+                        {m.body||"—"}
+                      </div>
+                      <div style={{...sf(9),color:C.s6,marginTop:3,textAlign:out?"right":"left",display:"flex",
+                        gap:6,justifyContent:out?"flex-end":"flex-start"}}>
+                        {kindLabel[m.kind]&&<span style={{color:C.s5}}>{kindLabel[m.kind]}</span>}
+                        <span>{new Date(m.created_at).toLocaleString()}</span>
+                        {out&&<span style={{color:m.status==="failed"?C.rd:C.s6}}>· {m.status}</span>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Composer */}
+              <div style={{borderTop:"1px solid "+C.bd,padding:12}}>
+                {!windowOpen&&(
+                  <p style={{...sf(11),color:C.or,margin:"0 0 8px"}}>
+                    ⏳ Outside the 24-hour reply window. To message first, send an approved template
+                    (welcome, offer, etc.). Free-form replies re-enable once the member writes again.
+                  </p>
+                )}
+                {sendMsg&&<p style={{...sf(11),color:C.rd,margin:"0 0 8px"}}>{sendMsg}</p>}
+                <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
+                  <textarea value={draft} onChange={function(e){setDraft(e.target.value);}}
+                    onKeyDown={function(e){if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){send();}}}
+                    placeholder={windowOpen?"Type a reply…  (⌘/Ctrl+Enter to send)":"Reply window closed"}
+                    disabled={!windowOpen||sending} rows={2}
+                    style={{flex:1,resize:"none",padding:"10px 12px",borderRadius:12,border:"1px solid "+C.bd,
+                      background:C.srf,color:C.s2,...sf(13),opacity:windowOpen?1:0.6}}/>
+                  <button onClick={send} disabled={!windowOpen||sending||!draft.trim()}
+                    style={{padding:"10px 20px",borderRadius:12,border:"1px solid "+C.gd,
+                      background:C.gd+"18",...sf(13,600),color:C.gd,
+                      cursor:(!windowOpen||sending||!draft.trim())?"default":"pointer",
+                      opacity:(!windowOpen||sending||!draft.trim())?0.5:1}}>
+                    {sending?"Sending…":"Send"}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GiftsView(){
+  var [venues,setVenues]=useState([]);
+  var [members,setMembers]=useState([]);
+  var [drops,setDrops]=useState([]);
+  var [recips,setRecips]=useState([]);
+  var [loading,setLoading]=useState(true);
+
+  var [venueId,setVenueId]=useState("");
+  var [title,setTitle]=useState("");
+  var [message,setMessage]=useState("");
+  var [hours,setHours]=useState("48");
+  var [picked,setPicked]=useState({});
+  var [search,setSearch]=useState("");
+  var [busy,setBusy]=useState(false);
+  var [msg,setMsg]=useState(null);
+
+  async function load(){
+    setLoading(true);
+    var v=await supabase.from("wellness").select("id,name,city,is_monthly_gift").eq("is_active",true).order("name");
+    var u=await supabase.from("users").select("id,email,first_name,last_name,tier,push_token").order("created_at",{ascending:false});
+    var d=await supabase.from("gift_drops").select("*").order("created_at",{ascending:false});
+    var r=await supabase.from("gift_drop_recipients").select("drop_id,user_id,claimed_at,notified_at");
+    setVenues(v.data||[]); setMembers(u.data||[]); setDrops(d.data||[]); setRecips(r.data||[]);
+    if(!venueId){
+      var gift=(v.data||[]).find(function(x){return x.is_monthly_gift;});
+      if(gift){setVenueId(gift.id); if(!title)setTitle(gift.name);}
+    }
+    setLoading(false);
+  }
+  useEffect(function(){load();},[]);
+
+  function nameOf(u){
+    var n=((u.first_name||"")+" "+(u.last_name||"")).trim();
+    return n||u.email||u.id.slice(0,8);
+  }
+  var pickedIds=Object.keys(picked).filter(function(k){return picked[k];});
+
+  var filtered=members.filter(function(u){
+    if(!search)return true;
+    var q=search.toLowerCase();
+    return (nameOf(u)+" "+(u.email||"")+" "+(u.tier||"")).toLowerCase().indexOf(q)>=0;
+  });
+
+  function toggle(id){
+    setPicked(function(p){var n=Object.assign({},p); if(n[id])delete n[id]; else n[id]=true; return n;});
+  }
+  function pickRandom(n){
+    // Fisher–Yates over the CURRENTLY FILTERED list, so "5 random gold
+    // members" is just: filter to gold, then pick 5.
+    var pool=filtered.slice();
+    for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
+    var next={};
+    pool.slice(0,n).forEach(function(u){next[u.id]=true;});
+    setPicked(next);
+  }
+
+  async function createAndLaunch(launch){
+    setMsg(null);
+    if(!venueId){setMsg({ok:false,text:"Pick a venue."});return;}
+    if(!title.trim()){setMsg({ok:false,text:"Give the drop a title."});return;}
+    if(!pickedIds.length){setMsg({ok:false,text:"Pick at least one member."});return;}
+    var hrs=parseFloat(hours);
+    if(!(hrs>0)){setMsg({ok:false,text:"Set how long they have to claim."});return;}
+    if(launch&&!window.confirm("Send \""+title+"\" to "+pickedIds.length+" member"+(pickedIds.length===1?"":"s")+" now? They'll get a push notification and "+hrs+"h to claim."))return;
+
+    setBusy(true);
+    try{
+      var deadline=new Date(Date.now()+hrs*3600*1000).toISOString();
+      var c=await supabase.rpc("admin_create_gift_drop",{
+        p_venue_id:venueId, p_title:title.trim(),
+        p_message:message.trim()||null, p_deadline:deadline,
+        p_user_ids:pickedIds
+      });
+      if(c.error)throw new Error(c.error.message);
+      var dropId=c.data;
+      if(launch){
+        var l=await supabase.rpc("admin_launch_gift_drop",{p_drop:dropId});
+        if(l.error)throw new Error(l.error.message);
+        var r=l.data||{};
+        setMsg({ok:true,text:"Sent to "+(r.notified||0)+" member(s) · "+(r.pushed||0)+" push notification(s) delivered."});
+      } else {
+        setMsg({ok:true,text:"Draft saved — nobody notified yet."});
+      }
+      setPicked({}); setMessage("");
+      load();
+    }catch(e){
+      setMsg({ok:false,text:String((e&&e.message)||e)});
+    }
+    setBusy(false);
+  }
+
+  async function launchExisting(id,t){
+    if(!window.confirm("Launch \""+t+"\" now? Recipients get a push immediately."))return;
+    setBusy(true);
+    var l=await supabase.rpc("admin_launch_gift_drop",{p_drop:id});
+    setMsg(l.error?{ok:false,text:l.error.message}
+                  :{ok:true,text:"Sent to "+((l.data||{}).notified||0)+" member(s)."});
+    setBusy(false); load();
+  }
+
+  if(loading)return <div style={{padding:"60px",textAlign:"center",color:C.s5}}>Loading gifts…</div>;
+
+  var withPush=pickedIds.filter(function(id){
+    var u=members.find(function(m){return m.id===id;});
+    return u&&u.push_token;
+  }).length;
+
+  return(
+    <div>
+      <h2 style={{...sf(24,600),color:C.s1,margin:"0 0 6px"}}>Gift Drops</h2>
+      <p style={{...sf(12),color:C.s5,margin:"0 0 20px"}}>
+        Hand-pick who receives a gift and how long they have to claim it. Everyone else never sees it.
+      </p>
+
+      {msg&&(
+        <div style={{background:msg.ok?"rgba(52,199,89,0.08)":"rgba(255,59,48,0.08)",
+          border:"1px solid "+(msg.ok?C.gn:C.rd),borderRadius:12,padding:"12px 16px",marginBottom:18}}>
+          <p style={{...sf(12),color:msg.ok?C.gn:C.rd,margin:0}}>{msg.text}</p>
+        </div>
+      )}
+
+      {/* ── Compose ── */}
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px",marginBottom:22}}>
+        <p style={{...sf(13,600),color:C.s2,margin:"0 0 14px"}}>New drop</p>
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12,marginBottom:12}}>
+          <div>
+            <label style={{...sf(10,700),color:C.s6,letterSpacing:1,textTransform:"uppercase"}}>Gift (wellness venue)</label>
+            <select value={venueId} onChange={function(e){
+                setVenueId(e.target.value);
+                var v=venues.find(function(x){return x.id===e.target.value;});
+                if(v&&!title.trim())setTitle(v.name);
+              }}
+              style={{width:"100%",marginTop:6,padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12)}}>
+              <option value="">Select…</option>
+              {venues.map(function(v){
+                return <option key={v.id} value={v.id}>{v.name+(v.city?" · "+v.city:"")}</option>;
+              })}
+            </select>
+          </div>
+          <div>
+            <label style={{...sf(10,700),color:C.s6,letterSpacing:1,textTransform:"uppercase"}}>Hours to claim</label>
+            <input value={hours} onChange={function(e){setHours(e.target.value);}}
+              style={{width:"100%",marginTop:6,padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12)}}/>
+            <div style={{display:"flex",gap:6,marginTop:6}}>
+              {["6","24","48","72"].map(function(h){
+                return <button key={h} onClick={function(){setHours(h);}}
+                  style={{padding:"3px 10px",borderRadius:8,border:"1px solid "+(hours===h?C.gd:C.bd),
+                    background:hours===h?C.gd+"15":"none",...sf(10),color:hours===h?C.gd:C.s5,cursor:"pointer"}}>{h}h</button>;
+              })}
+            </div>
+          </div>
+        </div>
+
+        <label style={{...sf(10,700),color:C.s6,letterSpacing:1,textTransform:"uppercase"}}>Notification title</label>
+        <input value={title} onChange={function(e){setTitle(e.target.value);}}
+          placeholder="A gift from Alfred"
+          style={{width:"100%",marginTop:6,marginBottom:12,padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12)}}/>
+
+        <label style={{...sf(10,700),color:C.s6,letterSpacing:1,textTransform:"uppercase"}}>Message</label>
+        <input value={message} onChange={function(e){setMessage(e.target.value);}}
+          placeholder="Yours if you claim it in the next 48 hours."
+          style={{width:"100%",marginTop:6,padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12)}}/>
+      </div>
+
+      {/* ── Recipients ── */}
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px",marginBottom:22}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:12}}>
+          <p style={{...sf(13,600),color:C.s2,margin:0}}>Recipients</p>
+          <span style={{...sf(12),color:pickedIds.length?C.gd:C.s5}}>
+            {pickedIds.length} selected{pickedIds.length?" · "+withPush+" will get a push":""}
+          </span>
+          <div style={{flex:1}}/>
+          <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="Search name, email, tier…"
+            style={{padding:"7px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12),minWidth:200}}/>
+        </div>
+
+        <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+          <button onClick={function(){var n={};filtered.forEach(function(u){n[u.id]=true;});setPicked(n);}}
+            style={{padding:"5px 12px",borderRadius:9,border:"1px solid "+C.bd,background:"none",...sf(11),color:C.s4,cursor:"pointer"}}>
+            Select all shown ({filtered.length})
+          </button>
+          {[1,5,10,25].map(function(n){
+            return <button key={n} onClick={function(){pickRandom(n);}}
+              style={{padding:"5px 12px",borderRadius:9,border:"1px solid "+C.bd,background:"none",...sf(11),color:C.s4,cursor:"pointer"}}>
+              {n} random</button>;
+          })}
+          <button onClick={function(){setPicked({});}}
+            style={{padding:"5px 12px",borderRadius:9,border:"1px solid "+C.bd,background:"none",...sf(11),color:C.s5,cursor:"pointer"}}>Clear</button>
+        </div>
+
+        <div style={{maxHeight:300,overflowY:"auto",border:"1px solid "+C.bd,borderRadius:12}}>
+          {filtered.map(function(u,ix){
+            var on=!!picked[u.id];
+            return(
+              <div key={u.id} onClick={function(){toggle(u.id);}}
+                style={{display:"flex",alignItems:"center",gap:10,padding:"8px 14px",cursor:"pointer",
+                  borderTop:ix?"1px solid "+C.bd:"none",background:on?"rgba(212,168,83,0.08)":"none"}}>
+                <span style={{width:16,height:16,borderRadius:4,border:"1px solid "+(on?C.gd:C.bd2),
+                  background:on?C.gd:"none",display:"flex",alignItems:"center",justifyContent:"center",
+                  ...sf(10,700),color:"#000",flexShrink:0}}>{on?"✓":""}</span>
+                <span style={{...sf(12),color:C.s2,flex:1}}>{nameOf(u)}</span>
+                <span style={{...sf(11),color:C.s5,flex:1}}>{u.email}</span>
+                <span style={{...sf(10),color:C.s5,width:44}}>{u.tier||"free"}</span>
+                <span style={{...sf(10),color:u.push_token?C.gn:C.s6,width:60}}>{u.push_token?"push ✓":"no push"}</span>
+              </div>
+            );
+          })}
+          {!filtered.length&&<p style={{...sf(12),color:C.s5,padding:"14px",margin:0}}>No members match.</p>}
+        </div>
+
+        <div style={{display:"flex",gap:10,marginTop:14}}>
+          <button onClick={function(){createAndLaunch(true);}} disabled={busy}
+            style={{padding:"10px 20px",borderRadius:10,border:"1px solid "+C.gd,background:C.gd+"18",
+              ...sf(12,600),color:C.gd,cursor:busy?"default":"pointer",opacity:busy?0.6:1}}>
+            {busy?"Sending…":"Send drop now"}
+          </button>
+          <button onClick={function(){createAndLaunch(false);}} disabled={busy}
+            style={{padding:"10px 20px",borderRadius:10,border:"1px solid "+C.bd,background:"none",
+              ...sf(12),color:C.s4,cursor:busy?"default":"pointer"}}>
+            Save as draft
+          </button>
+        </div>
+      </div>
+
+      {/* ── History ── */}
+      <p style={{...sf(13,600),color:C.s2,margin:"0 0 10px"}}>Past drops</p>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,overflow:"hidden"}}>
+        <div style={{display:"flex",gap:12,padding:"10px 18px",borderBottom:"1px solid "+C.bd,
+          ...sf(10,700),color:C.s6,textTransform:"uppercase",letterSpacing:1}}>
+          <span style={{flex:2}}>Gift</span>
+          <span style={{width:80}}>Status</span>
+          <span style={{width:90}}>Sent to</span>
+          <span style={{width:90}}>Claimed</span>
+          <span style={{width:150}}>Deadline</span>
+          <span style={{width:80}}/>
+        </div>
+        {drops.map(function(d){
+          var mine=recips.filter(function(r){return r.drop_id===d.id;});
+          var claimed=mine.filter(function(r){return r.claimed_at;}).length;
+          var expired=new Date(d.claim_deadline)<new Date();
+          var colour=d.status==="live"?(expired?C.s5:C.gn):C.s5;
+          return(
+            <div key={d.id} style={{display:"flex",gap:12,padding:"10px 18px",borderTop:"1px solid "+C.bd,alignItems:"center"}}>
+              <span style={{...sf(12),color:C.s2,flex:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{d.title}</span>
+              <span style={{...sf(11,600),color:colour,width:80}}>{d.status==="live"&&expired?"ended":d.status}</span>
+              <span style={{...sf(12),color:C.s4,width:90}}>{mine.length}</span>
+              <span style={{...sf(12,600),color:claimed?C.gd:C.s5,width:90}}>
+                {claimed}{mine.length?" ("+Math.round(claimed/mine.length*100)+"%)":""}
+              </span>
+              <span style={{...sf(11),color:C.s5,width:150}}>{new Date(d.claim_deadline).toLocaleString()}</span>
+              <span style={{width:80}}>
+                {d.status==="draft"&&!expired&&(
+                  <button onClick={function(){launchExisting(d.id,d.title);}} disabled={busy}
+                    style={{padding:"4px 10px",borderRadius:8,border:"1px solid "+C.gd,background:C.gd+"15",
+                      ...sf(10,600),color:C.gd,cursor:"pointer"}}>Launch</button>
+                )}
+              </span>
+            </div>
+          );
+        })}
+        {!drops.length&&<p style={{...sf(12),color:C.s5,padding:"16px 18px",margin:0}}>No drops yet.</p>}
+      </div>
+    </div>
+  );
+}
+
+function PointsView(){
+  var [tx,setTx]=useState([]);
+  var [balances,setBalances]=useState([]);
+  var [users,setUsers]=useState([]);
+  var [issues,setIssues]=useState(null);
+  var [issuesErr,setIssuesErr]=useState("");
+  var [loading,setLoading]=useState(true);
+  var [kindFilter,setKindFilter]=useState("");
+  var [search,setSearch]=useState("");
+  var [adjUser,setAdjUser]=useState("");
+  var [adjAmt,setAdjAmt]=useState("");
+  var [adjReason,setAdjReason]=useState("");
+  var [adjMsg,setAdjMsg]=useState("");
+
+  async function load(){
+    setLoading(true);
+    var t=await supabase.from("point_transactions").select("*").order("created_at",{ascending:false}).limit(1000);
+    var b=await supabase.from("member_points").select("*").order("balance",{ascending:false});
+    var u=await supabase.from("users").select("id,email,full_name,tier");
+    setTx(t.data||[]); setBalances(b.data||[]); setUsers(u.data||[]);
+    var chk=await supabase.rpc("points_integrity_check");
+    if(chk.error){setIssuesErr(chk.error.message||"Integrity check failed");setIssues(null);}
+    else {setIssues(chk.data||[]);setIssuesErr("");}
+    setLoading(false);
+  }
+  useEffect(function(){load();},[]);
+
+  var userById={};
+  users.forEach(function(u){userById[u.id]=u;});
+  function who(id){
+    var u=userById[id];
+    if(!u)return {label:"(deleted user)",sub:String(id||"").slice(0,8),missing:true};
+    return {label:u.full_name||u.email||"—",sub:u.email||"",tier:u.tier};
+  }
+
+  // Totals come from the ledger, not the cache — if they ever disagree the
+  // integrity check above says so explicitly.
+  var outstanding=balances.reduce(function(s,r){return s+(r.balance||0);},0);
+  var earned=balances.reduce(function(s,r){return s+(r.lifetime_earned||0);},0);
+  var redeemed=balances.reduce(function(s,r){return s+(r.lifetime_redeemed||0);},0);
+  var holders=balances.filter(function(r){return (r.balance||0)>0;}).length;
+
+  var kinds=["earn","membership","reversal","redeem","adjustment","clawback"];
+  var kindColor={earn:C.gn,membership:C.gd,reversal:C.or,redeem:C.bl,adjustment:C.gn,clawback:C.rd};
+
+  var rows=tx.filter(function(r){
+    if(kindFilter&&r.kind!==kindFilter)return false;
+    if(!search)return true;
+    var q=search.toLowerCase();
+    var w=who(r.user_id);
+    return (w.label+" "+w.sub+" "+(r.description||"")+" "+(r.source||"")).toLowerCase().indexOf(q)>=0;
+  });
+
+  async function submitAdjust(){
+    setAdjMsg("");
+    var amt=parseInt(adjAmt,10);
+    if(!adjUser||!amt||!adjReason.trim()){setAdjMsg("Member, a non-zero amount and a reason are all required.");return;}
+    var r=await supabase.rpc("admin_adjust_points",{p_user:adjUser,p_delta:amt,p_reason:adjReason.trim()});
+    if(r.error){setAdjMsg("Failed: "+r.error.message);return;}
+    setAdjMsg("Recorded "+(amt>0?"+":"")+amt+" pts.");
+    setAdjAmt("");setAdjReason("");
+    load();
+  }
+
+  if(loading)return <div style={{padding:"60px",textAlign:"center",color:C.s5}}>Loading points ledger…</div>;
+
+  var critical=(issues||[]).filter(function(i){return i.severity==="critical";});
+  var warnings=(issues||[]).filter(function(i){return i.severity!=="critical";});
+
+  function Card({label,value,color,sub}){
+    return(
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"20px 22px"}}>
+        <p style={{...sf(11,600),color:C.s5,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{label}</p>
+        <p style={{...sf(28,700),color:color||C.s1,margin:0}}>{value}</p>
+        {sub&&<p style={{...sf(10),color:C.s5,margin:"4px 0 0"}}>{sub}</p>}
+      </div>
+    );
+  }
+
+  return(
+    <div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:20}}>
+        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Points & Loyalty</h2>
+        <button onClick={load}
+          style={{padding:"7px 14px",borderRadius:10,border:"1px solid "+C.bd,background:"none",...sf(12),color:C.s4,cursor:"pointer"}}>
+          Re-run checks
+        </button>
+      </div>
+
+      {/* ── Integrity tripwire ── */}
+      <div style={{
+        background:issuesErr?C.el:(critical.length?"rgba(255,59,48,0.08)":(warnings.length?"rgba(255,149,0,0.07)":"rgba(52,199,89,0.07)")),
+        border:"1px solid "+(issuesErr?C.bd:(critical.length?C.rd:(warnings.length?C.or:C.gn))),
+        borderRadius:16,padding:"18px 22px",marginBottom:20
+      }}>
+        {issuesErr?(
+          <div>
+            <p style={{...sf(13,600),color:C.s2,margin:0}}>Integrity check unavailable</p>
+            <p style={{...sf(12),color:C.s5,margin:"6px 0 0"}}>{issuesErr}</p>
+          </div>
+        ):(!issues||issues.length===0)?(
+          <div>
+            <p style={{...sf(14,600),color:C.gn,margin:0}}>✓ Ledger reconciles — no anomalies</p>
+            <p style={{...sf(12),color:C.s5,margin:"6px 0 0"}}>
+              Every balance equals the sum of that member's transactions. No phantom balances,
+              no over-credited bookings, no duplicate welcome bonuses, no unattributed rows.
+            </p>
+          </div>
+        ):(
+          <div>
+            <p style={{...sf(14,600),color:critical.length?C.rd:C.or,margin:"0 0 10px"}}>
+              {critical.length?critical.length+" critical":""}
+              {critical.length&&warnings.length?" · ":""}
+              {warnings.length?warnings.length+" warning":""}
+              {" "}to review
+            </p>
+            {(issues||[]).map(function(i,ix){
+              var w=who(i.user_id);
+              return(
+                <div key={ix} style={{display:"flex",gap:10,alignItems:"baseline",padding:"6px 0",borderTop:ix?"1px solid "+C.bd:"none"}}>
+                  <span style={{...sf(10,700),color:i.severity==="critical"?C.rd:C.or,textTransform:"uppercase",letterSpacing:1,minWidth:64}}>{i.severity}</span>
+                  <span style={{...sf(12,600),color:C.s2,minWidth:190}}>{i.issue}</span>
+                  <span style={{...sf(12),color:C.s4,flex:1}}>{i.detail}</span>
+                  <span style={{...sf(11),color:C.s5}}>{w.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Totals ── */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:14,marginBottom:24}}>
+        <Card label="Outstanding" value={outstanding.toLocaleString()} color={C.gd} sub={holders+" members holding"}/>
+        <Card label="Lifetime earned" value={earned.toLocaleString()} color={C.gn}/>
+        <Card label="Lifetime redeemed" value={redeemed.toLocaleString()} color={C.bl}/>
+        <Card label="Ledger rows" value={tx.length.toLocaleString()} sub="most recent 1,000"/>
+      </div>
+
+      {/* ── Manual adjustment ── */}
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"18px 22px",marginBottom:24}}>
+        <p style={{...sf(13,600),color:C.s2,margin:"0 0 4px"}}>Manual adjustment</p>
+        <p style={{...sf(11),color:C.s5,margin:"0 0 12px"}}>
+          Goodwill credit or fraud clawback. Written to the ledger like any other award, so it stays auditable.
+        </p>
+        <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+          <select value={adjUser} onChange={function(e){setAdjUser(e.target.value);}}
+            style={{padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12),minWidth:240}}>
+            <option value="">Select member…</option>
+            {users.map(function(u){
+              return <option key={u.id} value={u.id}>{(u.full_name||u.email||u.id)+(u.tier?" · "+u.tier:"")}</option>;
+            })}
+          </select>
+          <input value={adjAmt} onChange={function(e){setAdjAmt(e.target.value);}} placeholder="+500 or -500"
+            style={{padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12),width:120}}/>
+          <input value={adjReason} onChange={function(e){setAdjReason(e.target.value);}} placeholder="Reason (required)"
+            style={{padding:"9px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12),flex:1,minWidth:200}}/>
+          <button onClick={submitAdjust}
+            style={{padding:"9px 18px",borderRadius:10,border:"1px solid "+C.gd,background:C.gd+"15",...sf(12,600),color:C.gd,cursor:"pointer"}}>
+            Apply
+          </button>
+        </div>
+        {adjMsg&&<p style={{...sf(11),color:adjMsg.indexOf("Failed")===0?C.rd:C.gn,margin:"10px 0 0"}}>{adjMsg}</p>}
+      </div>
+
+      {/* ── Top balances ── */}
+      <p style={{...sf(13,600),color:C.s2,margin:"0 0 10px"}}>Largest balances</p>
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:"8px 4px",marginBottom:24}}>
+        {balances.slice(0,10).map(function(r,ix){
+          var w=who(r.user_id);
+          return(
+            <div key={r.user_id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 18px",borderTop:ix?"1px solid "+C.bd:"none"}}>
+              <span style={{...sf(11),color:C.s6,width:20}}>{ix+1}</span>
+              <span style={{...sf(13),color:w.missing?C.rd:C.s2,flex:1}}>{w.label}</span>
+              <span style={{...sf(11),color:C.s5,flex:1}}>{w.sub}</span>
+              <span style={{...sf(11),color:C.s5}}>earned {(r.lifetime_earned||0).toLocaleString()}</span>
+              <span style={{...sf(13,600),color:C.gd,minWidth:90,textAlign:"right"}}>{(r.balance||0).toLocaleString()} pts</span>
+            </div>
+          );
+        })}
+        {!balances.length&&<p style={{...sf(12),color:C.s5,padding:"14px 18px",margin:0}}>No member holds points yet.</p>}
+      </div>
+
+      {/* ── Full ledger ── */}
+      <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:10}}>
+        <p style={{...sf(13,600),color:C.s2,margin:0,marginRight:6}}>Transaction ledger</p>
+        <button onClick={function(){setKindFilter("");}}
+          style={{padding:"5px 12px",borderRadius:9,border:"1px solid "+(kindFilter?C.bd:C.gd),background:kindFilter?"none":C.gd+"15",...sf(11),color:kindFilter?C.s5:C.gd,cursor:"pointer"}}>All</button>
+        {kinds.map(function(k){
+          var on=kindFilter===k;
+          return <button key={k} onClick={function(){setKindFilter(k);}}
+            style={{padding:"5px 12px",borderRadius:9,border:"1px solid "+(on?kindColor[k]:C.bd),background:on?kindColor[k]+"15":"none",...sf(11),color:on?kindColor[k]:C.s5,cursor:"pointer"}}>{k}</button>;
+        })}
+        <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="Search member, reason, source…"
+          style={{padding:"7px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12),flex:1,minWidth:200}}/>
+      </div>
+
+      <div style={{background:C.el,border:"1px solid "+C.bd,borderRadius:16,overflow:"hidden"}}>
+        <div style={{display:"flex",gap:12,padding:"10px 18px",borderBottom:"1px solid "+C.bd,...sf(10,700),color:C.s6,textTransform:"uppercase",letterSpacing:1}}>
+          <span style={{width:92}}>Date</span>
+          <span style={{flex:1.4}}>Member</span>
+          <span style={{width:92}}>Kind</span>
+          <span style={{width:80,textAlign:"right"}}>Points</span>
+          <span style={{flex:2}}>Reason</span>
+          <span style={{width:130}}>Written by</span>
+        </div>
+        <div style={{maxHeight:520,overflowY:"auto"}}>
+          {rows.map(function(r){
+            var w=who(r.user_id);
+            return(
+              <div key={r.id} style={{display:"flex",gap:12,padding:"9px 18px",borderTop:"1px solid "+C.bd,alignItems:"center"}}>
+                <span style={{...sf(11),color:C.s5,width:92}}>{new Date(r.created_at).toLocaleDateString()}</span>
+                <span style={{...sf(12),color:w.missing?C.rd:C.s3,flex:1.4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{w.label}</span>
+                <span style={{...sf(11,600),color:kindColor[r.kind]||C.s4,width:92}}>{r.kind}</span>
+                <span style={{...sf(12,600),color:(r.delta||0)>0?C.gn:C.rd,width:80,textAlign:"right"}}>
+                  {(r.delta||0)>0?"+":""}{(r.delta||0).toLocaleString()}
+                </span>
+                <span style={{...sf(11),color:C.s5,flex:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.description||"—"}</span>
+                <span style={{...sf(10),color:r.source?C.s5:C.or,width:130}}>{r.source||"unattributed"}</span>
+              </div>
+            );
+          })}
+          {!rows.length&&<p style={{...sf(12),color:C.s5,padding:"16px 18px",margin:0}}>No transactions match.</p>}
+        </div>
+      </div>
+
+      {/* ── Earn rates reference ── */}
+      <p style={{...sf(11),color:C.s6,marginTop:14}}>
+        Earn rates — Dining 100 · Wellness 300 · Nightlife 300 · Cars 1,000 · Yachts 1,000 · Hotels 1,000.
+        Membership welcome — Gold 2,500 · Platinum 10,000 · Centurion 25,000 (once per tier, trials excluded).
+      </p>
+    </div>
+  );
+}
+
 function DashboardView({counts,onNav}){
   var [analytics,setAnalytics]=useState({users:0,bookings:[],recentBookings:[],totalCommission:0,totalGross:0,monthCommission:0,monthGross:0,confirmedBookings:0,cancelledBookings:0,avgPartySize:0,topRestaurants:[],citySplit:{},byCategory:{}});
 
@@ -3955,6 +4674,9 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
   var opsItems=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
+    {id:"inbox",label:"Messages",icon:"star"},
+    {id:"points",label:"Points",icon:"star"},
+    {id:"gifts",label:"Gifts",icon:"star"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"finance",label:"Finance",icon:"star"},
   ];
@@ -4110,6 +4832,9 @@ function MobileDrawer({active,onNav,onClose,globalCity,onCityClick,cityCounts}){
   var opsItems=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
+    {id:"inbox",label:"Messages",icon:"star"},
+    {id:"points",label:"Points",icon:"star"},
+    {id:"gifts",label:"Gifts",icon:"star"},
     {id:"clients",label:"Members",icon:"clients"},
     {id:"finance",label:"Finance",icon:"star"},
   ];
@@ -4266,6 +4991,9 @@ function AdminDashboard({onLogout}){
         onClearCity={function(){setGlobalCity("");setPage("dashboard");}}/>;
     }
     if(page==="bookings")return <BookingsView/>;
+    if(page==="inbox")return <InboxView/>;
+    if(page==="points")return <PointsView/>;
+    if(page==="gifts")return <GiftsView/>;
     if(page==="clients")return <ClientsView/>;
     if(page==="images")return <ImageBrowserView/>;
     if(page==="featured")return <FeaturedView/>;

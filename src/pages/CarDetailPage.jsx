@@ -104,7 +104,7 @@ export default function CarDetailPage(){
     alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
   };
 
-  var WA_NUM="447449562204";
+  var WA_NUM="33743713649";
 
   var [idx,setIdx]=useState(0);
   var [loaded,setLoaded]=useState(false);

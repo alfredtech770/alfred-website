@@ -93,7 +93,7 @@ export default function HotelDetailPage(){
   var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
   var waMsg=encodeURIComponent("Hi Alfred, I'd like to arrange a stay at "+V.name+" — check-in "+date+", "+nights+" night(s), "+guests+" guest(s)"+(rates&&rates.offers&&rates.offers[0]?" (I saw from $"+rates.offers[0].perNight+"/night)":"")+". Could you help with availability and the best rate?");
-  var waHref="https://wa.me/447449562204?text="+waMsg;
+  var waHref="https://wa.me/33743713649?text="+waMsg;
   var stars=V.star_rating||5;
   var category=V.category==="resort"?"Resort":"Hotel";
 
@@ -350,7 +350,7 @@ export default function HotelDetailPage(){
         <div className="rooms-g" style={{opacity:roomsVis?1:0,transform:roomsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
           {V.rooms.map(function(r){
             var msg=encodeURIComponent("Hi Alfred — I'd like to request the best available rate for the "+r.name+" at "+V.name+".");
-            return(<a key={r.id} href={"https://wa.me/447449562204?text="+msg} target="_blank" rel="noopener noreferrer" style={{display:"block",borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",textDecoration:"none",transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+            return(<a key={r.id} href={"https://wa.me/33743713649?text="+msg} target="_blank" rel="noopener noreferrer" style={{display:"block",borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",textDecoration:"none",transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
               {r.hero_image_url&&<div style={{height:180,background:"#222 url("+r.hero_image_url+") center/cover"}}/>}
               <div style={{padding:"22px 22px"}}>
                 <div style={{...sf(17,700),color:C.s1,marginBottom:6}}>{r.name}</div>
