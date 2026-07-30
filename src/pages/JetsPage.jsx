@@ -114,7 +114,7 @@ export default function JetsPage(){
 
       {/* Footer */}
       <div style={{padding:"24px 40px",borderTop:"1px solid "+C.bd,textAlign:"center"}}>
-        <p style={{...sf(12),color:C.s6}}>Meanwhile, contact your Alfred concierge on <a href="https://wa.me/447449562204" style={{color:C.gd,textDecoration:"none"}}>WhatsApp</a> for jet charter quotes.</p>
+        <p style={{...sf(12),color:C.s6}}>Meanwhile, contact your Alfred concierge on <a href="https://wa.me/33743713649" style={{color:C.gd,textDecoration:"none"}}>WhatsApp</a> for jet charter quotes.</p>
       </div>
     </div>
   );

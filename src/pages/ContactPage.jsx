@@ -8,7 +8,7 @@ import {
 
 var T_ = T;
 
-var WHATSAPP = "https://wa.me/447449562204";
+var WHATSAPP = "https://wa.me/33743713649";
 var EMAIL = "ethan@alfredconcierge.app";
 
 var CHANNELS = [

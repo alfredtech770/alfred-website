@@ -14,7 +14,7 @@ function spotsColor(s){return s<=6?"#FF453A":s<=10?"#FFD60A":"#34C759"}
 function spotsShadow(s){return s<=6?"rgba(255,69,58,0.5)":s<=10?"rgba(255,214,10,0.4)":"rgba(52,199,89,0.4)"}
 
 var SB="https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/";
-var WA_NUM="447449562204";
+var WA_NUM="33743713649";
 function openWA(msg){window.open("https://wa.me/"+WA_NUM+"?text="+encodeURIComponent(msg),"_blank")}
 
 var EVENTS={
