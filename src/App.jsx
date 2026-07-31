@@ -1106,7 +1106,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         {/* Bottom bar */}
         <div style={{maxWidth:1060,margin:"0 auto",padding:"20px 40px 36px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderTop:"1px solid "+C.bd,paddingTop:24}}>
-            <span style={{...sf(12,400),color:C.s7}}>Alfred ©2026</span>
+            <span style={{...sf(12,400),color:C.s7}}>Alfred Concierge Inc. ©2026</span>
             <div style={{display:"flex",gap:24}}>
               {[{l:"Privacy Policy",h:"/privacy"},{l:"Terms",h:"/terms"}].map(function(it){return <a key={it.l} href={it.h} style={{...sf(12,400),color:C.s7,transition:"color 0.2s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.color=C.s5}} onMouseLeave={function(e){e.target.style.color=C.s7}}>{it.l}</a>})}
             </div>

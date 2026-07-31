@@ -307,8 +307,10 @@ export default function PrivacyPage() {
           <Section id="contact" title="13. Contact & Data Protection">
             <p>For privacy-related questions, requests, or concerns, please contact us:</p>
             <div style={{background:C.el,borderRadius:12,padding:"24px 28px",marginTop:16,marginBottom:24}}>
-              <p style={{...sf(14,600),color:C.s1,marginBottom:8}}>Alfred Concierge — Privacy Team</p>
+              <p style={{...sf(14,600),color:C.s1,marginBottom:8}}>Alfred Concierge Inc. — Privacy Team</p>
               <p style={{...sf(13,400),color:C.s4,lineHeight:2,margin:0}}>
+                Data Controller: Alfred Concierge Inc., a Delaware corporation<br/>
+                Registered Address: 11295 Biscayne Blvd, Miami, FL 33181, United States<br/>
                 Privacy Requests: <a href="mailto:privacy@alfredconcierge.app" style={{color:C.gold,textDecoration:"none"}}>privacy@alfredconcierge.app</a><br/>
                 General Support: <a href="mailto:support@alfredconcierge.app" style={{color:C.gold,textDecoration:"none"}}>support@alfredconcierge.app</a><br/>
                 Website: <a href="https://alfredconcierge.app" style={{color:C.gold,textDecoration:"none"}}>alfredconcierge.app</a>

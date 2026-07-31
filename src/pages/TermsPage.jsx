@@ -110,7 +110,7 @@ export default function TermsPage() {
           </div>
 
           <Section id="acceptance" title="1. Acceptance of Terms">
-            <p>By accessing or using the Alfred Concierge platform, mobile application, or any related services (collectively, the "Platform"), you agree to be legally bound by these Terms &amp; Conditions ("Terms"), our Privacy Policy, and any additional terms applicable to specific services. These Terms constitute a legally binding agreement between you ("User," "you," or "your") and Alfred Concierge ("Alfred," "we," "us," or "our"), operator of alfredconcierge.app.</p>
+            <p>By accessing or using the Alfred Concierge platform, mobile application, or any related services (collectively, the "Platform"), you agree to be legally bound by these Terms &amp; Conditions ("Terms"), our Privacy Policy, and any additional terms applicable to specific services. These Terms constitute a legally binding agreement between you ("User," "you," or "your") and <strong>Alfred Concierge Inc.</strong>, a Delaware corporation with its principal place of business at 11295 Biscayne Blvd, Miami, FL 33181, United States ("Alfred Concierge," "Alfred," "we," "us," or "our"), operator of alfredconcierge.app.</p>
             <p>Your continued use of the Platform following the posting of any changes to these Terms constitutes acceptance of those changes. If you access the Platform on behalf of a company or other legal entity, you represent that you have the authority to bind such entity to these Terms, in which case "you" shall refer to such entity.</p>
           </Section>
 
