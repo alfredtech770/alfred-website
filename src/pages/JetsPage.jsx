@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import SEOHead from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
+import { CatalogBrandNav } from "../components/brand";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gd:"#FFD60A"};
@@ -8,8 +9,6 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 
 export default function JetsPage(){
-  var [email,setEmail]=useState("");
-  var [submitted,setSubmitted]=useState(false);
   var [isMobile,setIsMobile]=useState(typeof window!=="undefined"&&window.innerWidth<=768);
 
   useEffect(function(){
@@ -18,28 +17,15 @@ export default function JetsPage(){
     return function(){window.removeEventListener("resize",onResize);};
   },[]);
 
-  function handleSubmit(e){
-    e.preventDefault();
-    if(!email.trim())return;
-    setSubmitted(true);
-  }
-
   return(
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column"}}>
       <SEOHead
-        title="Private Jets — Coming Soon | Alfred Concierge"
-        description="Charter private jets through Alfred Concierge. Gulfstream, Global, Falcon, Citation — worldwide. Coming soon."
+        title="Private Jet Charter Requests | Alfred Concierge"
+        description="Send Alfred your private aviation route, dates, passenger count and requirements. A licensed charter provider confirms aircraft availability, the complete quote and terms."
         path="/catalog/jets"
       />
 
-      {/* Nav */}
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:isMobile?"16px 20px":"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(10,10,11,0.85)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(44,44,49,0.3)"}}>
-        <a href="/" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}>
-          <Mark size={20} color={C.s1}/>
-          <span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span>
-        </a>
-        <a href="/catalog" style={{...sf(12,500),color:C.s4,textDecoration:"none",letterSpacing:1}}>Back to Catalog</a>
-      </nav>
+      <CatalogBrandNav active="Catalog"/>
 
       {/* Hero */}
       <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:isMobile?"100px 24px 60px":"120px 40px 80px",textAlign:"center",position:"relative",overflow:"hidden"}}>
@@ -55,7 +41,7 @@ export default function JetsPage(){
         <div style={{position:"relative",zIndex:2,maxWidth:640}}>
           <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"8px 20px",borderRadius:100,border:"1px solid "+C.gd+"30",background:C.gd+"08",marginBottom:32}}>
             <div style={{width:6,height:6,borderRadius:"50%",background:C.gd,animation:"pulse 2s ease infinite"}}/>
-            <span style={{...sf(12,600),color:C.gd,letterSpacing:2,textTransform:"uppercase"}}>Coming Soon</span>
+            <span style={{...sf(12,600),color:C.gd,letterSpacing:2,textTransform:"uppercase"}}>Request coordination</span>
           </div>
 
           <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}`}</style>
@@ -65,48 +51,22 @@ export default function JetsPage(){
           </h1>
 
           <p style={{...sf(isMobile?16:20,300),color:C.s4,lineHeight:1.7,marginBottom:12}}>
-            Charter the world’s finest private aircraft through Alfred.
+            Request private aviation through Alfred.
           </p>
           <p style={{...sf(isMobile?14:16,300),color:C.s5,lineHeight:1.7,marginBottom:40}}>
-            Gulfstream G650, Global 7500, Falcon 7X, Challenger 350, Citation XLS — light jets to ultra-long range. Instant quotes, same-day booking, empty leg deals from Miami, New York, London, Paris and Dubai.
+            Share the route, dates, passengers, luggage and timing. Alfred coordinates the request, while a licensed charter provider confirms the aircraft, operator, airports, complete quote and operating terms.
           </p>
 
           {/* Features */}
           <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginBottom:48}}>
-            {["Worldwide Coverage","Same-Day Booking","Empty Leg Deals","Dedicated Agent","24/7 Concierge"].map(function(f){
+            {["Route-specific requests","Provider-confirmed aircraft","Licensed operator details","Complete quote terms","Ground transfer requests"].map(function(f){
               return <div key={f} style={{padding:"10px 20px",borderRadius:12,border:"1px solid "+C.bd,background:C.el,...sf(13,500),color:C.s3}}>
                 {f}
               </div>;
             })}
           </div>
 
-          {/* Email signup */}
-          {!submitted?(
-            <div>
-              <p style={{...sf(14,500),color:C.s3,marginBottom:16}}>Get notified when we launch</p>
-              <form onSubmit={handleSubmit} style={{display:"flex",gap:10,maxWidth:420,margin:"0 auto",flexDirection:isMobile?"column":"row"}}>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={function(e){setEmail(e.target.value);}}
-                  style={{flex:1,padding:"14px 18px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(15),color:C.s1,outline:"none",transition:"border-color 0.2s"}}
-                  onFocus={function(e){e.target.style.borderColor=C.gd;}}
-                  onBlur={function(e){e.target.style.borderColor=C.bd;}}
-                />
-                <button type="submit" style={{padding:"14px 28px",borderRadius:12,border:"none",background:C.gd,...sf(15,700),color:"#000",cursor:"pointer",transition:"opacity 0.2s",whiteSpace:"nowrap"}}
-                  onMouseEnter={function(e){e.currentTarget.style.opacity="0.85";}}
-                  onMouseLeave={function(e){e.currentTarget.style.opacity="1";}}>
-                  Notify Me
-                </button>
-              </form>
-            </div>
-          ):(
-            <div style={{padding:"20px 32px",borderRadius:16,border:"1px solid "+C.gn+"40",background:C.gn+"08"}}>
-              <p style={{...sf(16,600),color:C.gn,margin:"0 0 4px"}}>You’re on the list</p>
-              <p style={{...sf(13),color:C.s4,margin:0}}>We’ll notify you as soon as private jets go live on Alfred.</p>
-            </div>
-          )}
+          <a href="https://wa.me/33743713649?text=Hi%20Alfred%2C%20I%27d%20like%20help%20with%20a%20private%20jet%20request.%20Please%20confirm%20current%20aircraft%20options%2C%20pricing%20and%20terms." target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",padding:"14px 28px",borderRadius:12,background:C.gd,...sf(15,700),color:"#000",textDecoration:"none"}}>Send a jet request</a>
         </div>
       </div>
 
@@ -114,7 +74,7 @@ export default function JetsPage(){
 
       {/* Footer */}
       <div style={{padding:"24px 40px",borderTop:"1px solid "+C.bd,textAlign:"center"}}>
-        <p style={{...sf(12),color:C.s6}}>Meanwhile, contact your Alfred concierge on <a href="https://wa.me/33743713649" style={{color:C.gd,textDecoration:"none"}}>WhatsApp</a> for jet charter quotes.</p>
+        <p style={{...sf(12),color:C.s6}}>Alfred coordinates the request; the licensed provider confirms the flight, complete quote and operating terms.</p>
       </div>
     </div>
   );

@@ -31,6 +31,7 @@ const YachtDetailPage=lazy(function(){return import("./pages/YachtDetailPage")})
 const EventRequestPage=lazy(function(){return import("./pages/EventRequestPage")});
 const JournalReviewPage=lazy(function(){return import("./pages/JournalReviewPage")});
 const CityPage=lazy(function(){return import("./pages/CityPage")});
+const CityServicePage=lazy(function(){return import("./pages/CityServicePage")});
 const HotelsPage=lazy(function(){return import("./pages/HotelsPage")});
 const HotelDetailPage=lazy(function(){return import("./pages/HotelDetailPage")});
 const AdminPage=lazy(function(){return import("./pages/AdminPage")});
@@ -439,7 +440,7 @@ function ConsentTelemetry(){
 
 export default function App(){
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{v7_startTransition:true,v7_relativeSplatPath:true}}>
       <Suspense fallback={<div style={{minHeight:"100vh",background:"#0A0A0B"}}/>}>
       <Routes>
         <Route path="/" element={<HomePage/>}/>
@@ -461,6 +462,7 @@ export default function App(){
         <Route path="/events/:slug" element={<EventRequestPage/>}/>
         <Route path="/blog" element={<JournalReviewPage/>}/>
         <Route path="/blog/:slug" element={<JournalReviewPage/>}/>
+        <Route path="/city/:city/:service" element={<CityServicePage/>}/>
         <Route path="/city/:slug" element={<CityPage/>}/>
         <Route path="/catalog/hotels" element={<HotelsPage/>}/>
         <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>

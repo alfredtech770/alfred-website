@@ -26,11 +26,13 @@ Google Ads can place Alfred among sponsored results, but it cannot guarantee the
 ## Ad groups and landing pages
 
 1. Concierge — `/city/miami`
-2. Restaurants — `/catalog/dining`
-3. Hotels — `/catalog/hotels`
-4. Exotic cars — `/catalog/exotic-cars`
+2. Restaurants — `/city/miami/restaurants`
+3. Hotels — `/city/miami/hotels`
+4. Exotic cars — `/city/miami/exotic-cars`
 
 Keep each ad group tightly aligned with its landing page. Do not send every keyword to the homepage.
+
+After the Miami pilot produces qualified leads, copy the winning structure to Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Each ad group should land on its matching `/city/{city}/{service}` page. Add nightlife, yachts, private aviation and wellness only when the concierge team can qualify and respond to those leads consistently.
 
 ## Venue and hotel names
 

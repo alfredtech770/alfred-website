@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
+import { CatalogBrandNav } from "../components/brand";
 import { cropFor } from "../lib/imageCrop";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
@@ -256,19 +257,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
 
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,opacity:0.1,mixBlendMode:"overlay",backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\")",backgroundSize:"180px",animation:"grain 4s steps(5) infinite"}}/>
 
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navOp>0.05?"rgba(10,10,11,"+Math.min(navOp*0.95,0.95)+")":"transparent",backdropFilter:navOp>0.05?"blur(24px) saturate(1.3)":"none",borderBottom:"1px solid rgba(44,44,49,"+navOp*0.8+")"}}>
-        <a href="/" style={{display:"flex",alignItems:"center",gap:10}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
-        <div style={{display:"flex",alignItems:"center",gap:20}}>
-          <a href="/catalog" style={{...sf(11),color:C.s5,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>Catalog</a>
-          <div style={{...sf(12,500),color:C.s1}}>Dining</div>
-        </div>
-      </nav>
+      <CatalogBrandNav active="Catalog"/>
 
       {/* Header */}
       <div style={{paddingTop:100,paddingBottom:40,textAlign:"center",opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(16px)",transition:"all 1s cubic-bezier(0.16,1,0.3,1)"}}>
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16}}>Alfred Concierge</p>
         <h1 className="d-title" style={{...sf(48,700),letterSpacing:-2,lineHeight:1.06,marginBottom:12}}>Dining</h1>
-        <p style={{...sf(16,400),color:C.s5}}>The world's best tables — reserved for you.</p>
+        <p style={{...sf(16,400),color:C.s5}}>Restaurants by city, cuisine and occasion.</p>
       </div>
 
       {/* Search Bar */}

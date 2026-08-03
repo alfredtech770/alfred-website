@@ -92,7 +92,7 @@ export function Hero({children, height, scrim, mobile}){
  * ──────────────────────────────────────────────────────────────────── */
 export function BrandNav({links, mobile}){
   return (
-    <nav style={{
+    <nav aria-label="Primary" style={{
       position:"sticky", top:0, zIndex:50,
       padding: mobile ? "14px 20px" : "17px 44px",
       display:"flex", alignItems:"center", justifyContent:"space-between",
@@ -101,7 +101,7 @@ export function BrandNav({links, mobile}){
       WebkitBackdropFilter:"saturate(140%) blur(18px)",
       borderBottom:`0.5px solid ${T.border2}`
     }}>
-      <a href="/" style={{display:"flex", alignItems:"center", gap:10, textDecoration:"none"}}>
+      <a href="/" aria-label="Alfred Concierge home" style={{display:"flex", alignItems:"center", gap:10, textDecoration:"none"}}>
         <span aria-hidden style={{width:22,height:22,border:"1px solid "+T.border2,borderRadius:"50%",display:"inline-flex",alignItems:"center",justifyContent:"center",...type.kicker(),color:T.text,fontSize:8}}>A</span>
         {!mobile && <span style={{...type.kicker(), color:T.text, letterSpacing:3.2}}>ALFRED</span>}
       </a>
@@ -116,6 +116,35 @@ export function BrandNav({links, mobile}){
       </div>
     </nav>
   );
+}
+
+/* Fixed catalogue navigation shared by every inventory page. It keeps the
+ * catalogue shell visually aligned with the public site while leaving room
+ * for the catalogue pages' existing fixed-position search experiences. */
+export function CatalogBrandNav({active}){
+  var links=[
+    {label:"Catalog",href:"/catalog"},
+    {label:"Destinations",href:"/#destinations"},
+    {label:"How it works",href:"/how-it-works",optional:true},
+    {label:"Contact",href:"/contact"}
+  ];
+  return <>
+    <style>{`@media(max-width:620px){.alfred-catalog-nav{padding:14px 18px!important}.alfred-catalog-wordmark,.alfred-catalog-optional{display:none!important}.alfred-catalog-links{gap:13px!important}.alfred-catalog-links a{font-size:8px!important;letter-spacing:1px!important}}`}</style>
+    <nav className="alfred-catalog-nav" aria-label="Primary" style={{
+      position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"17px 40px",
+      display:"flex",alignItems:"center",justifyContent:"space-between",
+      background:"rgba(10,10,11,0.9)",backdropFilter:"saturate(140%) blur(18px)",
+      WebkitBackdropFilter:"saturate(140%) blur(18px)",borderBottom:`0.5px solid ${T.border2}`
+    }}>
+      <a href="/" aria-label="Alfred Concierge home" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}>
+        <span aria-hidden style={{width:22,height:22,border:"1px solid "+T.border2,borderRadius:"50%",display:"inline-flex",alignItems:"center",justifyContent:"center",...type.kicker(),color:T.text,fontSize:8}}>A</span>
+        <span className="alfred-catalog-wordmark" style={{...type.kicker(),color:T.text,letterSpacing:3.2}}>ALFRED</span>
+      </a>
+      <div className="alfred-catalog-links" style={{display:"flex",alignItems:"center",gap:24}}>
+        {links.map(function(link){return <a key={link.href} className={link.optional?"alfred-catalog-optional":undefined} href={link.href} aria-current={link.label===active?"page":undefined} style={{...type.kicker(),color:link.label===active?T.text:T.textMid,textDecoration:"none",letterSpacing:1.5,fontSize:9}}>{link.label}</a>;})}
+      </div>
+    </nav>
+  </>;
 }
 
 /* ──────────────────────────────────────────────────────────────────────

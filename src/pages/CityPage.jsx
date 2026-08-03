@@ -22,12 +22,13 @@ var DESTINATIONS = [
 ];
 
 var CATEGORY_LINKS = [
-  {label:"Restaurants", href:"/catalog/dining", note:"Dining and table requests"},
-  {label:"Hotels", href:"/catalog/hotels", note:"Stays and room requests"},
-  {label:"Cars", href:"/catalog/exotic-cars", note:"Driver and vehicle requests"},
-  {label:"Nightlife", href:"/catalog/nightlife", note:"Tables and access requests"},
-  {label:"Yachts", href:"/catalog/yachts", note:"Day boats and charters"},
-  {label:"Private aviation", href:"/catalog/jets", note:"Aircraft and route requests"}
+  {label:"Restaurants", slug:"restaurants", note:"Dining and table requests"},
+  {label:"Hotels", slug:"hotels", note:"Stays and room requests"},
+  {label:"Cars", slug:"exotic-cars", note:"Driver and vehicle requests"},
+  {label:"Nightlife", slug:"nightlife", note:"Tables and access requests"},
+  {label:"Yachts", slug:"yachts", note:"Day boats and charters"},
+  {label:"Private aviation", slug:"jets", note:"Aircraft and route requests"},
+  {label:"Wellness", slug:"wellness", note:"Treatments and appointment requests"}
 ];
 
 function requestUrl(cityName, detail){
@@ -101,7 +102,7 @@ export default function CityPage(){
 
       <BrandNav mobile={mobile} links={[
         {label:"Catalog",href:"/catalog"},
-        {label:"How it works",href:"/how-it-works"},
+        {label:"Destinations",href:"/#destinations"},
         {label:"Contact",href:"/contact"}
       ]}/>
 
@@ -166,7 +167,7 @@ export default function CityPage(){
             <SectionHeader kicker="Browse the catalog" title={"Explore "+city.name} subtitle="Use Alfred's live catalog as a starting point for your request."/>
             <div style={{display:"grid",gridTemplateColumns:mobile?"1fr":"repeat(2, 1fr)",gap:12}}>
               {CATEGORY_LINKS.map(function(category, index){
-                return <a key={category.label} href={category.href} style={{textDecoration:"none",color:"inherit"}}>
+                return <a key={category.label} href={"/city/"+slug+"/"+category.slug} style={{textDecoration:"none",color:"inherit"}}>
                   <GlassCard style={{padding:mobile?"24px 22px":"28px 30px",display:"flex",alignItems:"center",gap:20}}>
                     <span style={{...type.kicker(),color:T.textDim}}>{("0"+(index+1)).slice(-2)}</span>
                     <div style={{flex:1}}>

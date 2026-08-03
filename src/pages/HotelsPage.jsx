@@ -242,7 +242,7 @@ export default function HotelsPage(){
         }
       `}</style>
 
-      <BrandNav mobile={mobile} links={[{label:"Catalog",href:"/catalog"},{label:"Destinations",href:"/city/ibiza"},{label:"Contact",href:"/contact"}]}/>
+      <BrandNav mobile={mobile} links={[{label:"Catalog",href:"/catalog"},{label:"Destinations",href:"/#destinations"},{label:"Contact",href:"/contact"}]}/>
 
       <main style={{padding:mobile?"72px 20px 90px":"106px 44px 120px",maxWidth:1280,margin:"0 auto"}}>
         <div style={{display:"grid",gridTemplateColumns:mobile?"1fr":"1.2fr 0.8fr",gap:mobile?22:80,alignItems:"end",marginBottom:42}}>

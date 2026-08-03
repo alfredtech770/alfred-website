@@ -23,7 +23,17 @@ for (const match of xml.matchAll(/<url>\s*[\s\S]*?<\/url>/g)) {
   urls.push("  " + block.trim().replace(/\n\s*/g, "\n    "));
 }
 
+const citySlugs = ["miami", "paris", "ibiza", "saint-tropez", "mykonos", "dubai", "london"];
+const serviceSlugs = ["hotels", "restaurants", "nightlife", "exotic-cars", "yachts", "jets", "wellness"];
+for (const city of citySlugs) {
+  for (const service of serviceSlugs) {
+    const loc = `https://alfredconcierge.app/city/${city}/${service}`;
+    if (seen.has(loc)) continue;
+    seen.add(loc);
+    urls.push(`  <url>\n    <loc>${loc}</loc>\n  </url>`);
+  }
+}
+
 const output = `${opening[0]}\n${urls.join("\n")}\n</urlset>\n`;
 fs.writeFileSync(file, output, "utf8");
 console.log(`sitemap: ${urls.length} unique URLs`);
-

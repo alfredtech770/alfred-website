@@ -3,14 +3,14 @@ Search | Miami | Concierge Requests,Concierge,luxury concierge miami,Phrase,http
 Search | Miami | Concierge Requests,Concierge,miami concierge service,Exact,https://alfredconcierge.app/city/miami
 Search | Miami | Concierge Requests,Concierge,personal concierge miami,Phrase,https://alfredconcierge.app/city/miami
 Search | Miami | Concierge Requests,Concierge,luxury travel concierge miami,Phrase,https://alfredconcierge.app/city/miami
-Search | Miami | Concierge Requests,Restaurants,restaurant concierge miami,Phrase,https://alfredconcierge.app/catalog/dining
-Search | Miami | Concierge Requests,Restaurants,miami restaurant concierge,Exact,https://alfredconcierge.app/catalog/dining
-Search | Miami | Concierge Requests,Restaurants,help booking restaurant miami,Phrase,https://alfredconcierge.app/catalog/dining
-Search | Miami | Concierge Requests,Restaurants,fine dining reservations miami,Phrase,https://alfredconcierge.app/catalog/dining
-Search | Miami | Concierge Requests,Hotels,hotel concierge miami,Phrase,https://alfredconcierge.app/catalog/hotels
-Search | Miami | Concierge Requests,Hotels,luxury hotel concierge miami,Exact,https://alfredconcierge.app/catalog/hotels
-Search | Miami | Concierge Requests,Hotels,help booking luxury hotel miami,Phrase,https://alfredconcierge.app/catalog/hotels
-Search | Miami | Concierge Requests,Hotels,miami hotel request concierge,Phrase,https://alfredconcierge.app/catalog/hotels
-Search | Miami | Concierge Requests,Exotic cars,exotic car concierge miami,Phrase,https://alfredconcierge.app/catalog/exotic-cars
-Search | Miami | Concierge Requests,Exotic cars,luxury car rental concierge miami,Exact,https://alfredconcierge.app/catalog/exotic-cars
-Search | Miami | Concierge Requests,Exotic cars,request exotic car miami,Phrase,https://alfredconcierge.app/catalog/exotic-cars
+Search | Miami | Concierge Requests,Restaurants,restaurant concierge miami,Phrase,https://alfredconcierge.app/city/miami/restaurants
+Search | Miami | Concierge Requests,Restaurants,miami restaurant concierge,Exact,https://alfredconcierge.app/city/miami/restaurants
+Search | Miami | Concierge Requests,Restaurants,help booking restaurant miami,Phrase,https://alfredconcierge.app/city/miami/restaurants
+Search | Miami | Concierge Requests,Restaurants,fine dining reservations miami,Phrase,https://alfredconcierge.app/city/miami/restaurants
+Search | Miami | Concierge Requests,Hotels,hotel concierge miami,Phrase,https://alfredconcierge.app/city/miami/hotels
+Search | Miami | Concierge Requests,Hotels,luxury hotel concierge miami,Exact,https://alfredconcierge.app/city/miami/hotels
+Search | Miami | Concierge Requests,Hotels,help booking luxury hotel miami,Phrase,https://alfredconcierge.app/city/miami/hotels
+Search | Miami | Concierge Requests,Hotels,miami hotel request concierge,Phrase,https://alfredconcierge.app/city/miami/hotels
+Search | Miami | Concierge Requests,Exotic cars,exotic car concierge miami,Phrase,https://alfredconcierge.app/city/miami/exotic-cars
+Search | Miami | Concierge Requests,Exotic cars,luxury car rental concierge miami,Exact,https://alfredconcierge.app/city/miami/exotic-cars
+Search | Miami | Concierge Requests,Exotic cars,request exotic car miami,Phrase,https://alfredconcierge.app/city/miami/exotic-cars

@@ -24,6 +24,10 @@ const cookieConsent = read("src/components/CookieConsent.jsx");
 const consent = read("src/lib/consent.js");
 const cityPage = read("src/pages/CityPage.jsx");
 const cityData = read("src/data/cities.js");
+const cityServicePage = read("src/pages/CityServicePage.jsx");
+const cityServiceData = read("src/data/cityServices.js");
+const brand = read("src/components/brand.jsx");
+const jets = read("src/pages/JetsPage.jsx");
 const about = read("src/pages/AboutPage.jsx");
 const howItWorks = read("src/pages/HowItWorksPage.jsx");
 const pricing = read("src/pages/PricingPage.jsx");
@@ -33,6 +37,7 @@ const envExample = read(".env.example");
 const vercel = read("vercel.json");
 const catalogBody = read("src/components/CatalogSeoBody.jsx");
 const jsonld = read("src/lib/jsonld.js");
+const llms = read("public/llms.txt");
 const sitemap = read("public/sitemap.xml");
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/\/$/, ""));
 
@@ -64,7 +69,25 @@ for (const slug of ["miami", "paris", "ibiza", "saint-tropez", "mykonos", "dubai
   const keyPattern = slug === "saint-tropez" ? /["']saint-tropez["']\s*:/ : new RegExp(`\\b${slug}\\s*:`);
   if (!keyPattern.test(cityData)) failures.push(`${slug} is missing from the city-guide data`);
   if (!locs.includes(`https://alfredconcierge.app/city/${slug}`)) failures.push(`${slug} is missing from the sitemap`);
+  for (const service of ["hotels", "restaurants", "nightlife", "exotic-cars", "yachts", "jets", "wellness"]) {
+    if (!locs.includes(`https://alfredconcierge.app/city/${slug}/${service}`)) failures.push(`${service} in ${slug} is missing from the sitemap`);
+  }
 }
+if (!/path="\/city\/:city\/:service"/.test(app)) failures.push("city-by-service landing-page route is missing");
+if (!/FAQPage/.test(cityServicePage) || !/BreadcrumbList/.test(cityServicePage) || !/Service/.test(cityServicePage)) failures.push("city-service pages are missing required structured data");
+if (!/CITY_SERVICE_ORDER/.test(cityServicePage) || !/catalogHref/.test(cityServicePage)) failures.push("city-service pages are missing cross-links or filtered catalog links");
+for (const service of ["hotels", "restaurants", "nightlife", "exotic-cars", "yachts", "jets", "wellness"]) {
+  const pattern = service === "exotic-cars" ? /["']exotic-cars["']\s*:/ : new RegExp(`\\b${service}\\s*:`);
+  if (!pattern.test(cityServiceData)) failures.push(`${service} is missing from the city-service data`);
+}
+if (!/export function CatalogBrandNav/.test(brand)) failures.push("shared catalog navigation is missing");
+for (const [name, source] of [["dining", dining], ["nightlife", nightlife], ["wellness", wellness], ["yachts", yachts], ["exotic cars", exoticCars], ["jets", jets]]) {
+  if (!/<CatalogBrandNav/.test(source)) failures.push(`${name} does not use shared catalog navigation`);
+  if (/href="\/proposal"/.test(source)) failures.push(`${name} exposes the private proposal route in public navigation`);
+}
+if (/Instant quotes|same-day booking|24\/7 Concierge|Get notified when we launch/i.test(jets)) failures.push("unsupported jet claims or a non-functional signup remain");
+if (/world's best tables|skip every line|crewed & ready|delivered to your door/i.test(dining + nightlife + yachts + exoticCars)) failures.push("unsupported catalog hero claims remain");
+if (!/city\/ibiza\/hotels/.test(llms) || !/city\/saint-tropez\/restaurants/.test(llms)) failures.push("LLM discovery file is missing city-service answer pages");
 if (!/encodeURIComponent\(city\)/.test(cityData) || !/\?city=/.test(cityData)) failures.push("city guides do not deep-link to city-filtered catalogs");
 if (/LocalBusiness|streetAddress|openingHoursSpecification/.test(cityData)) failures.push("city schema invents a physical Alfred location");
 if (/direct relationships|guaranteed access|guaranteed entry|fixed price/i.test(cityData)) failures.push("unsupported city-page claims remain");
@@ -83,6 +106,10 @@ for (const [name, source] of [["dining", dining], ["hotels", hotels], ["nightlif
 }
 if (!/searchParams\.get\(["']location["']\)/.test(yachts)) failures.push("yachts do not support destination-filtered deep links");
 if (new Set(locs).size !== locs.length) failures.push("sitemap contains duplicate URLs");
+for (const row of read("marketing/google-ads/search-keywords.csv").split(/\r?\n/).slice(1)) {
+  const finalUrl = row.split(",").pop();
+  if (finalUrl && !locs.includes(finalUrl)) failures.push(`Google Ads final URL is not in the sitemap: ${finalUrl}`);
+}
 if (/<(?:lastmod|changefreq|priority)>/.test(sitemap)) failures.push("sitemap contains stale or ignored metadata");
 
 if (failures.length) {

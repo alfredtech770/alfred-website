@@ -7,11 +7,17 @@ import { T, type } from "../lib/brand";
 import { SectionHeader, GlassCard, SilverText, useReveal, revealStyle, useMobile } from "./brand";
 
 var T_ = T;
+var DESTINATIONS=[
+  {name:"Miami",slug:"miami"},{name:"Paris",slug:"paris"},{name:"Ibiza",slug:"ibiza"},
+  {name:"Saint-Tropez",slug:"saint-tropez"},{name:"Mykonos",slug:"mykonos"},
+  {name:"Dubai",slug:"dubai"},{name:"London",slug:"london"}
+];
+var SERVICE_SLUG={dining:"restaurants",hotels:"hotels",nightlife:"nightlife","exotic-cars":"exotic-cars",yachts:"yachts",jets:"jets",wellness:"wellness"};
 
 var CONTENT = {
   dining:{
     italic:"restaurant reservations",
-    intro:"Browse restaurants by city, cuisine and occasion, then send Alfred your preferred date, time and party size. The catalog helps you compare options; the concierge confirms the reservation directly for each request.",
+    intro:"Browse restaurants by city, cuisine and occasion, then send Alfred your preferred date, time and party size. The catalog helps you compare options; the concierge coordinates confirmation for each request.",
     sections:[
       {title:"What to include in a restaurant request",body:"Share the city, preferred restaurant, date, time range and party size. Add dietary needs, accessibility requirements, whether children are joining and any table preference. A wider time range gives the concierge more options when a venue is busy."},
       {title:"Availability and confirmation",body:"A venue appearing in the catalog does not mean a table is available for a specific time. Availability can change throughout the day. A request is complete only after Alfred sends a confirmation with the venue, date, time and party size."},
@@ -144,6 +150,12 @@ export default function CatalogSeoBody({category}){
     </div>
     <div style={{padding:mobile?"0 22px 40px":"0 56px 60px",maxWidth:1100,margin:"0 auto"}}>
       <div style={{display:"grid",gridTemplateColumns:mobile?"1fr":"1fr 1fr",gap:mobile?14:18}}>{data.sections.map(function(s,i){return <Section key={i} sec={s} mobile={mobile}/>})}</div>
+    </div>
+    <div style={{padding:mobile?"28px 22px 44px":"40px 56px 64px",maxWidth:1100,margin:"0 auto"}}>
+      <SectionHeader kicker="Browse by destination" title={data.italic.charAt(0).toUpperCase()+data.italic.slice(1)+" in every Alfred city"} subtitle="Open a city-specific guide for local planning notes, the information to include and direct links into the filtered catalog."/>
+      <div style={{display:"grid",gridTemplateColumns:mobile?"1fr":"repeat(3,1fr)",gap:10}}>
+        {DESTINATIONS.map(function(city){return <a key={city.slug} href={"/city/"+city.slug+"/"+SERVICE_SLUG[category]} style={{textDecoration:"none",color:"inherit"}}><GlassCard style={{padding:"21px 22px",display:"flex",alignItems:"center",gap:12,height:"100%"}}><span style={{...type.cardSerif(18),flex:1}}>{city.name}</span><span aria-hidden style={{color:T_.silverDim}}>→</span></GlassCard></a>;})}
+      </div>
     </div>
     <div style={{padding:mobile?"40px 22px 80px":"60px 56px 120px",maxWidth:880,margin:"0 auto"}}>
       <SectionHeader kicker="Frequently asked" title="Common questions"/>

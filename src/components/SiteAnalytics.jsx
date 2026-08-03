@@ -172,6 +172,11 @@ export default function SiteAnalytics(){
           category:match[1],venue_id:decodeURIComponent(match[2]),venue_slug:decodeURIComponent(match[2]),source:"website",
         });
       }
+      var cityService=path.match(/^\/city\/([^/]+)\/(hotels|restaurants|nightlife|exotic-cars|yachts|jets|wellness)\/?$/);
+      if(cityService){
+        capturePosthog("city_service_viewed",{city:cityService[1],service:cityService[2],source:"website"});
+        if(window.gtag)window.gtag("event","view_item_list",{item_list_id:"city_service",item_list_name:cityService[2]+" in "+cityService[1]});
+      }
     }
     firstRoute.current=false;
     if(!excluded && consent.advertising && window.fbq) window.fbq("track","PageView");

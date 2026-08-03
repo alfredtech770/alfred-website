@@ -16,10 +16,11 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const SUPABASE_URL = 'https://fbdgbnnkgyljehtccgaq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZGdibm5rZ3lsamVodGNjZ2FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjA5MzgsImV4cCI6MjA4MjMzNjkzOH0.NmlSkGMDZ-DmhV0bmSCFPQmuFNo4E5H-Sz1cjRyYs8Q';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 const BASE = 'https://alfredconcierge.app';
 const SITEMAP = path.join(__dirname, '..', 'public', 'sitemap.xml');
+if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY before generating product URLs');
 
 function fetchAll(table, select) {
   // Page past Supabase's 1000-row cap.
@@ -56,11 +57,13 @@ const entry = (loc) => `  <url><loc>${loc}</loc></url>`;
   const cars = await fetchAll('cars', 'brand,name,is_active');
   const carSlugs = [...new Set(cars.filter((c) => c.is_active !== false).map(carSlug).filter(Boolean))];
 
-  const hotels = await fetchAll('accommodations', 'slug,is_active');
+  const hotels = await fetchAll('accommodations', 'slug,name,city,is_active');
   const counts = {};
   hotels.forEach((h) => { if (h.slug) counts[h.slug] = (counts[h.slug] || 0) + 1; });
+  const targetCities = new Set(['miami','paris','ibiza','saint tropez','mykonos','dubai','london']);
+  const normalizeCity = (value) => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   const hotelSlugs = [...new Set(hotels
-    .filter((h) => h.slug && counts[h.slug] === 1 && h.is_active !== false)
+    .filter((h) => h.slug && h.name && counts[h.slug] === 1 && h.is_active !== false && targetCities.has(normalizeCity(h.city)))
     .map((h) => h.slug))].sort();
 
   // Nightlife + wellness detail pages are data-driven (fetch by slug), and
