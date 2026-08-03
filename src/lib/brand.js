@@ -1,17 +1,12 @@
-/**
- * Alfred brand tokens — translated from the iOS app's Theme.swift.
- * Source: /Users/ethan/Desktop/Alfred/Alfred/Theme.swift
- *
- * Use these tokens for any new pages/components. The legacy `C` palette
- * inlined in older pages (#0A0A0B, #FFD60A, etc.) is being phased out.
- */
+/** Alfred web design tokens. Keep public pages visually aligned with the
+ * main site's restrained black, silver and white editorial system. */
 
 export var T = {
   /* ─── Backgrounds & surfaces ─────────────────────────────────────── */
-  bg: "#0C0C0E",
-  bg2: "#141416",
-  surf1: "#1A1A1D",
-  surf2: "#222226",
+  bg: "#0A0A0B",
+  bg2: "#111113",
+  surf1: "#18181B",
+  surf2: "#1F1F23",
 
   /* ─── Text hierarchy (alpha overlays on bg) ──────────────────────── */
   text: "#FAFAFA",
@@ -22,15 +17,15 @@ export var T = {
   /* ─── Accents ───────────────────────────────────────────────────── */
   silver: "#DCDCE0",
   silverDim: "#868689",
-  gold: "#F5C54C",
-  warm: "#F5A444",
-  warmDim: "#C47A2A",
-  warmInk: "#1A0E02",
+  gold: "#DCDCE0",
+  warm: "#DCDCE0",
+  warmDim: "#868689",
+  warmInk: "#0A0A0B",
 
   /* ─── Glass morphism ────────────────────────────────────────────── */
-  glassBg: "rgba(255,255,255,0.10)",
-  glassBg2: "rgba(255,255,255,0.16)",
-  glassEdge: "rgba(255,255,255,0.22)",
+  glassBg: "rgba(255,255,255,0.035)",
+  glassBg2: "rgba(255,255,255,0.065)",
+  glassEdge: "rgba(255,255,255,0.18)",
   glassEdge2: "rgba(255,255,255,0.10)",
 
   /* ─── Borders ────────────────────────────────────────────────────── */
@@ -39,8 +34,8 @@ export var T = {
 
   /* ─── Signature gradients ────────────────────────────────────────── */
   silverGradient: "radial-gradient(ellipse at 30% 20%, #FFFFFF 0%, #DCDCE0 35%, #A6A6AA 70%, #6E6E72 100%)",
-  warmGradient: "linear-gradient(135deg, #F5A444 0%, #C47A2A 100%)",
-  heroGlow: "radial-gradient(ellipse at 70% 0%, rgba(245,164,68,0.18), transparent 50%), radial-gradient(ellipse at 10% 80%, rgba(160,80,140,0.18), transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(255,255,255,0.06), transparent 50%)",
+  warmGradient: "linear-gradient(135deg, #F4F4F5 0%, #A1A1AA 100%)",
+  heroGlow: "radial-gradient(ellipse at 72% 8%, rgba(255,255,255,0.075), transparent 48%), linear-gradient(180deg, #0A0A0B 0%, #0C0C0E 100%)",
 
   /* ─── Spacing ────────────────────────────────────────────────────── */
   pad: 22,
@@ -67,8 +62,8 @@ export var T = {
 
 /* ─── Typography helpers ───────────────────────────────────────────── */
 
-var SERIF = "ui-serif, 'New York', Georgia, 'Times New Roman', serif";
 var SANS = "-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif";
+var SERIF = SANS;
 var MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
 
 /**
@@ -81,12 +76,12 @@ var MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
  */
 export var type = {
   // Hero, page, section titles
-  heroSerif: function(){ return {fontFamily:SERIF, fontSize:56, fontWeight:400, letterSpacing:-1.4, lineHeight:1.05, WebkitFontSmoothing:"antialiased"}; },
-  heroSerifMobile: function(){ return {fontFamily:SERIF, fontSize:36, fontWeight:400, letterSpacing:-1, lineHeight:1.08, WebkitFontSmoothing:"antialiased"}; },
-  pageSerif: function(){ return {fontFamily:SERIF, fontSize:38, fontWeight:400, letterSpacing:-0.8, lineHeight:1.1, WebkitFontSmoothing:"antialiased"}; },
-  sectionSerif: function(){ return {fontFamily:SERIF, fontSize:28, fontWeight:600, letterSpacing:-0.5, lineHeight:1.15, WebkitFontSmoothing:"antialiased"}; },
-  cardSerif: function(size){ return {fontFamily:SERIF, fontSize:size||19, fontWeight:400, letterSpacing:-0.3, lineHeight:1.2, WebkitFontSmoothing:"antialiased"}; },
-  italicSerif: function(size){ return {fontFamily:SERIF, fontSize:size||28, fontWeight:400, fontStyle:"italic", letterSpacing:-0.3, WebkitFontSmoothing:"antialiased"}; },
+  heroSerif: function(){ return {fontFamily:SANS, fontSize:64, fontWeight:600, letterSpacing:-3.2, lineHeight:0.98, WebkitFontSmoothing:"antialiased"}; },
+  heroSerifMobile: function(){ return {fontFamily:SANS, fontSize:40, fontWeight:600, letterSpacing:-1.9, lineHeight:1, WebkitFontSmoothing:"antialiased"}; },
+  pageSerif: function(){ return {fontFamily:SANS, fontSize:40, fontWeight:600, letterSpacing:-1.5, lineHeight:1.05, WebkitFontSmoothing:"antialiased"}; },
+  sectionSerif: function(){ return {fontFamily:SANS, fontSize:28, fontWeight:600, letterSpacing:-0.9, lineHeight:1.12, WebkitFontSmoothing:"antialiased"}; },
+  cardSerif: function(size){ return {fontFamily:SANS, fontSize:size||19, fontWeight:600, letterSpacing:-0.45, lineHeight:1.2, WebkitFontSmoothing:"antialiased"}; },
+  italicSerif: function(size){ return {fontFamily:SANS, fontSize:size||28, fontWeight:600, fontStyle:"normal", letterSpacing:-0.7, WebkitFontSmoothing:"antialiased"}; },
 
   // Body
   body: function(){ return {fontFamily:SANS, fontSize:13, fontWeight:400, letterSpacing:-0.05, lineHeight:1.7, WebkitFontSmoothing:"antialiased"}; },

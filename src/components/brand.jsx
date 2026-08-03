@@ -65,25 +65,21 @@ export function FilmGrain({opacity}){
   );
 }
 
-/* ──────────────────────────────────────────────────────────────────────
- * Hero — mirrors HomeView.HeroB + HeroContent. Full-bleed dark hero with
- * radial-glow gradient layers, film-grain overlay, and rounded bottom
- * corners. Children are placed in the lower 40% over a subtle scrim.
- * ──────────────────────────────────────────────────────────────────── */
+/* Public-page hero using the same monochrome editorial shell as home. */
 export function Hero({children, height, scrim, mobile}){
   var h = height || (mobile ? 540 : 680);
   return (
     <div style={{
       position:"relative", overflow:"hidden",
       width:"100%", height:h,
-      borderBottomLeftRadius: T.rHero, borderBottomRightRadius: T.rHero,
+      borderBottom:`0.5px solid ${T.border}`,
       background: T.bg
     }}>
       <div style={{position:"absolute", inset:0, background:T.heroGlow}}/>
-      <FilmGrain opacity={0.14}/>
+      <FilmGrain opacity={0.05}/>
       {scrim !== false && <div style={{
         position:"absolute", inset:0,
-        background:"linear-gradient(180deg, rgba(12,12,14,0) 35%, rgba(12,12,14,0.55) 80%, rgba(12,12,14,0.85) 100%)"
+        background:"linear-gradient(180deg, rgba(10,10,11,0) 35%, rgba(10,10,11,0.46) 78%, rgba(10,10,11,0.8) 100%)"
       }}/>}
       <div style={{position:"relative", zIndex:2, height:"100%"}}>{children}</div>
     </div>
@@ -98,21 +94,23 @@ export function BrandNav({links, mobile}){
   return (
     <nav style={{
       position:"sticky", top:0, zIndex:50,
-      padding: mobile ? "14px 20px" : "18px 28px",
+      padding: mobile ? "14px 20px" : "17px 44px",
       display:"flex", alignItems:"center", justifyContent:"space-between",
-      background:"rgba(12,12,14,0.78)",
+      background:"rgba(10,10,11,0.86)",
       backdropFilter:"saturate(140%) blur(18px)",
       WebkitBackdropFilter:"saturate(140%) blur(18px)",
       borderBottom:`0.5px solid ${T.border2}`
     }}>
       <a href="/" style={{display:"flex", alignItems:"center", gap:10, textDecoration:"none"}}>
-        <span style={{...type.kicker(), color:T.silverDim, letterSpacing:3.5}}>ALFRED</span>
+        <span aria-hidden style={{width:22,height:22,border:"1px solid "+T.border2,borderRadius:"50%",display:"inline-flex",alignItems:"center",justifyContent:"center",...type.kicker(),color:T.text,fontSize:8}}>A</span>
+        {!mobile && <span style={{...type.kicker(), color:T.text, letterSpacing:3.2}}>ALFRED</span>}
       </a>
-      <div style={{display:"flex", alignItems:"center", gap: mobile ? 16 : 24}}>
+      <div style={{display:"flex", alignItems:"center", gap: mobile ? 12 : 24}}>
         {links.map(function(l){
           return <a key={l.href} href={l.href} style={{
             ...type.kicker(), color: l.active ? T.text : T.textMid,
-            textDecoration:"none", letterSpacing:1.6
+            textDecoration:"none", letterSpacing:mobile?1.15:1.6,
+            fontSize:mobile?8:9
           }}>{l.label}</a>;
         })}
       </div>
@@ -149,17 +147,20 @@ export function PrimaryCTA({children, href, onClick, fullWidth, size}){
   var pad = size === "lg" ? "17px 32px" : "15px 24px";
   var style = {
     display:"inline-flex", alignItems:"center", justifyContent:"center", gap:8,
-    padding: pad, borderRadius:999,
-    background:T.text, color:T.bg,
+    padding: pad, borderRadius:12,
+    background:T.surf1, color:T.text,
     ...type.button(),
-    border:"none", cursor:"pointer", textDecoration:"none",
-    boxShadow: T.shadowCta,
+    border:`0.5px solid ${T.border2}`, cursor:"pointer", textDecoration:"none",
+    boxShadow: "none",
     transition:"transform 220ms cubic-bezier(0.16,1,0.3,1), box-shadow 220ms ease",
     width: fullWidth ? "100%" : "auto"
   };
-  var onEnter = function(e){ e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 14px 28px rgba(0,0,0,0.5)"; };
-  var onLeave = function(e){ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow=T.shadowCta; };
-  if(href) return <a href={href} style={style} onMouseEnter={onEnter} onMouseLeave={onLeave}>{children}</a>;
+  var onEnter = function(e){ e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.background=T.surf2; };
+  var onLeave = function(e){ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.background=T.surf1; };
+  if(href){
+    var external = /^https?:\/\//.test(href);
+    return <a href={href} target={external?"_blank":undefined} rel={external?"noopener noreferrer":undefined} style={style} onMouseEnter={onEnter} onMouseLeave={onLeave}>{children}</a>;
+  }
   return <button onClick={onClick} style={style} onMouseEnter={onEnter} onMouseLeave={onLeave}>{children}</button>;
 }
 
@@ -170,8 +171,8 @@ export function PrimaryCTA({children, href, onClick, fullWidth, size}){
 export function GhostCTA({children, href, onClick, fullWidth}){
   var style = {
     display:"inline-flex", alignItems:"center", justifyContent:"center", gap:8,
-    padding:"14px 22px", borderRadius:999,
-    background: T.glassBg,
+    padding:"14px 22px", borderRadius:12,
+    background: "transparent",
     backdropFilter:"blur(18px)", WebkitBackdropFilter:"blur(18px)",
     border:`0.5px solid ${T.glassEdge2}`,
     color:T.text, ...type.buttonSm(),
@@ -180,8 +181,11 @@ export function GhostCTA({children, href, onClick, fullWidth}){
     width: fullWidth ? "100%" : "auto"
   };
   var onEnter = function(e){ e.currentTarget.style.background=T.glassBg2; e.currentTarget.style.borderColor=T.glassEdge; };
-  var onLeave = function(e){ e.currentTarget.style.background=T.glassBg; e.currentTarget.style.borderColor=T.glassEdge2; };
-  if(href) return <a href={href} style={style} onMouseEnter={onEnter} onMouseLeave={onLeave}>{children}</a>;
+  var onLeave = function(e){ e.currentTarget.style.background="transparent"; e.currentTarget.style.borderColor=T.glassEdge2; };
+  if(href){
+    var external = /^https?:\/\//.test(href);
+    return <a href={href} target={external?"_blank":undefined} rel={external?"noopener noreferrer":undefined} style={style} onMouseEnter={onEnter} onMouseLeave={onLeave}>{children}</a>;
+  }
   return <button onClick={onClick} style={style} onMouseEnter={onEnter} onMouseLeave={onLeave}>{children}</button>;
 }
 
@@ -220,7 +224,7 @@ export function GlassCard({children, padded, sheen, featured, style}){
   return (
     <div style={{
       position:"relative", overflow:"hidden",
-      background: featured ? "linear-gradient(180deg, #1A1A1D 0%, #1F1F23 100%)" : T.surf1,
+      background: featured ? "linear-gradient(180deg, #18181B 0%, #111113 100%)" : T.surf1,
       border:`0.5px solid ${featured ? T.border2 : T.border}`,
       borderRadius: T.rLg,
       padding: pad,
@@ -251,8 +255,8 @@ export function Eyebrow({children, color, dot, accent}){
     }}>
       {dot && <span aria-hidden style={{
         width:6, height:6, borderRadius:"50%",
-        background: accent || T.warm,
-        boxShadow:`0 0 12px ${accent || T.warm}88`
+        background: accent || T.silverDim,
+        boxShadow:"none"
       }}/>}
       {children}
     </span>
