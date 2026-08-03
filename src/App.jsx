@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import SEOHead, { SEO } from "./components/SEOHead";
-import SiteAnalytics from "./components/SiteAnalytics";
+import SiteAnalytics, { trackLead } from "./components/SiteAnalytics";
+import CookieConsent from "./components/CookieConsent";
 import { supabase } from "./lib/supabase";
+import { readStoredConsent } from "./lib/consent";
 
 /* Apple App Store deep-link for Alfred Concierge. Universal URL (no
  * country code) so users land on their regional storefront and
@@ -26,11 +28,8 @@ const ExoticCarsPage=lazy(function(){return import("./pages/ExoticCarsPage")});
 const CarDetailPage=lazy(function(){return import("./pages/CarDetailPage")});
 const YachtsPage=lazy(function(){return import("./pages/YachtsPage")});
 const YachtDetailPage=lazy(function(){return import("./pages/YachtDetailPage")});
-import FeaturedEvents from "./pages/FeaturedEvents";
-const EventsPage=lazy(function(){return import("./pages/EventsPage")});
-const EventDetailPage=lazy(function(){return import("./pages/EventDetailPage")});
-const BlogPage=lazy(function(){return import("./pages/BlogPage")});
-const BlogPost=lazy(function(){return import("./pages/BlogPost")});
+const EventRequestPage=lazy(function(){return import("./pages/EventRequestPage")});
+const JournalReviewPage=lazy(function(){return import("./pages/JournalReviewPage")});
 const CityPage=lazy(function(){return import("./pages/CityPage")});
 const HotelsPage=lazy(function(){return import("./pages/HotelsPage")});
 const HotelDetailPage=lazy(function(){return import("./pages/HotelDetailPage")});
@@ -408,16 +407,16 @@ function NotFoundPage(){
       <div style={{display:"flex",flexWrap:"wrap",gap:12,justifyContent:"center"}}>
         {[
           {label:"Browse Catalog",href:"/catalog"},
-          {label:"Upcoming Events",href:"/events"},
-          {label:"Read Our Blog",href:"/blog"},
+          {label:"Restaurants",href:"/catalog/dining"},
+          {label:"Hotels",href:"/catalog/hotels"},
           {label:"Go Home",href:"/"}
         ].map(function(l){return <a key={l.href} href={l.href} style={{...sf(14,600),color:C.bg,background:C.s1,padding:"12px 24px",borderRadius:12,textDecoration:"none",transition:"opacity 0.2s"}} onMouseEnter={function(e){e.target.style.opacity="0.85"}} onMouseLeave={function(e){e.target.style.opacity="1"}}>{l.label}</a>})}
       </div>
       <div style={{marginTop:60,textAlign:"center"}}>
         <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:16}}>Popular</div>
         {[
-          {label:"Best Restaurants in Miami",href:"/blog/best-restaurants-miami-2026"},
-          {label:"Monaco Grand Prix 2026 Guide",href:"/blog/monaco-grand-prix-2026-guide"},
+          {label:"Best Restaurants in Miami",href:"/best/best-restaurants-miami"},
+          {label:"Italian Restaurants in Miami",href:"/best/italian-restaurants-miami"},
           {label:"Exotic Car Rental Miami",href:"/catalog/exotic-cars"},
           {label:"VIP Nightlife Miami",href:"/catalog/nightlife"},
           {label:"Yacht Charter Miami",href:"/catalog/yachts"}
@@ -428,6 +427,16 @@ function NotFoundPage(){
 }
 
 /* ═══ ROUTER ═══ */
+function ConsentTelemetry(){
+  var [allowed,setAllowed]=useState(function(){return readStoredConsent()?.analytics===true});
+  useEffect(function(){
+    function onConsent(event){setAllowed(event.detail?.analytics===true)}
+    window.addEventListener("alfred:consent",onConsent);
+    return function(){window.removeEventListener("alfred:consent",onConsent)};
+  },[]);
+  return allowed?<><Analytics/><SpeedInsights/></>:null;
+}
+
 export default function App(){
   return (
     <BrowserRouter>
@@ -448,10 +457,10 @@ export default function App(){
         <Route path="/catalog/jets/:slug" element={<JetDetailPage/>}/>
         <Route path="/catalog/yachts" element={<YachtsPage/>}/>
         <Route path="/catalog/yachts/:id" element={<YachtDetailPage/>}/>
-        <Route path="/events" element={<EventsPage/>}/>
-        <Route path="/events/:slug" element={<EventDetailPage/>}/>
-        <Route path="/blog" element={<BlogPage/>}/>
-        <Route path="/blog/:slug" element={<BlogPost/>}/>
+        <Route path="/events" element={<EventRequestPage/>}/>
+        <Route path="/events/:slug" element={<EventRequestPage/>}/>
+        <Route path="/blog" element={<JournalReviewPage/>}/>
+        <Route path="/blog/:slug" element={<JournalReviewPage/>}/>
         <Route path="/city/:slug" element={<CityPage/>}/>
         <Route path="/catalog/hotels" element={<HotelsPage/>}/>
         <Route path="/catalog/hotels/:slug" element={<HotelDetailPage/>}/>
@@ -468,8 +477,8 @@ export default function App(){
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
       </Suspense>
-      <Analytics/>
-      <SpeedInsights/>
+      <CookieConsent/>
+      <ConsentTelemetry/>
       <SiteAnalytics/>
     </BrowserRouter>
   );
@@ -529,11 +538,7 @@ function AlfredSite(){
     {n:"Hôtel de Crillon",sub:"Palace · Paris",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/AlfedHotelCrillionParis.jpeg",tag:"Hotel"},
     {n:"Four Seasons",sub:"Hotel · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/MFL_1008_original.jpg",tag:"Hotel"},
     {n:"Space",sub:"Nightclub · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/image.jpg",tag:"Nightlife"},
-    {n:"Zuma",sub:"Restaurant · Mykonos",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/zuma-mykonos.jpg",tag:"Dining"},
-    {n:"Bvlgari Resort",sub:"Hotel · Bali",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Bulgari-Resort-Bali-Exterior.webp",tag:"Hotel"},
-    {n:"F1 Experience",sub:"VIP · Global",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg",tag:"Events"},
     {n:"Carbone",sub:"Italian · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Carbone-Miami---Photo-Credit---Douglas-Friedman_Carbone-Miami-Dining-Room-4---PC-Douglas-Friedman.webp",tag:"Dining"},
-    {n:"Nao Beach",sub:"Beach Club · St. Barths",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/1-st-barts-nao-beach-restaurant-st-jean-st-barth.jpg",tag:"Dining"},
     {n:"Bugatti Chiron",sub:"Exotic Car · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(78).jpeg",tag:"Cars"},
   ];
 
@@ -551,12 +556,12 @@ function AlfredSite(){
   var stepsProgress=Math.max(0,Math.min((scrollY-stepsTop+wh*0.6)/(wh*0.8),1));
 
   var exps=[
-    {title:"Dining",count:"Curated restaurants",tag:"Most Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg"},
-    {title:"Nightlife",count:"VIP venues and tables",tag:"Members Only",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg"},
-    {title:"Accommodations",count:"Luxury hotels and resorts",tag:"Luxury Hotels",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg"},
-    {title:"Wellness",count:"Spas and wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
-    {title:"Exotic Cars",count:"Luxury and performance cars",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
-    {title:"Yachts",count:"Charter & day trips",tag:"Exclusive",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg"},
+    {title:"Dining",count:"Restaurant requests",tag:"Dining",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg"},
+    {title:"Nightlife",count:"Venue and table requests",tag:"Nightlife",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg"},
+    {title:"Accommodations",count:"Hotel and resort requests",tag:"Hotels",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg"},
+    {title:"Wellness",count:"Spa and wellness requests",tag:"Wellness",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
+    {title:"Exotic Cars",count:"Luxury and performance car requests",tag:"Cars",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
+    {title:"Yachts",count:"Charter and day-trip requests",tag:"Yachts",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg"},
   ];
 
 
@@ -720,7 +725,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:-80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.8s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:32,left:40,zIndex:10,animation:loaded?"slideFromLeft 1s cubic-bezier(0.16,1,0.3,1) 0.3s both":"none"}}><DrawMark size={22} color={C.s1} active={loaded} delay={0.5} id="mg1"/></div>
-        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Events","Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Events"?"/events":item==="Contact"?"https://wa.me/33743713649":"#"+item.toLowerCase();return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
+        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Contact"?"https://wa.me/33743713649":"#"+item.toLowerCase();return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
         {/* Mobile hamburger button */}
         <div className="mob-menu-btn" onClick={function(){setMobileMenu(true)}} style={{position:"absolute",top:32,right:20,zIndex:110,display:"none",alignItems:"center",justifyContent:"center",width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer",animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -728,22 +733,23 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
           <div style={{textAlign:"center",transform:"translateY("+(heroY+my)+"px) translateX("+mx+"px) scale("+heroScale+")",opacity:heroOp,filter:"blur("+heroBlur+"px)",willChange:"transform,opacity,filter",transition:"transform 0.5s cubic-bezier(0.16,1,0.3,1)"}}>
             <p className="hero-label" style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
-            <h1 aria-label="Alfred Concierge" style={{overflow:"hidden",lineHeight:0.88,position:"relative",whiteSpace:"nowrap"}}>
-              {LETTERS.map(function(ch,i){return <span key={i} className="hero-title" style={{display:"inline-block",...sf(160,700),letterSpacing:8,opacity:loaded?1:0,transform:loaded?"translateY(0) scale(1)":"translateY(100%) scale(0.9)",transition:"transform 1.1s cubic-bezier(0.16,1,0.3,1) "+(0.7+i*0.07)+"s, opacity 0.6s ease "+(0.7+i*0.07)+"s"}}>{ch}</span>})}
-              {shimmer && <div style={{position:"absolute",top:0,bottom:0,width:"25%",background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.08) 50%,transparent)",animation:"shimmerSweep 1.2s cubic-bezier(0.16,1,0.3,1) forwards",pointerEvents:"none"}}/>}
+            <h1 style={{overflow:"hidden",lineHeight:0.88,position:"relative",whiteSpace:"nowrap"}}>
+              <span style={{position:"absolute",width:1,height:1,padding:0,margin:-1,overflow:"hidden",clip:"rect(0, 0, 0, 0)",whiteSpace:"nowrap",border:0}}>Alfred Concierge for restaurants, hotels, cars and luxury services</span>
+              {LETTERS.map(function(ch,i){return <span aria-hidden="true" key={i} className="hero-title" style={{display:"inline-block",...sf(160,700),letterSpacing:8,opacity:loaded?1:0,transform:loaded?"translateY(0) scale(1)":"translateY(100%) scale(0.9)",transition:"transform 1.1s cubic-bezier(0.16,1,0.3,1) "+(0.7+i*0.07)+"s, opacity 0.6s ease "+(0.7+i*0.07)+"s"}}>{ch}</span>})}
+              {shimmer && <div aria-hidden="true" style={{position:"absolute",top:0,bottom:0,width:"25%",background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.08) 50%,transparent)",animation:"shimmerSweep 1.2s cubic-bezier(0.16,1,0.3,1) forwards",pointerEvents:"none"}}/>}
             </h1>
             <CityCarousel loaded={loaded}/>
             <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
             <div className="hero-cta" style={{marginTop:48,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
-              <div onClick={openAppStore} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 28px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",...sf(14,600),color:hoverCta?C.bg:C.s1}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
+              <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 28px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",...sf(14,600),color:hoverCta?C.bg:C.s1,textDecoration:"none"}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
                 <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
                 Download on the App Store
-              </div>
+              </a>
             </div>
           </div>
         </div>
         <div className="hero-scroll-l" style={{position:"absolute",bottom:36,left:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.4s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr",transform:"rotate(180deg)"}}>Scroll</span></div>
-        <div className="hero-scroll-r" style={{position:"absolute",bottom:36,right:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.5s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr"}}>©2026</span></div>
+        <div className="hero-scroll-r" style={{position:"absolute",bottom:36,right:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.5s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr"}}>{"©"+new Date().getFullYear()}</span></div>
       </section>
 
       {/* ═══ MOBILE MENU OVERLAY ═══ */}
@@ -763,7 +769,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
         {/* Links */}
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Events",href:"/events"},{label:"Pricing",href:"/pricing"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"/contact"}].map(function(item,i){
+          {[{label:"Pricing",href:"/pricing"},{label:"Catalog",href:"/catalog"},{label:"Restaurants",href:"/catalog/dining"},{label:"Hotels",href:"/catalog/hotels"},{label:"Business",href:"/business"},{label:"Contact",href:"/contact"}].map(function(item,i){
             return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{item.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -772,24 +778,23 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
         {/* Bottom CTA */}
         <div style={{padding:"0 36px 48px",opacity:0,animation:"menuFadeUp 0.5s ease 0.6s forwards"}}>
-          <div onClick={function(){setMobileMenu(false);openAppStore()}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,cursor:"pointer",width:"100%",transition:"transform 0.3s"}}>
+          <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" onClick={function(){setMobileMenu(false)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,cursor:"pointer",width:"100%",transition:"transform 0.3s",textDecoration:"none"}}>
             <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
             Download on the App Store
-          </div>
+          </a>
           <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Dubai · London</p>
         </div>
       </div>}
 
       {/* ═══ FEATURED EVENTS ═══ */}
-      <FeaturedEvents/>
 
       {/* ═══ HOW IT WORKS ═══ */}
       <section ref={stepsRef} aria-label="How it works" style={{padding:"140px 0 120px",position:"relative"}}><div style={divider}/>
         <div style={{textAlign:"center",maxWidth:600,margin:"0 auto 80px"}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:stepsVis?1:0,transition:"all 0.8s ease"}}>How it works</p><h2 className="sec-sub" style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:stepsVis?1:0,transform:stepsVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Three steps to<br/>everything.</h2></div>
         <div className="step-wrap" style={{maxWidth:560,margin:"0 auto",position:"relative",padding:"0 40px"}}><div className="step-line" style={{position:"absolute",top:24,bottom:80,left:63,width:1,background:"#1F1F23"}}><div style={{width:"100%",height:(stepsProgress*100)+"%",background:"linear-gradient(180deg,#3F3F46,#2C2C31)",transition:"height 0.1s linear"}}/></div>
-          <Step num="1" title="Tell Alfred" icon="💬" desc="Type what you want in plain language. A table for tonight, a yacht this weekend, a private chef for Saturday — anything." detail="Alfred checks it · responds in seconds" vis={stepsVis} delay={0.3}/>
-          <Step num="2" title="We handle it" icon="⚡" desc="Your request goes straight to a real human concierge who finds the best options, makes the calls, and confirms everything — no bots, no waiting." detail="100% human · always available" vis={stepsVis} delay={0.55}/>
-          <Step num="3" title="Show up" icon="✦" desc="Get your confirmation, show up, enjoy. No calls, no back-and-forth, no hassle. That's it." detail="One tap · done" vis={stepsVis} delay={0.8}/>
+          <Step num="1" title="Tell Alfred" icon="💬" desc="Share what you need, including the city, dates, party size, preferences and budget." detail="One clear request" vis={stepsVis} delay={0.3}/>
+          <Step num="2" title="We check options" icon="⚡" desc="A concierge checks relevant providers and returns current options, pricing and terms for your dates." detail="Availability is confirmed for each request" vis={stepsVis} delay={0.55}/>
+          <Step num="3" title="Approve the request" icon="✦" desc="Review the price, deposit and cancellation conditions, then approve the option that works for you." detail="Nothing is final until confirmed" vis={stepsVis} delay={0.8}/>
         </div>
       </section>
 
@@ -815,34 +820,23 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         </div>
       </section>
 
-      {/* ═══ SOCIAL PROOF ═══ */}
-      <section ref={statsRef} aria-label="Statistics" style={{padding:"140px 0 160px",position:"relative"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",marginBottom:80}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:statsVis?1:0,transition:"all 0.8s ease"}}>By the numbers</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Built to exceed<br/>every expectation.</h2></div>
-        <div className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,maxWidth:880,margin:"0 auto",background:C.bd,borderRadius:20,overflow:"hidden",opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 1s ease 0.3s"}}>{[{n:200,s:"+",l:"Curated Venues",sb:"Restaurants, clubs & bars",c:"#818CF8"},{n:120,s:"+",l:"Wellness Partners",sb:"Spas, trainers & retreats",c:"#34D399"},{px:"< ",n:2,s:" min",l:"Response Time",sb:"Average concierge reply",c:"#F472B6"},{n:24,s:"/7",l:"Concierge",sb:"Real humans, always on",c:"#FBBF24"}].map(function(stat,i){return <div key={i} className="stat-cell" style={{background:C.bg,padding:"44px 28px",textAlign:"center"}}><div className="stat-num" style={{...sf(48,600),color:stat.c,marginBottom:8,lineHeight:1,whiteSpace:"nowrap"}}>{stat.px||""}<AnimCounter end={stat.n} suffix={stat.s} duration={1800} active={statsVis}/></div><div style={{...sf(14,600),color:C.s2,marginBottom:4}}>{stat.l}</div><div style={{...sf(12,400),color:C.s6}}>{stat.sb}</div></div>})}</div>
+      {/* ═══ REQUEST STANDARDS ═══ */}
+      <section ref={statsRef} aria-label="Request standards" style={{padding:"140px 0 160px",position:"relative"}}><div style={divider}/>
+        <div style={{textAlign:"center",maxWidth:560,margin:"0 auto",marginBottom:80}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:statsVis?1:0,transition:"all 0.8s ease"}}>Request standards</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Built around<br/>clear confirmations.</h2></div>
+        <div className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,maxWidth:880,margin:"0 auto",background:C.bd,borderRadius:20,overflow:"hidden",opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(24px)",transition:"all 1s ease 0.3s"}}>{[{n:"Human",l:"Coordination",sb:"A concierge handles the request",c:"#818CF8"},{n:"Current",l:"Availability",sb:"Checked for your dates",c:"#34D399"},{n:"Clear",l:"Terms",sb:"Price and policies before approval",c:"#F472B6"},{n:"Flexible",l:"Alternatives",sb:"Other options when needed",c:"#FBBF24"}].map(function(stat,i){return <div key={i} className="stat-cell" style={{background:C.bg,padding:"44px 24px",textAlign:"center"}}><div className="stat-num" style={{...sf(30,600),color:stat.c,marginBottom:10,lineHeight:1,whiteSpace:"nowrap"}}>{stat.n}</div><div style={{...sf(14,600),color:C.s2,marginBottom:4}}>{stat.l}</div><div style={{...sf(12,400),color:C.s6,lineHeight:1.5}}>{stat.sb}</div></div>})}</div>
         <div style={{maxWidth:880,margin:"80px auto 0",opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.6s",padding:"0 40px"}}>
           <div className="test-card" style={{borderRadius:24,border:"1px solid "+C.bd,background:C.el,padding:"48px 44px",textAlign:"center",position:"relative",overflow:"hidden"}}>
-            {/* Subtle top shine */}
             <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg, transparent, rgba(244,244,245,0.06) 30%, rgba(244,244,245,0.1) 50%, rgba(244,244,245,0.06) 70%, transparent)"}}/>
-            {/* Quote mark */}
-            <div style={{...sf(64,300),color:C.s7,lineHeight:1,marginBottom:12}}>"</div>
-            <p className="test-quote" style={{...sf(20,400),color:C.s3,lineHeight:1.7,fontStyle:"italic",marginBottom:32,maxWidth:480,margin:"0 auto 32px"}}>I told Alfred I needed a last-minute dinner for eight in Paris. Twenty minutes later, I had a private room at a Michelin-starred restaurant I couldn't have booked myself.</p>
-            {/* Stars */}
-            <div style={{display:"flex",justifyContent:"center",gap:4,marginBottom:20}}>
-              {[1,2,3,4,5].map(function(s){return <svg key={s} width="16" height="16" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>})}
-            </div>
-            {/* Author */}
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-              <div style={{...sf(14,600),color:C.s3}}>Bruce Wayne</div>
-              <div style={{...sf(12,400),color:C.s6}}>· Founding Member · Miami</div>
-            </div>
+            <p style={{...sf(10,600),color:C.s7,letterSpacing:3,textTransform:"uppercase",marginBottom:18}}>Before you approve</p>
+            <p className="test-quote" style={{...sf(20,400),color:C.s3,lineHeight:1.7,maxWidth:620,margin:"0 auto"}}>Provider availability, final pricing, deposits and cancellation terms are checked for each request. If the first option is unavailable, Alfred can research alternatives.</p>
           </div>
         </div>
-        <div className="trust-row" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:40,marginTop:72,opacity:statsVis?1:0,transition:"all 0.8s ease 0.8s"}}>{["End-to-end encrypted","Invite-only beta","No ads, ever"].map(function(t,i){return <div key={i} style={{display:"flex",alignItems:"center",gap:8}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke={C.gn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg><span style={{...sf(12,400),color:C.s5}}>{t}</span></div>})}</div>
+        <div className="trust-row" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:40,marginTop:72,opacity:statsVis?1:0,transition:"all 0.8s ease 0.8s"}}>{["Human request coordination","Terms confirmed before booking","Privacy choices available"].map(function(t,i){return <div key={i} style={{display:"flex",alignItems:"center",gap:8}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke={C.gn} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg><span style={{...sf(12,400),color:C.s5}}>{t}</span></div>})}</div>
       </section>
 
       {/* ═══ MEMBERSHIP — THREE TIERS ═══ */}
       <section ref={tiersRef} aria-label="Membership" id="membership" style={{padding:"140px 0 160px",position:"relative"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:60}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:tiersVis?1:0,transition:"all 0.8s ease"}}>Membership</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:16,opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Choose your<br/>level of access.</h2><p style={{...sf(16,400),color:C.s5,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Three tiers. One concierge. Every door open.</p></div>
+        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:60}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:tiersVis?1:0,transition:"all 0.8s ease"}}>Membership</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:16,opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Choose your<br/>level of support.</h2><p style={{...sf(16,400),color:C.s5,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Plan details and current pricing are shown in the app.</p></div>
 
         <div className="tiers-row" style={{display:"flex",gap:16,maxWidth:1060,margin:"0 auto",padding:"0 40px",alignItems:"stretch",opacity:tiersVis?1:0,transform:tiersVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.4s"}}>
 
@@ -851,43 +845,39 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             <div style={{...sf(10,600),color:C.s6,letterSpacing:2,textTransform:"uppercase",marginBottom:12}}>Entry</div>
             <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred Gold</div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
-              <span style={{...sf(36,700),color:C.s1}}>$9.99</span>
-              <span style={{...sf(14),color:C.s6}}>/month</span>
+              <span style={{...sf(24,700),color:C.s1}}>Current pricing</span>
+              <span style={{...sf(14),color:C.s6}}>in the app</span>
             </div>
             <div style={{height:0.5,background:C.bd,marginBottom:20}}/>
-            {["Full access to the Alfred app","AI concierge chat agent","Restaurant discovery & recommendations","Bookings via Resy, OpenTable & SevenRooms","Global venue catalog","Event discovery"].map(function(f,i){
+            {["Access to the Alfred app","Browse the venue catalog","Restaurant and hotel discovery","Submit availability requests","Review request updates","Keep request details in one place"].map(function(f,i){
               return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:14}}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
                 <span style={{...sf(13),color:C.s4,lineHeight:1.5}}>{f}</span>
               </div>
             })}
             <div style={{flex:1}}/>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,border:"1px solid "+C.bd,cursor:"pointer",...sf(14,600),color:C.s1,marginTop:24,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.background="transparent";e.currentTarget.style.borderColor=C.bd}}>
-              Get Alfred Gold
-            </div>
+            <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,border:"1px solid "+C.bd,cursor:"pointer",...sf(14,600),color:C.s1,marginTop:24,transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.background="transparent";e.currentTarget.style.borderColor=C.bd}}>View Gold in the app</a>
           </div>
 
           {/* ── ALFRED PLATINUM ── */}
           <div style={{flex:1,borderRadius:24,background:C.el,border:"1.5px solid rgba(244,244,245,0.15)",padding:"36px 28px",display:"flex",flexDirection:"column",position:"relative",transform:"translateY(-8px)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
-            <div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",padding:"5px 16px",borderRadius:"0 0 12px 12px",background:C.s1,...sf(10,700),color:C.bg,letterSpacing:1}}>MOST POPULAR</div>
-            <div style={{...sf(10,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",marginBottom:12,marginTop:8}}>Recommended</div>
+            <div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",padding:"5px 16px",borderRadius:"0 0 12px 12px",background:C.s1,...sf(10,700),color:C.bg,letterSpacing:1}}>MORE SUPPORT</div>
+            <div style={{...sf(10,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",marginBottom:12,marginTop:8}}>Concierge</div>
             <div style={{...sf(24,700),color:C.s1,marginBottom:4}}>Alfred Platinum</div>
             <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:20}}>
-              <span style={{...sf(36,700),color:C.s1}}>$99</span>
-              <span style={{...sf(14),color:C.s6}}>/month</span>
+              <span style={{...sf(24,700),color:C.s1}}>Current pricing</span>
+              <span style={{...sf(14),color:C.s6}}>in the app</span>
             </div>
             <div style={{height:0.5,background:C.bd,marginBottom:16}}/>
             <div style={{...sf(12,500),color:C.s3,marginBottom:16}}>Everything in Gold, plus:</div>
-            {["Skip the line — outside & check-in desk","Strategic table placement","Reduced minimum spend on alcohol & food","Waived advance payment requirement","VIP flag in venue system — upgrade eligibility","Most experienced waiter & bottle girl","Waived valet","Waived 15-min grace period","Custom bottle parade & shoutouts","Music request selection","VIP host at your table all night","Guest companions on request","Exclusive event access","Concierge consultancy & advice"].map(function(f,i){
+            {["Human concierge coordination","Complex multi-service requests","Restaurant and hotel option research","Transport and itinerary coordination","Group requirement handling","Provider term summaries","Request follow-up","WhatsApp request support","Special-occasion planning"].map(function(f,i){
               return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:12}}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
                 <span style={{...sf(13),color:C.s3,lineHeight:1.5}}>{f}</span>
               </div>
             })}
             <div style={{flex:1}}/>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,marginTop:24,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-              Get Alfred Platinum
-            </div>
+            <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,marginTop:24,transition:"transform 0.3s,box-shadow 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>View Platinum in the app</a>
           </div>
 
           {/* ── ALFRED CENTURION ── */}
@@ -903,28 +893,28 @@ input::placeholder{color:#52525B}input:focus{outline:none}
               <div style={{...sf(24,700),color:C.s2,marginBottom:20}}>Alfred Centurion</div>
               <div style={{height:0.5,background:"rgba(244,244,245,0.06)",marginBottom:16}}/>
               <div style={{...sf(12,500),color:C.s4,marginBottom:16}}>Everything in Platinum, plus:</div>
-              {["Dedicated personal agent — one human, always your contact","24/7 WhatsApp access to your agent","Worldwide VIP access","Airport → venue coordination","Last-minute impossible reservations","Full travel itinerary building","Private event & experience curation","Quarterly branded gifting"].map(function(f,i){
+              {["Dedicated personal agent","WhatsApp access to your concierge","Multi-city request coordination","Airport → venue planning","Last-minute availability checks","Travel itinerary assistance","Private event request support","Curated member updates"].map(function(f,i){
                 return <div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:12}}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s3} strokeWidth="2" strokeLinecap="round" style={{marginTop:2,flexShrink:0}}><path d="M20 6L9 17l-5-5"/></svg>
                   <span style={{...sf(13),color:C.s4,lineHeight:1.5}}>{f}</span>
                 </div>
               })}
               <div style={{flex:1}}/>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",cursor:"pointer",...sf(14,600),color:C.s2,marginTop:24,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
+              <a href="https://wa.me/33743713649" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",cursor:"pointer",...sf(14,600),color:C.s2,marginTop:24,transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
                 Apply for Centurion
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s2} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
-              </div>
+              </a>
             </div>
             <div style={{position:"absolute",bottom:14,right:18,opacity:0.03,pointerEvents:"none"}}><span style={{...sf(8,700),letterSpacing:4,textTransform:"uppercase",color:C.s2}}>ALFRED</span></div>
           </div>
         </div>
 
-        <p style={{textAlign:"center",marginTop:40,...sf(13,400),color:C.s6,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.9s"}}>All plans include end-to-end encryption and no ads. Cancel anytime.</p>
+        <p style={{textAlign:"center",marginTop:40,...sf(13,400),color:C.s6,opacity:tiersVis?1:0,transition:"opacity 0.8s ease 0.9s"}}>Plan availability, pricing and included support are confirmed in the app. Provider availability remains separate.</p>
       </section>
 
       {/* ═══ VENUE HORIZONTAL SCROLL ═══ */}
       <section ref={dirRef} aria-label="Venues" style={{padding:"140px 0 140px",position:"relative",overflow:"hidden"}}><div style={divider}/>
-        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:48}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:dirVis?1:0,transition:"all 0.8s ease"}}>Our Venues</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:12,opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Hand-picked.<br/>Verified. Yours.</h2><p style={{...sf(14,400),color:C.s5,opacity:dirVis?1:0,transition:"all 0.8s ease 0.3s"}}>{venues.length} exclusive venues worldwide</p></div>
+        <div style={{textAlign:"center",maxWidth:520,margin:"0 auto",marginBottom:48}}><p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:16,opacity:dirVis?1:0,transition:"all 0.8s ease"}}>Catalog examples</p><h2 className="sec-head" style={{...sf(48,600),letterSpacing:-1.5,lineHeight:1.08,marginBottom:12,opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>A starting point<br/>for your request.</h2><p style={{...sf(14,400),color:C.s5,opacity:dirVis?1:0,transition:"all 0.8s ease 0.3s"}}>Examples from the current venue and service catalog</p></div>
 
         <div className="venue-scroll" style={{display:"flex",gap:20,overflowX:"auto",scrollSnapType:"x mandatory",scrollBehavior:"smooth",padding:"0 40px 20px",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",msOverflowStyle:"none",opacity:dirVis?1:0,transform:dirVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.4s"}}>
           {venues.map(function(v,i){return(
@@ -957,10 +947,10 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
           {/* App Store button */}
           <div style={{opacity:ctaVis?1:0,transition:"all 0.8s ease 0.55s",marginBottom:32}}>
-            <div onClick={openAppStore} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 36px",borderRadius:16,background:hoverFinal?C.s1:C.el,border:"1px solid "+(hoverFinal?C.s1:C.bd),cursor:"pointer",transform:hoverFinal?"translateY(-3px)":"translateY(0)",boxShadow:hoverFinal?"0 12px 40px rgba(244,244,245,0.1)":"none",transition:"all 0.4s ease",...sf(16,600),color:hoverFinal?C.bg:C.s1}} onMouseEnter={function(){setHoverFinal(true)}} onMouseLeave={function(){setHoverFinal(false)}}>
+            <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"16px 36px",borderRadius:16,background:hoverFinal?C.s1:C.el,border:"1px solid "+(hoverFinal?C.s1:C.bd),cursor:"pointer",transform:hoverFinal?"translateY(-3px)":"translateY(0)",boxShadow:hoverFinal?"0 12px 40px rgba(244,244,245,0.1)":"none",transition:"all 0.4s ease",...sf(16,600),color:hoverFinal?C.bg:C.s1,textDecoration:"none"}} onMouseEnter={function(){setHoverFinal(true)}} onMouseLeave={function(){setHoverFinal(false)}}>
               <svg width="18" height="18" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
               Download on the App Store
-            </div>
+            </a>
           </div>
         </div>
       </section>
@@ -979,7 +969,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* Explore */}
             <div>
               <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
-              {["About","How it Works","Pricing","Events","Catalog","Blog","Business","Contact"].map(function(l){var href=l==="About"?"/about":l==="How it Works"?"/how-it-works":l==="Pricing"?"/pricing":l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Events"?"/events":l==="Blog"?"/blog":l==="Contact"?"/contact":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
+              {["About","How it Works","Pricing","Catalog","Restaurants","Hotels","Business","Contact"].map(function(l){var href=l==="About"?"/about":l==="How it Works"?"/how-it-works":l==="Pricing"?"/pricing":l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Restaurants"?"/catalog/dining":l==="Hotels"?"/catalog/hotels":l==="Contact"?"/contact":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
             </div>
 
             {/* Follow us */}
@@ -995,18 +985,15 @@ input::placeholder{color:#52525B}input:focus{outline:none}
 
             {/* Newsletter + Download */}
             <div>
-              <div style={{...sf(15,600),color:C.s1,marginBottom:6}}>Get invited to the best venues</div>
-              <p style={{...sf(12,400),color:C.s6,marginBottom:16,lineHeight:1.5}}>Weekly curated picks and exclusive access. No spam.</p>
-              <div style={{display:"flex",gap:8,marginBottom:28}}>
-                <input placeholder="Your email" style={{...sf(13,400),color:C.s1,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,borderRadius:10,padding:"10px 14px",flex:1,outline:"none"}}/>
-                <div style={{...sf(12,600),color:"#0E0E11",background:C.s1,padding:"10px 18px",borderRadius:10,cursor:"pointer",whiteSpace:"nowrap",transition:"opacity 0.2s"}} onMouseEnter={function(e){e.target.style.opacity="0.85"}} onMouseLeave={function(e){e.target.style.opacity="1"}}>Subscribe</div>
-              </div>
+              <div style={{...sf(15,600),color:C.s1,marginBottom:6}}>Request something from Alfred</div>
+              <p style={{...sf(12,400),color:C.s6,marginBottom:16,lineHeight:1.5}}>Share the city, dates and what you need. A concierge can check current options.</p>
+              <a href="https://wa.me/33743713649" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",...sf(12,600),color:C.bg,background:C.s1,padding:"10px 18px",borderRadius:10,marginBottom:28,textDecoration:"none"}}>Request on WhatsApp</a>
 
               {/* App Store */}
-              <div onClick={openAppStore} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s",...sf(13,600),color:C.s1}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+              <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s",...sf(13,600),color:C.s1,textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
                 <svg width="14" height="14" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
                 Download on the App Store
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -1021,7 +1008,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         {/* Bottom bar */}
         <div style={{maxWidth:1060,margin:"0 auto",padding:"20px 40px 36px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderTop:"1px solid "+C.bd,paddingTop:24}}>
-            <span style={{...sf(12,400),color:C.s7}}>Alfred Concierge Inc. ©2026</span>
+            <span style={{...sf(12,400),color:C.s7}}>Alfred Concierge Inc. {"©"+new Date().getFullYear()}</span>
             <div style={{display:"flex",gap:24}}>
               {[{l:"Privacy Policy",h:"/privacy"},{l:"Terms",h:"/terms"}].map(function(it){return <a key={it.l} href={it.h} style={{...sf(12,400),color:C.s7,transition:"color 0.2s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.color=C.s5}} onMouseLeave={function(e){e.target.style.color=C.s7}}>{it.l}</a>})}
             </div>
@@ -1101,14 +1088,14 @@ function PAnimCounter(p){
 }
 
 var CATS=[
-  {icon:"🏨",title:"Hotels & Resorts",desc:"Get booked by high-spending guests who trust Alfred for their stays.",examples:"Boutique hotels, 5-star resorts, palace hotels, villas"},
-  {icon:"🍽",title:"Restaurants",desc:"Fill your best tables with guests who spend 3x the average cover.",examples:"Fine dining, Michelin-starred, chef's tables, private rooms"},
-  {icon:"🌙",title:"Nightlife",desc:"Premium table bookings and VIP guestlists from verified members.",examples:"Clubs, lounges, rooftop bars, members-only venues"},
+  {icon:"🏨",title:"Hotels & Resorts",desc:"Receive stay requests with dates, guest count and room preferences.",examples:"Boutique hotels, 5-star resorts, palace hotels, villas"},
+  {icon:"🍽",title:"Restaurants",desc:"Receive relevant table and private-dining requests through a human concierge.",examples:"Fine dining, Michelin-starred, chef's tables, private rooms"},
+  {icon:"🌙",title:"Nightlife",desc:"Receive table and guest-list requests with the customer's requirements included.",examples:"Clubs, lounges, rooftop bars, members-only venues"},
   {icon:"💆",title:"Wellness & Spas",desc:"Connect with clients seeking premium treatments and retreats.",examples:"Luxury spas, private trainers, clinics, wellness retreats"},
-  {icon:"🏎",title:"Exotic Cars",desc:"Rent to verified, insured members with dedicated concierge support.",examples:"Supercar rentals, classic cars, chauffeur services"},
-  {icon:"✈️",title:"Private Aviation",desc:"Charter requests from members who book same-week.",examples:"Jet charters, helicopter transfers, fractional operators"},
-  {icon:"🛥",title:"Yachts & Marine",desc:"Day charters and extended bookings from our global member base.",examples:"Superyachts, day boats, sailing experiences"},
-  {icon:"✦",title:"Experiences",desc:"Offer exclusive access, events, and one-of-a-kind moments.",examples:"VIP events, private tours, personal shopping, concierge"},
+  {icon:"🏎",title:"Exotic Cars",desc:"Receive rental requests with dates, location and vehicle preferences.",examples:"Supercar rentals, classic cars, chauffeur services"},
+  {icon:"✈️",title:"Private Aviation",desc:"Receive charter requests with route, date and passenger requirements.",examples:"Jet charters, helicopter transfers, fractional operators"},
+  {icon:"🛥",title:"Yachts & Marine",desc:"Receive day-charter and extended-trip requests for confirmed service areas.",examples:"Superyachts, day boats, sailing experiences"},
+  {icon:"✦",title:"Experiences",desc:"Present request-based events, tours and tailored experiences.",examples:"VIP events, private tours, personal shopping, concierge"},
 ];
 
 function AlfredPartners(){
@@ -1152,6 +1139,7 @@ function AlfredPartners(){
         status:"new"
       });
       if(result.error)throw result.error;
+      trackLead({method:"partner_form",label:"Partner application"});
       setSubmitted(true);
     }catch(e){
       console.error(e);
@@ -1161,12 +1149,12 @@ function AlfredPartners(){
   var inputStyle={width:"100%",padding:"14px 18px",borderRadius:14,background:C.el,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",transition:"border-color 0.3s"};
 
   var FAQS=[
-    {q:"Is there a fee to join?",a:"No upfront fees. Alfred operates on a commission model — you only pay when we drive real bookings. Rates are discussed during onboarding and vary by category (typically 10-20%)."},
-    {q:"What kind of clients will I reach?",a:"Alfred members are verified UHNW individuals, executives, and global travelers who spend 3-5x the average customer. Every member is vetted before joining."},
-    {q:"How does the booking process work?",a:"Members request through Alfred's app. Our concierge team coordinates directly with your reservations team via WhatsApp, email, or phone. No new systems to learn."},
-    {q:"What cities do you operate in?",a:"Currently Miami and Paris, expanding to London, New York, Dubai, Mykonos, Milan, and more. We onboard partners ahead of launch in new cities."},
-    {q:"How quickly can I get listed?",a:"Most partners are live within 1-2 weeks. We handle photography, copywriting, and profile creation. You just confirm availability and pricing."},
-    {q:"Can I control my availability?",a:"Absolutely. You set blackout dates, table limits, pricing tiers, minimum spend. Alfred respects your operations completely. You're always in control."},
+    {q:"Is there a fee to join?",a:"Any listing fees, commission or other commercial terms are explained during review and agreed in writing before activation."},
+    {q:"What kind of clients will I reach?",a:"Alfred introduces relevant concierge requests based on the services and locations a partner confirms. Request volume and customer spend are not guaranteed."},
+    {q:"How does the booking process work?",a:"A concierge coordinates the request with your nominated contact. Availability, price, deposits and cancellation terms are confirmed before a booking is final."},
+    {q:"What cities do you operate in?",a:"Current service coverage is shown on Alfred's city and catalog pages. Ask the partnerships team about a specific market before applying."},
+    {q:"How quickly can I get listed?",a:"Timing depends on verification, content, commercial terms and operational setup. The team confirms a realistic timeline after reviewing the application."},
+    {q:"Can I control my availability?",a:"Partners confirm their own availability, blackout dates, pricing and conditions. Alfred does not represent an option as confirmed without partner approval."},
   ];
 
   return(
@@ -1236,7 +1224,7 @@ textarea{resize:vertical;min-height:100px}
           </div>
         </div>
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33743713649",ext:true}].map(function(item,i){
+          {[{label:"Home",href:"/"},{label:"Restaurants",href:"/catalog/dining"},{label:"Hotels",href:"/catalog/hotels"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33743713649",ext:true}].map(function(item,i){
             return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{item.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1257,11 +1245,11 @@ textarea{resize:vertical;min-height:100px}
             {/* Urgency badge */}
             <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"8px 16px",borderRadius:10,background:C.gn+"0F",border:"0.5px solid "+C.gn+"25",marginBottom:28}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px "+C.gn+"66"}}/>
-              <span style={{...sf(11,500),color:C.gn}}>Now onboarding Miami & Paris · Limited spots per category</span>
+              <span style={{...sf(11,500),color:C.gn}}>Partnership applications are open</span>
             </div>
 
             <h1 className="hero-t" style={{...sf(52,700),letterSpacing:-2,lineHeight:1.06,marginBottom:20}}>Grow your business<br/>with Alfred.</h1>
-            <p className="hero-sub" style={{...sf(17,400),color:C.s5,lineHeight:1.7,maxWidth:460,margin:"0 auto 36px"}}>Join the concierge platform trusted by the world's most discerning clientele. Zero upfront cost. Premium guests. Real bookings.</p>
+            <p className="hero-sub" style={{...sf(17,400),color:C.s5,lineHeight:1.7,maxWidth:460,margin:"0 auto 36px"}}>Apply to have your hotel, restaurant, venue or service reviewed for Alfred's concierge catalog. Commercial terms and onboarding requirements are confirmed before launch.</p>
 
             {/* Dual CTA */}
             <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
@@ -1278,31 +1266,27 @@ textarea{resize:vertical;min-height:100px}
         </div>
       </section>
 
-      {/* ═══ REVENUE PROJECTION ═══ */}
+      {/* ═══ PARTNERSHIP VALUE ═══ */}
       <section ref={revenueRef} style={{padding:"100px 0 80px",position:"relative"}}><div style={pDiv}/>
         <div className="vw">
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:revenueVis?1:0,transition:"all 0.8s ease"}}>The Opportunity</p>
-          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:48,opacity:revenueVis?1:0,transform:revenueVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>What Alfred partners<br/>earn on average.</h2>
+          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:48,opacity:revenueVis?1:0,transform:revenueVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>A clearer path from<br/>request to confirmation.</h2>
 
           <div className="rev-row" style={{display:"flex",gap:16,opacity:revenueVis?1:0,transform:revenueVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.3s"}}>
             {[
-              {num:6000,period:"/month",label:"Restaurant",sub:"Based on 20 covers/month via Alfred at €300 avg. spend",delay:0},
-              {num:17000,period:"/month",label:"Hotel",sub:"Based on 8 room-nights/month at €2,100 avg. rate",delay:200},
-              {num:8600,period:"/month",label:"Nightlife",sub:"Based on 12 table bookings/month at €720 avg. minimum",delay:400},
+              {label:"Relevant requests",sub:"Your profile describes what you offer so the concierge can route appropriate enquiries."},
+              {label:"Terms confirmed",sub:"Availability, pricing, deposits and cancellation conditions are checked for each request."},
+              {label:"Human coordination",sub:"A concierge keeps the customer and your nominated contact aligned through confirmation."},
             ].map(function(r,i){
               return(
                 <div key={i} style={{flex:1,padding:"32px 28px",borderRadius:24,background:C.el,border:"1px solid "+C.bd,transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
-                  <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:6}}>
-                    <span style={{...sf(32,700),color:C.s1}}><PAnimCounter prefix="€" end={r.num} active={revenueVis} duration={1800+r.delay}/></span>
-                    <span style={{...sf(14),color:C.s6}}>{r.period}</span>
-                  </div>
-                  <div style={{...sf(14,600),color:C.s3,marginBottom:8}}>{r.label}</div>
+                  <div style={{...sf(18,600),color:C.s3,marginBottom:10}}>{r.label}</div>
                   <div style={{...sf(12,400),color:C.s6,lineHeight:1.5}}>{r.sub}</div>
                 </div>
               );
             })}
           </div>
-          <p style={{...sf(12,400),color:C.s7,marginTop:16,opacity:revenueVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>* Based on current partner data across Miami and Paris. Results vary by venue, category, and market.</p>
+          <p style={{...sf(12,400),color:C.s7,marginTop:16,opacity:revenueVis?1:0,transition:"opacity 0.8s ease 0.5s"}}>Request volume, revenue and acceptance are not guaranteed.</p>
         </div>
       </section>
 
@@ -1310,13 +1294,13 @@ textarea{resize:vertical;min-height:100px}
       <section ref={whyRef} style={{padding:"100px 0 80px",position:"relative"}}><div style={pDiv}/>
         <div className="vw">
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:whyVis?1:0,transition:"all 0.8s ease"}}>Why Alfred</p>
-          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:48,maxWidth:500,opacity:whyVis?1:0,transform:whyVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Not another listing.<br/>A concierge that sells for you.</h2>
+          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:48,maxWidth:500,opacity:whyVis?1:0,transform:whyVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>More than a listing.<br/>Human request coordination.</h2>
 
           <div className="why-grid" style={{opacity:whyVis?1:0,transform:whyVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.3s"}}>
             {[
-              {title:"Premium clientele",desc:"Verified guests who spend 3-5x the average.",icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>},
-              {title:"Zero upfront cost",desc:"Commission only. You pay when we deliver.",icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>},
-              {title:"Human concierge",desc:"Every booking handled personally, not by bots.",icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>},
+              {title:"Relevant enquiries",desc:"Profiles help the concierge match customer requests to the right partner options.",icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>},
+              {title:"Clear commercial terms",desc:"Fees, commissions and payment terms are agreed before the partnership goes live.",icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>},
+              {title:"Human concierge",desc:"A person coordinates requests, alternatives and final confirmation with your team.",icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.s4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>},
             ].map(function(item,i){
               return(
                 <div key={i} style={{padding:"32px 28px",borderRadius:24,background:C.el,border:"1px solid "+C.bd,transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
@@ -1333,7 +1317,7 @@ textarea{resize:vertical;min-height:100px}
       {/* ═══ INLINE CTA 1 ═══ */}
       <div className="vw" style={{marginBottom:0}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"24px 32px",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,flexWrap:"wrap",gap:16}}>
-          <div><span style={{...sf(15,600),color:C.s1}}>Ready to get started?</span><span style={{...sf(14,400),color:C.s5,marginLeft:8}}>Most partners go live in under 2 weeks.</span></div>
+          <div><span style={{...sf(15,600),color:C.s1}}>Ready to get started?</span><span style={{...sf(14,400),color:C.s5,marginLeft:8}}>We confirm requirements and timing after reviewing your application.</span></div>
           <a href="#apply" style={{padding:"12px 24px",borderRadius:12,background:C.s1,...sf(13,600),color:C.bg,transition:"transform 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-1px)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)"}}>Apply Now</a>
         </div>
       </div>
@@ -1342,24 +1326,24 @@ textarea{resize:vertical;min-height:100px}
       <section ref={compareRef} style={{padding:"100px 0 80px",position:"relative"}}><div style={pDiv}/>
         <div className="vw">
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:compareVis?1:0,transition:"all 0.8s ease"}}>How We Compare</p>
-          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:48,opacity:compareVis?1:0,transform:compareVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Not like the others.</h2>
+          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:48,opacity:compareVis?1:0,transform:compareVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>A transparent workflow.</h2>
 
           <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",opacity:compareVis?1:0,transform:compareVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.3s"}}>
             {/* Header */}
             <div className="compare-table" style={{padding:"16px 24px",borderBottom:"1px solid "+C.bd}}>
               <div style={{...sf(11,500),color:C.s6}}></div>
               <div style={{...sf(11,600),color:C.s1,textAlign:"center",letterSpacing:1}}>ALFRED</div>
-              <div style={{...sf(11,500),color:C.s6,textAlign:"center"}}>Others</div>
+              <div style={{...sf(11,500),color:C.s6,textAlign:"center"}}>CONFIRMED WITH YOU</div>
             </div>
             {[
-              {feature:"Listing fee",alfred:"Free",other:"$300-2,000/yr"},
-              {feature:"Commission",alfred:"10-20%",other:"15-30%"},
-              {feature:"Client quality",alfred:"Verified UHNW",other:"Anyone"},
-              {feature:"Avg. spend per guest",alfred:"€440+",other:"€80-150"},
-              {feature:"No-show rate",alfred:"< 1%",other:"15-25%"},
-              {feature:"Booking method",alfred:"Human concierge",other:"Bot / self-serve"},
-              {feature:"Onboarding",alfred:"We do everything",other:"DIY setup"},
-              {feature:"Support",alfred:"Dedicated partner manager",other:"Email tickets"},
+              {feature:"Request handling",alfred:"Human concierge",other:"Dates and requirements"},
+              {feature:"Availability",alfred:"Checked per request",other:"Blackouts and limits"},
+              {feature:"Pricing",alfred:"Never assumed",other:"Rates and inclusions"},
+              {feature:"Booking terms",alfred:"Shown before confirmation",other:"Deposits and cancellation"},
+              {feature:"Profile content",alfred:"Reviewed for accuracy",other:"Approved descriptions"},
+              {feature:"Commercial model",alfred:"Documented in advance",other:"Fees and payment terms"},
+              {feature:"Onboarding",alfred:"Guided setup",other:"Contacts and workflow"},
+              {feature:"Support",alfred:"Concierge coordination",other:"Escalation process"},
             ].map(function(row,i){
               return(
                 <div key={i} className="compare-table" style={{padding:"14px 24px",borderBottom:i<7?"1px solid rgba(44,44,49,0.5)":"none",background:i%2===0?"rgba(244,244,245,0.015)":"transparent"}}>
@@ -1405,7 +1389,7 @@ textarea{resize:vertical;min-height:100px}
       <section ref={statsRef} style={{padding:"100px 0 80px",position:"relative"}}><div style={pDiv}/>
         <div className="vw">
           <div className="stats-row" style={{opacity:statsVis?1:0,transform:statsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-            {[{n:"10,000+",label:"Members",sub:"Verified, high-net-worth",color:"#818CF8"},{n:"€440",label:"Avg. spend",sub:"Per booking, per person",color:"#34D399"},{n:"< 1%",label:"No-show rate",sub:"From Alfred bookings",color:"#F472B6"},{n:"0",label:"Upfront cost",sub:"Commission only model",color:"#FBBF24"}].map(function(s,i){
+            {[{n:"1:1",label:"Coordination",sub:"Human concierge",color:"#818CF8"},{n:"Live",label:"Availability",sub:"Checked per request",color:"#34D399"},{n:"Clear",label:"Terms",sub:"Confirmed before booking",color:"#F472B6"},{n:"Yours",label:"Control",sub:"You approve final terms",color:"#FBBF24"}].map(function(s,i){
               return(<div key={i} style={{background:C.bg,padding:"40px 24px",textAlign:"center"}}><div style={{...sf(36,700),color:s.color,marginBottom:8,lineHeight:1}}>{s.n}</div><div style={{...sf(14,600),color:C.s2,marginBottom:4}}>{s.label}</div><div style={{...sf(12,400),color:C.s6}}>{s.sub}</div></div>);
             })}
           </div>
@@ -1416,12 +1400,12 @@ textarea{resize:vertical;min-height:100px}
       <section ref={howRef} style={{padding:"100px 0 80px",position:"relative"}}><div style={pDiv}/>
         <div className="vw">
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:howVis?1:0,transition:"all 0.8s ease"}}>How It Works</p>
-          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:56,opacity:howVis?1:0,transform:howVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Live in days,<br/>not months.</h2>
+          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:56,opacity:howVis?1:0,transform:howVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>A practical path<br/>to going live.</h2>
           <div className="step-row" style={{display:"flex",gap:48,opacity:howVis?1:0,transform:howVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.3s"}}>
             {[
-              {n:"1",title:"Apply",desc:"Submit the form below. We review every application within 48 hours and prioritize businesses that align with our members."},
-              {n:"2",title:"Onboard",desc:"We handle everything — photography, profile copywriting, pricing setup. No tech work on your end. Your dedicated partner manager guides you through."},
-              {n:"3",title:"Earn",desc:"Alfred members discover you and book through their concierge. You receive confirmed, high-value reservations. Money in your account, guests at your door."},
+              {n:"1",title:"Apply",desc:"Share your business, service area and the best contact for partnership review."},
+              {n:"2",title:"Confirm",desc:"Agree the profile content, request workflow, commercial terms and operational requirements."},
+              {n:"3",title:"Go live",desc:"Once approved, the listing can receive requests that your team accepts or declines based on current availability."},
             ].map(function(step,i){
               return(<div key={i} style={{flex:1}}><div style={{width:48,height:48,borderRadius:"50%",border:"1px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20}}><span style={{...sf(18,600),color:C.s1}}>{step.n}</span></div><h3 style={{...sf(20,600),color:C.s1,marginBottom:10}}>{step.title}</h3><p style={{...sf(14,400),color:C.s5,lineHeight:1.7}}>{step.desc}</p></div>);
             })}
@@ -1429,25 +1413,23 @@ textarea{resize:vertical;min-height:100px}
         </div>
       </section>
 
-      {/* ═══ TESTIMONIALS — multiple ═══ */}
+      {/* ═══ PARTNERSHIP PRINCIPLES ═══ */}
       <section ref={testRef} style={{padding:"100px 0 80px",position:"relative"}}><div style={pDiv}/>
         <div className="vw">
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:testVis?1:0,transition:"all 0.8s ease"}}>From Our Partners</p>
-          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:40,opacity:testVis?1:0,transform:testVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Don't take our word<br/>for it.</h2>
+          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:testVis?1:0,transition:"all 0.8s ease"}}>Partnership Principles</p>
+          <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:40,opacity:testVis?1:0,transform:testVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>What partners<br/>can expect.</h2>
         </div>
         <div className="test-scroll" style={{paddingLeft:40,paddingRight:40,maxWidth:880,margin:"0 auto",opacity:testVis?1:0,transform:testVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.3s"}}>
           {[
-            {quote:"Alfred sends us exactly the type of guest we want — high-spending, respectful, and they always show up. Our no-show rate from Alfred bookings is literally zero.",role:"Reservations Director",venue:"Michelin-starred restaurant · Paris"},
-            {quote:"We went from 3 exotic car rentals per month to 14 in the first 60 days. Every renter is insured and verified. The concierge team handles all the coordination.",role:"Fleet Manager",venue:"Supercar rental · Miami"},
-            {quote:"The onboarding was seamless. They sent a photographer, wrote our profile, and we were live in 5 days. First booking came the same week.",role:"General Manager",venue:"Boutique hotel · South Beach"},
+            {title:"Accuracy first",body:"Profiles and request details should reflect what the partner can currently provide."},
+            {title:"No assumed availability",body:"The concierge checks dates, pricing and conditions before presenting an option as confirmed."},
+            {title:"Clear communication",body:"Both the customer and partner receive the relevant terms and next steps for each request."},
           ].map(function(t,i){
             return(
               <div key={i} style={{width:340,flexShrink:0,borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"32px 28px",position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.06) 30%,rgba(244,244,245,0.1) 50%,rgba(244,244,245,0.06) 70%,transparent)"}}/>
-                <div style={{...sf(40,300),color:C.s7,lineHeight:1,marginBottom:8}}>"</div>
-                <p style={{...sf(14,400),color:C.s3,lineHeight:1.7,fontStyle:"italic",marginBottom:24}}>{t.quote}</p>
-                <div style={{...sf(13,600),color:C.s3,marginBottom:2}}>{t.role}</div>
-                <div style={{...sf(12,400),color:C.s6}}>{t.venue}</div>
+                <div style={{...sf(16,600),color:C.s2,marginBottom:10}}>{t.title}</div>
+                <p style={{...sf(14,400),color:C.s5,lineHeight:1.7,margin:0}}>{t.body}</p>
               </div>
             );
           })}
@@ -1477,13 +1459,13 @@ textarea{resize:vertical;min-height:100px}
         <div className="vw">
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:formVis?1:0,transition:"all 0.8s ease"}}>Apply</p>
           <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:16,opacity:formVis?1:0,transform:formVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Join the network.</h2>
-          <p style={{...sf(16,400),color:C.s5,lineHeight:1.7,marginBottom:48,maxWidth:480,opacity:formVis?1:0,transition:"opacity 0.8s ease 0.25s"}}>Tell us about your business. No obligations, no fees. We respond within 48 hours.</p>
+          <p style={{...sf(16,400),color:C.s5,lineHeight:1.7,marginBottom:48,maxWidth:480,opacity:formVis?1:0,transition:"opacity 0.8s ease 0.25s"}}>Tell us about your business. Applications are reviewed individually, and any commercial terms are confirmed before onboarding.</p>
 
           {submitted ? (
             <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"60px 40px",textAlign:"center"}}>
               <div style={{width:56,height:56,borderRadius:"50%",background:C.gn+"14",border:"1px solid "+C.gn+"30",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px"}}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
               <h3 style={{...sf(24,600),marginBottom:10}}>Application received.</h3>
-              <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,maxWidth:400,margin:"0 auto 24px"}}>Our partnerships team will review and reach out within 48 hours.</p>
+              <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,maxWidth:400,margin:"0 auto 24px"}}>Our partnerships team will review the information and contact you about the next step.</p>
               <p style={{...sf(13,400),color:C.s6}}>Want to skip the wait? <a href="https://wa.me/33743713649" target="_blank" rel="noopener" style={{color:C.gn,textDecoration:"underline"}}>WhatsApp us now</a></p>
             </div>
           ) : (
@@ -1513,7 +1495,7 @@ textarea{resize:vertical;min-height:100px}
               <div style={{marginTop:14}}><label style={{display:"block",...sf(11,500),color:C.s5,letterSpacing:0.5,marginBottom:8}}>Tell us about your business</label><textarea value={formData.message} onChange={handleInput("message")} placeholder="What makes your business special? What type of clients are you looking to attract?" style={{...inputStyle,minHeight:110}}/></div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:24,flexWrap:"wrap",gap:12}}>
                 <div>
-                  <span style={{...sf(12,400),color:C.s6}}>* Required · We respond within 48 hours</span>
+                  <span style={{...sf(12,400),color:C.s6}}>* Required · Applications are reviewed individually</span>
                   {submitError&&<div style={{...sf(12,500),color:C.red,marginTop:6}}>{submitError}</div>}
                 </div>
                 <div onClick={handleSubmit} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 32px",borderRadius:14,background:formData.business&&formData.email&&!submitting?C.s1:"rgba(244,244,245,0.08)",cursor:formData.business&&formData.email&&!submitting?"pointer":"default",opacity:submitting?0.6:1,...sf(14,600),color:formData.business&&formData.email&&!submitting?C.bg:C.s6,transition:"all 0.3s"}} onMouseEnter={function(e){if(formData.business&&formData.email&&!submitting){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.1)"}}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
@@ -1545,7 +1527,7 @@ textarea{resize:vertical;min-height:100px}
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
           <PMark size={32} color={C.s5}/>
           <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,marginTop:24,marginBottom:16}}>Let's build<br/>something together.</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>The world's best businesses. The world's most discerning clients. No ads, no algorithms — real concierge, real bookings.</p>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Tell us what your business offers and how your team handles requests. We will confirm fit, terms and onboarding requirements with you.</p>
           <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
             <a href="#apply" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Apply Now</a>
             <a href="https://wa.me/33743713649" target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>WhatsApp Us</a>
@@ -1555,7 +1537,7 @@ textarea{resize:vertical;min-height:100px}
 
       {/* ═══ FOOTER ═══ */}
       <footer style={{borderTop:"1px solid "+C.bd,padding:"36px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
-        <div style={{display:"flex",alignItems:"center",gap:10}}><PMark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:10}}><PMark size={14} color={C.s7}/><span style={{...sf(10),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred {"©"+new Date().getFullYear()}</span></div>
         <div style={{display:"flex",gap:20}}>
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
           <a href="/catalog" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
@@ -1580,14 +1562,14 @@ var CATEGORIES = [
   {
     id: "dining",
     title: "Dining",
-    subtitle: "The world's best tables",
-    count: "Curated restaurants",
-    tag: "Most Popular",
+    subtitle: "Restaurant discovery and requests",
+    count: "Browse current listings",
+    tag: "Dining",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg",
     items: [
       {name:"Carbone",loc:"Miami",price:"$$$$"},
       {name:"Le Cinq",loc:"Paris",price:"$$$$"},
-      {name:"Zuma",loc:"Mykonos",price:"$$$$"},
+      {name:"Zuma",loc:"Miami",price:"Request current terms"},
       {name:"Nobu",loc:"Miami",price:"$$$$"},
       {name:"Girafe",loc:"Paris",price:"$$$"},
       {name:"Komodo",loc:"Miami",price:"$$$"},
@@ -1603,9 +1585,9 @@ var CATEGORIES = [
   {
     id: "nightlife",
     title: "Nightlife",
-    subtitle: "Tables, guestlists & VIP",
-    count: "VIP venues and tables",
-    tag: "Members Only",
+    subtitle: "Venue and table requests",
+    count: "Browse current listings",
+    tag: "Nightlife",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",
     items: [
       {name:"LIV",loc:"Miami",price:"Table min varies"},
@@ -1622,9 +1604,9 @@ var CATEGORIES = [
   {
     id: "wellness",
     title: "Wellness",
-    subtitle: "Spas, trainers & retreats",
-    count: "Spas and wellness partners",
-    tag: "Popular",
+    subtitle: "Spa and wellness requests",
+    count: "Browse current listings",
+    tag: "Wellness",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg",
     items: [
       {name:"The Setai Spa",loc:"Miami",price:"$$$"},
@@ -1641,29 +1623,29 @@ var CATEGORIES = [
   {
     id: "exotic-cars",
     title: "Exotic Cars",
-    subtitle: "Supercars, classics & chauffeurs",
-    count: "Luxury and performance cars",
-    tag: "On Demand",
+    subtitle: "Luxury and performance car requests",
+    count: "Browse current listings",
+    tag: "Cars",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg",
     items: [
-      {name:"Bugatti Chiron",loc:"Miami",price:"From $8,500/day"},
-      {name:"Lamborghini Revuelto",loc:"Miami",price:"From $3,500/day"},
-      {name:"Ferrari SF90",loc:"Miami",price:"From $3,200/day"},
-      {name:"Rolls-Royce Cullinan",loc:"Miami",price:"From $2,800/day"},
-      {name:"McLaren 750S",loc:"Miami",price:"From $2,500/day"},
-      {name:"Porsche 911 GT3 RS",loc:"Miami",price:"From $1,800/day"},
-      {name:"Aston Martin DBX707",loc:"Miami",price:"From $1,600/day"},
-      {name:"Mercedes-AMG GT",loc:"Miami",price:"From $1,200/day"},
-      {name:"Bentley Continental GT",loc:"Miami",price:"From $1,500/day"},
+      {name:"Bugatti Chiron",loc:"Miami",price:"Request current terms"},
+      {name:"Lamborghini Revuelto",loc:"Miami",price:"Request current terms"},
+      {name:"Ferrari SF90",loc:"Miami",price:"Request current terms"},
+      {name:"Rolls-Royce Cullinan",loc:"Miami",price:"Request current terms"},
+      {name:"McLaren 750S",loc:"Miami",price:"Request current terms"},
+      {name:"Porsche 911 GT3 RS",loc:"Miami",price:"Request current terms"},
+      {name:"Aston Martin DBX707",loc:"Miami",price:"Request current terms"},
+      {name:"Mercedes-AMG GT",loc:"Miami",price:"Request current terms"},
+      {name:"Bentley Continental GT",loc:"Miami",price:"Request current terms"},
     ],
     active: true,
   },
   {
     id: "accommodations",
     title: "Accommodations",
-    subtitle: "Hotels, villas & residences",
-    count: "Luxury hotels and resorts",
-    tag: "Luxury Hotels",
+    subtitle: "Hotel and resort requests",
+    count: "Browse current listings",
+    tag: "Hotels",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg",
     items: [],
     active: true,
@@ -1671,14 +1653,14 @@ var CATEGORIES = [
   {
     id: "yachts",
     title: "Yachts",
-    subtitle: "Day charters & superyachts",
-    count: "108 yachts",
-    tag: "Charter",
+    subtitle: "Charter and day-trip requests",
+    count: "Browse current listings",
+    tag: "Yachts",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg",
     items: [
-      {name:"Day Charters",loc:"Miami",price:"From $800/4hr"},
-      {name:"Luxury Yachts",loc:"Miami · Fort Lauderdale",price:"From $3,000/4hr"},
-      {name:"Superyachts",loc:"Miami",price:"On request"},
+      {name:"Day Charters",loc:"Miami",price:"Request current terms"},
+      {name:"Luxury Yachts",loc:"Miami · Fort Lauderdale",price:"Request current terms"},
+      {name:"Superyachts",loc:"Miami",price:"Request current terms"},
     ],
     active: true,
   },
@@ -1798,7 +1780,7 @@ body::-webkit-scrollbar{width:0}
           </div>
         </div>
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Home",href:"/"},{label:"Events",href:"/events"},{label:"Catalog",href:"/catalog"},{label:"Blog",href:"/blog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33743713649",ext:true}].map(function(link,i){
+          {[{label:"Home",href:"/"},{label:"Restaurants",href:"/catalog/dining"},{label:"Hotels",href:"/catalog/hotels"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33743713649",ext:true}].map(function(link,i){
             return <a key={link.label} href={link.href} target={link.ext?"_blank":undefined} rel={link.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{link.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1945,7 +1927,7 @@ body::-webkit-scrollbar{width:0}
       <footer style={{borderTop:"1px solid "+C.bd,padding:"40px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <CDrawMark size={16} color={C.s7}/>
-          <span style={{...sf(10,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred ©2026</span>
+          <span style={{...sf(10,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Alfred {"©"+new Date().getFullYear()}</span>
         </div>
         <div style={{display:"flex",gap:24}}>
           <a href="/" style={{...sf(11,400),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>

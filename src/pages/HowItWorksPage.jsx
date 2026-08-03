@@ -9,20 +9,19 @@ import {
 var T_ = T;
 
 var STEPS = [
-  {n:"01", title:"Download Alfred and choose your tier", body:"Install Alfred from the App Store or Google Play, pick a membership tier — Gold, Platinum or Centurion — and complete a one-time onboarding (preferences, dietary, your usual cities, dress sizes for stylist work, partner names, allergies). The full catalogue unlocks immediately."},
-  {n:"02", title:"Browse or ask", body:"Open the catalogue to browse 200+ Michelin restaurants, the top nightclubs in each city, the supercar fleet, the yacht lineup, the jet partners and the spa list. Or just open the chat and ask: \"book me a table for four at Carbone Miami Friday at 8.\" Both work."},
-  {n:"03", title:"A real concierge confirms", body:"Every request is verified by a human concierge before it is booked. For partner venues we hold inventory; for everything else we work the back channels — manager calls, host relationships, restaurant management software direct lines. You get a confirmation when it is real, not a 'submitting...' spinner."},
-  {n:"04", title:"Show up", body:"Walk in. The host knows your name, the manager knows your tier, the table is set. For Platinum and Centurion members, valet is waived, the 15-minute grace period is removed, and the VIP flag is on your reservation across the venue's system."},
-  {n:"05", title:"Alfred handles the rest", body:"Need a car back to your hotel at 2am? Want to extend the yacht charter for another two hours? Lost your wallet? Alfred is on WhatsApp. Centurion members have a single dedicated agent for every request, every time, no rotation."}
+  {n:"01", title:"Open Alfred", body:"Install Alfred from the App Store, review the current plan information and complete the account details requested in the app."},
+  {n:"02", title:"Browse or describe what you need", body:"Start with the catalog or write a request in plain language. Include the city, dates, party size, preferences and budget so the request can be checked accurately."},
+  {n:"03", title:"Alfred checks current options", body:"For concierge-supported requests, a person checks relevant providers and gathers current availability, pricing, deposits and cancellation terms."},
+  {n:"04", title:"Review before approving", body:"Compare the available options and provider conditions. A request is not a confirmed booking until you receive a clear confirmation."},
+  {n:"05", title:"Keep the details together", body:"Use the app or WhatsApp to follow the request. If the first option is unavailable, Alfred can research alternatives that fit the brief."}
 ];
 
 var FAQ = [
-  {q:"Is Alfred a real concierge or just an AI chatbot?", a:"Both. The Gold tier includes an AI concierge that handles search, recommendations and routing. Platinum and Centurion tiers add a real human concierge team — the AI does triage, the humans handle bookings. Centurion members get one named agent assigned to them permanently, contactable on WhatsApp 24/7."},
-  {q:"How long does a booking take?", a:"App-integrated bookings (Resy, OpenTable, SevenRooms) confirm in under a minute. Concierge-handled bookings — impossible reservations, VIP tables, last-minute requests — typically confirm within 15 minutes during operating hours and within an hour overnight. Centurion requests are prioritised and target sub-15-minute confirmations regardless of time."},
-  {q:"What cities does Alfred cover?", a:"Miami, Paris, Dubai and London with full local concierge teams. We arrange travel and hospitality globally — private jets, yachts in the Mediterranean, ski chalets in the Alps, hotels worldwide — but on-the-ground support is concentrated in those four cities."},
-  {q:"How is Alfred different from American Express Centurion or Quintessentially?", a:"Alfred is app-first, with the catalogue, bookings and receipts in one place. Card-issuer concierge services run on email and phone. Quintessentially and similar legacy concierges have broader global coverage but slower response times and less transparency on pricing. Alfred sits between: faster than legacy, more accountable than card concierge, with deeper relationships in our four cities than either."},
-  {q:"Can I book on behalf of guests or my family?", a:"Yes. Members can add up to four secondary profiles per account. Bookings under a guest profile carry your member tier benefits."},
-  {q:"What happens if a booking falls through?", a:"Alfred re-books at the next-best available venue at no extra charge, and Platinum and Centurion members receive a credit equal to any non-refundable deposit lost. Every booking carries our concierge guarantee — if we confirmed it, we own it."}
+  {q:"Does Alfred confirm every request instantly?", a:"No. Availability and terms depend on the provider and the requested dates. Alfred will identify when a request is pending and when it has been confirmed."},
+  {q:"What cities does Alfred cover?", a:"Alfred currently publishes guides for Miami, Paris, Dubai and London. Check the relevant city page or make a request to confirm coverage for a specific service."},
+  {q:"What information should I include?", a:"Share the city, date and time, party size, preferences, budget and any important constraints. Complete details make it easier to return relevant options."},
+  {q:"Are provider prices included in membership?", a:"Provider charges, deposits, taxes and cancellation fees are separate unless the checkout explicitly states otherwise. Review all terms before approving a request."},
+  {q:"What happens when the first option is unavailable?", a:"Alfred can research alternatives based on the same brief. You decide whether to approve any replacement option after seeing its current terms."}
 ];
 
 var JSONLD = [
@@ -30,8 +29,7 @@ var JSONLD = [
     "@context":"https://schema.org",
     "@type":"HowTo",
     "name":"How Alfred Concierge works",
-    "description":"How to use Alfred Concierge — the luxury concierge app for Miami, Paris, Dubai and London — from download to first booking.",
-    "totalTime":"PT5M",
+    "description":"How to use Alfred Concierge to discover options, submit a request and review provider confirmation.",
     "step": STEPS.map(function(s,i){
       return {"@type":"HowToStep","position":i+1,"name":s.title,"text":s.body};
     })
@@ -99,8 +97,8 @@ export default function HowItWorksPage(){
   return (
     <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
-        title="How Alfred Works — From Download to First Booking | Alfred Concierge"
-        description="See exactly how Alfred Concierge works: download the app, choose a tier, browse 200+ venues or ask for what you need, get a real human concierge to handle it. Booking confirmations in under 15 minutes."
+        title="How Alfred Works — Request Restaurants, Hotels & More"
+        description="See how Alfred Concierge works: share a city and dates, review current options and provider terms, then approve a confirmed restaurant, hotel, car or private-service request."
         keywords="how Alfred works, how does a concierge app work, Alfred concierge booking process, luxury concierge how it works, Alfred concierge tutorial"
         path="/how-it-works"
         type="website"
@@ -124,11 +122,11 @@ export default function HowItWorksPage(){
             ...(mobile ? type.heroSerifMobile() : type.heroSerif()),
             color:T_.text, marginTop:18, maxWidth:980
           }}>
-            One app. One concierge team.{" "}
-            <SilverText style={{fontStyle:"italic"}}>Every door open.</SilverText>
+            One app. One request flow.{" "}
+            <SilverText style={{fontStyle:"italic"}}>Clear confirmations.</SilverText>
           </h1>
           <p style={{...type.bodyLg(), color:T_.textMid, marginTop:18, maxWidth:580}}>
-            Five steps from downloading Alfred to walking into the table that "wasn't available" thirty minutes ago.
+            Five steps from describing what you need to reviewing a provider-confirmed option.
           </p>
         </div>
       </Hero>
@@ -147,11 +145,11 @@ export default function HowItWorksPage(){
       <ProseSection
         mobile={mobile}
         kicker="The two layers"
-        title="App layer and human layer, working as one"
+        title="Discovery and coordination, working together"
         paragraphs={[
-          "Alfred runs on two stacks at once. The app layer holds the catalogue, the AI concierge that triages every request, the integrations with restaurant management systems (Resy, OpenTable, SevenRooms, Tock), the payment rails and the receipts. The human layer is the concierge team itself — operators in Miami, Paris, Dubai and London with direct phone numbers for the venue managers, hosts and operators that decide whether a member walks straight in or waits at the desk.",
-          "The app handles speed and inventory. The humans handle judgement, recovery and the impossible-reservation cases that no API will solve. When you ask Alfred for a 9pm Friday table at Carbone in Miami Beach the week of F1, you do not need an algorithm — you need someone who knows the manager.",
-          "This is why every Alfred booking has a name attached on our side, even at the Gold tier. If something goes wrong, there is a human to escalate to — not a support ticket queue."
+          "The catalog helps you discover restaurants, hotels, transport and private services. The request layer captures the exact city, dates and preferences needed to check an option.",
+          "Concierge-supported requests add human review where provider availability, pricing or policies need confirmation. The provider remains responsible for the underlying service.",
+          "The result is a clear status: requested, awaiting provider confirmation, or confirmed — with the relevant terms attached."
         ]}
       />
 
@@ -159,11 +157,11 @@ export default function HowItWorksPage(){
 
       <ProseSection
         mobile={mobile}
-        kicker="Real concierge"
-        title="What real human concierge actually means"
+        kicker="Human review"
+        title="What concierge coordination means"
         paragraphs={[
-          "<span style=\"color:" + T_.text + "\">Concierge</span> is a word that has been diluted by every neobank, credit card and lifestyle app that bolts on a chat window. At Alfred we use it in the original sense: a human who knows the city, has personal relationships at the venues, and gets paid to make problems disappear. Our concierge team has worked the front desks at Le Bristol Paris, the management offices at LIV Miami, the booking desks of major superyacht charter brokers, the dispatch teams of the world's top private jet operators, and the host stands of Michelin-starred kitchens.",
-          "That background is the difference between a <span style=\"color:" + T_.text + "\">request submitted</span> notification and a Friday-night table at a venue that closed its book three weeks ago."
+          "A concierge-supported request is reviewed by a person who can clarify the brief, contact relevant providers and summarize the options returned.",
+          "Human review does not override provider capacity or policies. It makes the status, price and conditions easier to understand before you decide."
         ]}
       />
 

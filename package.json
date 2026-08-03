@@ -6,7 +6,8 @@
     "dev": "vite",
     "clean:sitemap": "node scripts/clean-sitemap.js",
     "test:seo": "node scripts/validate-seo.js",
-    "build": "node scripts/clean-sitemap.js && node scripts/validate-seo.js && vite build && node scripts/generate-seo-pages.js && node scripts/validate-dist-seo.js",
+    "test:ads": "node scripts/validate-google-ads.js",
+    "build": "node scripts/clean-sitemap.js && node scripts/validate-seo.js && node scripts/validate-google-ads.js && vite build && node scripts/validate-bundle.js && node scripts/generate-seo-pages.js && node scripts/validate-dist-seo.js",
     "build:seo": "npm run build && node prerender.js",
     "preview": "vite preview"
   },

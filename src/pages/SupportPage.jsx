@@ -14,7 +14,7 @@ var FAQS = [
   },
   {
     q: "What subscription plans are available?",
-    a: "Alfred offers three membership tiers — Gold ($29.99/month), Platinum ($99.99/month), and Centurion ($499.99/month). Gold and Platinum are also available on a yearly billing option. Each tier unlocks progressively exclusive concierge services and experiences."
+    a: "The Alfred app shows the membership options currently available, including the live price, billing period and included features before purchase."
   },
   {
     q: "How do I cancel my subscription?",
@@ -26,11 +26,11 @@ var FAQS = [
   },
   {
     q: "What cities does Alfred operate in?",
-    a: "Alfred is currently available in Paris, Miami, Dubai, London, Monaco, and New York, with more cities being added regularly. Check the app for the latest city coverage."
+    a: "Alfred currently publishes city guides for Paris, Miami, Dubai and London. Check the app or submit a request to confirm coverage for a specific service and date."
   },
   {
     q: "How does the concierge service work?",
-    a: "Once you're a member, you can request reservations, bookings, and personalised recommendations directly through the app. Your dedicated Alfred concierge handles everything — from restaurant reservations to private jet charters — and responds via in-app chat or WhatsApp."
+    a: "Submit the city, dates, party size, preferences and budget in the app. For concierge-supported requests, Alfred checks relevant providers and returns current options and terms. A request is not booked until it is confirmed."
   },
   {
     q: "I have a technical issue with the app. What should I do?",
@@ -119,7 +119,7 @@ export default function SupportPage() {
             title="WhatsApp Concierge"
             detail="Available for members"
             sub="Real-time concierge chat"
-            href="https://wa.me/33612345678"
+            href="https://wa.me/33743713649"
           />
         </div>
 

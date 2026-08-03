@@ -6,6 +6,7 @@ import {
   SectionHeader as BSectionHeader, GlassCard as BGlassCard,
   SilverText as BSilverText, useReveal as bUseReveal, revealStyle as bRevealStyle
 } from "../components/brand";
+import CITY_GUIDES from "../data/cities";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
@@ -204,7 +205,7 @@ var CITIES={
 export default function CityPage(){
   var {slug}=useParams();
   var navigate=useNavigate();
-  var city=CITIES[slug];
+  var city=CITY_GUIDES[slug];
   var [mob,setMob]=useState(window.innerWidth<768);
   var [expandedFaq,setExpandedFaq]=useState(null);
 
@@ -217,7 +218,7 @@ export default function CityPage(){
   if(!city){
     return(
       <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:C.bg,padding:"40px 20px"}}>
-        <SEOHead title="City Not Found — Alfred Concierge" path="/city/404" description="The city page you're looking for doesn't exist."/>
+        <SEOHead title="City Not Found — Alfred Concierge" path={"/city/"+(slug||"not-found")} description="The city page you're looking for doesn't exist." noindex/>
         <div style={{textAlign:"center"}}>
           <h1 style={{...sf(48,700),color:C.s1,marginBottom:12}}>City Not Found</h1>
           <p style={{...sf(16),color:C.s5,marginBottom:32}}>We don't have a concierge service in this city yet.</p>
@@ -227,8 +228,8 @@ export default function CityPage(){
     );
   }
 
-  var seoTitle="Luxury Concierge "+city.name+" — Restaurants, Nightlife, Cars, Jets | Alfred";
-  var seoDesc="Alfred luxury concierge in "+city.name+". "+city.tagline+" Book fine dining, VIP nightlife, exotic car rentals, private jets, yachts & more.";
+  var seoTitle="Concierge Requests in "+city.name+" — Restaurants, Hotels & More | Alfred";
+  var seoDesc="Browse restaurants, hotels, cars and experiences in "+city.name+", then ask Alfred to check current availability, pricing and terms.";
   var seoPath="/city/"+slug;
 
   return(
@@ -272,8 +273,8 @@ export default function CityPage(){
             {city.heroDescription}
           </p>
           <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-            <button style={{...sf(14,600),padding:"14px 28px",background:C.gn,color:C.bg,border:"none",borderRadius:12,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.target.style.transform="scale(1.05)"}} onMouseLeave={function(e){e.target.style.transform="scale(1)"}}>Download Alfred App</button>
-            <button style={{...sf(14,600),padding:"14px 28px",background:"transparent",border:"1px solid "+C.bd,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.target.style.borderColor=C.s7}} onMouseLeave={function(e){e.target.style.borderColor=C.bd}}>Contact on WhatsApp</button>
+            <a href="https://apps.apple.com/app/id6759160130" target="_blank" rel="noopener noreferrer" style={{...sf(14,600),padding:"14px 28px",background:C.gn,color:C.bg,border:"none",borderRadius:12,cursor:"pointer",transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.transform="scale(1.05)"}} onMouseLeave={function(e){e.target.style.transform="scale(1)"}}>Download Alfred App</a>
+            <a href={"https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'd like help with a request in "+city.name+".")} target="_blank" rel="noopener noreferrer" style={{...sf(14,600),padding:"14px 28px",background:"transparent",border:"1px solid "+C.bd,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.borderColor=C.s7}} onMouseLeave={function(e){e.target.style.borderColor=C.bd}}>Contact on WhatsApp</a>
           </div>
         </div>
       </section>
@@ -285,7 +286,7 @@ export default function CityPage(){
             Our Services in {city.name}
           </h2>
           <p style={{...sf(mob?14:16),color:C.s5,textAlign:"center",marginBottom:60,maxWidth:600,margin:"0 auto 60px"}}>
-            Everything you need for an unforgettable luxury experience
+            Browse current categories, then request specific options and terms
           </p>
           <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(3, 1fr)",gap:mob?16:24}}>
             {city.services.map(function(svc,i){
@@ -308,16 +309,16 @@ export default function CityPage(){
             Featured Venues in {city.name}
           </h2>
           <p style={{...sf(mob?14:16),color:C.s5,textAlign:"center",marginBottom:60,maxWidth:600,margin:"0 auto 60px"}}>
-            Signature experiences curated by our concierge team
+            Start with a catalog category and tell Alfred what you need
           </p>
           <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"repeat(2, 1fr)",gap:mob?16:24}}>
             {city.venues.map(function(venue,i){
               return(
-                <div key={i} onClick={function(){window.location.href=venue.link}} style={{padding:mob?20:24,background:C.srf,border:"1px solid "+C.bd,borderRadius:16,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+                <a key={i} href={venue.link} style={{display:"block",padding:mob?20:24,background:C.srf,border:"1px solid "+C.bd,borderRadius:16,cursor:"pointer",transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
                   <h3 style={{...sf(18,600),color:C.s1,marginBottom:8}}>{venue.name}</h3>
                   <p style={{...sf(13),color:C.s5,lineHeight:1.6,marginBottom:12}}>{venue.desc}</p>
                   <div style={{...sf(12,600),color:C.gn}}>Explore →</div>
-                </div>
+                </a>
               );
             })}
           </div>
@@ -383,11 +384,11 @@ export default function CityPage(){
             Ready to Experience {city.name} Like Never Before?
           </h2>
           <p style={{...sf(mob?14:16),color:C.s4,marginBottom:40,lineHeight:1.6}}>
-            Your personal concierge is available 24/7 to handle every detail. From impossible restaurant reservations to private jet charters, we make luxury effortless.
+            Send the date, location, party size or route and your preferences. Alfred checks current options and confirms final pricing and terms before you commit.
           </p>
           <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center"}}>
-            <button style={{...sf(14,600),padding:"14px 32px",background:C.gold,color:C.bg,border:"none",borderRadius:12,cursor:"pointer",transition:"all 0.3s"}} onMouseEnter={function(e){e.target.style.transform="scale(1.05)"}} onMouseLeave={function(e){e.target.style.transform="scale(1)"}}>Download Alfred App</button>
-            <a href={"https://wa.me/+18005273353?text=Hi Alfred, I'd like to book luxury experiences in "+city.name} target="_blank" rel="noopener noreferrer" style={{...sf(14,600),padding:"14px 32px",background:"transparent",border:"1px solid "+C.s1,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s",textDecoration:"none",display:"inline-block"}} onMouseEnter={function(e){e.target.style.background=C.s1;e.target.style.color=C.bg}} onMouseLeave={function(e){e.target.style.background="transparent";e.target.style.color=C.s1}}>Message on WhatsApp</a>
+            <a href="https://apps.apple.com/app/id6759160130" target="_blank" rel="noopener noreferrer" style={{...sf(14,600),padding:"14px 32px",background:C.gold,color:C.bg,border:"none",borderRadius:12,cursor:"pointer",transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.transform="scale(1.05)"}} onMouseLeave={function(e){e.target.style.transform="scale(1)"}}>Download Alfred App</a>
+            <a href={"https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'd like to request luxury experiences in "+city.name+". Please confirm current options.")} target="_blank" rel="noopener noreferrer" style={{...sf(14,600),padding:"14px 32px",background:"transparent",border:"1px solid "+C.s1,color:C.s1,borderRadius:12,cursor:"pointer",transition:"all 0.3s",textDecoration:"none",display:"inline-block"}} onMouseEnter={function(e){e.target.style.background=C.s1;e.target.style.color=C.bg}} onMouseLeave={function(e){e.target.style.background="transparent";e.target.style.color=C.s1}}>Message on WhatsApp</a>
           </div>
         </div>
       </section>

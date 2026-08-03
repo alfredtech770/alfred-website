@@ -14,7 +14,7 @@ var EMAIL = "ethan@alfredconcierge.app";
 var CHANNELS = [
   {
     title:"WhatsApp",
-    body:"The fastest channel into the concierge team. Members get priority routing; non-members are handled by the duty operator. Available twenty-four hours a day.",
+    body:"Send the city, dates and request details to the concierge team. Response timing depends on demand and the type of request.",
     cta:"Message on WhatsApp",
     href:WHATSAPP,
     target:"_blank",
@@ -23,7 +23,7 @@ var CHANNELS = [
   },
   {
     title:"Email",
-    body:"For Centurion enquiries, partnership requests, press, and anything that needs a record. Replies within four business hours.",
+    body:"For membership enquiries, partnership requests, press and anything that benefits from a written record.",
     cta: EMAIL,
     href:"mailto:" + EMAIL,
     accent:T.silver
@@ -32,26 +32,27 @@ var CHANNELS = [
     title:"Inside the app",
     body:"Members chat directly with the concierge from inside Alfred. Every booking, receipt and conversation lives there. Download the app to start.",
     cta:"Download Alfred",
-    href:"#",
+    href:"https://apps.apple.com/app/id6759160130",
+    target:"_blank",
+    rel:"noopener noreferrer",
     accent:T.silver
   }
 ];
 
 var ROUTES = [
   {label:"Become a member", body:"See the three tiers and what's included.", href:"/pricing"},
-  {label:"Apply for Centurion", body:"Invite-only. Apply via the email above with a brief on what you're looking for.", href:"mailto:" + EMAIL + "?subject=Alfred%20Centurion%20application"},
+  {label:"Ask about Centurion", body:"Email a brief description of the support you are looking for.", href:"mailto:" + EMAIL + "?subject=Alfred%20Centurion%20enquiry"},
   {label:"List your venue", body:"Restaurants, nightclubs, yachts, jet operators, car fleets and spas — partner with Alfred.", href:"/business"},
   {label:"Press and media", body:"For press enquiries, founder interviews and brand assets.", href:"mailto:" + EMAIL + "?subject=Press%20enquiry"},
-  {label:"Event hospitality", body:"Monaco Grand Prix, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening.", href:"/events"},
-  {label:"Existing members", body:"Use the in-app chat or your assigned agent's WhatsApp for the fastest response.", href:"#"}
+  {label:"Custom request", body:"Share the city, dates, party size, preferences and budget.", href:WHATSAPP},
+  {label:"Existing members", body:"Use the in-app chat or the contact method shown in your plan.", href:"/support"}
 ];
 
 var RESPONSE_TIMES = [
-  {label:"WhatsApp · Centurion", time:"Under 5 minutes, 24/7"},
-  {label:"WhatsApp · Platinum", time:"Under 15 minutes, 24/7"},
-  {label:"WhatsApp · non-member duty desk", time:"Under 1 hour"},
-  {label:"Email", time:"Under 4 business hours"},
-  {label:"Press enquiries", time:"Same business day"}
+  {label:"WhatsApp requests", time:"Timing varies by request"},
+  {label:"Provider checks", time:"Depends on provider response"},
+  {label:"Email", time:"Monitored by the Alfred team"},
+  {label:"Confirmed requests", time:"Written confirmation provided"}
 ];
 
 var CITIES = [
@@ -67,21 +68,17 @@ var JSONLD = [
     "@type":"ContactPage",
     "name":"Contact Alfred Concierge",
     "url":"https://alfredconcierge.app/contact",
-    "description":"Talk to Alfred Concierge directly. WhatsApp 24/7, email replies within four business hours, and partnership and press contacts.",
+    "description":"Contact Alfred Concierge by WhatsApp, email or the app for city requests, membership questions, partnerships and press.",
     "mainEntity":{
       "@type":"Organization",
       "name":"Alfred Concierge",
       "url":"https://alfredconcierge.app",
       "contactPoint":[
-        {"@type":"ContactPoint","contactType":"customer service","availableLanguage":["English","French"],"areaServed":["US","FR","AE","GB"],"telephone":"+44-7449-562204","contactOption":"TollFree"},
+        {"@type":"ContactPoint","contactType":"customer service","availableLanguage":["English","French"],"areaServed":["US","FR","AE","GB"],"telephone":"+33-7-43-71-36-49"},
         {"@type":"ContactPoint","contactType":"sales","email":"ethan@alfredconcierge.app","areaServed":["US","FR","AE","GB"]},
         {"@type":"ContactPoint","contactType":"press","email":"ethan@alfredconcierge.app"}
       ],
-      "sameAs":[
-        "https://www.instagram.com/alfred",
-        "https://x.com/alfredconcierge",
-        "https://www.tiktok.com/@alfred"
-      ]
+      "sameAs":["https://www.instagram.com/askalfred.app","https://www.tiktok.com/@alfred.app"]
     }
   },
   {
@@ -140,7 +137,7 @@ export default function ContactPage(){
     <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
         title="Contact Alfred Concierge — WhatsApp, Email & Press | Alfred"
-        description="Talk to Alfred directly. WhatsApp 24/7 for the concierge team. Email ethan@alfredconcierge.app for partnerships, press and Centurion applications. Replies within four business hours."
+        description="Contact Alfred Concierge by WhatsApp, email or the app for restaurant, hotel and transport requests, membership questions, partnerships and press."
         keywords="contact Alfred Concierge, Alfred concierge phone number, Alfred WhatsApp, Alfred email, Alfred concierge contact, luxury concierge contact"
         path="/contact"
         type="website"
@@ -241,7 +238,7 @@ function ResponseTimesSection({mobile}){
       maxWidth:780, margin:"0 auto",
       ...revealStyle(r.visible)
     }}>
-      <SectionHeader kicker="Response times" title="What you can expect, and when"/>
+      <SectionHeader kicker="Request status" title="What you can expect after contacting Alfred"/>
       <GlassCard padded={false} style={{padding:0, overflow:"hidden"}}>
         {RESPONSE_TIMES.map(function(rt, i){
           return <div key={rt.label} style={{
@@ -269,10 +266,10 @@ function CitiesSection({mobile}){
     }}>
       <SectionHeader
         kicker="Where Alfred operates"
-        title="Four cities on the ground, the world by request"
+        title="Start with one of four city guides"
       />
       <p style={{...type.bodyLg(), color:T_.textMid, marginBottom:32, maxWidth:680}}>
-        The Alfred concierge team operates on the ground in Miami, Paris, Dubai and London. The same team handles requests worldwide for travel, hospitality and event work outside those four core cities.
+        Alfred currently publishes guides for Miami, Paris, Dubai and London. Use a city page or contact the team to confirm current coverage for the service and dates you need.
       </p>
       <div style={{
         display:"grid",

@@ -154,15 +154,12 @@ export default function TermsPage() {
           </Section>
 
           <Section id="membership" title="5. Membership Tiers">
-            <p>Alfred Concierge offers four membership tiers with different levels of access and service:</p>
+            <p>Alfred Concierge may offer membership options with different levels of app access and request support. The options currently available are shown in the Alfred app before purchase.</p>
 
             <div style={{background:C.el,borderRadius:12,padding:"20px 24px",margin:"20px 0"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:20}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr",gap:20}}>
                 {[
-                  {name:"Free",price:"$0/mo",color:C.s5},
-                  {name:"Gold",price:"$29.99/mo",color:"#FFD700"},
-                  {name:"Platinum",price:"$99/mo",color:"#E5E4E2"},
-                  {name:"Centurion",price:"$499/mo",color:C.gold},
+                  {name:"Current membership options",price:"See the Alfred app for live pricing and terms",color:C.gold},
                 ].map(function(t){return(
                   <div key={t.name} style={{textAlign:"center"}}>
                     <div style={{...sf(14,700),color:t.color,marginBottom:6}}>{t.name}</div>
@@ -172,13 +169,10 @@ export default function TermsPage() {
               </div>
             </div>
 
-            <p><strong>Free:</strong> Basic access to the Alfred platform with limited booking requests per month. Subject to availability and concierge capacity.</p>
-            <p><strong>Gold ($29.99/month):</strong> Enhanced access with priority booking for restaurants and nightlife, faster concierge response times, and access to Gold-tier exclusive events.</p>
-            <p><strong>Platinum ($99/month):</strong> Full concierge service including yacht, jet, and exotic car bookings, 24/7 dedicated concierge line, VIP access at partnered venues, and Platinum member events.</p>
-            <p><strong>Centurion ($499/month, invite-only):</strong> Alfred's most exclusive membership tier, by invitation only. Unlimited concierge requests, dedicated personal concierge, first access to rare experiences, and bespoke trip planning services.</p>
+            <p><strong>Plan details:</strong> The name, price, billing period, included features and any usage limits shown at checkout form part of your purchase terms. Provider availability is never guaranteed by membership.</p>
 
-            <p><strong>Auto-Renewal:</strong> Paid memberships automatically renew at the end of each billing period (monthly) unless cancelled. You authorize Alfred to charge your payment method on file for the applicable subscription fee plus any applicable taxes.</p>
-            <p><strong>Cancellation:</strong> You may cancel your paid membership at any time through the Alfred app settings or by contacting support@alfredconcierge.app. Cancellation takes effect at the end of the current billing period. No refunds are issued for partial billing periods, except where required by applicable law.</p>
+            <p><strong>Auto-Renewal:</strong> If the subscription shown at checkout renews automatically, the renewal period and price will be disclosed before purchase. You authorize the applicable marketplace or payment processor to charge the payment method on file according to those terms.</p>
+            <p><strong>Cancellation:</strong> Manage App Store subscriptions through your Apple subscription settings. Other subscriptions may be managed through the method identified at purchase or by contacting support@alfredconcierge.app. Cancellation and refund timing follow the checkout terms and applicable law.</p>
             <p><strong>Price Changes:</strong> Alfred reserves the right to modify subscription pricing with at least 30 days' advance notice to current subscribers. Continued use after the effective date of any price change constitutes your acceptance of the new pricing.</p>
             <p><strong>Trial Periods:</strong> If offered, free trial periods automatically convert to paid subscriptions unless cancelled before the trial period ends. You will be notified of any trial period terms at the time of sign-up.</p>
           </Section>
@@ -197,7 +191,7 @@ export default function TermsPage() {
           </Section>
 
           <Section id="payments" title="7. Payments">
-            <p>All payments on the Alfred Platform are processed through <strong>Stripe</strong>, a third-party payment processor. By using Alfred, you agree to Stripe's Terms of Service and Privacy Policy.</p>
+            <p>Payments may be processed by an app marketplace or another payment processor identified at checkout, including <strong>Apple or Stripe where applicable</strong>. The processor's terms and privacy policy also apply.</p>
             <ul>
               <li><strong>Service Fees:</strong> Alfred charges service fees for concierge services, which may be incorporated into the total price shown or disclosed separately. Service fees are non-refundable unless otherwise stated.</li>
               <li><strong>Venue Minimums &amp; Covers:</strong> Many nightlife venues and restaurants require minimum spend, cover charges, or table minimums. These are separate from Alfred's service fees and are entirely the user's responsibility. Alfred will disclose known minimums at the time of booking where possible.</li>

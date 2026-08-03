@@ -15,90 +15,74 @@ var TIERS = [
   {
     id:"gold", label:"Entry",
     name:"Alfred Gold", italicWord:"Gold",
-    price:"$9.99", cadence:"/ month",
-    summary:"The catalogue, the AI concierge, and integrated bookings. The right tier to see what Alfred is.",
+    price:"See app", cadence:"for current price",
+    summary:"A starting plan for browsing the catalog and submitting requests in the Alfred app.",
     features:[
-      "Full app and catalogue access",
-      "AI concierge chat agent",
-      "Bookings via Resy, OpenTable, SevenRooms, Tock",
-      "Global venue catalogue across four cities",
-      "Event discovery and ticketing access",
-      "Up to four secondary profiles",
-      "End-to-end encrypted messaging",
-      "Cancel anytime"
+      "Access to the Alfred app",
+      "Browse the venue and service catalog",
+      "Restaurant and hotel discovery",
+      "Submit availability requests",
+      "Review request updates",
+      "Keep request details in one place"
     ],
-    cta:"Get Alfred Gold", ctaHref:"#"
+    cta:"View Gold in the app", ctaHref:"https://apps.apple.com/app/id6759160130"
   },
   {
-    id:"platinum", label:"Recommended",
+    id:"platinum", label:"Concierge",
     name:"Alfred Platinum", italicWord:"Platinum",
-    price:"$99", cadence:"/ month",
-    summary:"Everything in Gold plus a real human concierge team and the operational benefits that real luxury concierge work depends on.",
-    badge:"Most Popular",
+    price:"See app", cadence:"for current price",
+    summary:"Additional concierge coordination for requests that involve provider checks or multiple services.",
+    badge:"More support",
     features:[
       "Everything in Alfred Gold",
-      "Real human concierge — named operators",
-      "Skip the line outside and at check-in",
-      "Strategic table placement at partner venues",
-      "Reduced minimum spend on alcohol and food",
-      "Waived advance payment requirement",
-      "VIP flag in venue systems — upgrade eligibility",
-      "Most experienced waiter and bottle service",
-      "Waived valet at partner venues",
-      "Custom bottle parade and shoutouts on request",
-      "Music request selection at partner clubs",
-      "Exclusive event access and pre-sale windows",
-      "Concierge consultancy and trip advice"
+      "Human concierge coordination",
+      "Complex multi-service requests",
+      "Restaurant and hotel option research",
+      "Transport and itinerary coordination",
+      "Group requirement handling",
+      "Provider term summaries",
+      "Request follow-up",
+      "WhatsApp request support",
+      "Special-occasion planning"
     ],
-    cta:"Get Alfred Platinum", ctaHref:"#",
+    cta:"View Platinum in the app", ctaHref:"https://apps.apple.com/app/id6759160130",
     featured: true
   },
   {
     id:"centurion", label:"Invite Only",
     name:"Alfred Centurion", italicWord:"Centurion",
-    price:"By invitation", cadence:"",
-    summary:"A single named agent for every aspect of a member's life. The full Alfred operation, dedicated, twenty-four hours a day.",
+    price:"By enquiry", cadence:"",
+    summary:"A request-based plan whose availability, scope and commercial terms are confirmed directly with Alfred.",
     features:[
       "Everything in Alfred Platinum",
-      "Dedicated personal agent — one human, always your contact",
-      "24/7 WhatsApp access to your agent",
-      "Worldwide VIP access beyond the four core cities",
-      "Airport-to-venue coordination on every arrival",
-      "Last-minute and impossible reservations prioritised",
-      "Full travel itinerary building",
-      "Private event and experience curation",
-      "Quarterly branded gifting",
-      "Annual member-only experience access"
+      "Named contact where included in the proposal",
+      "Multi-city request coordination",
+      "Airport-to-venue planning",
+      "Last-minute availability checks",
+      "Travel itinerary assistance",
+      "Private event request support",
+      "Scope and terms agreed before purchase"
     ],
     cta:"Apply for Centurion", ctaHref:"/contact"
   }
 ];
 
 var FAQ = [
-  {q:"What is the difference between Alfred Gold and Alfred Platinum?", a:"Gold is the app and the AI concierge. Platinum adds a real human concierge team, operational benefits at venues — reduced minimum spends, waived advance payments, VIP table placement, the right host on the floor — and concierge consultancy on travel and experiences. If you go out more than once or twice a month at premium venues, Platinum pays for itself in waived deposits and minimums alone."},
-  {q:"How does Alfred Centurion get offered?", a:"Centurion is invite-only. Members are invited based on Platinum activity, referrals from existing Centurion members, or a direct application via the contact page. There is no public price; Centurion is structured to fit each member's lifestyle and is billed quarterly or annually. Apply through the contact page if you want to be considered."},
-  {q:"Are there annual or quarterly billing options?", a:"Yes. Gold and Platinum can be billed monthly or annually with a discount on annual. Centurion is structured per member. Annual plans can be cancelled at any time with the unused portion refunded; monthly plans cancel at the end of the current billing cycle."},
-  {q:"Are bookings included in the membership price?", a:"Bookings themselves are free — Alfred does not charge a per-booking fee on top of the venue's cost. Members pay only what the venue charges. The exception is event hospitality (Monaco GP, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening) where ticket and hospitality packages are sold at face value plus a small handling fee."},
-  {q:"Can I gift an Alfred membership?", a:"Yes. Gift memberships are available for Gold and Platinum at the contact page. The recipient receives an onboarding email and gets full member status from day one of the gift period."},
-  {q:"What if I only need Alfred for one trip or event?", a:"Members can sign up for a single month at the Platinum tier to cover a trip — Monaco Grand Prix weekend, a week in Paris, a Miami F1 visit — and cancel at the end of the month with no penalty. The full Platinum benefits apply during the active period."},
-  {q:"How does Alfred compare to Quintessentially or Velocity Black?", a:"Quintessentially has the broadest global footprint and the longest brand history but is roughly 5–10x the price of Alfred Platinum and runs primarily on email and phone, not an app. Velocity Black was the closest US-based comparable; it was acquired by Capital One in 2023 and the consumer product was discontinued. Alfred is the modern alternative — app-first, transparent pricing, four-city focus, real human team."},
-  {q:"What is the cancellation policy?", a:"Cancel any plan at any time from the app's account settings. Monthly plans cancel at the end of the current billing cycle. Annual plans can be cancelled mid-term with the unused portion refunded pro-rata. There are no early-termination fees and no automatic renewal traps."},
-  {q:"Are there hidden fees, gratuities or surcharges?", a:"No. The membership price is the price. The only additional costs are what you spend at the venue — the dinner bill, the bottle, the rental, the charter — and any government taxes or service charges that apply to that booking."},
-  {q:"Is Alfred available in cities other than Miami, Paris, Dubai and London?", a:"The full concierge team is in those four cities. Alfred can arrange experiences worldwide — private jets, yacht charters in the Mediterranean, ski chalets in the Alps, hotels globally — but on-the-ground concierge support is concentrated in our four core cities."}
+  {q:"Where can I see current membership prices?", a:"The Alfred app shows the current price, billing period and included features before purchase. App marketplace terms also apply."},
+  {q:"What is the difference between Gold and Platinum?", a:"Gold is the starting app plan. Platinum adds the concierge coordination described in the app. Review the current feature comparison before subscribing."},
+  {q:"Are provider charges included?", a:"Restaurant bills, deposits, hotel rates, rentals, charters, taxes and provider cancellation fees are separate unless the checkout explicitly says otherwise."},
+  {q:"Does membership guarantee availability?", a:"No. Availability and provider terms are checked for each request. A request is not booked until it is confirmed."},
+  {q:"How do cancellation and renewal work?", a:"Review the subscription terms presented at purchase. For App Store subscriptions, manage renewal and cancellation through your Apple subscription settings."},
+  {q:"Which cities are covered?", a:"Alfred currently publishes city guides for Miami, Paris, Dubai and London. Specific service coverage is confirmed when you make a request."}
 ];
 
 var JSONLD = [
   {
     "@context":"https://schema.org",
-    "@type":"Product",
+    "@type":"WebPage",
     "name":"Alfred Concierge Membership",
-    "description":"Membership in Alfred Concierge — luxury concierge app for Miami, Paris, Dubai and London. Three tiers from app-only access to a dedicated personal agent.",
-    "brand":{"@type":"Brand","name":"Alfred Concierge"},
-    "offers":[
-      {"@type":"Offer","name":"Alfred Gold","price":"9.99","priceCurrency":"USD","priceSpecification":{"@type":"UnitPriceSpecification","price":"9.99","priceCurrency":"USD","unitCode":"MON"},"availability":"https://schema.org/InStock","url":"https://alfredconcierge.app/pricing#gold"},
-      {"@type":"Offer","name":"Alfred Platinum","price":"99","priceCurrency":"USD","priceSpecification":{"@type":"UnitPriceSpecification","price":"99","priceCurrency":"USD","unitCode":"MON"},"availability":"https://schema.org/InStock","url":"https://alfredconcierge.app/pricing#platinum"},
-      {"@type":"Offer","name":"Alfred Centurion","priceCurrency":"USD","availability":"https://schema.org/LimitedAvailability","url":"https://alfredconcierge.app/pricing#centurion","description":"Invite-only. Pricing structured per member."}
-    ]
+    "description":"Review Alfred membership options and open the app for current pricing, billing periods and included support.",
+    "url":"https://alfredconcierge.app/pricing"
   },
   {
     "@context":"https://schema.org",
@@ -205,8 +189,8 @@ export default function PricingPage(){
   return (
     <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
-        title="Alfred Pricing — Membership Tiers from $9.99/month | Alfred Concierge"
-        description="Alfred Concierge memberships from $9.99/month. Gold: full app access and AI concierge. Platinum $99/month: real human concierge team, VIP venue benefits. Centurion: invite-only dedicated agent. Compare every tier."
+        title="Alfred Membership Options — See Current Pricing in the App"
+        description="Compare Alfred membership options for catalog access and concierge-supported requests. Open the app for current prices, billing periods and included support."
         keywords="Alfred Concierge pricing, Alfred membership cost, luxury concierge price, Alfred Gold price, Alfred Platinum price, Alfred Centurion, concierge app pricing, how much does a concierge cost, luxury concierge subscription"
         path="/pricing"
         type="website"
@@ -231,13 +215,13 @@ export default function PricingPage(){
             ...(mobile ? type.heroSerifMobile() : type.heroSerif()),
             color:T_.text, marginTop:18, maxWidth:880
           }}>
-            Three tiers.<br/>One concierge.<br/>
-            <SilverText style={{fontStyle:"italic"}}>Every door open.</SilverText>
+            Three options.<br/>One request flow.<br/>
+            <SilverText style={{fontStyle:"italic"}}>Terms made clear.</SilverText>
           </h1>
           <p style={{
             ...type.bodyLg(), color:T_.textMid, marginTop:18, maxWidth:560
           }}>
-            Transparent pricing. No per-booking fees. Cancel any plan at any time.
+            Review the current price, billing period and included support in the app before subscribing.
           </p>
         </div>
       </Hero>
@@ -258,7 +242,7 @@ export default function PricingPage(){
         <p style={{
           textAlign:"center", marginTop:36,
           ...type.caption(), color:T_.textDim, letterSpacing:1.5, textTransform:"uppercase"
-        }}>End-to-end encryption · No advertising · Cancel anytime</p>
+        }}>Provider costs and availability are separate unless stated otherwise</p>
       </section>
 
       <Divider margin={mobile ? "0 22px" : "0 56px"}/>
@@ -301,12 +285,12 @@ export default function PricingPage(){
             ...type.sectionSerif(), fontSize: mobile ? 28 : 34,
             color:T_.text, marginTop:14, marginBottom:14, lineHeight:1.15
           }}>
-            Start with <SilverText style={{fontStyle:"italic"}}>Gold</SilverText>.<br/>
-            Upgrade any time.
+            Review the options.<br/>
+            <SilverText style={{fontStyle:"italic"}}>Choose in the app.</SilverText>
           </h2>
           <p style={{
             ...type.bodyLg(), color:T_.textMid, maxWidth:520, margin:"0 auto 28px"
-          }}>Your account, history, and preferences carry across tiers.</p>
+          }}>The app shows the current plan details and marketplace subscription terms.</p>
           <div style={{
             display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap"
           }}>
@@ -333,16 +317,16 @@ function ChoosingSection({mobile}){
       />
       <div style={{display:"flex", flexDirection:"column", gap:22}}>
         <p style={{...type.bodyLg(), color:T_.textMid}}>
-          Most members start at <span style={{color:T_.text}}>Gold</span> to see the catalogue and use the AI concierge for restaurant discovery and event browsing. It is the right tier for someone who wants the modern app surface — search, recommendations, integrated booking — without committing to the full concierge service.
+          <span style={{color:T_.text}}>Gold</span> is the starting option for browsing the catalog and submitting requests in the app. Check the live plan screen for the features currently included.
         </p>
         <p style={{...type.bodyLg(), color:T_.textMid}}>
-          <span style={{color:T_.text}}>Platinum</span> is the inflection point. It adds a real human concierge team behind every request and unlocks the operational benefits that make the difference at premium venues — waived advance payments, reduced minimum spends on bottles, VIP table placement, skipped queues, the right waiter on your table. If you book three or four premium nights out a month or take more than one trip a quarter to one of our cities, Platinum pays for itself in waived minimums alone.
+          <span style={{color:T_.text}}>Platinum</span> adds the concierge coordination described in the app. That can include checking providers, summarizing terms and coordinating requests that involve more than one service.
         </p>
         <p style={{...type.bodyLg(), color:T_.textMid}}>
-          <span style={{color:T_.text}}>Centurion</span> is for members who want a single named agent on call twenty-four hours a day — someone who knows their preferences, their travel patterns, their family, and the standing relationships at venues. It is structured per member rather than priced as a SKU, and the right way to start the conversation is to apply through the <a href="/contact" style={{color:T_.text, textDecoration:"underline", textUnderlineOffset:3}}>contact page</a>.
+          <span style={{color:T_.text}}>Centurion</span> is handled by enquiry. Its availability, scope, billing and support commitments must be agreed directly with Alfred; start through the <a href="/contact" style={{color:T_.text, textDecoration:"underline", textUnderlineOffset:3}}>contact page</a>.
         </p>
         <p style={{...type.bodyLg(), color:T_.textMid}}>
-          All tiers can be cancelled at any time. Memberships paid annually are refunded pro-rata on cancellation. There are no per-booking surcharges, no automatic renewal traps and no upsell pressure once you're in.
+          Before purchase, review the price, renewal period and cancellation terms shown by Alfred and the applicable app marketplace. Those live terms control the subscription.
         </p>
       </div>
     </section>
@@ -363,10 +347,10 @@ function IncludedSection({mobile}){
       />
       <div style={{display:"flex", flexDirection:"column", gap:22}}>
         <p style={{...type.bodyLg(), color:T_.textMid}}>
-          The membership covers the concierge service itself — the catalogue, the bookings, the human team, the relationships and the benefits. It does not cover what you spend at the venue: the dinner, the bottle, the car rental, the yacht day, the jet hour. Those are billed at the venue's rate and paid through the app at point of booking or to the venue at the time of service, depending on the category.
+          A membership covers only the Alfred features listed for that plan at the time of purchase. It does not automatically cover the restaurant bill, hotel rate, deposit, rental, charter, tax, gratuity or another provider charge.
         </p>
         <p style={{...type.bodyLg(), color:T_.textMid}}>
-          Event hospitality — Monaco Grand Prix, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening — is sold at face value plus a small handling fee that is disclosed at the time of booking. There is never a hidden mark-up on tickets or hospitality packages.
+          Any service fee, provider price, deposit and cancellation policy should be disclosed before a request is approved. Ask Alfred to clarify any amount or term that is not clear.
         </p>
       </div>
     </section>

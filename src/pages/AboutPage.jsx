@@ -10,20 +10,20 @@ var T_ = T;
 
 var DIFFERENTIATORS = [
   {
-    title: "Real humans, not chatbots",
-    body: "Every booking is verified by a human concierge before it goes out. Centurion members get a single named agent who handles every request, twenty-four hours a day, on WhatsApp."
+    title: "Human request coordination",
+    body: "Concierge-supported requests are reviewed by a person who checks the relevant provider, current availability and the terms offered for your dates."
   },
   {
-    title: "Direct relationships at every venue",
-    body: "We do not work through third-party APIs for our top venues. Our concierges have direct lines to managers at LIV, E11even, Zuma, Cipriani, Casa Tua, Raspoutine, Castel, and the rest of our partner roster."
+    title: "Clear confirmations",
+    body: "A request is not presented as booked until the provider has confirmed it. Pricing, deposits and cancellation conditions are shared before approval."
   },
   {
-    title: "Member benefits that move the needle",
-    body: "Reduced minimum spends, waived advance payments, VIP flags in venue systems, priority placement and complimentary upgrades — concrete benefits negotiated on behalf of members, not vague perks."
+    title: "Alternatives when plans change",
+    body: "When the first option is unavailable, Alfred can research alternatives that match the location, timing, party size and budget in the request."
   },
   {
     title: "One app, four cities, one team",
-    body: "Miami, Paris, Dubai and London under a single membership. No regional sub-services, no separate apps, no handoffs between teams when you cross a border."
+    body: "The catalog and request flow cover Miami, Paris, Dubai and London in one app. Current coverage for any service is confirmed when you ask."
   }
 ];
 
@@ -32,13 +32,13 @@ var JSONLD = {
   "@type":"AboutPage",
   "name":"About Alfred Concierge",
   "url":"https://alfredconcierge.app/about",
-  "description":"Alfred Concierge is the luxury concierge app for Miami, Paris, Dubai and London. Real human concierges, instant bookings, and member-only access to the world's best venues.",
+  "description":"Alfred Concierge is a request-based concierge app for restaurants, hotels, transport and private services in Miami, Paris, Dubai and London.",
   "mainEntity":{
     "@type":"Organization",
     "name":"Alfred Concierge",
     "url":"https://alfredconcierge.app",
     "logo":"https://alfredconcierge.app/og-image.jpg",
-    "description":"Alfred is a luxury concierge app combining real human concierges with an AI assistant, serving members in Miami, Paris, Dubai and London.",
+    "description":"Alfred is a concierge app for discovering options and coordinating requests in Miami, Paris, Dubai and London.",
     "foundingDate":"2024",
     "areaServed":[
       {"@type":"City","name":"Miami"},
@@ -46,11 +46,7 @@ var JSONLD = {
       {"@type":"City","name":"Dubai"},
       {"@type":"City","name":"London"}
     ],
-    "sameAs":[
-      "https://www.instagram.com/alfred",
-      "https://x.com/alfredconcierge",
-      "https://www.tiktok.com/@alfred"
-    ]
+    "sameAs":["https://www.instagram.com/askalfred.app","https://www.tiktok.com/@alfred.app"]
   }
 };
 
@@ -80,7 +76,7 @@ export default function AboutPage(){
     <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
         title="About Alfred — The Luxury Concierge App for Miami, Paris, Dubai & London"
-        description="Learn about Alfred Concierge: real human concierges, an AI assistant, and member-only access to Michelin restaurants, VIP nightlife, jets, yachts and exotic cars across Miami, Paris, Dubai and London."
+        description="Learn how Alfred helps people discover and request restaurants, hotels, transport and private services across Miami, Paris, Dubai and London."
         keywords="about Alfred Concierge, luxury concierge company, who is Alfred, Alfred concierge founders, Alfred app team, Miami concierge company, Paris concierge company"
         path="/about"
         type="website"
@@ -110,7 +106,7 @@ export default function AboutPage(){
           <p style={{
             ...type.bodyLg(), color:T_.textMid, marginTop:18, maxWidth:580
           }}>
-            One app. One concierge team. Every door open across Miami, Paris, Dubai and London.
+            One app for discovering options and coordinating requests across Miami, Paris, Dubai and London.
           </p>
         </div>
       </Hero>
@@ -118,11 +114,11 @@ export default function AboutPage(){
       <ProseSection
         mobile={mobile}
         kicker="Why Alfred exists"
-        title="Two systems that didn't quite work — and one that does"
+        title="A clearer way to coordinate city requests"
         paragraphs={[
-          "The traditional luxury concierge industry runs on phone calls, email chains, fax confirmations and a thousand favours owed across hotel front desks, restaurant managers and event promoters. It works — but it is slow, opaque, and built for a different generation. The newer apps that tried to fix this went the other way: chatbots, generic recommendations, no real relationships, no accountability when things go wrong at 11pm on a Saturday in South Beach.",
-          "Alfred sits between the two. We built an app that puts the catalogue, the bookings and the receipts in your pocket — and behind that app sits a real concierge team with real relationships at the venues that matter. Every Michelin restaurant we book has a manager who picks up our call. Every nightclub has a host who walks our members in. Every yacht broker, jet operator and supercar fleet on our platform is one we have used personally.",
-          "That combination — modern interface, traditional relationships — is the entire premise of Alfred."
+          "Planning a night out or a trip often means comparing several websites, calling providers and keeping track of separate terms. Alfred brings discovery and request coordination into one place.",
+          "You share the city, dates, party size, preferences and budget. Alfred can then check relevant providers and return current options for review.",
+          "Availability and final terms come from the provider. Nothing is described as confirmed until those details are checked and you approve them."
         ]}
       />
 
@@ -131,11 +127,11 @@ export default function AboutPage(){
       <ProseSection
         mobile={mobile}
         kicker="What we do"
-        title="Seven categories of curated luxury, one chat thread"
+        title="Multiple service categories, one request flow"
         paragraphs={[
-          "Alfred members get instant access to seven categories of curated luxury experience: Michelin and impossible-reservation dining, VIP tables and bottle service at the world's top nightclubs, exotic and luxury car rentals delivered to the door, private jet charters with empty-leg deals, day yachts and superyachts with full crew, wellness and spa bookings at the best venues in each city, and luxury hotel reservations with member benefits across our partner network.",
-          "We also handle the things that don't fit a category — last-minute private chefs, courtside seats, helicopter transfers, jewellery stylists, surprise proposals on the Eiffel Tower at 9pm. If it can be arranged in one of our cities, Alfred has a person who can arrange it.",
-          "Tickets and hospitality for the world's marquee events — Monaco Grand Prix, Miami F1, Roland Garros, Royal Ascot, Ibiza Opening — are sold directly through the app each season."
+          "The catalog covers dining, nightlife, hotels, cars, yachts, private aviation and wellness. Listings are a starting point: each request is checked for the requested city and dates.",
+          "Requests can also combine services, such as a hotel, restaurant and transport plan. Alfred will explain which parts can be coordinated and which provider terms apply.",
+          "Catalog inclusion does not imply that Alfred is the provider's official site or that availability is held."
         ]}
       />
 
@@ -149,10 +145,10 @@ export default function AboutPage(){
       <ProseSection
         mobile={mobile}
         kicker="Where we operate"
-        title="Four cities. One team. Same app."
+        title="Four city guides. One request flow."
         paragraphs={[
-          "Alfred operates a curated catalogue across four cities. Miami is the home market, with the deepest catalogue across dining, nightlife, yacht charters out of Miami Beach and Biscayne Bay, and exotic car rentals delivered anywhere from South Beach to Star Island. Paris covers Michelin and bistronomy reservations, the top nightclubs of the 8th and 1st arrondissements, hotel partnerships from the Costes group through to the Bristol, and the spa and beauty venues that define Parisian wellness. Dubai handles the supercar fleet, beach club access, helicopter transfers and the increasingly important off-season hospitality calendar. London covers private members' clubs, fine dining across Mayfair and Notting Hill, Royal Ascot hospitality and the city's best wellness and spa venues.",
-          "Members travelling between cities use the same app, the same concierge team and the same membership tier. There is no <span style=\"color:" + T_.text + "\">Alfred Paris</span> or <span style=\"color:" + T_.text + "\">Alfred Dubai</span> — there is just Alfred."
+          "Alfred publishes request guides for Miami, Paris, Dubai and London. Each guide links to the relevant restaurant, hotel, nightlife, transport and private-service categories.",
+          "Coverage changes by date and provider, so the app and concierge request flow are the source for current availability."
         ]}
       />
 
@@ -160,11 +156,11 @@ export default function AboutPage(){
 
       <ProseSection
         mobile={mobile}
-        kicker="Membership and trust"
-        title="Three tiers, end-to-end encryption, no advertising"
+        kicker="Membership and terms"
+        title="Plan details before you subscribe"
         paragraphs={[
-          "Alfred operates three membership tiers — <span style=\"color:" + T_.text + "\">Gold</span>, <span style=\"color:" + T_.text + "\">Platinum</span> and <span style=\"color:" + T_.text + "\">Centurion</span> — designed to match the way our members actually live. Gold gives full app access for $9.99 per month and is the right tier for someone who wants the catalogue, the AI concierge and access to the booking integrations. Platinum at $99 per month adds direct human concierge support, VIP venue placement, reduced minimum spends and the operational benefits that real luxury concierge work depends on. Centurion is invite-only and assigns a single named agent to handle every aspect of a member's life — from airport coordination to private event curation.",
-          "All plans are protected by end-to-end encryption, contain no advertising, and can be cancelled at any time. Members own their data; Alfred does not sell it, share it with venues without explicit consent, or use it to retarget for advertising."
+          "Current plan names, prices, billing periods and included support are shown in the app before purchase. Provider costs are separate from any Alfred membership unless the checkout says otherwise.",
+          "Privacy choices and data practices are explained in the Privacy Policy. Subscription cancellation and renewal follow the terms shown by the applicable app marketplace and in Alfred's Terms."
         ]}
       />
 
