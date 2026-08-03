@@ -333,7 +333,7 @@ export default function LongTailPage(){
 
       {/* Footer */}
       <footer style={{borderTop:"1px solid "+C.bd, padding:"40px 24px", textAlign:"center", color: C.s5}}>
-        <p style={{...sf(12), margin: 0}}>© {new Date().getFullYear()} Alfred Concierge · Miami · Paris · Dubai · London</p>
+        <p style={{...sf(12), margin: 0}}>© {new Date().getFullYear()} Alfred Concierge · Miami · Paris · Ibiza · Saint-Tropez · Mykonos · Dubai · London</p>
       </footer>
     </div>
   );

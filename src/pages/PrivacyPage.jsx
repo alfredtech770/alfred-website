@@ -259,7 +259,7 @@ export default function PrivacyPage() {
             <p>You may request a copy of the applicable safeguards by contacting privacy@alfredconcierge.app.</p>
 
             <h3>Global Service Delivery</h3>
-            <p>Given Alfred's operations across Miami, Paris, Dubai, and London, booking data may be processed in multiple jurisdictions. We ensure appropriate safeguards are in place for all international transfers and that partner venues in each city handle data in compliance with local requirements.</p>
+            <p>Given Alfred's service coverage across Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai, and London, booking data may be processed in multiple jurisdictions. We apply appropriate safeguards to international transfers and disclose relevant third-party providers as described in this policy.</p>
           </Section>
 
           <Section id="security" title="9. Security Measures">

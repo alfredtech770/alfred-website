@@ -143,7 +143,7 @@ var catVenues = {
 };
 
 function CityCarousel(p){
-  var cities = ["Miami","Paris","Dubai","London"];
+  var cities = ["Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London"];
   var [idx, setIdx] = useState(0);
   useEffect(function(){
     if(!p.loaded) return;
@@ -782,7 +782,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
             Download on the App Store
           </a>
-          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Dubai · London</p>
+          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Ibiza · Saint-Tropez · Mykonos · Dubai · London</p>
         </div>
       </div>}
 
@@ -1233,7 +1233,7 @@ textarea{resize:vertical;min-height:100px}
         </div>
         <div style={{padding:"0 36px 48px",opacity:0,animation:"menuFadeUp 0.5s ease 0.6s forwards"}}>
           <a href="#apply" onClick={function(){setMobileMenu(false)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,textDecoration:"none",width:"100%"}}>Apply Now</a>
-          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Dubai · London</p>
+          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Ibiza · Saint-Tropez · Mykonos · Dubai · London</p>
         </div>
       </div>}
 
@@ -1789,7 +1789,7 @@ body::-webkit-scrollbar{width:0}
         </div>
         <div style={{padding:"0 36px 48px",opacity:0,animation:"menuFadeUp 0.5s ease 0.6s forwards"}}>
           <a href="/" onClick={function(){setMobileMenu(false)}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"18px 0",borderRadius:16,background:C.s1,...sf(15,600),color:C.bg,textDecoration:"none",width:"100%"}}>Download App</a>
-          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Dubai · London</p>
+          <p style={{...sf(11,400),color:C.s7,textAlign:"center",marginTop:16,letterSpacing:0.5}}>Miami · Paris · Ibiza · Saint-Tropez · Mykonos · Dubai · London</p>
         </div>
       </div>}
 

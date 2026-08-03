@@ -83,11 +83,18 @@ export default function SEOHead(p){
 }
 
 /* Pre-built SEO configs for each page */
+var COVERAGE_AREAS=[
+  {"@type":"City","name":"Miami"},{"@type":"City","name":"Paris"},
+  {"@type":"AdministrativeArea","name":"Ibiza"},{"@type":"City","name":"Saint-Tropez"},
+  {"@type":"AdministrativeArea","name":"Mykonos"},{"@type":"City","name":"Dubai"},
+  {"@type":"City","name":"London"}
+];
+
 export var SEO={
   home:{
     title:"Alfred Concierge — Restaurants, Hotels, Cars & Luxury Services",
-    description:"Browse curated restaurants, luxury hotels, nightlife, exotic cars, yachts, private jets and wellness in Miami, Paris, Dubai and London, then send your request to Alfred Concierge.",
-    keywords:"luxury concierge app, best concierge service, Miami concierge, Paris concierge, Dubai concierge, restaurant reservations, VIP nightlife Miami, private jet charter, exotic car rental Miami, yacht charter, Monaco Grand Prix tickets, Miami F1 tickets, Alfred concierge, Alfred app",
+    description:"Request restaurants, hotels, cars, nightlife and more through Alfred Concierge in Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London.",
+    keywords:"luxury concierge app, Miami concierge, Paris concierge, Ibiza concierge, Saint Tropez concierge, Mykonos concierge, Dubai concierge, London concierge, restaurant requests, hotel requests, Alfred concierge, Alfred app",
     path:"/"
   },
   events:{
@@ -110,41 +117,41 @@ export var SEO={
   },
   catalog:{
     title:"Luxury Catalog — Dining, Nightlife, Cars, Jets, Yachts, Wellness | Alfred",
-    description:"Browse Alfred's curated catalog of luxury experiences. Michelin restaurants, VIP nightlife, exotic car rentals, private jet charters, yacht charters and wellness spas in Miami, Paris, Dubai and London.",
+    description:"Browse Alfred's request catalog for restaurants, hotels, nightlife, cars, yachts, aviation and wellness across seven destinations.",
     keywords:"luxury experiences, luxury catalog, Miami restaurants, Miami nightlife, exotic car rental, private jet, yacht charter, wellness spa, luxury concierge catalog",
     path:"/catalog",
     jsonLd:[
-      {"@context":"https://schema.org","@type":"ItemList","name":"Alfred Concierge — Luxury Catalog","description":"Curated luxury experiences in Miami, Paris, Dubai and London. Dining, nightlife, exotic cars, private jets, yachts and wellness.","itemListElement":[{"@type":"ListItem","position":1,"name":"Dining","url":"https://alfredconcierge.app/catalog/dining"},{"@type":"ListItem","position":2,"name":"Nightlife","url":"https://alfredconcierge.app/catalog/nightlife"},{"@type":"ListItem","position":3,"name":"Exotic Cars","url":"https://alfredconcierge.app/catalog/exotic-cars"},{"@type":"ListItem","position":4,"name":"Private Jets","url":"https://alfredconcierge.app/catalog/jets"},{"@type":"ListItem","position":5,"name":"Yachts","url":"https://alfredconcierge.app/catalog/yachts"},{"@type":"ListItem","position":6,"name":"Wellness","url":"https://alfredconcierge.app/catalog/wellness"}]},
+      {"@context":"https://schema.org","@type":"ItemList","name":"Alfred Concierge — Luxury Catalog","description":"Request-based dining, hotels, nightlife, cars, private aviation, yachts and wellness across Alfred's seven destination guides.","itemListElement":[{"@type":"ListItem","position":1,"name":"Dining","url":"https://alfredconcierge.app/catalog/dining"},{"@type":"ListItem","position":2,"name":"Nightlife","url":"https://alfredconcierge.app/catalog/nightlife"},{"@type":"ListItem","position":3,"name":"Exotic Cars","url":"https://alfredconcierge.app/catalog/exotic-cars"},{"@type":"ListItem","position":4,"name":"Private Jets","url":"https://alfredconcierge.app/catalog/jets"},{"@type":"ListItem","position":5,"name":"Yachts","url":"https://alfredconcierge.app/catalog/yachts"},{"@type":"ListItem","position":6,"name":"Wellness","url":"https://alfredconcierge.app/catalog/wellness"}]},
       {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"}]}
     ]
   },
   dining:{
-    title:"Best Restaurants in Miami & Paris — Michelin Dining Reservations | Alfred",
-    description:"Browse curated restaurants in Miami and Paris, including Michelin dining, private rooms and waterfront venues. Send Alfred your date, time and party size to request a table.",
-    keywords:"best restaurants Miami, best restaurants Paris, Michelin restaurants Miami, Michelin restaurants Paris, restaurant reservations Miami, impossible reservations, private dining Miami, fine dining Miami, luxury restaurants, Miami restaurant booking, concierge restaurant reservations",
+    title:"Restaurants in Miami, Paris, Ibiza & More | Alfred Concierge",
+    description:"Browse restaurants across Alfred's seven destinations and send your date, time, party size and preferences to request current options.",
+    keywords:"restaurants Miami, restaurants Paris, restaurants Ibiza, restaurants Saint Tropez, restaurants Mykonos, concierge restaurant requests",
     path:"/catalog/dining",
     jsonLd:[
-      {"@context":"https://schema.org","@type":"Service","name":"Restaurant Requests — Alfred Concierge","description":"Browse restaurants and ask Alfred Concierge to confirm current reservation options for your date, time and party size.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Restaurant reservation requests","areaServed":[{"@type":"City","name":"Miami"},{"@type":"City","name":"Paris"},{"@type":"City","name":"Dubai"},{"@type":"City","name":"London"}],"url":"https://alfredconcierge.app/catalog/dining"},
+      {"@context":"https://schema.org","@type":"Service","name":"Restaurant Requests — Alfred Concierge","description":"Browse restaurants and ask Alfred Concierge to confirm current reservation options for your date, time and party size.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Restaurant reservation requests","areaServed":COVERAGE_AREAS,"url":"https://alfredconcierge.app/catalog/dining"},
       {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},{"@type":"ListItem","position":3,"name":"Dining","item":"https://alfredconcierge.app/catalog/dining"}]}
     ]
   },
   nightlife:{
-    title:"VIP Nightlife Miami & Paris — Request Tables & Guest Lists | Alfred",
-    description:"Browse nightlife venues in Miami and Paris, then ask Alfred to check current guest-list, table and bottle-service options for your date and group size.",
-    keywords:"LIV Miami table, LIV Miami VIP, E11even Miami, E11even VIP table, Story Miami, Club Space Miami, Hyde Beach Miami, Raspoutine Paris, Castel Paris, nightclub tables Miami, VIP nightlife Miami, bottle service Miami, nightclub reservations, VIP tables Paris, Miami nightclub booking, best nightclubs Miami, best nightclubs Paris",
+    title:"Nightlife in Miami, Paris, Ibiza & More | Alfred Concierge",
+    description:"Browse nightlife venues across Alfred's destinations and request current guest-list, table or bottle-service options for your date and group size.",
+    keywords:"nightlife Miami, nightlife Paris, nightlife Ibiza, nightlife Mykonos, Saint Tropez nightlife, nightclub table requests",
     path:"/catalog/nightlife",
     jsonLd:[
-      {"@context":"https://schema.org","@type":"Service","name":"Nightlife Requests — Alfred Concierge","description":"Browse nightlife venues and ask Alfred to confirm current guest-list, table or bottle-service options and venue terms.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Nightlife booking requests","areaServed":[{"@type":"City","name":"Miami"},{"@type":"City","name":"Paris"}],"url":"https://alfredconcierge.app/catalog/nightlife"},
+      {"@context":"https://schema.org","@type":"Service","name":"Nightlife Requests — Alfred Concierge","description":"Browse nightlife venues and ask Alfred to confirm current guest-list, table or bottle-service options and venue terms.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Nightlife booking requests","areaServed":COVERAGE_AREAS,"url":"https://alfredconcierge.app/catalog/nightlife"},
       {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},{"@type":"ListItem","position":3,"name":"Nightlife","item":"https://alfredconcierge.app/catalog/nightlife"}]}
     ]
   },
   exoticCars:{
-    title:"Exotic Car Rental Miami — Ferrari, Lamborghini, Rolls Royce | Alfred",
-    description:"Browse Ferrari, Lamborghini, Rolls-Royce, McLaren, Porsche and other luxury cars in Miami. View indicative daily pricing and request current availability, delivery and rental terms through Alfred.",
-    keywords:"exotic car rental Miami, Ferrari rental Miami, Lamborghini rental Miami, Rolls Royce rental Miami, McLaren rental Miami, Porsche rental Miami, supercar rental Miami, luxury car rental Miami, exotic car hire, sports car rental Miami, car rental Miami Beach, exotic car rental near me, rent a Ferrari, rent a Lamborghini, Miami luxury car rental",
+    title:"Luxury & Exotic Car Requests Across Alfred Destinations",
+    description:"Browse listed luxury and exotic cars across Alfred's destinations, then request current supplier availability, delivery, pricing and rental terms.",
+    keywords:"exotic car rental Miami, luxury car Paris, car rental Ibiza, luxury car Saint Tropez, exotic car Mykonos, exotic car Dubai, luxury car London",
     path:"/catalog/exotic-cars",
     jsonLd:[
-      {"@context":"https://schema.org","@type":"Service","name":"Exotic Car Rental Requests — Alfred Concierge","description":"Compare luxury cars and request current vehicle availability, pricing, delivery options and supplier terms through Alfred Concierge.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Exotic car rental requests","areaServed":[{"@type":"City","name":"Miami"},{"@type":"City","name":"Paris"},{"@type":"City","name":"Dubai"}],"url":"https://alfredconcierge.app/catalog/exotic-cars"},
+      {"@context":"https://schema.org","@type":"Service","name":"Exotic Car Rental Requests — Alfred Concierge","description":"Compare luxury cars and request current vehicle availability, pricing, delivery options and supplier terms through Alfred Concierge.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Exotic car rental requests","areaServed":COVERAGE_AREAS,"url":"https://alfredconcierge.app/catalog/exotic-cars"},
       {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},{"@type":"ListItem","position":3,"name":"Exotic Cars","item":"https://alfredconcierge.app/catalog/exotic-cars"}]}
     ]
   },
@@ -159,22 +166,22 @@ export var SEO={
     ]
   },
   yachts:{
-    title:"Yacht Charter Miami — Luxury Boat Rental & Yacht Hire | Alfred",
-    description:"Browse yachts in Miami, the French Riviera, Ibiza and Monaco, then request current vessel availability, charter pricing and confirmed inclusions through Alfred.",
-    keywords:"yacht charter Miami, yacht rental Miami, boat rental Miami, luxury yacht charter, yacht hire Miami, boat charter Miami, Miami yacht, superyacht charter, day boat rental Miami, Biscayne Bay yacht, yacht rental near me, party boat Miami, Miami boat party",
+    title:"Yacht Charter Requests Across Alfred Destinations",
+    description:"Browse listed yachts across Alfred's destinations, then request current vessel availability, charter pricing, guest capacity and confirmed inclusions.",
+    keywords:"yacht charter Miami, yacht Ibiza, yacht Saint Tropez, yacht Mykonos, Dubai yacht charter, luxury yacht request",
     path:"/catalog/yachts",
     jsonLd:[
-      {"@context":"https://schema.org","@type":"Service","name":"Yacht Charter Requests — Alfred Concierge","description":"Browse yachts and request current vessel availability, charter pricing, guest capacity and confirmed inclusions.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Yacht charter requests","areaServed":[{"@type":"City","name":"Miami"},{"@type":"City","name":"Ibiza"},{"@type":"City","name":"Monaco"}],"url":"https://alfredconcierge.app/catalog/yachts"},
+      {"@context":"https://schema.org","@type":"Service","name":"Yacht Charter Requests — Alfred Concierge","description":"Browse yachts and request current vessel availability, charter pricing, guest capacity and confirmed inclusions.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Yacht charter requests","areaServed":COVERAGE_AREAS,"url":"https://alfredconcierge.app/catalog/yachts"},
       {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},{"@type":"ListItem","position":3,"name":"Yachts","item":"https://alfredconcierge.app/catalog/yachts"}]}
     ]
   },
   wellness:{
-    title:"Luxury Wellness & Spa — Best Spas in Miami & Paris | Alfred",
-    description:"Browse spas and wellness providers in Miami and Paris, then ask Alfred to confirm current treatment times, prices and provider terms.",
-    keywords:"best spa Miami, luxury spa Miami, wellness Miami, personal trainer Miami, facial Miami, spa booking, wellness retreat, spa Paris, luxury wellness, best spa near me",
+    title:"Wellness & Spa Requests Across Alfred Destinations",
+    description:"Browse spas and wellness providers across Alfred's destinations, then ask the concierge to confirm current treatment times, prices and terms.",
+    keywords:"spa Miami, spa Paris, wellness Ibiza, spa Saint Tropez, wellness Mykonos, concierge wellness requests",
     path:"/catalog/wellness",
     jsonLd:[
-      {"@context":"https://schema.org","@type":"Service","name":"Wellness Requests — Alfred Concierge","description":"Browse wellness providers and request current treatment times, pricing and provider terms through Alfred Concierge.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Wellness appointment requests","areaServed":[{"@type":"City","name":"Miami"},{"@type":"City","name":"Paris"}],"url":"https://alfredconcierge.app/catalog/wellness"},
+      {"@context":"https://schema.org","@type":"Service","name":"Wellness Requests — Alfred Concierge","description":"Browse wellness providers and request current treatment times, pricing and provider terms through Alfred Concierge.","provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"},"serviceType":"Wellness appointment requests","areaServed":COVERAGE_AREAS,"url":"https://alfredconcierge.app/catalog/wellness"},
       {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://alfredconcierge.app/catalog"},{"@type":"ListItem","position":3,"name":"Wellness","item":"https://alfredconcierge.app/catalog/wellness"}]}
     ]
   },

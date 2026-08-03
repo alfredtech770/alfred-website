@@ -35,6 +35,7 @@ function details(route) {
   const parts = route.split("/").filter(Boolean);
   const slug = parts[parts.length - 1] || "Alfred Concierge";
   const name = words(slug);
+  const cityName = route === "/city/saint-tropez" ? "Saint-Tropez" : name;
   const parent = "/" + parts.slice(0, -1).join("/");
 
   if (route.startsWith("/catalog/dining/")) return {title:`${name} — Restaurant Request | Alfred`, h1:name, description:`View ${name} restaurant details and request a table through Alfred Concierge. Confirm the date, time, party size and current availability with the concierge.`, parent:"/catalog/dining", parentLabel:"Browse restaurants"};
@@ -45,7 +46,7 @@ function details(route) {
   if (route.startsWith("/catalog/yachts/")) return {title:`${name} — Yacht Charter Request | Alfred`, h1:name, description:`View ${name} charter details and request current availability and final terms through Alfred Concierge.`, parent:"/catalog/yachts", parentLabel:"Browse yachts"};
   if (route.startsWith("/catalog/jets/")) return {title:`${name} — Private Jet Charter Request | Alfred`, h1:name, description:`View ${name} aircraft details and request current charter options and a full quote through Alfred Concierge.`, parent:"/catalog/jets", parentLabel:"Browse private jets"};
   if (route.startsWith("/best/")) return {title:`${name} | Alfred Concierge Guide`, h1:name, description:`A concierge-curated guide to ${name.toLowerCase()}, with links to relevant catalog pages and a direct request option.`, parent:"/catalog", parentLabel:"Browse the catalog"};
-  if (route.startsWith("/city/")) return {title:`${name} Concierge — Restaurants, Hotels & Cars | Alfred`, h1:`Alfred Concierge in ${name}`, description:`Explore restaurants, hotels, nightlife, cars and other concierge requests in ${name}.`, parent:"/catalog", parentLabel:"Browse the catalog"};
+  if (route.startsWith("/city/")) return {title:`${cityName} Concierge — Restaurants, Hotels & Cars | Alfred`, h1:`Alfred Concierge in ${cityName}`, description:`Explore restaurants, hotels, nightlife, cars and other concierge requests in ${cityName}.`, parent:"/catalog", parentLabel:"Browse the catalog"};
 
   const labels = {
     "/catalog":"Luxury Services Catalog", "/catalog/dining":"Restaurants", "/catalog/hotels":"Luxury Hotels",

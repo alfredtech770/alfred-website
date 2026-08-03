@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead, { SEO } from "../components/SEOHead";
@@ -118,7 +119,8 @@ export default function DiningPage(){
   var [scrollY,setScrollY]=useState(0);
   var [restaurants,setRestaurants]=useState([]);
   var [fetching,setFetching]=useState(true);
-  var [city,setCity]=useState("All Cities");
+  var [searchParams,setSearchParams]=useSearchParams();
+  var [city,setCity]=useState(searchParams.get("city")||"All Cities");
   var [cuisine,setCuisine]=useState("Cuisine");
   var [price,setPrice]=useState("Price");
   var [vibe,setVibe]=useState("Vibe");
@@ -131,6 +133,11 @@ export default function DiningPage(){
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
+  useEffect(function(){
+    var p={};
+    if(city!=="All Cities")p.city=city;
+    setSearchParams(p,{replace:true});
+  },[city]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
   useEffect(function(){
     async function load(){
@@ -172,7 +179,7 @@ export default function DiningPage(){
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
   /* Dynamic filter options from data — group cuisines into broad categories */
-  var cities=["All Cities","Miami","Paris"];
+  var cities=["All Cities","Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London"];
   var CUISINE_MAP={
     "French":["French","French Fine Dining","French Bistro","French Brasserie","French Cafe","French Café","French Classic","French Contemporary","French Gastronomic","French Mediterranean","French Seafood","French Steakhouse","French, Bar Lounge","French, Bistro","French, Brasserie","French, Cafe","French, Contemporary","French, Fine Dining","French, Wine Bar","French-American","French-American Fusion","French-Mediterranean","Contemporary French","Modern French","Franco-Japanese Fusion","Pastries, French","Cafe, French"],
     "Italian":["Italian","Italian Fine Dining","Italian Casual","Italian Pasta","Italian Pasta Bar","Italian Pizza","Italian Wine Bar","Italian, Contemporary","Italian, Seafood","Italian, Trattoria","Italian-American","Italian-Ligurian","Italian-Mediterranean","Italian-Mediterranean Cafe","Italian-Piedmont","Italian-Roman","Italian-Sicilian","Italian-Venetian","Italian Bakery","Mediterranean-Italian","Roman Italian","Southern Italian","Sicilian Pizza","Modern Italian"],
@@ -195,7 +202,11 @@ export default function DiningPage(){
   var vibes=["Vibe"].concat([...new Set(restaurants.map(function(r){return r.vibe}).filter(Boolean))].sort());
   var prices=["Price","$","$$","$$$","$$$$"];
 
-  function cityMatch(loc,filter){if(filter==="Paris")return loc==="Paris";return loc!=="Paris"}
+  function cityMatch(loc,filter){
+    var value=(loc||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+    var wanted=(filter||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+    return value===wanted||value.indexOf(wanted+" ")===0||value.indexOf(" "+wanted)!==-1;
+  }
 
   var filtered=restaurants.filter(function(r){
     if(city!=="All Cities"&&!cityMatch(r.loc,city))return false;

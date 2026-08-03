@@ -57,8 +57,8 @@ function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100
 
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.01,rootMargin:"200px"});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
 
-var CITIES=["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"];
-var COMING_SOON_CITIES=["Paris","Ibiza","Monaco","New York","London"];
+var CITIES=["All Cities","Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London","Monaco","New York"];
+var COMING_SOON_CITIES=["Monaco","New York"];
 var SORT_OPTIONS=["Featured","Price: Low","Price: High","Most Powerful","Fastest"];
 
 /* ═══ Dropdown component ═══ */
@@ -239,7 +239,14 @@ export default function ExoticCarsPage(){
 
   /* Filter logic */
   var filtered=cars.filter(function(c){
-    if(city!=="All Cities"&&c.locs.indexOf(city)===-1) return false;
+    if(city!=="All Cities"){
+      var wanted=city.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      var matchesCity=c.locs.some(function(loc){
+        var value=(loc||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+        return value===wanted||value.indexOf(wanted+" ")===0||value.indexOf(" "+wanted)!==-1;
+      });
+      if(!matchesCity)return false;
+    }
     if(bodyType!=="Type"&&c.body!==bodyType) return false;
     if(brand!=="Brand"&&c.brand!==brand) return false;
     if(driveType!=="Drive"&&c.drive!==driveType) return false;

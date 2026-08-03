@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import SEOHead from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
@@ -41,9 +42,11 @@ function HotelCard({hotel}){
 }
 
 export default function HotelsPage(){
+  var [searchParams,setSearchParams]=useSearchParams();
   var [hotels,setHotels]=useState([]);
   var [loading,setLoading]=useState(true);
   var [search,setSearch]=useState("");
+  var [city,setCity]=useState(searchParams.get("city")||"");
   var [hood,setHood]=useState("");
   var [status,setStatus]=useState("");
   var [visibleCount,setVisibleCount]=useState(24);
@@ -61,23 +64,35 @@ export default function HotelsPage(){
     });
   },[]);
 
+  useEffect(function(){
+    var p={};
+    if(city)p.city=city;
+    setSearchParams(p,{replace:true});
+  },[city]);
+
+  var cityOptions=["Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London"];
   var neighborhoods=[...new Set(hotels.map(function(h){return h.neighborhood}).filter(Boolean))].sort();
   var filtered=hotels.filter(function(h){
     if(search){var s=search.toLowerCase();if(!(h.name||"").toLowerCase().includes(s)&&!(h.neighborhood||"").toLowerCase().includes(s))return false;}
+    if(city){
+      var hCity=(h.city||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      var wanted=city.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      if(hCity!==wanted&&hCity.indexOf(wanted+" ")!==0&&hCity.indexOf(" "+wanted)===-1)return false;
+    }
     if(hood&&h.neighborhood!==hood)return false;
     if(status==="open"&&h.status!=="open")return false;
     if(status==="coming_soon"&&h.status!=="coming_soon")return false;
     return true;
   });
-  useEffect(function(){setVisibleCount(24)},[search,hood,status]);
+  useEffect(function(){setVisibleCount(24)},[search,city,hood,status]);
   var visibleHotels=filtered.slice(0,visibleCount);
 
   return(
     <div style={{minHeight:"100vh",background:C.bg}}>
       <SEOHead
-        title="Best Luxury Hotels — Five-Star Stays with VIP Perks | Alfred Concierge"
-        description="Browse five-star and palace hotels in Miami, Paris, Dubai and London. Request current rates, availability and any eligible stay benefits through Alfred Concierge."
-        keywords="luxury hotels, five-star hotels, palace hotels, hotel VIP perks, room upgrades, Miami hotels, Paris hotels, Dubai hotels, London hotels, Alfred concierge"
+        title="Hotels in Miami, Paris, Ibiza & More | Alfred Concierge"
+        description="Browse hotels in Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Request current rates, availability and provider terms through Alfred Concierge."
+        keywords="luxury hotels, Miami hotels, Paris hotels, Ibiza hotels, Saint Tropez hotels, Mykonos hotels, Dubai hotels, London hotels, Alfred concierge"
         path="/catalog/hotels"
         image="/og-hotels.jpg"
         jsonLd={{
@@ -85,7 +100,7 @@ export default function HotelsPage(){
           "@type":"CollectionPage",
           "name":"Luxury Hotels",
           "url":"https://alfredconcierge.app/catalog/hotels",
-          "description":"Five-star and palace hotels booked with VIP perks through Alfred Concierge.",
+          "description":"Browse hotel listings across Alfred's destinations and request current rates, availability, eligible benefits and provider terms.",
           "breadcrumb":{"@type":"BreadcrumbList","itemListElement":[
             {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app/"},
             {"@type":"ListItem","position":2,"name":"Hotels","item":"https://alfredconcierge.app/catalog/hotels"}
@@ -99,11 +114,16 @@ export default function HotelsPage(){
 
       <div style={{padding:isMobile?"90px 20px 40px":"110px 40px 60px",maxWidth:1200,margin:"0 auto"}}>
         <h1 style={{...sf(isMobile?28:40,700),color:C.s1,marginBottom:8}}>Luxury Hotels</h1>
-        <p style={{...sf(isMobile?14:16),color:C.s5,marginBottom:32}}>Browse {hotels.length||"our curated selection of"} luxury hotels and resorts across Alfred's destinations. Request current rates, benefits and availability from the concierge.</p>
+        <p style={{...sf(isMobile?14:16),color:C.s5,marginBottom:32}}>Browse {hotels.length||"our selection of"} hotels and resorts across Alfred's destinations. Request current rates, eligible benefits, availability and provider terms from the concierge.</p>
 
         <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:28,alignItems:"center"}}>
           <input placeholder="Search hotels..." value={search} onChange={function(e){setSearch(e.target.value)}}
             style={{flex:"1 1 200px",maxWidth:320,padding:"10px 16px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(14),color:C.s1,outline:"none"}}/>
+          <select value={city} onChange={function(e){setCity(e.target.value);setHood("")}}
+            style={{padding:"10px 14px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
+            <option value="">All Cities</option>
+            {cityOptions.map(function(n){return <option key={n} value={n}>{n}</option>})}
+          </select>
           <select value={hood} onChange={function(e){setHood(e.target.value)}}
             style={{padding:"10px 14px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
             <option value="">All Neighborhoods</option>

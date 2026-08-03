@@ -33,8 +33,8 @@ function mapNightclub(row){
   }
 }
 
-var CITIES=["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"];
-var COMING_SOON_CITIES=["Paris","Ibiza","Monaco","New York","London"];
+var CITIES=["All Cities","Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London","Monaco","New York"];
+var COMING_SOON_CITIES=["Monaco","New York"];
 var SORT_OPTIONS=["Featured","Rating","Table Min: Low","Table Min: High","Most Reviewed"];
 
 function FilterDrop(p){
@@ -201,7 +201,11 @@ export default function NightlifePage(){
   var ecDiv={position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"};
 
   var filtered=venues.filter(function(v){
-    if(city!=="All Cities"&&city==="Miami"){var vLoc=(v.loc||"").toLowerCase();if(vLoc&&vLoc!=="miami")return false;}
+    if(city!=="All Cities"){
+      var vLoc=(v.loc||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      var wanted=city.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      if(vLoc!==wanted&&vLoc.indexOf(wanted+" ")!==0&&vLoc.indexOf(" "+wanted)===-1)return false;
+    }
     if(type!=="Type"&&v.type!==type)return false;
     if(vibe!=="Vibe"&&v.vibe!==vibe)return false;
     if(door!=="Door"&&v.door!==door)return false;

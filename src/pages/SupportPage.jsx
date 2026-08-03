@@ -26,7 +26,7 @@ var FAQS = [
   },
   {
     q: "What cities does Alfred operate in?",
-    a: "Alfred currently publishes city guides for Paris, Miami, Dubai and London. Check the app or submit a request to confirm coverage for a specific service and date."
+    a: "Alfred publishes city guides for Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Check the app or submit a request to confirm coverage for a specific service and date."
   },
   {
     q: "How does the concierge service work?",

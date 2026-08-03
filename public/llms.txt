@@ -21,6 +21,9 @@ Alfred provides a browsable catalog and concierge request service. A visitor can
 
 - Miami: https://alfredconcierge.app/city/miami
 - Paris: https://alfredconcierge.app/city/paris
+- Ibiza: https://alfredconcierge.app/city/ibiza
+- Saint-Tropez: https://alfredconcierge.app/city/saint-tropez
+- Mykonos: https://alfredconcierge.app/city/mykonos
 - Dubai: https://alfredconcierge.app/city/dubai
 - London: https://alfredconcierge.app/city/london
 

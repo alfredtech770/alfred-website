@@ -1,4 +1,4 @@
-function serviceSchema(name,slug){
+function serviceSchema(name,slug,areaType){
   return {
     "@context":"https://schema.org",
     "@type":"Service",
@@ -6,7 +6,7 @@ function serviceSchema(name,slug){
     "description":"A human concierge service for requesting restaurants, hotels, transport and experiences in "+name+". Availability and final terms are confirmed for each request.",
     "url":"https://alfredconcierge.app/city/"+slug,
     "serviceType":"Concierge request coordination",
-    "areaServed":{"@type":"City","name":name},
+    "areaServed":{"@type":areaType||"City","name":name},
     "provider":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app/"}
   };
 }
@@ -23,11 +23,14 @@ function services(city){
 }
 
 function catalogLinks(city){
+  var query="?city="+encodeURIComponent(city);
   return [
-    {name:"Restaurants in "+city,desc:"Browse listed restaurants and request a table.",link:"/catalog/dining"},
-    {name:"Hotels in "+city,desc:"Browse listed hotels and request current stay options.",link:"/catalog/hotels"},
-    {name:"Cars and transport",desc:"Browse exotic cars and request current availability.",link:"/catalog/exotic-cars"},
-    {name:"Yachts and private aviation",desc:"Browse request-based charter options.",link:"/catalog/yachts"},
+    {name:"Restaurants in "+city,desc:"Browse listed restaurants and request a table.",link:"/catalog/dining"+query},
+    {name:"Hotels in "+city,desc:"Browse listed hotels and request current stay options.",link:"/catalog/hotels"+query},
+    {name:"Nightlife in "+city,desc:"Browse current venue listings and request options.",link:"/catalog/nightlife"+query},
+    {name:"Cars in "+city,desc:"Browse listed vehicles and request current supplier availability.",link:"/catalog/exotic-cars"+query},
+    {name:"Yachts in "+city,desc:"Browse listed vessels and request current charter options.",link:"/catalog/yachts?location="+encodeURIComponent(city)},
+    {name:"Wellness in "+city,desc:"Browse treatments and request current appointments.",link:"/catalog/wellness"+query},
   ];
 }
 
@@ -69,6 +72,63 @@ var CITY_GUIDES={
     ],
     keywords:"concierge Paris, restaurant requests Paris, hotel requests Paris, nightlife requests Paris, luxury travel Paris",
     jsonLdData:serviceSchema("Paris","paris"),
+  },
+  ibiza:{
+    name:"Ibiza",
+    tagline:"Restaurants, hotels, nightlife and wellness on request",
+    heroDescription:"Browse Alfred's Ibiza restaurants, hotels, nightlife and wellness listings, then send your dates, group size and preferences to a human concierge. Availability, seasonal opening dates, deposits and final provider terms are checked for every request.",
+    aboutSections:[
+      {title:"Choose the right side of the island",body:"Ibiza Town and Marina Botafoch are convenient for restaurants and nightlife, while Santa Eulària suits a quieter base and the west coast is known for sunset locations. Share where you are staying so travel time can be considered."},
+      {title:"Plan around the season",body:"Many Ibiza hotels, restaurants and venues operate seasonally or change schedules during the year. Alfred checks whether a listing is open for your dates before presenting it as an option."},
+      {title:"Confirm transport and venue terms",body:"Table minimums, deposits, entry policies and transport availability vary by venue and date. Alfred shares the current conditions before you approve a request."},
+    ],
+    services:services("Ibiza"),venues:catalogLinks("Ibiza"),
+    faqs:[
+      {q:"Can Alfred request restaurants and nightlife in Ibiza?",a:"Yes. Send the date, preferred area, time range, party size and atmosphere. Each venue controls availability and entry conditions."},
+      {q:"Are Ibiza venues open all year?",a:"Not always. Seasonal opening dates and weekly schedules vary, so Alfred checks the venue for the dates in your request."},
+      {q:"Can I request an Ibiza hotel or wellness appointment?",a:"Yes. Share your dates, guest count, preferred area and budget. Current rates, availability and cancellation terms are confirmed by the provider."},
+      {q:"Does Alfred guarantee entry or a table?",a:"No. The venue makes the final decision. Alfred coordinates the request and can research alternatives when needed."},
+    ],
+    keywords:"concierge Ibiza, restaurant requests Ibiza, Ibiza nightlife requests, hotel requests Ibiza, wellness Ibiza, luxury travel Ibiza",
+    jsonLdData:serviceSchema("Ibiza","ibiza","AdministrativeArea"),
+  },
+  "saint-tropez":{
+    name:"Saint-Tropez",
+    tagline:"Hotels, dining and Riviera requests in Saint-Tropez",
+    heroDescription:"Use Alfred to browse Saint-Tropez hotel and service listings and send a human concierge your dates, location and preferences. Providers confirm current availability, seasonal schedules, deposits and final terms before booking.",
+    aboutSections:[
+      {title:"Choose between the village and the beaches",body:"A stay in the village keeps the port and central restaurants close, while the Pampelonne area is better suited to beach plans. Include your accommodation and schedule so transfer time can be considered."},
+      {title:"Request early for peak dates",body:"Summer and event periods can create heavy demand. Flexible dates, time ranges or room categories make it easier to return useful alternatives without promising availability."},
+      {title:"Review every provider condition",body:"Hotels, restaurants, beach venues and transport suppliers set their own deposits, minimums and cancellation policies. Alfred confirms the applicable conditions before a request is final."},
+    ],
+    services:services("Saint-Tropez"),venues:catalogLinks("Saint-Tropez"),
+    faqs:[
+      {q:"Can Alfred request a hotel in Saint-Tropez?",a:"Yes. Share dates, guest count, room preferences, preferred area and budget. The hotel confirms its current rate and cancellation terms."},
+      {q:"Can Alfred help with Saint-Tropez dining or beach venues?",a:"Alfred can check current options using your date, party size and preferred atmosphere. The provider controls availability and access conditions."},
+      {q:"How far ahead should I make a summer request?",a:"As early as practical. Lead times vary by provider and date, and short-notice options may still be checked without a guarantee."},
+      {q:"Are online prices final?",a:"No. Seasonal pricing, deposits and minimums may change. Alfred confirms the current total and terms for the specific request."},
+    ],
+    keywords:"concierge Saint-Tropez, Saint Tropez hotel requests, restaurant requests Saint Tropez, beach club requests Saint Tropez, French Riviera concierge",
+    jsonLdData:serviceSchema("Saint-Tropez","saint-tropez"),
+  },
+  mykonos:{
+    name:"Mykonos",
+    tagline:"Hotels, dining and island requests in Mykonos",
+    heroDescription:"Browse Alfred's Mykonos listings and send your dates, group size, preferred area and budget to a human concierge. Seasonal openings, current availability, deposits and provider terms are confirmed for each request.",
+    aboutSections:[
+      {title:"Pick the right base",body:"Mykonos Town is convenient for dining and nightlife, while areas such as Psarou, Ornos and Agios Ioannis suit beach-focused stays. Share your accommodation area so island travel time can be considered."},
+      {title:"Allow for seasonal schedules",body:"Hotels and venues may operate only during part of the year or change schedules during the season. Alfred checks current opening information for your dates."},
+      {title:"Confirm transfers and booking terms",body:"Island transfers, restaurant requests and hotel stays have provider-specific pricing, deposits and cancellation rules. Those details are shared before approval."},
+    ],
+    services:services("Mykonos"),venues:catalogLinks("Mykonos"),
+    faqs:[
+      {q:"Can Alfred request a Mykonos hotel?",a:"Yes. Send your dates, guest count, preferred area, room requirements and budget. The hotel confirms current availability and terms."},
+      {q:"Can Alfred coordinate restaurants or nightlife in Mykonos?",a:"Alfred can check relevant providers for your date, time and party size. Availability and entry remain subject to provider approval."},
+      {q:"Are all Mykonos listings open year-round?",a:"No. Many operate seasonally, so opening dates are checked for the specific request."},
+      {q:"Can Alfred arrange island transport?",a:"A transport request can be coordinated using pickup, destination, date, time and passenger count. The supplier confirms availability and final price."},
+    ],
+    keywords:"concierge Mykonos, Mykonos hotel requests, restaurant requests Mykonos, Mykonos nightlife requests, luxury travel Mykonos",
+    jsonLdData:serviceSchema("Mykonos","mykonos","AdministrativeArea"),
   },
   dubai:{
     name:"Dubai",

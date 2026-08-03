@@ -73,7 +73,7 @@ var FAQ = [
   {q:"Are provider charges included?", a:"Restaurant bills, deposits, hotel rates, rentals, charters, taxes and provider cancellation fees are separate unless the checkout explicitly says otherwise."},
   {q:"Does membership guarantee availability?", a:"No. Availability and provider terms are checked for each request. A request is not booked until it is confirmed."},
   {q:"How do cancellation and renewal work?", a:"Review the subscription terms presented at purchase. For App Store subscriptions, manage renewal and cancellation through your Apple subscription settings."},
-  {q:"Which cities are covered?", a:"Alfred currently publishes city guides for Miami, Paris, Dubai and London. Specific service coverage is confirmed when you make a request."}
+  {q:"Which cities are covered?", a:"Alfred publishes city guides for Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Specific service coverage is confirmed when you make a request."}
 ];
 
 var JSONLD = [

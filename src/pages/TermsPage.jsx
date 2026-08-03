@@ -117,7 +117,7 @@ export default function TermsPage() {
           <Section id="services" title="2. Description of Services">
             <p>Alfred Concierge is a luxury concierge platform that <strong>facilitates bookings and connects users with third-party service providers</strong>. Alfred does not directly provide the underlying experiences. Our services include facilitating access to:</p>
             <ul>
-              <li><strong>Restaurant Reservations</strong> — securing tables at top-tier and exclusive restaurants in Miami, Paris, Dubai, London, and other cities</li>
+              <li><strong>Restaurant Reservations</strong> — coordinating table requests in Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai, London, and other supported destinations</li>
               <li><strong>Nightlife &amp; VIP Access</strong> — arranging VIP entry, table reservations, and bottle service at premier nightlife venues</li>
               <li><strong>Exotic Car Rentals</strong> — connecting users with vetted luxury and exotic car rental operators</li>
               <li><strong>Yacht Charters</strong> — facilitating yacht rentals and charter experiences through licensed operators</li>
@@ -125,7 +125,7 @@ export default function TermsPage() {
               <li><strong>Wellness &amp; Spa Bookings</strong> — securing appointments at exclusive spas, wellness centers, and health facilities</li>
             </ul>
             <p><strong>Alfred acts solely as an intermediary.</strong> We are not the venue, car rental company, yacht operator, air carrier, or service provider. Alfred's role is to use our relationships and expertise to secure access and bookings on your behalf. The actual services are rendered by independent third-party providers who have their own terms, conditions, cancellation policies, and liability limitations.</p>
-            <p>Alfred currently operates primarily in <strong>Miami, Paris, Dubai, and London</strong>, with additional cities being added periodically. Service availability may vary by city and membership tier.</p>
+            <p>Alfred currently publishes service coverage for <strong>Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai, and London</strong>. Service availability may vary by destination, date, provider, and membership tier.</p>
           </Section>
 
           <Section id="eligibility" title="3. Eligibility">

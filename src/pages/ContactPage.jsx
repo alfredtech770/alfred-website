@@ -58,6 +58,9 @@ var RESPONSE_TIMES = [
 var CITIES = [
   {n:"Miami", h:"/city/miami"},
   {n:"Paris", h:"/city/paris"},
+  {n:"Ibiza", h:"/city/ibiza"},
+  {n:"Saint-Tropez", h:"/city/saint-tropez"},
+  {n:"Mykonos", h:"/city/mykonos"},
   {n:"Dubai", h:"/city/dubai"},
   {n:"London", h:"/city/london"}
 ];
@@ -74,8 +77,8 @@ var JSONLD = [
       "name":"Alfred Concierge",
       "url":"https://alfredconcierge.app",
       "contactPoint":[
-        {"@type":"ContactPoint","contactType":"customer service","availableLanguage":["English","French"],"areaServed":["US","FR","AE","GB"],"telephone":"+33-7-43-71-36-49"},
-        {"@type":"ContactPoint","contactType":"sales","email":"ethan@alfredconcierge.app","areaServed":["US","FR","AE","GB"]},
+        {"@type":"ContactPoint","contactType":"customer service","availableLanguage":["English","French"],"areaServed":["US","FR","ES","GR","AE","GB"],"telephone":"+33-7-43-71-36-49"},
+        {"@type":"ContactPoint","contactType":"sales","email":"ethan@alfredconcierge.app","areaServed":["US","FR","ES","GR","AE","GB"]},
         {"@type":"ContactPoint","contactType":"press","email":"ethan@alfredconcierge.app"}
       ],
       "sameAs":["https://www.instagram.com/askalfred.app","https://www.tiktok.com/@alfred.app"]
@@ -266,10 +269,10 @@ function CitiesSection({mobile}){
     }}>
       <SectionHeader
         kicker="Where Alfred operates"
-        title="Start with one of four city guides"
+        title="Start with one of seven destination guides"
       />
       <p style={{...type.bodyLg(), color:T_.textMid, marginBottom:32, maxWidth:680}}>
-        Alfred currently publishes guides for Miami, Paris, Dubai and London. Use a city page or contact the team to confirm current coverage for the service and dates you need.
+        Alfred publishes guides for Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Use a city page or contact the team to confirm current coverage for the service and dates you need.
       </p>
       <div style={{
         display:"grid",

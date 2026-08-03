@@ -494,11 +494,11 @@ export var BLOG_POSTS=[
 
 <p><strong>Genuine Relationships vs. Transactional Services:</strong> Ordinary concierge operates transactionally—you request something, they provide it. Exceptional concierge builds genuine relationships with venues, restaurants, vendors, and service providers. These relationships create access to tables after public systems show "fully booked," VIP experiences not advertised, and personalized treatment.</p>
 
-<p>Alfred's relationships span hundreds of establishments across Miami, Paris, Dubai, and London. Our team maintains ongoing communication with restaurants, nightclubs, event organizers, and service providers. This network transforms impossible requests into routine accomplishments.</p>
+<p>Alfred's request catalog covers restaurants, hotels, nightlife and other services across Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. The concierge checks current provider availability and terms for each request.</p>
 
 <p><strong>Proactive Problem-Solving:</strong> Ordinary concierge executes requests. Exceptional concierge anticipates challenges and prevents problems before they occur. Alfred identifies potential issues—a restaurant location challenging for your specific mobility needs, a nightclub unlikely to deliver your preferred experience—and proactively addresses them.</p>
 
-<p><strong>Local Expertise Across Multiple Cities:</strong> Many concierge services provide city-specific expertise. Alfred operates across four major cities (Miami, Paris, Dubai, London), maintaining comprehensive local knowledge in each. We understand cultural nuances, seasonal variations, event calendars, and local logistics affecting your experiences.</p>
+<p><strong>Destination-specific planning:</strong> Alfred publishes request guides for Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Each guide explains relevant seasonal patterns, local logistics and the information needed to make a useful request.</p>
 
 <p><strong>Curation Over Inventory:</strong> Ordinary concierge assembles long lists of options. Exceptional concierge curates personalized recommendations based on understanding your preferences, values, and objectives. Alfred learns your style, preferences, and priorities, making recommendations increasingly aligned with your vision.</p>
 
@@ -564,7 +564,7 @@ export var BLOG_POSTS=[
 
 <p>Quintessentially is the longest-running luxury concierge brand, founded in 2000 with offices in 60+ cities and the broadest global reach in the category. Membership tiers run from £1,000 to £100,000+ annually depending on service level. Quintessentially's strength is the global footprint and the institutional relationships built over 25 years. The trade-off is that the service runs primarily on email and phone — there's no usable app, response times are measured in hours rather than minutes, and the membership cost is an order of magnitude above newer competitors. Velocity Black was the closest direct competitor to Alfred until its acquisition by Capital One in 2023; the consumer product was discontinued shortly after. American Express Centurion concierge (and the Black Card concierge) is included with the card and operates with the broadest call-center reach but no curated relationships at specific venues — it's good for travel logistics, mediocre for impossible reservations.</p>
 
-<p>Alfred sits in a deliberate position: app-first surface for booking and discovery, real human concierge team behind every member, direct relationships at the top venues in our four cities (Miami, Paris, Dubai, London), and pricing that's a fraction of legacy competitors ($9.99 Gold, $99 Platinum, Centurion invite-only). We're not the right choice for someone who needs concierge support in 30 cities globally; we are the right choice for someone whose life centers on our four cities and who values response time, transparent pricing, and the operational benefits (waived advance payments, reduced minimum spends, VIP table placement) that real venue relationships unlock.</p>
+<p>Alfred combines an app-based discovery surface with a human concierge request service. Its current destination guides cover Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Provider availability, pricing, deposits, minimums and any eligible benefits are confirmed for each request rather than promised by the catalog.</p>
 
 <h2>Frequently Asked Questions</h2>
 
@@ -1685,7 +1685,7 @@ function BlogPost(){
           {/* CTA */}
           <div style={{marginTop:64,padding:32,borderRadius:20,background:C.el,border:"1px solid "+C.bd}}>
             <h2 style={{...sf(24,600),color:C.s1,marginBottom:12}}>Discover the Alfred Difference</h2>
-            <p style={{...sf(16),color:C.s5,marginBottom:20,lineHeight:1.8}}>Experience luxury lifestyle redefined. From impossible restaurant reservations to exclusive event access and bespoke travel arrangements, Alfred Concierge delivers curated experiences across Miami, Paris, Dubai, and London.</p>
+            <p style={{...sf(16),color:C.s5,marginBottom:20,lineHeight:1.8}}>Browse restaurant, hotel, nightlife, transport and travel listings for Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London, then send the concierge your request.</p>
             <a href="/contact" style={{...sf(14,600),display:"inline-block",padding:"14px 28px",background:C.gn,color:C.bg,borderRadius:8,textDecoration:"none",transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(52,199,89,0.3)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Contact Alfred Today →</a>
           </div>
 

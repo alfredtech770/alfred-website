@@ -9,7 +9,9 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 const index = read("index.html");
 const app = read("src/App.jsx");
 const car = read("src/pages/CarDetailPage.jsx");
+const exoticCars = read("src/pages/ExoticCarsPage.jsx");
 const dining = read("src/pages/DiningPage.jsx");
+const hotels = read("src/pages/HotelsPage.jsx");
 const nightlife = read("src/pages/NightlifePage.jsx");
 const wellness = read("src/pages/WellnessPage.jsx");
 const yachts = read("src/pages/YachtsPage.jsx");
@@ -51,6 +53,12 @@ if (!/VITE_SUPABASE_URL=/.test(envExample) || !/VITE_SUPABASE_ANON_KEY=/.test(en
 if (!/ad_user_data/.test(consent) || !/ad_personalization/.test(consent)) failures.push("Google consent mode v2 signals are incomplete");
 if (!/Necessary only/.test(cookieConsent) || !/Save choices/.test(cookieConsent)) failures.push("granular cookie choices are missing");
 if (!/CITY_GUIDES\[slug\]/.test(cityPage)) failures.push("city pages are not using verified request-based content");
+for (const slug of ["miami", "paris", "ibiza", "saint-tropez", "mykonos", "dubai", "london"]) {
+  const keyPattern = slug === "saint-tropez" ? /["']saint-tropez["']\s*:/ : new RegExp(`\\b${slug}\\s*:`);
+  if (!keyPattern.test(cityData)) failures.push(`${slug} is missing from the city-guide data`);
+  if (!locs.includes(`https://alfredconcierge.app/city/${slug}`)) failures.push(`${slug} is missing from the sitemap`);
+}
+if (!/encodeURIComponent\(city\)/.test(cityData) || !/\?city=/.test(cityData)) failures.push("city guides do not deep-link to city-filtered catalogs");
 if (/LocalBusiness|streetAddress|openingHoursSpecification/.test(cityData)) failures.push("city schema invents a physical Alfred location");
 if (/direct relationships|guaranteed access|guaranteed entry|fixed price/i.test(cityData)) failures.push("unsupported city-page claims remain");
 if (/direct relationships at every venue|waived advance payments|VIP flags in venue systems|every door open/i.test(about)) failures.push("unsupported About-page claims remain");
@@ -63,6 +71,10 @@ if (!/X-Robots-Tag[\s\S]{0,80}noindex, nofollow/.test(vercel)) failures.push("pr
 for (const [name,source] of [["dining",dining],["nightlife",nightlife],["wellness",wellness],["yachts",yachts]]) {
   if (!new RegExp(`<a href=\\{\\"/catalog/${name === "yachts" ? "yachts" : name}/`).test(source)) failures.push(`${name} cards are not crawlable anchors`);
 }
+for (const [name, source] of [["dining", dining], ["hotels", hotels], ["nightlife", nightlife], ["wellness", wellness], ["exotic cars", exoticCars]]) {
+  if (!/searchParams\.get\(["']city["']\)/.test(source)) failures.push(`${name} does not support city-filtered deep links`);
+}
+if (!/searchParams\.get\(["']location["']\)/.test(yachts)) failures.push("yachts do not support destination-filtered deep links");
 if (new Set(locs).size !== locs.length) failures.push("sitemap contains duplicate URLs");
 if (/<(?:lastmod|changefreq|priority)>/.test(sitemap)) failures.push("sitemap contains stale or ignored metadata");
 

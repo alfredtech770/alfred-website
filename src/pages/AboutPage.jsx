@@ -22,8 +22,8 @@ var DIFFERENTIATORS = [
     body: "When the first option is unavailable, Alfred can research alternatives that match the location, timing, party size and budget in the request."
   },
   {
-    title: "One app, four cities, one team",
-    body: "The catalog and request flow cover Miami, Paris, Dubai and London in one app. Current coverage for any service is confirmed when you ask."
+    title: "One app, seven destinations, one team",
+    body: "The catalog and request flow cover Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London in one app. Current coverage for any service is confirmed when you ask."
   }
 ];
 
@@ -32,17 +32,20 @@ var JSONLD = {
   "@type":"AboutPage",
   "name":"About Alfred Concierge",
   "url":"https://alfredconcierge.app/about",
-  "description":"Alfred Concierge is a request-based concierge app for restaurants, hotels, transport and private services in Miami, Paris, Dubai and London.",
+  "description":"Alfred Concierge is a request-based app for restaurants, hotels, transport and private services across seven destinations.",
   "mainEntity":{
     "@type":"Organization",
     "name":"Alfred Concierge",
     "url":"https://alfredconcierge.app",
     "logo":"https://alfredconcierge.app/og-image.jpg",
-    "description":"Alfred is a concierge app for discovering options and coordinating requests in Miami, Paris, Dubai and London.",
+    "description":"Alfred is a concierge app for discovering options and coordinating requests across seven destinations.",
     "foundingDate":"2024",
     "areaServed":[
       {"@type":"City","name":"Miami"},
       {"@type":"City","name":"Paris"},
+      {"@type":"AdministrativeArea","name":"Ibiza"},
+      {"@type":"City","name":"Saint-Tropez"},
+      {"@type":"AdministrativeArea","name":"Mykonos"},
       {"@type":"City","name":"Dubai"},
       {"@type":"City","name":"London"}
     ],
@@ -75,8 +78,8 @@ export default function AboutPage(){
   return (
     <div style={{background:T_.bg, minHeight:"100vh", color:T_.text}}>
       <SEOHead
-        title="About Alfred — The Luxury Concierge App for Miami, Paris, Dubai & London"
-        description="Learn how Alfred helps people discover and request restaurants, hotels, transport and private services across Miami, Paris, Dubai and London."
+        title="About Alfred — The Concierge Request App"
+        description="Learn how Alfred helps people discover and request restaurants, hotels, transport and private services across seven destinations."
         keywords="about Alfred Concierge, luxury concierge company, who is Alfred, Alfred concierge founders, Alfred app team, Miami concierge company, Paris concierge company"
         path="/about"
         type="website"
@@ -106,7 +109,7 @@ export default function AboutPage(){
           <p style={{
             ...type.bodyLg(), color:T_.textMid, marginTop:18, maxWidth:580
           }}>
-            One app for discovering options and coordinating requests across Miami, Paris, Dubai and London.
+            One app for discovering options and coordinating requests across seven destinations.
           </p>
         </div>
       </Hero>
@@ -145,9 +148,9 @@ export default function AboutPage(){
       <ProseSection
         mobile={mobile}
         kicker="Where we operate"
-        title="Four city guides. One request flow."
+        title="Seven destination guides. One request flow."
         paragraphs={[
-          "Alfred publishes request guides for Miami, Paris, Dubai and London. Each guide links to the relevant restaurant, hotel, nightlife, transport and private-service categories.",
+          "Alfred publishes request guides for Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Each guide links to the relevant restaurant, hotel, nightlife, transport and private-service categories.",
           "Coverage changes by date and provider, so the app and concierge request flow are the source for current availability."
         ]}
       />

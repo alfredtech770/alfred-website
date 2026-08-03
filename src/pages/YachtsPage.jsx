@@ -227,13 +227,17 @@ export default function YachtsPage(){
 
   /* Dynamic filter options from data */
   var brands=["Brand"].concat([...new Set(yachts.map(function(y){return y.brand}).filter(Boolean))].sort());
-  var locations=["Location","Miami","Paris","Ibiza","Monaco","New York","London"];
-  var comingSoonCities=["Paris","Ibiza","Monaco","New York","London"];
+  var locations=["Location","Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London","Monaco","New York"];
+  var comingSoonCities=["Monaco","New York"];
 
   /* Filter logic */
   var filtered=yachts.filter(function(y){
     if(brand!=="Brand"&&y.brand!==brand) return false;
-    if(location!=="Location"&&location==="Miami"){var yLoc=(y.city||y.location||"").toLowerCase();if(yLoc&&yLoc!=="miami")return false;}
+    if(location!=="Location"){
+      var yLoc=(y.city||y.location||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      var wanted=location.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      if(yLoc!==wanted&&yLoc.indexOf(wanted+" ")!==0&&yLoc.indexOf(" "+wanted)===-1)return false;
+    }
     if(sizeRange==="Under 40 ft"&&(y.size_ft===null||y.size_ft>=40)) return false;
     if(sizeRange==="40–60 ft"&&(y.size_ft===null||y.size_ft<40||y.size_ft>60)) return false;
     if(sizeRange==="60–80 ft"&&(y.size_ft===null||y.size_ft<60||y.size_ft>80)) return false;

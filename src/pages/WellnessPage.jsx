@@ -32,8 +32,8 @@ function mapWellnessRow(row){
   };
 }
 
-var CITIES=["All Cities","Miami","Paris","Ibiza","Monaco","New York","London"];
-var COMING_SOON_CITIES=["Paris","Ibiza","Monaco","New York","London"];
+var CITIES=["All Cities","Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London","Monaco","New York"];
+var COMING_SOON_CITIES=["Monaco","New York"];
 var SORT_OPTIONS=["Featured","Rating","Price: Low","Price: High","Most Reviewed"];
 
 function FilterDrop(p){
@@ -179,7 +179,11 @@ export default function WellnessPage(){
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;
 
   var filtered=rows.filter(function(v){
-    if(city!=="All Cities"&&city==="Miami"){var vLoc=(v.loc||"").toLowerCase();if(vLoc&&vLoc!=="miami")return false;}
+    if(city!=="All Cities"){
+      var vLoc=(v.loc||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      var wanted=city.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      if(vLoc!==wanted&&vLoc.indexOf(wanted+" ")!==0&&vLoc.indexOf(" "+wanted)===-1)return false;
+    }
     if(type!=="Type"&&v.type!==type)return false;
     if(treatment!=="Treatment"&&v.treatment!==treatment)return false;
     if(price!=="Price"&&v.price!==price)return false;

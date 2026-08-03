@@ -18,7 +18,7 @@ var STEPS = [
 
 var FAQ = [
   {q:"Does Alfred confirm every request instantly?", a:"No. Availability and terms depend on the provider and the requested dates. Alfred will identify when a request is pending and when it has been confirmed."},
-  {q:"What cities does Alfred cover?", a:"Alfred currently publishes guides for Miami, Paris, Dubai and London. Check the relevant city page or make a request to confirm coverage for a specific service."},
+  {q:"What cities does Alfred cover?", a:"Alfred publishes guides for Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Check the relevant city page or make a request to confirm coverage for a specific service."},
   {q:"What information should I include?", a:"Share the city, date and time, party size, preferences, budget and any important constraints. Complete details make it easier to return relevant options."},
   {q:"Are provider prices included in membership?", a:"Provider charges, deposits, taxes and cancellation fees are separate unless the checkout explicitly states otherwise. Review all terms before approving a request."},
   {q:"What happens when the first option is unavailable?", a:"Alfred can research alternatives based on the same brief. You decide whether to approve any replacement option after seeing its current terms."}
