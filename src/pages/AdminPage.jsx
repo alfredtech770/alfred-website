@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { createClient } from "@supabase/supabase-js";
+import SEOHead from "../components/SEOHead";
+import { supabase } from "../lib/supabase";
 
-/* ═══ Admin Supabase Client (service role for full CRUD) ═══ */
+/* ═══ Admin Supabase Client (browser-safe key; RLS must enforce access) ═══ */
 var SUPA_URL = import.meta.env.VITE_SUPABASE_URL || "https://fbdgbnnkgyljehtccgaq.supabase.co";
-var SUPA_KEY = import.meta.env.VITE_SUPABASE_SERVICE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZGdibm5rZ3lsamVodGNjZ2FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjA5MzgsImV4cCI6MjA4MjMzNjkzOH0.NmlSkGMDZ-DmhV0bmSCFPQmuFNo4E5H-Sz1cjRyYs8Q";
-var supabase = createClient(SUPA_URL, SUPA_KEY);
+var SUPA_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZGdibm5rZ3lsamVodGNjZ2FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjA5MzgsImV4cCI6MjA4MjMzNjkzOH0.NmlSkGMDZ-DmhV0bmSCFPQmuFNo4E5H-Sz1cjRyYs8Q";
 
 /* ═══ Design Tokens ═══ */
 var sf = function(size, weight){
@@ -5063,6 +5063,8 @@ export default function AdminPage(){
     setAuthed(false);
   }
 
-  if(!authed)return <PasswordGate onAuth={handleAuth}/>;
-  return <AdminDashboard onLogout={handleLogout}/>;
+  return <>
+    <SEOHead title="Admin | Alfred Concierge" description="Internal Alfred administration." path="/admin" noindex/>
+    {authed?<AdminDashboard onLogout={handleLogout}/>:<PasswordGate onAuth={handleAuth}/>}
+  </>;
 }

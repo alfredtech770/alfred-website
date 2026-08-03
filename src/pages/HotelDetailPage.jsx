@@ -203,7 +203,7 @@ export default function HotelDetailPage(){
             <div style={{marginBottom:40}}>
               <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
                 <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:C.s3+"14"}}>{"★".repeat(stars)}</span>
-                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
+                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED CATALOG</span>
                 {V.status==="coming_soon"&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.s2,padding:"4px 10px",borderRadius:8,background:"rgba(255,255,255,0.05)",border:"0.5px solid rgba(255,255,255,0.1)"}}>COMING SOON{V.opening_date?" · "+V.opening_date:""}</span>}
               </div>
               <h1 className="hd-name" style={{...sf(38,700),letterSpacing:-1.5,marginBottom:8}}>{V.name}</h1>
@@ -297,7 +297,7 @@ export default function HotelDetailPage(){
                 </a>
 
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:14}}>
-                  {["No fees","Best rate","VIP perks"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+                  {["Live rate request","Benefits confirmed","Concierge support"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
                 </div>
               </div>
             </div>
@@ -306,8 +306,8 @@ export default function HotelDetailPage(){
             {V.status!=="coming_soon"&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderRadius:14,background:C.gn+"08",border:"0.5px solid "+C.gn+"1A",marginTop:12}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px "+C.gn+"66",flexShrink:0}}/>
               <div>
-                <div style={{...sf(12,600),color:C.s1}}>Available now</div>
-                <div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Alfred secures the best available rate</div>
+                <div style={{...sf(12,600),color:C.s1}}>Availability on request</div>
+                <div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Alfred confirms the live rate and any eligible stay benefits.</div>
               </div>
             </div>}
             {V.status==="coming_soon"&&<div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderRadius:14,background:"rgba(244,244,245,0.04)",border:"0.5px solid "+C.bd,marginTop:12}}>

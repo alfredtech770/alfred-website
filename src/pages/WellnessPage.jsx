@@ -8,6 +8,7 @@ import CatalogSeoBody from "../components/CatalogSeoBody";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
@@ -20,8 +21,8 @@ function mapWellnessRow(row){
     loc:row.city||"Miami",
     treatment:row.category||row.type||"Treatment",
     price:new Array(Math.min(4,row.price_level||3)+1).join("€"),
-    rating:row.rating||4.7,
-    reviews:null,
+    rating:row.rating||null,
+    reviews:row.review_count||row.reviews||null,
     from:null,
     img:row.hero_image_url||"",
     tagline:row.ambiance||(row.description?row.description.slice(0,64):""),
@@ -85,9 +86,9 @@ function WellCard(p){
   var [hover,setHover]=useState(false);
   var v=p.v;
   return(
-    <div onClick={function(){if(v.available)window.location.href="/catalog/wellness/"+v.slug}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:v.available?"pointer":"default",transform:hover&&v.available?"translateY(-6px)":"translateY(0)",boxShadow:hover&&v.available?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
+    <a href={"/catalog/wellness/"+v.slug} style={{display:"block",textDecoration:"none",borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
       <div style={{height:200,position:"relative",overflow:"hidden"}}>
-        <img src={v.img} alt={v.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:v.available?"none":"brightness(0.4)"}}/>
+        <img src={v.img} alt={v.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:v.available?"none":"brightness(0.4)"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 30%,rgba(10,10,11,0.85) 100%)"}}/>
         <div style={{position:"absolute",top:16,left:16}}>
           <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{v.type}</span>
@@ -95,7 +96,7 @@ function WellCard(p){
         <div style={{position:"absolute",top:16,right:16}}>
           <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)"}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:v.available?C.gn:"#FF453A"}}/>
-            <span style={{...sf(9,500),color:v.available?C.gn:"#FF453A"}}>{v.available?"Available":"Waitlist"}</span>
+            <span style={{...sf(9,500),color:v.available?C.gn:"#FF453A"}}>{v.available?"Request":"Unavailable"}</span>
           </div>
         </div>
         <div style={{position:"absolute",bottom:14,left:16}}>
@@ -112,11 +113,11 @@ function WellCard(p){
             <h3 style={{...sf(20,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v.name}</h3>
             <p style={{...sf(12),color:C.s5,marginBottom:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v.tagline}</p>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
+          {v.rating&&v.reviews?<div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <span style={{...sf(13,600),color:C.s1}}>{v.rating}</span>
             {v.reviews?<span style={{...sf(10),color:C.s6}}>({v.reviews})</span>:null}
-          </div>
+          </div>:null}
         </div>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -128,12 +129,12 @@ function WellCard(p){
           </div>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{...sf(11,500),color:hover&&v.available?C.s1:C.s5,transition:"color 0.3s"}}>
-              {v.available?"View →":"Join waitlist"}
+              {v.available?"View details →":"Unavailable"}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -146,7 +147,7 @@ export default function WellnessPage(){
   var [treatment,setTreatment]=useState(searchParams.get("treatment")||"Treatment");
   var [price,setPrice]=useState(searchParams.get("price")||"Price");
   var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
-  var [date,setDate]=useState("2026-03-20");
+  var [date,setDate]=useState(function(){return dateFromToday(2)});
   var [time,setTime]=useState(searchParams.get("time")||"Morning");
   useEffect(function(){
     var p={};

@@ -5,6 +5,7 @@ import SEOHead from "../components/SEOHead";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
@@ -672,10 +673,11 @@ export default function JetDetailPage(){
   var [scrollY,setScrollY]=useState(0);
   var [from,setFrom]=useState("Miami (MIA)");
   var [to,setTo]=useState("Paris (CDG)");
-  var [date,setDate]=useState("2026-03-25");
+  var [date,setDate]=useState(function(){return dateFromToday(3)});
   var [pax,setPax]=useState("6");
   var [tripType,setTripType]=useState("One Way");
-  var J=JETS[slug]||JETS["global-7500"];
+  var foundJet=JETS[slug];
+  var J=foundJet||JETS["global-7500"];
   var cabinLayout=CABIN_LAYOUTS[slug]||CABIN_LAYOUTS["global-7500"];
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
@@ -683,7 +685,6 @@ export default function JetDetailPage(){
   var cabinRef=useRef(null);var cabinVis=useVis(cabinRef);
   var inclRef=useRef(null);var inclVis=useVis(inclRef);
   var routesRef=useRef(null);var routesVis=useVis(routesRef);
-  var revRef=useRef(null);var revVis=useVis(revRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
@@ -692,12 +693,22 @@ export default function JetDetailPage(){
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
+  var requestUrl="https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'd like a charter quote for the "+J.name+" from "+from+" to "+to+" on "+date+" for "+pax+" passengers ("+tripType+"). Could you confirm options and pricing?");
+
+  if(!foundJet){
+    return <div style={{minHeight:"100vh",background:C.bg,color:C.s1,padding:"140px 24px",textAlign:"center",...sf(15)}}>
+      <SEOHead title="Private Jet Not Found | Alfred Concierge" path={"/catalog/jets/"+slug} noindex/>
+      <h1 style={{...sf(34,700)}}>Private jet not found</h1>
+      <p style={{...sf(14),color:C.s5,marginTop:14}}>This aircraft is not in the current catalog.</p>
+      <a href="/catalog/jets" style={{...sf(13,600),color:C.s1,display:"inline-block",marginTop:22}}>← Browse private jets</a>
+    </div>;
+  }
 
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
         title={J.name+" — Charter a Private Jet | Alfred Concierge"}
-        description={"Charter the "+J.name+" for your next flight. "+J.range+" range, "+J.pax+" passengers. Worldwide flights, empty legs available."}
+        description={"Request a charter quote for the "+J.name+". View range and passenger details; Alfred confirms aircraft availability and final pricing."}
         image={J.imgs&&J.imgs[0]?J.imgs[0]:"/og-jets.jpg"}
         path={"/catalog/jets/"+slug}
         jsonLd={[
@@ -705,7 +716,7 @@ export default function JetDetailPage(){
             "@context":"https://schema.org",
             "@type":"Product",
             "name":J.name,
-            "description":"Charter the "+J.name+" for your next flight. "+J.range+" range, "+J.pax+" passengers. Worldwide flights, empty legs available.",
+            "description":"Request a charter quote for the "+J.name+". Alfred confirms aircraft availability and final pricing.",
             "image":J.imgs[0],
             "category":"Private Jet Charter"
           },
@@ -766,18 +777,12 @@ export default function JetDetailPage(){
           <div className="left-col">
             <div style={{marginBottom:40}}>
               <div style={{display:"flex",gap:6,marginBottom:14}}>
-                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
-                <span style={{display:"flex",alignItems:"center",gap:5,...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>AVAILABLE</span>
+                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED CATALOG</span>
+                <span style={{display:"flex",alignItems:"center",gap:5,...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>ON REQUEST</span>
               </div>
               <h1 className="jd-name" style={{...sf(38,700),letterSpacing:-1.5,marginBottom:8}}>{J.name}</h1>
               <p style={{...sf(16,300),color:C.s5,marginBottom:16}}>{J.tagline}</p>
               <div style={{display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
-                <div style={{display:"flex",alignItems:"center",gap:5}}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                  <span style={{...sf(14,600),color:C.s1}}>{J.rating}</span>
-                  <span style={{...sf(12),color:C.s6}}>({J.reviewCount})</span>
-                </div>
-                <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13),color:C.s4}}>{J.pax} passengers</span>
                 <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13),color:C.s4}}>{J.range} range</span>
@@ -838,7 +843,7 @@ export default function JetDetailPage(){
                     {["2","4","6","10","16+"].map(function(g){var active=pax===g;return <div key={g} onClick={function(){setPax(g)}} style={{flex:1,textAlign:"center",padding:"10px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",...sf(13,active?600:400),color:active?C.s1:C.s6,transition:"all 0.2s"}}>{g}</div>})}
                   </div>
                 </div>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm interested in chartering the "+J.name+". Could you provide a quote?"),"_blank")}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Request Quote</div>
+                <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Request Quote</a>
                 <div style={{textAlign:"center",marginTop:10,...sf(11),color:C.s6}}>Quote within 1 hour · No commitment</div>
               </div>
             </div>
@@ -846,10 +851,10 @@ export default function JetDetailPage(){
               <div style={{width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px "+C.gn+"66",flexShrink:0}}/>
               <div><div style={{...sf(12,600),color:C.s1}}>Available for charter</div><div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Next availability: March 25</div></div>
             </div>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm interested in chartering the "+J.name+". Could you provide a quote?"),"_blank")}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+            <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
               Ask about this aircraft
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -925,27 +930,6 @@ export default function JetDetailPage(){
         <div style={{...sf(11),color:C.s6,marginTop:14,opacity:routesVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>* Estimates are one-way, excluding taxes & fees. Final pricing depends on routing, date, and availability.</div>
       </div>
 
-      {/* Reviews */}
-      <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
-        {secDiv}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:revVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
-          <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{J.reviewCount} reviews</span>
-        </div>
-        <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {J.reviews.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(
-            <div key={i} style={{width:300,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"24px 22px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
-                <div style={{width:36,height:36,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(15,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
-                <div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{...sf(13,600),color:C.s1}}>{r.name}</span><span style={{...sf(8,600),letterSpacing:0.8,color:isTop?C.s3:C.s5,padding:"2px 8px",borderRadius:6,background:isTop?"rgba(244,244,245,0.06)":C.srf,border:"0.5px solid "+(isTop?"rgba(244,244,245,0.1)":C.bd),textTransform:"uppercase"}}>{r.tier}</span></div>
-                <div style={{display:"flex",alignItems:"center",gap:3,marginTop:4}}>{Array.from({length:r.rating}).map(function(_,si){return <svg key={si} width="9" height="9" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>})}<span style={{...sf(10),color:C.s6,marginLeft:4}}>{r.date}</span></div></div>
-              </div>
-              <p style={{...sf(13),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{r.text}"</p>
-            </div>
-          )})}
-        </div>
-      </div>
-
       {/* CTA */}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
@@ -953,7 +937,7 @@ export default function JetDetailPage(){
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Charter</p>
           <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Ready to fly<br/>the Global 7500?</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred your route and dates. Quote within the hour, wheels up when you say.</p>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}} onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm interested in chartering the "+J.name+". Could you provide a quote?"),"_blank")}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Request Quote<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
+          <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Request Quote<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></a>
           <p style={{...sf(12),color:C.s6,marginTop:20,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>Quote within 1 hour · No commitment · Empty legs available</p>
         </div>
       </section>

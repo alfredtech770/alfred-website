@@ -67,10 +67,10 @@ function buildJsonLd(slug, cfg, vert, rows){
         "name": vert.displayName(r),
         "url": url,
         "image": r.hero_image_url || undefined,
-        "aggregateRating": r.rating ? {
+        "aggregateRating": r.rating && Number(r.review_count || r.reviews || 0)>0 ? {
           "@type":"AggregateRating",
           "ratingValue": String(r.rating),
-          "reviewCount": String(r.review_count || r.reviews || 1)
+          "reviewCount": String(r.review_count || r.reviews)
         } : undefined
       };
       if(vert.type==="Restaurant"){
@@ -81,7 +81,7 @@ function buildJsonLd(slug, cfg, vert, rows){
       } else if(vert.type==="Product"){
         item.brand = r.brand ? {"@type":"Brand","name": r.brand} : undefined;
         item.category = "Luxury & Exotic Car Rental";
-        if(r.price_1_day){ item.offers = {"@type":"Offer","price": r.price_1_day, "priceCurrency":"USD","availability":"https://schema.org/InStock","url": url}; }
+        if(r.price_1_day){ item.offers = {"@type":"Offer","price": r.price_1_day, "priceCurrency":"USD","url": url}; }
       } else if(vert.type==="Hotel"){
         if(r.star_rating){ item.starRating = {"@type":"Rating","ratingValue": r.star_rating}; }
         item.priceRange = dollars(r.price_level) || "$$$$";
@@ -146,14 +146,14 @@ function Row(props){
         </div>
       </div>
       <div style={{display:"flex", alignItems:"center", gap:14, flexShrink:0}}>
-        {r.rating ? (
+        {r.rating && Number(r.review_count || r.reviews || 0)>0 ? (
           <div style={{display:"flex", alignItems:"center", gap:4}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <span style={{...sf(13,600), color: C.s1}}>{r.rating}</span>
           </div>
         ) : null}
         <div style={{...sf(11,500), color: hover ? C.s1 : C.s5, transition:"color 0.2s", letterSpacing: 1, textTransform:"uppercase"}}>
-          Book →
+          View details →
         </div>
       </div>
     </Link>
@@ -185,16 +185,16 @@ export default function LongTailPage(){
         if(brv !== arv) return brv - arv;
         return (vert.displayName(a)||"").localeCompare(vert.displayName(b)||"");
       });
-      setRows(filtered);
+      setRows(filtered.slice(0,cfg.maxItems||20));
       setLoading(false);
-    })();
+    })().catch(function(){if(alive){setRows([]);setLoading(false)}});
     return function(){ alive = false; };
   }, [slug]);
 
   if(!cfg){
     return (
       <div style={{minHeight:"100vh", background: C.bg, color: C.s1, padding:"120px 24px", textAlign:"center"}}>
-        <SEOHead title="Page Not Found | Alfred Concierge" path="/best/404"/>
+        <SEOHead title="Page Not Found | Alfred Concierge" path={"/best/"+slug} noindex/>
         <h1 style={{...sf(36,700)}}>Page not found</h1>
         <p style={{...sf(15), color: C.s5, marginTop: 16}}>
           We don't have a guide at <code style={{color:C.gold}}>/best/{slug}</code> yet.
@@ -262,7 +262,7 @@ export default function LongTailPage(){
             The list {rows.length ? "· "+rows.length+" "+vert.listNoun : ""}
           </h2>
           <span style={{...sf(11,500), color: C.s6, letterSpacing: 1.5, textTransform:"uppercase"}}>
-            Ranked by concierge team
+            Curated by Alfred
           </span>
         </div>
         <div style={{background: C.el, border:"1px solid "+C.bd, borderRadius: 20, overflow:"hidden"}}>
@@ -285,10 +285,10 @@ export default function LongTailPage(){
             Why book through Alfred
           </h2>
           <ul style={{...sf(15), color: C.s3, lineHeight: 1.7, paddingLeft: 20, margin: 0}}>
-            <li>Direct relationships with every partner on this list.</li>
-            <li>Same-day and "fully booked" requests are routine for members.</li>
-            <li>Every detail — timing, delivery, extras, transport — handled in one thread.</li>
-            <li>Real human concierge on WhatsApp, 24/7. No bots, no DMs into the void.</li>
+            <li>One request can include timing, party size and special requirements.</li>
+            <li>Alfred checks current options and proposes alternatives when needed.</li>
+            <li>Prices, availability and final terms are confirmed before booking.</li>
+            <li>A human concierge coordinates the request in one conversation.</li>
           </ul>
           <a href={WHATSAPP+"?text="+encodeURIComponent("Hi Alfred, I'd like "+vert.cta+" — "+cfg.h1+".")} target="_blank" rel="noopener noreferrer"
              style={{display:"inline-block", marginTop: 24, padding:"14px 28px", background: C.s1, color: C.bg, borderRadius: 12, textDecoration:"none", ...sf(14,600)}}>
@@ -333,7 +333,7 @@ export default function LongTailPage(){
 
       {/* Footer */}
       <footer style={{borderTop:"1px solid "+C.bd, padding:"40px 24px", textAlign:"center", color: C.s5}}>
-        <p style={{...sf(12), margin: 0}}>© 2026 Alfred Concierge · Miami · Paris · Dubai · London</p>
+        <p style={{...sf(12), margin: 0}}>© {new Date().getFullYear()} Alfred Concierge · Miami · Paris · Dubai · London</p>
       </footer>
     </div>
   );

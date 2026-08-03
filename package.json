@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node prerender.js || true",
-    "build:seo": "vite build && node prerender.js || true",
+    "clean:sitemap": "node scripts/clean-sitemap.js",
+    "test:seo": "node scripts/validate-seo.js",
+    "build": "node scripts/clean-sitemap.js && node scripts/validate-seo.js && vite build && node scripts/generate-seo-pages.js && node scripts/validate-dist-seo.js",
+    "build:seo": "npm run build && node prerender.js",
     "preview": "vite preview"
   },
   "dependencies": {

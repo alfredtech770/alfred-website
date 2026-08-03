@@ -10,36 +10,11 @@ var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetic
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
-function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
-
-var LE_CINQ={
-  name:"Le Cinq",tagline:"Where French haute cuisine meets quiet grandeur",
-  cuisine:"French Contemporary",address:"31 Avenue George V, 75008 Paris",
-  rating:4.9,reviewCount:47,priceLevel:"€€€€",avgSpend:"€280",
-  imgs:["https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85","https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=900&q=80","https://images.unsplash.com/photo-1550966871-3ed3cdb51f3a?w=900&q=80","https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80"],
-  hours:{lunch:"12:00 – 2:30 PM",dinner:"7:00 – 10:00 PM",closed:"Sunday & Monday"},
-  dressCode:"Smart Elegant",michelin:3,
-  alfredNote:"If I may suggest — request table 14 by the garden window. The light at 8 PM is extraordinary. And do ask for the off-menu cheese course. They reserve it for guests who know.",
-  alfredTip:"Mention Alfred at arrival. The maître d' will understand.",
-  chef:{name:"Christian Le Squer",title:"Executive Chef",note:"Four Seasons Paris. Triple-starred since 2016."},
-  dishes:[
-    {name:"Langoustine Carpaccio",desc:"Caviar, citrus gel, gold leaf",price:"€95",popular:true,course:"Starter"},
-    {name:"Bresse Chicken",desc:"Black truffle, foie gras jus",price:"€120",course:"Main"},
-    {name:"Seasonal Garden",desc:"28 vegetables, herbs, flowers",price:"€85",course:"Main",veg:true},
-    {name:"Grand Dessert",desc:"Seven textures of chocolate",price:"€65",popular:true,course:"Dessert"},
-  ],
-  wineNote:"The sommelier's private reserve includes 3 bottles of 1947 Cheval Blanc. Ask discreetly.",
-  atmosphere:[{label:"Noise",value:20},{label:"Intimacy",value:90},{label:"Formality",value:85},{label:"Scene",value:60}],
-  bestFor:["Anniversary","Business","Impressing","Celebration"],
-  reviews:[
-    {name:"Sophia M.",rating:5,text:"Alfred secured the garden table on a Saturday. Unheard of. The langoustine was transcendent.",date:"2 weeks ago",tier:"Member"},
-    {name:"James R.",rating:5,text:"The cheese course is the real secret. Worth every euro.",date:"1 month ago",tier:"Black"},
-    {name:"Claire D.",rating:4,text:"Impeccable service. Slightly formal for my taste, but the food is beyond compare.",date:"3 weeks ago",tier:"Member"},
-  ],
-  facts:[{icon:"€",label:"Avg. spend",value:"€280 / person"},{icon:"🕐",label:"Best time",value:"8:00 PM weekdays"},{icon:"👔",label:"Dress code",value:"Smart Elegant"},{icon:"👥",label:"Party size",value:"2 – 8 guests"}],
-};
+function useVis(ref){var[v,setV]=useState(false);useEffect(function(){var o=null,mo=null;function connect(){if(!ref.current)return false;o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);if(mo)mo.disconnect();return true}if(!connect()){mo=new MutationObserver(connect);mo.observe(document.body,{childList:true,subtree:true})}return function(){if(mo)mo.disconnect();if(o)o.disconnect()}},[]);return v}
 
 var courseCol=function(c){return c==="Starter"?"#60A5FA":c==="Dessert"?"#F472B6":C.s3};
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
+function titleFromSlug(value){return (value||"").split("-").filter(Boolean).map(function(s){return s.charAt(0).toUpperCase()+s.slice(1)}).join(" ")}
 
 export default function DiningDetailPage(){
   var {slug}=useParams();
@@ -48,17 +23,16 @@ export default function DiningDetailPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [guests,setGuests]=useState("2");
-  var [date,setDate]=useState("2026-03-20");
+  var [date,setDate]=useState(function(){return dateFromToday(2)});
   var [time,setTime]=useState("20:00");
   var [dbRestaurant,setDbRestaurant]=useState(null);
-  var [dbLoading,setDbLoading]=useState(false);
+  var [dbLoading,setDbLoading]=useState(true);
 
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var factsRef=useRef(null);var factsVis=useVis(factsRef);
   var dishRef=useRef(null);var dishVis=useVis(dishRef);
   var atmoRef=useRef(null);var atmoVis=useVis(atmoRef);
   var hoursRef=useRef(null);var hoursVis=useVis(hoursRef);
-  var revRef=useRef(null);var revVis=useVis(revRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
@@ -69,8 +43,12 @@ export default function DiningDetailPage(){
     var hasSess=false;
     try{hasSess=!!JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
     if(hasSess)return;
+    var cancelled=false;
+    var timer=setTimeout(function(){if(!cancelled)setDbLoading(false)},10000);
     setDbLoading(true);
-    supabase.from("restaurants").select("*").eq("slug",slug).single().then(function(res){
+    supabase.from("restaurants").select("*").eq("slug",slug).limit(1).maybeSingle().then(function(res){
+      if(cancelled)return;
+      clearTimeout(timer);
       if(res.data){
         var r=res.data;
         var pl=r.price_level||0;
@@ -94,11 +72,14 @@ export default function DiningDetailPage(){
         });
       }
       setDbLoading(false);
-    });
+    }).catch(function(){if(!cancelled){clearTimeout(timer);setDbLoading(false)}});
+    return function(){cancelled=true;clearTimeout(timer)};
   },[slug]);
 
   var _sess=null;try{_sess=JSON.parse(sessionStorage.getItem("alfred_restaurant_"+slug))}catch(e){}
   var _src=_sess||dbRestaurant;
+  var imageCount=_src&&(_src.imgs||[_src.img].filter(Boolean)).length||0;
+  useEffect(function(){if(imageCount<=1)return;var t=setInterval(function(){setIdx(function(c){return(c+1)%imageCount})},5000);return function(){clearInterval(t)}},[slug,imageCount]);
 
   /* Show loading state while Supabase fetches (only when sessionStorage empty) */
   if(dbLoading&&!_src){
@@ -107,11 +88,21 @@ export default function DiningDetailPage(){
     </div>);
   }
 
-  var V=_src?{
+  if(!_src){
+    return(<div style={{width:"100%",minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20,padding:24,textAlign:"center"}}>
+      <SEOHead title="Restaurant Not Found | Alfred Concierge" description="This restaurant is not currently listed. Browse Alfred's curated dining catalog." path={"/catalog/dining/"+slug} noindex/>
+      <h1 style={{...sf(28,700),color:C.s1}}>{titleFromSlug(slug)} is not currently listed</h1>
+      <p style={{...sf(14),color:C.s5,maxWidth:520,lineHeight:1.6}}>Browse the dining catalog or ask Alfred to source this restaurant directly.</p>
+      <a href="/catalog/dining" style={{...sf(14,600),color:C.s1}}>← Browse restaurants</a>
+    </div>);
+  }
+
+  var V={
     name:_src.name,
     tagline:_src.tagline||("Fine dining · "+_src.cuisine),
     cuisine:_src.cuisine,
     address:_src.address||_src.loc,
+    city:_src.loc||"",
     rating:_src.rating,
     reviewCount:_src.reviews,
     priceLevel:_src.price,
@@ -119,30 +110,28 @@ export default function DiningDetailPage(){
     imgs:_src.imgs||[_src.img].filter(Boolean),
     crops:_src.crops||_src.image_crops||{},
     hours:{lunch:_src.hoursLunch||"Check availability",dinner:_src.hoursDinner||"Check availability",closed:_src.hoursClosed||"Check availability"},
-    dressCode:_src.dressCode==="formal"?"Smart Elegant":_src.dressCode==="smart casual"?"Smart Casual":_src.dressCode||"Smart Casual",
+    dressCode:_src.dressCode==="formal"?"Smart Elegant":_src.dressCode==="smart casual"?"Smart Casual":_src.dressCode||"Check with concierge",
     michelin:_src.michelin||0,
     alfredNote:_src.alfredNote||("Contact Alfred to arrange your table at "+_src.name+". We handle the reservation, seating preference, and any special occasions."),
-    alfredTip:_src.alfredTip||"Mention Alfred at arrival for preferred treatment and the best available table.",
+    alfredTip:_src.alfredTip||"Share your preferred time, party size, dietary needs and seating preference when you request the table.",
     chef:_src.chefName?{name:_src.chefName,title:_src.chefTitle||"Executive Chef",note:_src.chefNote||""}:null,
     dishes:[],
     wineNote:_src.wineNote||"",
     atmosphere:[
-      {label:"Noise",value:_src.atmNoise||(_src.vibe==="Scene"?72:_src.vibe==="Casual"?55:30)},
-      {label:"Intimacy",value:_src.atmIntimacy||(_src.vibe==="Romantic"?92:_src.vibe==="Formal"?75:55)},
-      {label:"Formality",value:_src.atmFormality||(_src.vibe==="Formal"?85:_src.vibe==="Casual"?20:50)},
-      {label:"Scene",value:_src.atmScene||(_src.vibe==="Scene"?88:40)},
-    ],
-    bestFor:(_src.bestFor&&_src.bestFor.length>0)?_src.bestFor:_src.vibe==="Romantic"?["Anniversary","Date Night","Special Occasion"]:_src.vibe==="Scene"?["Celebration","Birthday","Impressing"]:["Business","Anniversary","Celebration","Impressing"],
+      _src.atmNoise?{label:"Noise",value:_src.atmNoise}:null,
+      _src.atmIntimacy?{label:"Intimacy",value:_src.atmIntimacy}:null,
+      _src.atmFormality?{label:"Formality",value:_src.atmFormality}:null,
+      _src.atmScene?{label:"Scene",value:_src.atmScene}:null,
+    ].filter(Boolean),
+    bestFor:(_src.bestFor&&_src.bestFor.length>0)?_src.bestFor:[],
     reviews:[],
     facts:[
-      {icon:"💰",label:"Avg. spend",value:(_src.avg||"N/A")+" / person"},
-      {icon:"🕐",label:"Best time",value:_src.hoursDinner?"Dinner service":"Check availability"},
-      {icon:"👔",label:"Dress code",value:_src.dressCode==="formal"?"Smart Elegant":"Smart Casual"},
-      {icon:"👥",label:"Party size",value:"2 – 8 guests"},
-    ],
-  }:LE_CINQ;
-
-  useEffect(function(){var t=setInterval(function(){setIdx(function(c){return(c+1)%V.imgs.length})},5000);return function(){clearInterval(t)}},[slug]);
+      _src.avg?{icon:"💰",label:"Avg. spend",value:_src.avg+" / person"}:null,
+      _src.hoursDinner?{icon:"🕐",label:"Dinner",value:_src.hoursDinner}:null,
+      _src.dressCode?{icon:"👔",label:"Dress code",value:_src.dressCode==="formal"?"Smart Elegant":_src.dressCode}:null,
+      {icon:"👥",label:"Party size",value:"Confirm with concierge"},
+    ].filter(Boolean),
+  };
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
@@ -150,8 +139,8 @@ export default function DiningDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" "+((V.address||"").toLowerCase().includes("paris")?"Paris":"Miami")+" — Book a Table | Alfred Concierge"}
-        description={"Book a table at "+V.name+" in "+((V.address||"").toLowerCase().includes("paris")?"Paris":"Miami")+". "+V.cuisine+" restaurant. "+(V.michelin>0?V.michelin+" Michelin star"+(V.michelin>1?"s":"")+". ":"")+"Reserve through Alfred Concierge — instant confirmation, best table."}
+        title={V.name+" "+(V.city||"Restaurant")+" — Request a Table | Alfred Concierge"}
+        description={"Request a table at "+V.name+(V.city?" in "+V.city:"")+" through Alfred Concierge. View cuisine, location and venue details, then confirm date, time and party size."}
         image={V.imgs&&V.imgs[0]?V.imgs[0]:undefined}
         path={"/catalog/dining/"+slug}
         jsonLd={restaurantJsonLd({
@@ -159,9 +148,9 @@ export default function DiningDetailPage(){
           description: V.tagline || ("Fine dining at "+V.name),
           cuisine: V.cuisine,
           street_address: V.address && V.address.split(",")[0],
-          city: (V.address||"").toLowerCase().includes("paris") ? "Paris" : "Miami",
-          region: (V.address||"").toLowerCase().includes("paris") ? undefined : "FL",
-          country: (V.address||"").toLowerCase().includes("paris") ? "FR" : "US",
+          city: V.city || undefined,
+          region: (V.city||"").toLowerCase().includes("miami") ? "FL" : undefined,
+          country: (V.city||"").toLowerCase().includes("paris") ? "FR" : (V.city||"").toLowerCase().includes("miami") ? "US" : undefined,
           rating: V.rating,
           review_count: V.reviewCount,
           price_level: V.priceLevel ? V.priceLevel.length : 4,
@@ -250,18 +239,18 @@ export default function DiningDetailPage(){
             {/* Title */}
             <div style={{marginBottom:40}}>
               <div style={{display:"flex",gap:6,marginBottom:14}}>
-                <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:C.s3+"14"}}>MICHELIN {"★".repeat(V.michelin)}</span>
-                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
+                {V.michelin>0&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:C.s3+"14"}}>MICHELIN {"★".repeat(V.michelin)}</span>}
+                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED CATALOG</span>
               </div>
               <h1 className="dd-name" style={{...sf(38,700),letterSpacing:-1.5,marginBottom:8}}>{V.name}</h1>
               <p style={{...sf(16,300),color:C.s5,marginBottom:16}}>{V.tagline}</p>
               <div style={{display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
-                <div style={{display:"flex",alignItems:"center",gap:5}}>
+                {V.rating>0&&V.reviewCount>0&&<div style={{display:"flex",alignItems:"center",gap:5}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                   <span style={{...sf(14,600),color:C.s1}}>{V.rating}</span>
                   <span style={{...sf(12),color:C.s6}}>({V.reviewCount})</span>
-                </div>
-                <div style={{width:1,height:14,background:C.bd}}/>
+                </div>}
+                {V.rating>0&&V.reviewCount>0&&<div style={{width:1,height:14,background:C.bd}}/>}
                 <span style={{...sf(13),color:C.s4}}>{V.cuisine}</span>
                 <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13,500),color:C.s4}}>{V.priceLevel}</span>
@@ -384,10 +373,10 @@ export default function DiningDetailPage(){
       </div>}
 
       {/* Atmosphere + Wine + Chef */}
-      <div ref={atmoRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
+      {(V.atmosphere.length||V.wineNote||V.chef||V.bestFor.length)&&<div ref={atmoRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
         <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32,opacity:atmoVis?1:0,transition:"all 0.8s ease"}}>The Atmosphere</p>
-        <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"28px 30px",display:"flex",flexDirection:"column",gap:22,opacity:atmoVis?1:0,transform:atmoVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
+        {V.atmosphere.length>0&&<div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"28px 30px",display:"flex",flexDirection:"column",gap:22,opacity:atmoVis?1:0,transform:atmoVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
           {V.atmosphere.map(function(m,i){return(
             <div key={i} style={{display:"flex",alignItems:"center",gap:14}}>
               <span style={{...sf(13,400),color:C.s1,width:76,flexShrink:0}}>{m.label}</span>
@@ -397,7 +386,7 @@ export default function DiningDetailPage(){
               <span style={{...sf(12,500),color:C.s5,width:28,textAlign:"right",flexShrink:0}}>{m.value}</span>
             </div>
           )})}
-        </div>
+        </div>}
         {/* Wine Cellar + Chef — only show cards that have data */}
         {(V.wineNote||V.chef)&&<div style={{display:"flex",gap:14,marginTop:14}}>
           {V.wineNote&&<div style={{flex:1,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 24px",opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.4s"}}>
@@ -414,7 +403,7 @@ export default function DiningDetailPage(){
         <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16,opacity:atmoVis?1:0,transition:"opacity 0.8s ease 0.6s"}}>
           {V.bestFor.map(function(tag,i){return <span key={i} style={{...sf(12),color:C.s4,padding:"0 16px",height:34,lineHeight:"34px",borderRadius:17,background:C.srf,border:"0.5px solid "+C.bd}}>{tag}</span>})}
         </div>
-      </div>
+      </div>}
 
       {/* Hours */}
       <div ref={hoursRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
@@ -425,27 +414,6 @@ export default function DiningDetailPage(){
         </div>
       </div>
 
-      {/* Reviews */}
-      <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
-        {secDiv}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",opacity:revVis?1:0,transition:"all 0.8s ease"}}>From Members</p>
-          <span style={{...sf(12),color:C.s6,opacity:revVis?1:0}}>{V.reviewCount} reviews</span>
-        </div>
-        <div className="rev-row" style={{opacity:revVis?1:0,transform:revVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {V.reviews.map(function(r,i){var isB=r.tier==="Black";return(
-            <div key={i} style={{width:300,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"24px 22px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
-                <div style={{width:36,height:36,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(15,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
-                <div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{...sf(13,600),color:C.s1}}>{r.name}</span><span style={{...sf(8,600),letterSpacing:0.8,color:isB?C.s3:C.s5,padding:"2px 8px",borderRadius:6,background:isB?"rgba(244,244,245,0.06)":C.srf,border:"0.5px solid "+(isB?"rgba(244,244,245,0.1)":C.bd),textTransform:"uppercase"}}>{r.tier}</span></div>
-                <div style={{display:"flex",alignItems:"center",gap:3,marginTop:4}}>{Array.from({length:r.rating}).map(function(_,si){return <svg key={si} width="9" height="9" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>})}<span style={{...sf(10),color:C.s6,marginLeft:4}}>{r.date}</span></div></div>
-              </div>
-              <p style={{...sf(13),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{r.text}"</p>
-            </div>
-          )})}
-        </div>
-      </div>
-
       {/* Bottom CTA */}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
@@ -453,7 +421,7 @@ export default function DiningDetailPage(){
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Reserve</p>
           <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Ready for<br/>{V.name}?</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Your concierge handles everything — you just show up.</p>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Arrange a Table<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
+          <a href={"https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'd like to request a table at "+V.name+" on "+date+" at "+time+" for "+guests+" guests. Please confirm availability.")} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",textDecoration:"none",...sf(14,600),color:C.bg,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Request a Table<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></a>
         </div>
       </section>
 

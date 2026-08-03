@@ -50,7 +50,7 @@ function carSlug(c) {
   return slugify(full);
 }
 
-const entry = (loc, prio) => `  <url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>${prio}</priority></url>`;
+const entry = (loc) => `  <url><loc>${loc}</loc></url>`;
 
 (async () => {
   const cars = await fetchAll('cars', 'brand,name,is_active');

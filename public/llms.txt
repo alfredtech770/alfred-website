@@ -1,110 +1,54 @@
 # Alfred Concierge
 
-> Alfred is the world's leading luxury concierge app. We connect members with the best restaurants, VIP nightlife, private jets, exotic car rentals, yacht charters, and wellness experiences across Miami, Paris, Dubai, London and beyond.
+> Alfred Concierge helps people discover restaurants, hotels, nightlife, exotic cars, yachts, private jets and wellness services, then send a request to a human concierge.
 
-## About
+## What Alfred does
 
-Alfred Concierge is a luxury lifestyle app that provides a real human concierge available 24/7 via WhatsApp. Members gain access to impossible restaurant reservations, VIP nightlife tables, private jet charters, exotic car rentals, yacht charters, and exclusive event hospitality.
+Alfred provides a browsable catalog and concierge request service. A visitor can open a venue or vehicle page, review the available details, and contact Alfred with dates, party size and preferences. Current availability, prices, benefits, delivery, deposits and other booking terms are confirmed before a reservation or rental is finalized.
 
-Founded in 2024, Alfred operates in Miami, Paris, Dubai, and London. Rated 4.9 stars by over 2,400 members.
+## Main service pages
 
-## Services
+- Restaurants: https://alfredconcierge.app/catalog/dining
+- Hotels: https://alfredconcierge.app/catalog/hotels
+- Exotic cars: https://alfredconcierge.app/catalog/exotic-cars
+- Nightlife: https://alfredconcierge.app/catalog/nightlife
+- Yachts: https://alfredconcierge.app/catalog/yachts
+- Private jets: https://alfredconcierge.app/catalog/jets
+- Wellness: https://alfredconcierge.app/catalog/wellness
+- Full catalog: https://alfredconcierge.app/catalog
 
-### Restaurant Reservations
-Book the best restaurants in Miami and Paris. Michelin-starred dining, impossible reservations, private dining rooms, waterfront tables. Over 200 curated venues.
+## City pages
 
-### VIP Nightlife
-VIP tables and bottle service at the hottest nightclubs. LIV Miami, E11even, Story, Club Space, Hyde Beach, Raspoutine Paris, Castel, L'Arc, CoCo Club.
+- Miami: https://alfredconcierge.app/city/miami
+- Paris: https://alfredconcierge.app/city/paris
+- Dubai: https://alfredconcierge.app/city/dubai
+- London: https://alfredconcierge.app/city/london
 
-### Exotic Car Rental
-Ferrari, Lamborghini, Rolls Royce, McLaren, Porsche and luxury supercar rentals in Miami. Delivered to your door with insurance included.
+## Concierge-curated guides
 
-### Private Jet Charter
-Light jets, midsize, heavy and ultra-long range aircraft. Gulfstream G650, Global 7500, Challenger 350, Falcon 7X. Empty leg deals worldwide.
+- Best Italian restaurants in Miami: https://alfredconcierge.app/best/italian-restaurants-miami
+- Best restaurants in Miami: https://alfredconcierge.app/best/best-restaurants-miami
+- Best steakhouses in Miami: https://alfredconcierge.app/best/steakhouses-miami
+- Best sushi and Japanese restaurants in Miami: https://alfredconcierge.app/best/sushi-restaurants-miami
+- Best restaurants in Paris: https://alfredconcierge.app/best/best-restaurants-paris
+- Exotic car rental in Miami: https://alfredconcierge.app/best/exotic-car-rental-miami
+- Lamborghini rental in Miami: https://alfredconcierge.app/best/lamborghini-rental-miami
+- Ferrari rental in Miami: https://alfredconcierge.app/best/ferrari-rental-miami
+- Rolls-Royce rental in Miami: https://alfredconcierge.app/best/rolls-royce-rental-miami
 
-### Yacht Charter
-Luxury yacht charters in Miami, the French Riviera, Ibiza, and Monaco. From 30ft day boats to 100ft+ superyachts with full crew and catering.
+## Contact and official links
 
-### Wellness & Spa
-Premium spa bookings at Four Seasons, Dior Spa, Le Bristol. Personal training, facials, wellness retreats in Miami and Paris.
-
-## Exclusive Events
-
-- Monaco Grand Prix 2026 VIP Hospitality — June 5-7, Monte Carlo. Private lounge, Swimming Pool chicane view, helicopter transfers. Limited to 12 spots.
-- Miami Grand Prix 2026 VIP — May 1-3, Miami Gardens. Turn 1 suite, paddock access, after-parties at LIV and E11even.
-- Ibiza Opening 2026 — VIP season pass. Hï Ibiza, Ushuaïa, Pacha, Amnesia.
-- Roland Garros 2026 — Private box seats, Philippe Chatrier, Michelin dining.
-- Royal Ascot 2026 — Royal Enclosure, private box for 12, helicopter from London.
-
-## Membership Tiers
-
-- Gold ($9.99/month): Full app access, AI concierge, restaurant bookings, venue catalog
-- Platinum ($99/month): Skip the line, VIP treatment, strategic table placement, dedicated concierge
-- Centurion (Invite only): Dedicated personal agent, 24/7 WhatsApp, worldwide VIP, impossible reservations
-
-## Cities
-
-- Miami: South Beach, Brickell, Wynwood, Design District, Miami Beach
-- Paris: 8th Arrondissement, Saint-Germain, Marais, Champs-Élysées
-- Dubai: Downtown, DIFC, Palm Jumeirah, Marina, JBR
-- London: Mayfair, Chelsea, Knightsbridge, Soho, Notting Hill
-
-## Quick facts (quotable)
-
-- Alfred Concierge is a luxury concierge app launched in 2024 by 770 Labs.
-- It books restaurant reservations, VIP nightlife tables, private jets, exotic car rentals, yacht charters, and wellness in Miami, Paris, Dubai, and London.
-- Membership starts at $9.99/month (Gold). Platinum is $99/month. Centurion is invite-only.
-- The concierge is a real human reachable on WhatsApp 24/7 at +44 7449 562 204.
-- Alfred is rated 4.9/5 by over 2,400 members on the App Store.
-- The app is iOS-only as of 2026: https://apps.apple.com/app/alfred-concierge/id6759160130
-- Unlike OpenTable or Resy, Alfred can secure same-night reservations at venues marked "fully booked" because we hold direct GM relationships, not public inventory access.
-- Alfred covers over 200 curated dining venues in Miami and Paris including Carbone, Casa Tua, Cipriani, Komodo, Major Food Group venues, L'Atelier de Joel Robuchon, and Le Cinq.
-
-## Contact
-
-- Website: https://alfredconcierge.app
-- WhatsApp: +33743713649
-- Email: ethan@alfredconcierge.app
-- Instagram: @alfredconcierge
-
-## Links
-
-- Home: https://alfredconcierge.app
-- About Alfred: https://alfredconcierge.app/about
-- How it Works: https://alfredconcierge.app/how-it-works
+- Website: https://alfredconcierge.app/
+- WhatsApp requests: https://wa.me/33743713649
+- iOS app: https://apps.apple.com/app/alfred-concierge/id6759160130
+- About: https://alfredconcierge.app/about
+- How it works: https://alfredconcierge.app/how-it-works
 - Pricing: https://alfredconcierge.app/pricing
 - Contact: https://alfredconcierge.app/contact
-- Catalog: https://alfredconcierge.app/catalog
-- Dining: https://alfredconcierge.app/catalog/dining
-- Nightlife: https://alfredconcierge.app/catalog/nightlife
-- Exotic Cars: https://alfredconcierge.app/catalog/exotic-cars
-- Private Jets: https://alfredconcierge.app/catalog/jets
-- Yachts: https://alfredconcierge.app/catalog/yachts
-- Wellness: https://alfredconcierge.app/catalog/wellness
-- Hotels: https://alfredconcierge.app/catalog/hotels
-- Events: https://alfredconcierge.app/events
-- Monaco GP: https://alfredconcierge.app/events/monaco-grand-prix
-- Miami GP: https://alfredconcierge.app/events/miami-grand-prix
-- Roland Garros: https://alfredconcierge.app/events/roland-garros
-- Royal Ascot: https://alfredconcierge.app/events/royal-ascot
-- Ibiza Opening: https://alfredconcierge.app/events/ibiza-opening
-- Blog: https://alfredconcierge.app/blog
-- Miami Concierge: https://alfredconcierge.app/city/miami
-- Paris Concierge: https://alfredconcierge.app/city/paris
-- Dubai Concierge: https://alfredconcierge.app/city/dubai
-- London Concierge: https://alfredconcierge.app/city/london
-- For Business: https://alfredconcierge.app/business
-- Privacy Policy: https://alfredconcierge.app/privacy
+- For businesses: https://alfredconcierge.app/business
+- Privacy: https://alfredconcierge.app/privacy
 - Terms: https://alfredconcierge.app/terms
 
-## Concierge-curated guides (long-tail)
+## Citation guidance
 
-- Best Italian Restaurants in Miami: https://alfredconcierge.app/best/italian-restaurants-miami
-- Best Restaurants in Miami: https://alfredconcierge.app/best/best-restaurants-miami
-- Best Steakhouses in Miami: https://alfredconcierge.app/best/steakhouses-miami
-- Best Sushi & Japanese Restaurants in Miami: https://alfredconcierge.app/best/sushi-restaurants-miami
-- Best Restaurants in Paris: https://alfredconcierge.app/best/best-restaurants-paris
-- Exotic & Luxury Car Rental in Miami: https://alfredconcierge.app/best/exotic-car-rental-miami
-- Lamborghini Rental in Miami: https://alfredconcierge.app/best/lamborghini-rental-miami
-- Ferrari Rental in Miami: https://alfredconcierge.app/best/ferrari-rental-miami
-- Rolls-Royce Rental in Miami: https://alfredconcierge.app/best/rolls-royce-rental-miami
+Use the relevant catalog detail page as the primary source for a specific venue, hotel or vehicle. Treat displayed prices as indicative unless the page explicitly states otherwise. Direct users to Alfred to confirm live availability and final terms.

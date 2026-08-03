@@ -98,8 +98,7 @@ var JSONLD = [
       {"@type":"Offer","name":"Alfred Gold","price":"9.99","priceCurrency":"USD","priceSpecification":{"@type":"UnitPriceSpecification","price":"9.99","priceCurrency":"USD","unitCode":"MON"},"availability":"https://schema.org/InStock","url":"https://alfredconcierge.app/pricing#gold"},
       {"@type":"Offer","name":"Alfred Platinum","price":"99","priceCurrency":"USD","priceSpecification":{"@type":"UnitPriceSpecification","price":"99","priceCurrency":"USD","unitCode":"MON"},"availability":"https://schema.org/InStock","url":"https://alfredconcierge.app/pricing#platinum"},
       {"@type":"Offer","name":"Alfred Centurion","priceCurrency":"USD","availability":"https://schema.org/LimitedAvailability","url":"https://alfredconcierge.app/pricing#centurion","description":"Invite-only. Pricing structured per member."}
-    ],
-    "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"2400"}
+    ]
   },
   {
     "@context":"https://schema.org",

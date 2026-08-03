@@ -9,18 +9,14 @@ var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetic
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
-function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
+function useVis(ref){var[v,setV]=useState(false);useEffect(function(){var o=null,mo=null;function connect(){if(!ref.current)return false;o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);if(mo)mo.disconnect();return true}if(!connect()){mo=new MutationObserver(connect);mo.observe(document.body,{childList:true,subtree:true})}return function(){if(mo)mo.disconnect();if(o)o.disconnect()}},[]);return v}
 
 
 var TIERS=[{label:"4 hours",hours:4,field:"price_4hr",wkField:"price_weekday_4hr"},{label:"6 hours",hours:6,field:"price_6hr",wkField:"price_weekday_6hr"},{label:"8 hours",hours:8,field:"price_8hr",wkField:"price_weekday_8hr"}];
 function getTier(h){return TIERS.find(function(t){return t.hours===h})||TIERS[0]}
 function getPrice(yacht,tier){return yacht[tier.field]||yacht[tier.wkField]||yacht.price_4hr||yacht.price_weekday_4hr||0}
 
-var REVIEWS=[
-  {name:"Alexander K.",tier:"Noir",rating:5,text:"The handover experience alone is worth it. Alfred had it ready at the dock with a full walkthrough. Sailed to the islands — unforgettable.",date:"1 week ago"},
-  {name:"Marcus L.",tier:"Black",rating:5,text:"I've chartered yachts before. This was different. The concierge handled everything — captain, route suggestions, even restaurant recs.",date:"3 weeks ago"},
-  {name:"David R.",tier:"Member",rating:5,text:"Booked for my birthday. Alfred surprised me with a bottle of Dom on board. Will be back for a longer charter.",date:"1 month ago"},
-];
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 export default function YachtDetailPage(){
   var {id}=useParams();
@@ -30,8 +26,8 @@ export default function YachtDetailPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [hours,setHours]=useState(4);
-  var [pickup,setPickup]=useState("2026-03-20");
-  var [returnD,setReturnD]=useState("2026-03-20");
+  var [pickup,setPickup]=useState(function(){return dateFromToday(2)});
+  var [returnD,setReturnD]=useState(function(){return dateFromToday(2)});
   var [lightbox,setLightbox]=useState(false);
   var touchStartX=useRef(0);
   var touchEndX=useRef(0);
@@ -40,7 +36,6 @@ export default function YachtDetailPage(){
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var inclRef=useRef(null);var inclVis=useVis(inclRef);
   var priceRef=useRef(null);var priceVis=useVis(priceRef);
-  var revRef=useRef(null);var revVis=useVis(revRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   useEffect(function(){
@@ -75,7 +70,8 @@ export default function YachtDetailPage(){
   }
   if(!yacht){
     return(<div style={{width:"100%",minHeight:"100vh",background:"#0A0A0B",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20}}>
-      <h2 style={{color:"#F4F4F5",fontFamily:"system-ui",fontSize:24}}>Yacht not found</h2>
+      <SEOHead title="Yacht Not Found | Alfred Concierge" description="This yacht is not currently listed. Browse Alfred's yacht catalog." path={"/catalog/yachts/"+id} noindex/>
+      <h1 style={{color:"#F4F4F5",fontFamily:"system-ui",fontSize:24}}>Yacht not found</h1>
       <a href="/catalog/yachts" style={{color:"#A1A1AA",fontFamily:"system-ui",fontSize:14}}>← Back to catalog</a>
     </div>);
   }
@@ -97,13 +93,11 @@ export default function YachtDetailPage(){
     maxPassengers: yacht.max_passengers,
     pricePerDay: yacht.price_4hr || yacht.price_weekday_4hr,
     imgs: yachtImgs.length > 0 ? yachtImgs : [],
-    rating: 5.0,
-    reviews: Math.floor(Math.random() * 20) + 5,
     available: yacht.available !== false,
     isFeatured: yacht.is_featured,
     city: yacht.city,
     location: yacht.location || yacht.city || "Charter",
-    features: (yacht.whats_included || ["Fuel included","Captain included","First mate","Towels & ice"]).filter(function(item){var low=item.toLowerCase();return low!=="ice box"&&low!=="gratuity"&&low!=="tax"&&low!=="cleaning fee"&&low!=="water"}).map(function(item){return item.toLowerCase()==="ice"?"Ice & Beverages":item}),
+    features: (yacht.whats_included || []).filter(function(item){var low=item.toLowerCase();return low!=="ice box"&&low!=="gratuity"&&low!=="tax"&&low!=="cleaning fee"&&low!=="water"}).map(function(item){return item.toLowerCase()==="ice"?"Ice & Beverages":item}),
     notIncluded: (yacht.not_included || []).filter(function(item){var low=item.toLowerCase();return low!=="ice box"&&low!=="gratuity"&&low!=="tax"&&low!=="cleaning fee"&&low!=="water"}).map(function(item){return item.toLowerCase()==="ice"?"Ice & Beverages":item}),
     tags: yacht.tags || [],
     deposit: yacht.security_deposit || 0,
@@ -117,10 +111,11 @@ export default function YachtDetailPage(){
     priceWeekday6hr: yacht.price_weekday_6hr,
     priceWeekday8hr: yacht.price_weekday_8hr,
     alfredNote: "Contact Alfred for the best experience with the " + yacht.name + ". We handle boarding, captain, and everything in between.",
-    alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
+    alfredTip: "Share your date, duration, group size and preferred route so Alfred can confirm live availability and final terms.",
   };
 
   var tier=getTier(hours);var total=getPrice(yacht,tier);
+  var requestUrl="https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'd like to request the "+YACHT.name+" on "+pickup+" for "+hours+" hours. Please confirm availability, inclusions and final pricing.");
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var inputS={padding:"14px 16px",borderRadius:14,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,500),outline:"none",width:"100%",colorScheme:"dark",WebkitAppearance:"none",appearance:"none"};
@@ -129,8 +124,8 @@ export default function YachtDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <SEOHead
-        title={yacht.name+" "+(yacht.city||"Miami")+" — Charter a Yacht | Alfred Concierge"}
-        description={"Charter the "+yacht.name+" in "+(yacht.city||"Miami")+". "+(yacht.size_ft||"")+"ft luxury yacht, up to "+(yacht.max_passengers||"")+" guests. Captain, fuel & crew included. Book through Alfred Concierge."}
+        title={yacht.name+" "+(yacht.city||"")+" — Request a Yacht Charter | Alfred Concierge"}
+        description={"View "+yacht.name+" charter details in "+(yacht.city||"the listed destination")+" and request current availability, inclusions and final terms through Alfred Concierge."}
         image={yacht.hero_image_url||undefined}
         path={"/catalog/yachts/"+id}
         jsonLd={yachtJsonLd(yacht, id)}
@@ -232,7 +227,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             {/* Title */}
             <div style={{marginBottom:40}}>
               <div style={{display:"flex",gap:6,marginBottom:14}}>
-                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
+                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED CATALOG</span>
                 {YACHT.isFeatured&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.gold+"D9",padding:"4px 10px",borderRadius:8,background:C.gold+"0F",border:"0.5px solid "+C.gold+"1A"}}>★ FEATURED</span>}
                 {YACHT.available&&<span style={{display:"flex",alignItems:"center",gap:5,...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>AVAILABLE</span>}
               </div>
@@ -294,13 +289,13 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
                 </div>
 
                 {/* Book */}
-                <a onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm interested in chartering the "+YACHT.name+". Could you let me know about availability and pricing?"),"_blank")}} style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-                  Book Now
+                <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+                  Request this yacht
                 </a>
 
                 {/* Sub-info */}
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:14}}>
-                  {["Captain included","Fuel included","24/7 support"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+                  {["Live availability","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
                 </div>
               </div>
             </div>
@@ -309,13 +304,13 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderRadius:14,background:C.gn+"08",border:"0.5px solid "+C.gn+"1A",marginTop:12}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px "+C.gn+"66",flexShrink:0}}/>
               <div>
-                <div style={{...sf(12,600),color:C.s1}}>Available now</div>
-                <div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Next available: Tomorrow</div>
+                <div style={{...sf(12,600),color:C.s1}}>Availability on request</div>
+                <div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Alfred confirms the vessel and charter window before booking.</div>
               </div>
             </div>
 
             {/* WhatsApp quick */}
-            <a onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm interested in chartering the "+YACHT.name+". Could you let me know about availability and pricing?"),"_blank")}} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",textDecoration:"none",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+            <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 0",borderRadius:14,border:"1px solid "+C.bd,marginTop:10,cursor:"pointer",textDecoration:"none",...sf(12,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
               Ask about this yacht
             </a>
@@ -344,9 +339,9 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
             <div style={{display:"flex",gap:4,marginBottom:16}}>
               {[4,6,8].map(function(h){var active=hours===h;return <div key={h} onClick={function(){pickHours(h)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{h}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>hrs</div></div>})}
             </div>
-            <a onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm interested in chartering the "+YACHT.name+". Could you let me know about availability and pricing?"),"_blank")}} style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}}>Book Now</a>
+            <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}}>Request this yacht</a>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:12}}>
-              {["Captain included","Fuel included","24/7 support"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+              {["Live availability","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
             </div>
           </div>
         </div>
@@ -396,7 +391,7 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
           <div><div style={{...sf(13,500),color:C.s1}}>Security deposit</div><div style={{...sf(11),color:C.s6}}>Pre-authorised · fully refundable</div></div>
           <div style={{...sf(20,700),color:C.s1}}>${YACHT.deposit.toLocaleString()}</div>
         </div>}
-        <a onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm interested in chartering the "+YACHT.name+". Could you let me know about availability and pricing?"),"_blank")}} style={{display:"flex",alignItems:"center",gap:14,padding:"16px clamp(14px,3vw,22px)",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,cursor:"pointer",marginTop:12,textDecoration:"none",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
+        <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:14,padding:"16px clamp(14px,3vw,22px)",borderRadius:20,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd,cursor:"pointer",marginTop:12,textDecoration:"none",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
           <span style={{...sf(20),color:C.s4}}>✦</span>
           <div style={{flex:1}}><div style={{...sf(14,500),color:C.s1,marginBottom:3}}>Questions about this yacht?</div><div style={{...sf(12),color:C.s6}}>Chat with your Alfred concierge</div></div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s7} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
@@ -445,25 +440,6 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
         </div>
       </div>}
 
-      {/* Reviews */}
-      <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
-        {secDiv}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase"}}>From Members</p>
-          <span style={{...sf(12),color:C.s6}}>{YACHT.reviews} reviews</span>
-        </div>
-        <div className="rev-row">
-          {REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(<div key={i} style={{width:320,minWidth:280,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-              <div style={{width:32,height:32,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(14,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
-              <div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{...sf(12,600),color:C.s1}}>{r.name}</span><span style={{...sf(8,600),letterSpacing:0.8,color:isTop?C.s3:C.s5,padding:"2px 7px",borderRadius:6,background:isTop?"rgba(244,244,245,0.06)":C.srf,border:"0.5px solid "+(isTop?"rgba(244,244,245,0.1)":C.bd),textTransform:"uppercase"}}>{r.tier}</span></div>
-              <div style={{display:"flex",alignItems:"center",gap:2,marginTop:3}}>{Array.from({length:r.rating}).map(function(_,si){return <svg key={si} width="8" height="8" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>})}<span style={{...sf(9),color:C.s6,marginLeft:4}}>{r.date}</span></div></div>
-            </div>
-            <p style={{...sf(12),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{r.text}"</p>
-          </div>)})}
-        </div>
-      </div>
-
       {/* Bottom CTA — full width */}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
@@ -471,8 +447,8 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20}}>Reserve</p>
           <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1}}>Ready to charter<br/>the {YACHT.name}?</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36}}>Tell Alfred your dates and we'll arrange everything. Captain, crew, and open water.</p>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
-          <p style={{...sf(12),color:C.s6,marginTop:20}}>Captain included · Fuel included · 24/7 concierge</p>
+          <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",textDecoration:"none",...sf(14,600),color:C.bg}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Request charter · estimated ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></a>
+          <p style={{...sf(12),color:C.s6,marginTop:20}}>Final availability, inclusions, taxes, fees and gratuity are confirmed before booking.</p>
         </div>
       </section>
 

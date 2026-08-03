@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import SEOHead from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
@@ -9,13 +8,14 @@ var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 
-function HotelCard({hotel,onClick}){
+function HotelCard({hotel}){
   var [hover,setHover]=useState(false);
+  var href="/catalog/hotels/"+(hotel.slug||hotel.id);
   return(
-    <div onClick={onClick} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}
-      style={{borderRadius:18,overflow:"hidden",background:C.el,border:"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s",transform:hover?"translateY(-4px)":"none",boxShadow:hover?"0 12px 40px rgba(0,0,0,0.3)":"none"}}>
+    <a href={href} onClick={function(){try{sessionStorage.setItem("alfred_hotel_"+(hotel.slug||hotel.id),JSON.stringify(hotel))}catch(e){}}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}
+      style={{display:"block",textDecoration:"none",borderRadius:18,overflow:"hidden",background:C.el,border:"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s",transform:hover?"translateY(-4px)":"none",boxShadow:hover?"0 12px 40px rgba(0,0,0,0.3)":"none"}}>
       <div style={{position:"relative",height:220,overflow:"hidden"}}>
-        <img src={hotel.hero_image_url||""} alt={hotel.name} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.5s",transform:hover?"scale(1.05)":"scale(1)"}}/>
+        <img src={hotel.hero_image_url||""} alt={hotel.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.5s",transform:hover?"scale(1.05)":"scale(1)"}}/>
         {hotel.status==="coming_soon"&&<div style={{position:"absolute",top:12,left:12,padding:"4px 11px",borderRadius:20,background:"rgba(0,0,0,0.55)",backdropFilter:"blur(8px)",border:"0.5px solid rgba(255,255,255,0.12)",...sf(10,600),color:C.s1,letterSpacing:1}}>COMING SOON</div>}
         <div style={{position:"absolute",top:12,right:12,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)",...sf(11,600),color:C.s1}}>{"★".repeat(hotel.star_rating||5)}</div>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:80,background:"linear-gradient(transparent,rgba(0,0,0,0.7))"}}/>
@@ -36,17 +36,17 @@ function HotelCard({hotel,onClick}){
           </div>
         )}
       </div>
-    </div>
+    </a>
   );
 }
 
 export default function HotelsPage(){
-  var nav=useNavigate();
   var [hotels,setHotels]=useState([]);
   var [loading,setLoading]=useState(true);
   var [search,setSearch]=useState("");
   var [hood,setHood]=useState("");
   var [status,setStatus]=useState("");
+  var [visibleCount,setVisibleCount]=useState(24);
   var [isMobile,setIsMobile]=useState(typeof window!=="undefined"&&window.innerWidth<=768);
 
   useEffect(function(){
@@ -56,7 +56,7 @@ export default function HotelsPage(){
   },[]);
 
   useEffect(function(){
-    supabase.from("accommodations").select("*").order("name").then(function(res){
+    supabase.from("accommodations").select("*").neq("is_active",false).order("name").then(function(res){
       setHotels(res.data||[]);setLoading(false);
     });
   },[]);
@@ -69,18 +69,14 @@ export default function HotelsPage(){
     if(status==="coming_soon"&&h.status!=="coming_soon")return false;
     return true;
   });
-
-  useEffect(function(){
-    document.title="Luxury Hotels Miami — 5-Star Accommodations | Alfred Concierge";
-    var meta=document.querySelector('meta[name="description"]');
-    if(meta)meta.setAttribute("content","Browse 57 luxury hotels in Miami. Five-star beachfront resorts, boutique hotels, and urban retreats. Book through Alfred Concierge for exclusive perks and upgrades.");
-  },[]);
+  useEffect(function(){setVisibleCount(24)},[search,hood,status]);
+  var visibleHotels=filtered.slice(0,visibleCount);
 
   return(
     <div style={{minHeight:"100vh",background:C.bg}}>
       <SEOHead
         title="Best Luxury Hotels — Five-Star Stays with VIP Perks | Alfred Concierge"
-        description="Book the best five-star and palace hotels through Alfred. VIP perks, room upgrades, daily breakfast and hotel credits in Miami, Paris, Dubai, London and beyond."
+        description="Browse five-star and palace hotels in Miami, Paris, Dubai and London. Request current rates, availability and any eligible stay benefits through Alfred Concierge."
         keywords="luxury hotels, five-star hotels, palace hotels, hotel VIP perks, room upgrades, Miami hotels, Paris hotels, Dubai hotels, London hotels, Alfred concierge"
         path="/catalog/hotels"
         image="/og-hotels.jpg"
@@ -103,7 +99,7 @@ export default function HotelsPage(){
 
       <div style={{padding:isMobile?"90px 20px 40px":"110px 40px 60px",maxWidth:1200,margin:"0 auto"}}>
         <h1 style={{...sf(isMobile?28:40,700),color:C.s1,marginBottom:8}}>Luxury Hotels</h1>
-        <p style={{...sf(isMobile?14:16),color:C.s5,marginBottom:32}}>{hotels.length||"50+"} luxury hotels and resorts in Miami. Book through Alfred for exclusive perks, room upgrades, and VIP treatment.</p>
+        <p style={{...sf(isMobile?14:16),color:C.s5,marginBottom:32}}>Browse {hotels.length||"our curated selection of"} luxury hotels and resorts across Alfred's destinations. Request current rates, benefits and availability from the concierge.</p>
 
         <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:28,alignItems:"center"}}>
           <input placeholder="Search hotels..." value={search} onChange={function(e){setSearch(e.target.value)}}
@@ -124,14 +120,16 @@ export default function HotelsPage(){
 
         {loading?<div style={{padding:"80px",textAlign:"center",...sf(14),color:C.s5}}>Loading hotels...</div>:(
           <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fill,minmax(320px,1fr))",gap:20}}>
-            {filtered.map(function(h){
-              return <HotelCard key={h.id} hotel={h} onClick={function(){
-                sessionStorage.setItem("alfred_hotel_"+h.slug,JSON.stringify(h));
-                nav("/catalog/hotels/"+(h.slug||h.id));
-              }}/>;
+            {visibleHotels.map(function(h){
+              return <HotelCard key={h.id} hotel={h}/>;
             })}
           </div>
         )}
+        {!loading&&visibleCount<filtered.length&&<div style={{display:"flex",justifyContent:"center",marginTop:32}}>
+          <button type="button" onClick={function(){setVisibleCount(function(n){return n+24})}} style={{padding:"13px 24px",borderRadius:12,border:"1px solid "+C.bd,background:C.el,color:C.s2,cursor:"pointer",...sf(13,600)}}>
+            Show more hotels ({filtered.length-visibleCount} remaining)
+          </button>
+        </div>}
       </div>
 
       <CatalogSeoBody category="hotels"/>

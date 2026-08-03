@@ -538,7 +538,7 @@ function ProposalBuilderPage(){
   }
 
   return(<div style={{backgroundColor:C.bg,color:C.s1,minHeight:"100vh"}}>
-    <SEOHead title="Proposal Builder - Alfred Concierge" description="Build custom proposals for luxury car selections"/>
+    <SEOHead title="Proposal Builder | Alfred Concierge" description="Internal tool for building custom Alfred proposals." path="/proposal" noindex/>
 
     {/* Nav Bar */}
     <div style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(10,10,11,0.95)",backdropFilter:"blur(30px) saturate(1.3)",borderBottom:"1px solid rgba(44,44,49,0.8)",transition:"all 0.3s"}}>

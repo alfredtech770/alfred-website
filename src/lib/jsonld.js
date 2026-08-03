@@ -76,8 +76,7 @@ export function hotelJsonLd(h, slug){
     "geo": (h.latitude && h.longitude) ? clean({"@type":"GeoCoordinates","latitude":h.latitude,"longitude":h.longitude}) : undefined,
     "amenityFeature": Array.isArray(h.amenities) && h.amenities.length ? h.amenities.map(function(a){ return {"@type":"LocationFeatureSpecification","name": typeof a==="string" ? a : a.name, "value": true}; }) : undefined,
     "isAccessibleForFree": false,
-    "potentialAction": {"@type":"ReserveAction","target":url,"name":"Book through Alfred Concierge"},
-    "broker": ORG
+    "potentialAction": {"@type":"ReserveAction","target":url,"name":"Request this hotel through Alfred Concierge"}
   });
 
   var breadcrumb = {
@@ -101,6 +100,8 @@ export function restaurantJsonLd(r, slug){
   var images = imgs(r);
   var priceRange = r.price_level ? Array(r.price_level+1).join("$") || "$$$" : "$$$";
   var country = r.country || (r.city==="Paris" ? "FR" : r.city==="London" ? "GB" : r.city==="Dubai" ? "AE" : "US");
+  var address = postal(r.street_address, r.city, r.region, r.postal_code, country);
+  var reviewCount = Number(r.review_count || r.reviews || 0);
 
   var restaurant = clean({
     "@context":"https://schema.org",
@@ -112,13 +113,12 @@ export function restaurantJsonLd(r, slug){
     "image": images.length ? images : undefined,
     "servesCuisine": r.cuisine || undefined,
     "priceRange": priceRange,
-    "address": postal(r.street_address, r.city, r.region, r.postal_code, country),
+    "address": Object.keys(address).length>1 ? address : undefined,
     "telephone": r.phone || undefined,
     "geo": (r.latitude && r.longitude) ? clean({"@type":"GeoCoordinates","latitude":r.latitude,"longitude":r.longitude}) : undefined,
-    "aggregateRating": r.rating ? clean({"@type":"AggregateRating","ratingValue": String(r.rating), "reviewCount": String(r.review_count || r.reviews || 1)}) : undefined,
+    "aggregateRating": r.rating && reviewCount>0 ? clean({"@type":"AggregateRating","ratingValue": String(r.rating), "reviewCount": String(reviewCount)}) : undefined,
     "acceptsReservations": true,
-    "potentialAction": {"@type":"ReserveAction","target":url,"name":"Reserve through Alfred Concierge"},
-    "broker": ORG
+    "potentialAction": {"@type":"ReserveAction","target":url,"name":"Request a reservation through Alfred Concierge"}
   });
 
   var breadcrumb = {
@@ -148,7 +148,7 @@ export function carJsonLd(c, slug){
     "name": name,
     "brand": c.brand ? {"@type":"Brand","name":c.brand} : undefined,
     "model": c.name && c.brand && c.name.toLowerCase().indexOf(c.brand.toLowerCase())===0 ? c.name.replace(new RegExp("^"+c.brand+"\\s*","i"),"").trim() : c.name,
-    "description": c.description || (name + " — exotic car rental in " + (c.city || "Miami") + " through Alfred Concierge. Delivered to your door, fully insured."),
+    "description": c.description || (name + " — exotic car rental request in " + (c.city || "Miami") + " through Alfred Concierge. Availability and final terms are confirmed before booking."),
     "url": url,
     "image": imgs(c).length ? imgs(c) : (c.hero_image_url ? [c.hero_image_url] : undefined),
     "vehicleEngine": c.engine ? clean({"@type":"EngineSpecification","name":c.engine,"enginePower": c.hp ? clean({"@type":"QuantitativeValue","value": String(c.hp), "unitCode":"BHP"}) : undefined}) : undefined,
@@ -164,7 +164,6 @@ export function carJsonLd(c, slug){
       "price": String(c.price_1_day),
       "priceCurrency": c.price_currency || "USD",
       "priceSpecification": clean({"@type":"UnitPriceSpecification","price": String(c.price_1_day), "priceCurrency": c.price_currency || "USD", "unitCode":"DAY"}),
-      "availability": c.is_active===false ? "https://schema.org/Discontinued" : "https://schema.org/InStock",
       "seller": ORG,
       "areaServed": c.city ? {"@type":"City","name":c.city} : undefined
     }) : undefined
@@ -197,7 +196,7 @@ export function yachtJsonLd(y, id){
     "@id": url,
     "name": y.name + (y.size_ft ? " — "+y.size_ft+"ft Yacht Charter" : " — Yacht Charter"),
     "category":"Yacht Charter",
-    "description": y.description || (y.name + " — " + (y.size_ft || "luxury") + "ft yacht charter in " + (y.city || "Miami") + " with full crew, fuel, water toys and catering. Book through Alfred Concierge."),
+    "description": y.description || (y.name + " — " + (y.size_ft || "luxury") + "ft yacht charter request in " + (y.city || "Miami") + " through Alfred Concierge. Availability, inclusions and final terms are confirmed before booking."),
     "url": url,
     "image": imgs(y).length ? imgs(y) : (y.hero_image_url ? [y.hero_image_url] : undefined),
     "brand": y.brand ? {"@type":"Brand","name":y.brand} : undefined,
@@ -212,7 +211,6 @@ export function yachtJsonLd(y, id){
       "lowPrice": lowPrice ? String(lowPrice) : undefined,
       "highPrice": highPrice ? String(highPrice) : undefined,
       "priceCurrency": y.price_currency || "USD",
-      "availability":"https://schema.org/InStock",
       "seller": ORG,
       "areaServed": y.city ? {"@type":"City","name":y.city} : undefined
     }) : undefined
@@ -237,6 +235,7 @@ export function yachtJsonLd(y, id){
 export function spaJsonLd(s, slug){
   var url = BASE + "/catalog/wellness/" + slug;
   var country = s.country || (s.city==="Paris" ? "FR" : s.city==="London" ? "GB" : s.city==="Dubai" ? "AE" : "US");
+  var reviewCount = Number(s.reviewCount || s.review_count || 0);
 
   var spa = clean({
     "@context":"https://schema.org",
@@ -249,7 +248,7 @@ export function spaJsonLd(s, slug){
     "address": postal(s.street_address || (s.address && s.address.split(",")[0]), s.city, s.region, s.postal_code, country),
     "priceRange": s.priceLevel || s.price_range || "$$$$",
     "telephone": s.phone || undefined,
-    "aggregateRating": s.rating ? clean({"@type":"AggregateRating","ratingValue": String(s.rating), "reviewCount": String(s.reviewCount || s.review_count || 1)}) : undefined,
+    "aggregateRating": s.rating && reviewCount>0 ? clean({"@type":"AggregateRating","ratingValue": String(s.rating), "reviewCount": String(reviewCount)}) : undefined,
     "openingHours": s.openingHours || undefined
   });
 
@@ -272,6 +271,7 @@ export function spaJsonLd(s, slug){
 export function nightclubJsonLd(n, slug){
   var url = BASE + "/catalog/nightlife/" + slug;
   var country = n.country || (n.city==="Paris" ? "FR" : n.city==="London" ? "GB" : n.city==="Dubai" ? "AE" : "US");
+  var reviewCount = Number(n.reviewCount || n.review_count || 0);
 
   var club = clean({
     "@context":"https://schema.org",
@@ -283,7 +283,7 @@ export function nightclubJsonLd(n, slug){
     "image": Array.isArray(n.imgs) && n.imgs.length ? n.imgs : undefined,
     "address": postal(n.address && n.address.split(",")[0], n.city || "Miami Beach", n.region || (country==="US" ? "FL" : undefined), n.postal_code, country),
     "telephone": n.phone || undefined,
-    "aggregateRating": n.rating ? clean({"@type":"AggregateRating","ratingValue": String(n.rating), "reviewCount": String(n.reviewCount || 1)}) : undefined,
+    "aggregateRating": n.rating && reviewCount>0 ? clean({"@type":"AggregateRating","ratingValue": String(n.rating), "reviewCount": String(reviewCount)}) : undefined,
     "openingHours": n.hours || undefined
   });
 

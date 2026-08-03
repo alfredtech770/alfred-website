@@ -110,7 +110,7 @@ export default function BarDetailPage(){
       {/* ═══ TITLE — full width, no booking card ═══ */}
       <div className="vw" style={{marginTop:-40,position:"relative",zIndex:10,marginBottom:20,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1)"}}>
         <div style={{display:"flex",gap:6,marginBottom:14}}>
-          <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
+          <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED CATALOG</span>
         </div>
         <h1 className="bl-name" style={{...sf(42,700),letterSpacing:-1.5,marginBottom:8}}>{V.name}</h1>
         <p style={{...sf(17,300),color:C.s5,marginBottom:16}}>{V.tagline}</p>

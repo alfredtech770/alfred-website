@@ -8,6 +8,7 @@ import CatalogSeoBody from "../components/CatalogSeoBody";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 
@@ -64,7 +65,7 @@ function YachtCard(p){
   var price=y.price_4hr||y.price_weekday_4hr||null;
   var hasImg=!!y.hero_image_url;
   return(
-    <div onClick={function(){window.location.href="/catalog/yachts/"+y.id}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.05+p.i*0.06)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
+    <a href={"/catalog/yachts/"+y.id} style={{display:"block",textDecoration:"none",borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.05+p.i*0.06)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
       <div style={{height:220,position:"relative",overflow:"hidden",background:hasImg?"transparent":"linear-gradient(135deg,#0f1923,#1a2535)"}}>
         {hasImg
           ? <img src={y.hero_image_url} alt={y.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}}/>
@@ -80,7 +81,7 @@ function YachtCard(p){
         <div style={{position:"absolute",top:16,right:16}}>
           <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.45)",backdropFilter:"blur(12px)"}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:y.available!==false?C.gn:"#FF453A"}}/>
-            <span style={{...sf(9,500),color:y.available!==false?C.gn:"#FF453A"}}>{y.available!==false?"Available":"On Request"}</span>
+            <span style={{...sf(9,500),color:y.available!==false?C.gn:"#FF453A"}}>{y.available!==false?"Request":"On Request"}</span>
           </div>
         </div>
         <div style={{position:"absolute",bottom:14,left:16,display:"flex",alignItems:"center",gap:6}}>
@@ -139,7 +140,7 @@ function YachtCard(p){
           </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -172,8 +173,8 @@ export default function YachtsPage(){
   var [priceRange,setPriceRange]=useState(searchParams.get("price")||"Price");
   var [location,setLocation]=useState(searchParams.get("location")||"Location");
   var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
-  var [charter,setCharter]=useState(searchParams.get("from")||"2026-03-20");
-  var [returnD,setReturnD]=useState(searchParams.get("to")||"2026-03-23");
+  var [charter,setCharter]=useState(searchParams.get("from")||dateFromToday(2));
+  var [returnD,setReturnD]=useState(searchParams.get("to")||dateFromToday(3));
   useEffect(function(){
     var p={};
     if(location!=="Location")p.location=location;

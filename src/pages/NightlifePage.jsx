@@ -8,6 +8,7 @@ import { supabase } from "../lib/supabase";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gold:"#FFD60A"};
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
@@ -20,8 +21,8 @@ function mapNightclub(row){
     vibe:row.vibe||"",
     music:row.music||"",
     door:row.reservation||row.entry_type||"Table Required",
-    rating:row.rating||4.5,
-    reviews:row.review_count||50,
+    rating:row.rating||null,
+    reviews:row.review_count||null,
     tableMin:row.price_level||"$$$$",
     img:row.hero_image_url||"",
     tagline:row.crowd_type||row.best_night||"",
@@ -87,9 +88,9 @@ function VenueCard(p){
   var v=p.v;
   var doorColor=v.door==="Members Only"?"#A78BFA":v.door==="Table Required"?"#FB923C":C.gn;
   return(
-    <div onClick={function(){if(v.available)window.location.href="/catalog/nightlife/"+v.slug}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:v.available?"pointer":"default",transform:hover&&v.available?"translateY(-6px)":"translateY(0)",boxShadow:hover&&v.available?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
+    <a href={"/catalog/nightlife/"+v.slug} style={{display:"block",textDecoration:"none",borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
       <div style={{height:200,position:"relative",overflow:"hidden"}}>
-        <img src={v.img} alt={v.name} style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:v.available?"none":"brightness(0.4)"}}/>
+        <img src={v.img} alt={v.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease",filter:v.available?"none":"brightness(0.4)"}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 25%,rgba(10,10,11,0.85) 100%)"}}/>
         {/* Door policy */}
         <div style={{position:"absolute",top:16,left:16}}>
@@ -99,7 +100,7 @@ function VenueCard(p){
         <div style={{position:"absolute",top:16,right:16}}>
           <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:v.available?C.gn:"#FF453A"}}/>
-            <span style={{...sf(9,500),color:v.available?C.gn:"#FF453A"}}>{v.available?"Available":"Fully Booked"}</span>
+            <span style={{...sf(9,500),color:v.available?C.gn:"#FF453A"}}>{v.available?"Request":"Unavailable"}</span>
           </div>
         </div>
         {/* Type + music on image */}
@@ -117,11 +118,11 @@ function VenueCard(p){
             <h3 style={{...sf(20,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v.name}</h3>
             <p style={{...sf(12),color:C.s5,marginBottom:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{v.tagline}</p>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
+          {v.rating&&v.reviews?<div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <span style={{...sf(13,600),color:C.s1}}>{v.rating}</span>
             <span style={{...sf(10),color:C.s6}}>({v.reviews})</span>
-          </div>
+          </div>:null}
         </div>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -133,12 +134,12 @@ function VenueCard(p){
           </div>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <div style={{...sf(11,500),color:hover&&v.available?C.s1:C.s5,transition:"color 0.3s"}}>
-              {v.available?"View →":"Notify me"}
+              {v.available?"View details →":"Unavailable"}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -152,7 +153,7 @@ export default function NightlifePage(){
   var [door,setDoor]=useState(searchParams.get("door")||"Door");
   var [music,setMusic]=useState(searchParams.get("music")||"Music");
   var [sort,setSort]=useState(searchParams.get("sort")||"Featured");
-  var [date,setDate]=useState("2026-03-20");
+  var [date,setDate]=useState(function(){return dateFromToday(2)});
   var [guests,setGuests]=useState(searchParams.get("guests")||"4");
   useEffect(function(){
     var p={};
@@ -180,7 +181,7 @@ export default function NightlifePage(){
       try{
         var {data,error:err}=await supabase
           .from("nightclubs")
-          .select("id,name,city,category,hero_image_url,rating,vibe,music,reservation,entry_type,price_level,crowd_type,best_night,opening_hours,capacity,is_active,is_featured")
+          .select("id,name,slug,city,category,hero_image_url,rating,review_count,vibe,music,reservation,entry_type,price_level,crowd_type,best_night,opening_hours,capacity,is_active,is_featured")
           .eq("is_active",true)
           .order("is_featured",{ascending:false})
           .order("name",{ascending:true});

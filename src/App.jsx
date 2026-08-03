@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { lazy, Suspense, useState, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import SEOHead, { SEO } from "./components/SEOHead";
 import SiteAnalytics from "./components/SiteAnalytics";
+import { supabase } from "./lib/supabase";
 
 /* Apple App Store deep-link for Alfred Concierge. Universal URL (no
  * country code) so users land on their regional storefront and
@@ -11,39 +12,38 @@ import SiteAnalytics from "./components/SiteAnalytics";
 const APP_STORE_URL = "https://apps.apple.com/app/id6759160130";
 const openAppStore = function(){ window.open(APP_STORE_URL,"_blank","noopener,noreferrer"); };
 
-/* ═══ CATEGORY PAGE IMPORTS — v2 ═══ */
-/* Place each file in src/pages/ and uncomment these imports: */
-import DiningPage from "./pages/DiningPage";
-import DiningDetailPage from "./pages/DiningDetailPage";
-import NightlifePage from "./pages/NightlifePage";
-import NightlifeDetailPage from "./pages/NightlifeDetailPage";
-import BarDetailPage from "./pages/BarDetailPage";
-import WellnessPage from "./pages/WellnessPage";
-import WellnessDetailPage from "./pages/WellnessDetailPage";
-import JetsPage from "./pages/JetsPage";
-import JetDetailPage from "./pages/JetDetailPage";
-import ExoticCarsPage from "./pages/ExoticCarsPage";
-import CarDetailPage from "./pages/CarDetailPage";
-import YachtsPage from "./pages/YachtsPage";
-import YachtDetailPage from "./pages/YachtDetailPage";
+/* Route pages are loaded on demand so the homepage does not ship every
+ * catalog, admin and proposal implementation in its initial bundle. */
+const DiningPage=lazy(function(){return import("./pages/DiningPage")});
+const DiningDetailPage=lazy(function(){return import("./pages/DiningDetailPage")});
+const NightlifePage=lazy(function(){return import("./pages/NightlifePage")});
+const NightlifeDetailPage=lazy(function(){return import("./pages/NightlifeDetailPage")});
+const WellnessPage=lazy(function(){return import("./pages/WellnessPage")});
+const WellnessDetailPage=lazy(function(){return import("./pages/WellnessDetailPage")});
+const JetsPage=lazy(function(){return import("./pages/JetsPage")});
+const JetDetailPage=lazy(function(){return import("./pages/JetDetailPage")});
+const ExoticCarsPage=lazy(function(){return import("./pages/ExoticCarsPage")});
+const CarDetailPage=lazy(function(){return import("./pages/CarDetailPage")});
+const YachtsPage=lazy(function(){return import("./pages/YachtsPage")});
+const YachtDetailPage=lazy(function(){return import("./pages/YachtDetailPage")});
 import FeaturedEvents from "./pages/FeaturedEvents";
-import EventsPage from "./pages/EventsPage";
-import EventDetailPage from "./pages/EventDetailPage";
-import BlogPage from "./pages/BlogPage";
-import BlogPost from "./pages/BlogPost";
-import CityPage from "./pages/CityPage";
-import HotelsPage from "./pages/HotelsPage";
-import HotelDetailPage from "./pages/HotelDetailPage";
-import AdminPage from "./pages/AdminPage";
-import ProposalBuilderPage from "./pages/ProposalBuilderPage";
-import TermsPage from "./pages/TermsPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import AboutPage from "./pages/AboutPage";
-import HowItWorksPage from "./pages/HowItWorksPage";
-import PricingPage from "./pages/PricingPage";
-import ContactPage from "./pages/ContactPage";
-import SupportPage from "./pages/SupportPage";
-import LongTailPage from "./pages/LongTailPage";
+const EventsPage=lazy(function(){return import("./pages/EventsPage")});
+const EventDetailPage=lazy(function(){return import("./pages/EventDetailPage")});
+const BlogPage=lazy(function(){return import("./pages/BlogPage")});
+const BlogPost=lazy(function(){return import("./pages/BlogPost")});
+const CityPage=lazy(function(){return import("./pages/CityPage")});
+const HotelsPage=lazy(function(){return import("./pages/HotelsPage")});
+const HotelDetailPage=lazy(function(){return import("./pages/HotelDetailPage")});
+const AdminPage=lazy(function(){return import("./pages/AdminPage")});
+const ProposalBuilderPage=lazy(function(){return import("./pages/ProposalBuilderPage")});
+const TermsPage=lazy(function(){return import("./pages/TermsPage")});
+const PrivacyPage=lazy(function(){return import("./pages/PrivacyPage")});
+const AboutPage=lazy(function(){return import("./pages/AboutPage")});
+const HowItWorksPage=lazy(function(){return import("./pages/HowItWorksPage")});
+const PricingPage=lazy(function(){return import("./pages/PricingPage")});
+const ContactPage=lazy(function(){return import("./pages/ContactPage")});
+const SupportPage=lazy(function(){return import("./pages/SupportPage")});
+const LongTailPage=lazy(function(){return import("./pages/LongTailPage")});
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -110,8 +110,9 @@ function AnimCounter(p){
 function GridCard(p){
   var [hover, setHover] = useState(false);
   var [loaded, setLoaded] = useState(false);
+  var CardTag=p.href?"a":"div";
   return (
-    <div onClick={p.onClick} style={{borderRadius:20,overflow:"hidden",position:"relative",cursor:"pointer",aspectRatio:"3/4",border:"1px solid "+(hover?"rgba(255,255,255,0.1)":C.bd),boxShadow:hover?"0 24px 60px rgba(0,0,0,0.5)":"0 8px 30px rgba(0,0,0,0.25)",transform:hover?"translateY(-6px) scale(1.02)":"translateY(0) scale(1)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
+    <CardTag href={p.href} onClick={p.href?undefined:p.onClick} style={{display:"block",textDecoration:"none",borderRadius:20,overflow:"hidden",position:"relative",cursor:"pointer",aspectRatio:"3/4",border:"1px solid "+(hover?"rgba(255,255,255,0.1)":C.bd),boxShadow:hover?"0 24px 60px rgba(0,0,0,0.5)":"0 8px 30px rgba(0,0,0,0.25)",transform:hover?"translateY(-6px) scale(1.02)":"translateY(0) scale(1)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}>
       <img src={p.img} alt={p.title} onLoad={function(){setLoaded(true)}} loading="lazy" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.06)":"scale(1)",transition:"transform 0.8s cubic-bezier(0.16,1,0.3,1)",opacity:loaded?1:0}}/>
       {!loaded && <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,#1a1a22,#252530)"}}/>}
       <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(10,10,11,0) 35%,rgba(10,10,11,0.5) 65%,rgba(10,10,11,0.92) 100%)"}}/>
@@ -128,7 +129,7 @@ function GridCard(p){
           </div>
         </div>
       </div>
-    </div>
+    </CardTag>
   );
 }
 
@@ -143,7 +144,7 @@ var catVenues = {
 };
 
 function CityCarousel(p){
-  var cities = ["Miami","Paris","Dubai","London","New York","Monaco","Milan","Tokyo","Mykonos","Ibiza","St. Barts","Aspen"];
+  var cities = ["Miami","Paris","Dubai","London"];
   var [idx, setIdx] = useState(0);
   useEffect(function(){
     if(!p.loaded) return;
@@ -152,7 +153,7 @@ function CityCarousel(p){
   }, [p.loaded]);
   return (
     <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginTop:28,opacity:p.loaded?1:0,transform:p.loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 1.4s",height:20,overflow:"hidden"}}>
-      <span style={{...sf(11,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Now in</span>
+      <span style={{...sf(11,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>Explore</span>
       <div style={{position:"relative",width:120,height:20,overflow:"hidden"}}>
         {cities.map(function(city,i){
           var isCurrent = i === idx;
@@ -161,7 +162,7 @@ function CityCarousel(p){
         })}
       </div>
       <div style={{width:4,height:4,borderRadius:"50%",background:C.s6,animation:p.loaded?"pulseGlow 2.5s ease infinite 2s":"none"}}/>
-      <span style={{...sf(11,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>& more</span>
+      <span style={{...sf(11,400),color:C.s7,letterSpacing:4,textTransform:"uppercase"}}>with Alfred</span>
     </div>
   );
 }
@@ -400,7 +401,7 @@ function HomePage(){
 function NotFoundPage(){
   return(
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40,fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif"}}>
-      <SEOHead title="Page Not Found | Alfred Concierge" description="The page you're looking for doesn't exist. Explore Alfred's luxury concierge services." path="/404"/>
+      <SEOHead title="Page Not Found | Alfred Concierge" description="The page you're looking for doesn't exist. Explore Alfred's luxury concierge services." path={window.location.pathname} noindex/>
       <div style={{...sf(120,900),color:C.s7,letterSpacing:-4,marginBottom:8}}>404</div>
       <h1 style={{...sf(28,600),color:C.s1,marginBottom:12}}>Page not found</h1>
       <p style={{...sf(16,400),color:C.s5,marginBottom:40,textAlign:"center",maxWidth:460,lineHeight:1.6}}>The page you're looking for doesn't exist. But there's plenty to explore.</p>
@@ -430,6 +431,7 @@ function NotFoundPage(){
 export default function App(){
   return (
     <BrowserRouter>
+      <Suspense fallback={<div style={{minHeight:"100vh",background:"#0A0A0B"}}/>}>
       <Routes>
         <Route path="/" element={<HomePage/>}/>
         <Route path="/business" element={<AlfredPartners/>}/>
@@ -465,6 +467,7 @@ export default function App(){
         <Route path="/best/:slug" element={<LongTailPage/>}/>
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
+      </Suspense>
       <Analytics/>
       <SpeedInsights/>
       <SiteAnalytics/>
@@ -523,15 +526,15 @@ function AlfredSite(){
   },[]);
 
   var venues=[
-    {n:"Hôtel de Crillon",sub:"Palace · Paris",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/AlfedHotelCrillionParis.jpeg",tag:"5.0"},
-    {n:"Four Seasons",sub:"Hotel · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/MFL_1008_original.jpg",tag:"4.9"},
-    {n:"Space",sub:"Nightclub · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/image.jpg",tag:"4.8"},
-    {n:"Zuma",sub:"Restaurant · Mykonos",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/zuma-mykonos.jpg",tag:"4.9"},
-    {n:"Bvlgari Resort",sub:"Hotel · Bali",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Bulgari-Resort-Bali-Exterior.webp",tag:"5.0"},
-    {n:"F1 Experience",sub:"VIP · Global",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg",tag:"4.9"},
-    {n:"Carbone",sub:"Italian · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Carbone-Miami---Photo-Credit---Douglas-Friedman_Carbone-Miami-Dining-Room-4---PC-Douglas-Friedman.webp",tag:"4.9"},
-    {n:"Nao Beach",sub:"Beach Club · St. Barths",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/1-st-barts-nao-beach-restaurant-st-jean-st-barth.jpg",tag:"4.8"},
-    {n:"Bugatti Chiron",sub:"Exotic Car · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(78).jpeg",tag:"5.0"},
+    {n:"Hôtel de Crillon",sub:"Palace · Paris",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/AlfedHotelCrillionParis.jpeg",tag:"Hotel"},
+    {n:"Four Seasons",sub:"Hotel · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/MFL_1008_original.jpg",tag:"Hotel"},
+    {n:"Space",sub:"Nightclub · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/image.jpg",tag:"Nightlife"},
+    {n:"Zuma",sub:"Restaurant · Mykonos",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/zuma-mykonos.jpg",tag:"Dining"},
+    {n:"Bvlgari Resort",sub:"Hotel · Bali",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Bulgari-Resort-Bali-Exterior.webp",tag:"Hotel"},
+    {n:"F1 Experience",sub:"VIP · Global",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/DPPI_00124009_1978.jpg",tag:"Events"},
+    {n:"Carbone",sub:"Italian · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Carbone-Miami---Photo-Credit---Douglas-Friedman_Carbone-Miami-Dining-Room-4---PC-Douglas-Friedman.webp",tag:"Dining"},
+    {n:"Nao Beach",sub:"Beach Club · St. Barths",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/1-st-barts-nao-beach-restaurant-st-jean-st-barth.jpg",tag:"Dining"},
+    {n:"Bugatti Chiron",sub:"Exotic Car · Miami",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(78).jpeg",tag:"Cars"},
   ];
 
 
@@ -548,11 +551,11 @@ function AlfredSite(){
   var stepsProgress=Math.max(0,Math.min((scrollY-stepsTop+wh*0.6)/(wh*0.8),1));
 
   var exps=[
-    {title:"Dining",count:"200+ restaurants",tag:"Most Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg"},
-    {title:"Nightlife",count:"23 exclusive venues",tag:"Members Only",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg"},
-    {title:"Accommodations",count:"45 hotels",tag:"Luxury Hotels",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg"},
-    {title:"Wellness",count:"120+ wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
-    {title:"Exotic Cars",count:"45+ vehicles",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
+    {title:"Dining",count:"Curated restaurants",tag:"Most Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg"},
+    {title:"Nightlife",count:"VIP venues and tables",tag:"Members Only",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg"},
+    {title:"Accommodations",count:"Luxury hotels and resorts",tag:"Luxury Hotels",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg"},
+    {title:"Wellness",count:"Spas and wellness partners",tag:"Popular",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg"},
+    {title:"Exotic Cars",count:"Luxury and performance cars",tag:"On Demand",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg"},
     {title:"Yachts",count:"Charter & day trips",tag:"Exclusive",img:"https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(83).jpeg"},
   ];
 
@@ -568,94 +571,6 @@ function AlfredSite(){
 
   return(
     <div lang="en" style={{width:"100%",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
-      {/* ═══ SEO: Meta Tags ═══ */}
-      <title>Alfred Concierge — Luxury Concierge App for Miami & Paris | Restaurants, Nightlife, Wellness</title>
-      <meta name="description" content="Alfred is the luxury concierge app for Miami and Paris. Book Michelin-starred restaurants, VIP nightlife, wellness spas, private chefs, luxury cars, yachts and jets. Real human concierge, 24/7. Download on iOS."/>
-      <meta name="keywords" content="luxury concierge app, Miami concierge, Paris concierge, restaurant reservations Miami, best restaurants Miami, best restaurants Paris, VIP nightlife Miami, nightclub VIP tables, wellness spa booking, private chef Miami, luxury car rental, yacht charter, private jet booking, Carbone Miami, LIV Miami, Le Cinq Paris, concierge service, Alfred app"/>
-      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1"/>
-      <link rel="canonical" href="https://alfredconcierge.app"/>
-      <meta name="author" content="Alfred Concierge"/>
-      <meta name="theme-color" content="#0A0A0B"/>
-
-      {/* Open Graph */}
-      <meta property="og:type" content="website"/>
-      <meta property="og:title" content="Alfred — Luxury Concierge App for Miami & Paris"/>
-      <meta property="og:description" content="Book the best restaurants, nightlife, wellness, private chefs, luxury cars, yachts and jets through one app. Real human concierge available 24/7."/>
-      <meta property="og:url" content="https://alfredconcierge.app"/>
-      <meta property="og:site_name" content="Alfred Concierge"/>
-      <meta property="og:image" content="https://alfredconcierge.app/og-image.jpg"/>
-      <meta property="og:image:width" content="1200"/>
-      <meta property="og:image:height" content="630"/>
-      <meta property="og:locale" content="en_US"/>
-
-      {/* Twitter Card */}
-      <meta name="twitter:card" content="summary_large_image"/>
-      <meta name="twitter:title" content="Alfred — Luxury Concierge App"/>
-      <meta name="twitter:description" content="Restaurants, nightlife, wellness, private chefs, luxury cars, yachts & jets. One app. Miami & Paris."/>
-      <meta name="twitter:image" content="https://alfredconcierge.app/og-image.jpg"/>
-      <meta name="twitter:site" content="@alfredconcierge"/>
-
-      {/* Apple Smart Banner */}
-      <meta name="apple-itunes-app" content="app-id=YOURAPPID"/>
-
-      {/* ═══ SEO: Structured Data ═══ */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({
-        "@context":"https://schema.org",
-        "@type":"MobileApplication",
-        "name":"Alfred Concierge",
-        "description":"Alfred is the luxury concierge app for Miami and Paris. Book the best restaurants, nightclubs, wellness spas, private chefs, luxury cars, yachts and jets through one app. Real human concierge support available 24/7.",
-        "applicationCategory":"LifestyleApplication",
-        "operatingSystem":"iOS",
-        "url":"https://alfredconcierge.app",
-        "offers":{"@type":"AggregateOffer","lowPrice":"0","highPrice":"199","priceCurrency":"USD"},
-        "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","ratingCount":"127"},
-        "author":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"}
-      })}}/>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({
-        "@context":"https://schema.org",
-        "@type":"Organization",
-        "name":"Alfred Concierge",
-        "url":"https://alfredconcierge.app",
-        "logo":"https://alfredconcierge.app/logo.png",
-        "description":"Luxury concierge app for restaurants, nightlife, wellness, private chefs, luxury cars, yachts and jets in Miami and Paris.",
-        "sameAs":["https://www.instagram.com/askalfred.app","https://www.tiktok.com/@alfred.app"],
-        "contactPoint":{"@type":"ContactPoint","contactType":"customer service","availableLanguage":["English","French"]},
-        "areaServed":[{"@type":"City","name":"Miami"},{"@type":"City","name":"Paris"}]
-      })}}/>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({
-        "@context":"https://schema.org",
-        "@type":"FAQPage",
-        "mainEntity":[
-          {"@type":"Question","name":"What is Alfred Concierge?","acceptedAnswer":{"@type":"Answer","text":"Alfred is a luxury concierge iOS app that lets you book the best restaurants, nightclubs, wellness spas, private chefs, luxury cars, yachts and jets in Miami and Paris through one app with a real human concierge available 24/7."}},
-          {"@type":"Question","name":"How does Alfred work?","acceptedAnswer":{"@type":"Answer","text":"Tell Alfred what you want in plain language, a real human concierge checks your request and responds in seconds. They find the best options, make the calls, and confirm everything. Average response time is under 2 minutes."}},
-          {"@type":"Question","name":"Where is Alfred available?","acceptedAnswer":{"@type":"Answer","text":"Alfred is currently available in Miami and Paris with expansion planned to Dubai, London, New York, Monaco, Milan, Tokyo, Mykonos, Ibiza, St. Barts, and Aspen."}},
-          {"@type":"Question","name":"How much does Alfred cost?","acceptedAnswer":{"@type":"Answer","text":"Alfred Gold is $9.99/month and includes the full app, the AI concierge, and integrated bookings. Alfred Platinum is $99/month and adds a real human concierge team with VIP venue benefits, reduced minimum spends and waived advance payments. Alfred Centurion is invite-only with a dedicated personal agent on WhatsApp 24/7. Detailed pricing at https://alfredconcierge.app/pricing."}}
-        ]
-      })}}/>
-      {/* Hidden SEO content for crawlers */}
-      <div style={{position:"absolute",width:1,height:1,overflow:"hidden",clip:"rect(0,0,0,0)",whiteSpace:"nowrap"}} aria-hidden="false">
-        <h1>Alfred Concierge — Luxury Concierge App for Miami and Paris</h1>
-        <p>Alfred is the premier luxury concierge mobile app available on iOS. Book Michelin-starred restaurants like Carbone, Le Cinq, L'Ambroisie, Girafe, Papi Steak, Komodo, Nobu, Gekko, and Septime. Access exclusive nightlife at LIV Miami, E11even, Story, CoCo Club Paris, Raspoutine, L'Arc, and Castel. Enjoy world-class wellness at The Setai Spa, Dior Spa Plaza Athénée, Le Spa Ritz Paris, Bamford Wellness Spa, and Guerlain Spa. Rent supercars and book chauffeurs through mph Club, Pugachev Luxury, and Prestige Rentals. Hire Michelin-trained private chefs for your home, yacht, or villa. Charter yachts and book private jets.</p>
-        <h2>Best Restaurants in Miami</h2>
-        <p>Carbone Miami, Komodo Brickell, Papi Steak South Beach, Major Food Group, Cecconi's, Swan Design District, Casa Tua, Zuma Downtown, Nobu Mid-Beach, Gekko South Beach, ZZ's Club Design District, Makoto Bal Harbour, Juvia South Beach, COTE Miami, Bourbon Steak Aventura, Le Jardinier, Baia Beach Club</p>
-        <h2>Best Restaurants in Paris</h2>
-        <p>Le Cinq Paris, L'Ambroisie Le Marais, Girafe Trocadéro, Le Clarence, Pavyllon, L'Arpège, Epicure Le Bristol, Septime, Frenchie, Le Chateaubriand, La Tour d'Argent, Restaurant Kei, Le Grand Véfour, Plénitude, Le Meurice, L'Abeille, Le Taillevent, Le Pré Catelan, Sur Mesure</p>
-        <h2>Best Nightclubs in Miami</h2>
-        <p>LIV Miami Beach, E11even Downtown Miami, Story South Beach, Basement Miami, Club Space, Do Not Sit On The Furniture, Floyd Wynwood, Mynt Lounge, Rockwell</p>
-        <h2>Best Nightclubs in Paris</h2>
-        <p>CoCo Club Paris, Raspoutine, L'Arc, Castel Saint-Germain, Silencio, Le Montana, Le Baron, Rex Club, Concrete</p>
-        <h2>Luxury Wellness and Spa in Miami and Paris</h2>
-        <p>The Setai Spa Miami, Bamford Wellness Spa Bal Harbour, The Standard Spa Miami Beach, Lapis Spa, Dior Spa Plaza Athénée Paris, Spa Le Bristol Paris, Le Spa Ritz Paris, Guerlain Spa Champs-Élysées, Carillon Miami Wellness Resort</p>
-        <h2>Luxury Car Rental and Chauffeur Services</h2>
-        <p>mph Club Miami supercar rental, Pugachev Luxury Cars, Prestige Luxury Rentals Miami, South Beach Exotic Rentals, Blacklane Paris chauffeur service, Paris VTC Premium</p>
-        <h2>Private Chef and Yacht Charter Services</h2>
-        <p>Michelin-trained private chefs in Miami and Paris. Day yacht charters, weekend getaways, private aviation, NetJets, XO Aviation, Blade Helicopters</p>
-        <h2>Alfred Concierge Membership Plans</h2>
-        <p>Alfred Gold $9.99/month — full app access, AI concierge, restaurant discovery and bookings via Resy, OpenTable, SevenRooms and Tock, the full venue catalogue across Miami, Paris, Dubai and London, and event discovery. Alfred Platinum $99/month — everything in Gold plus a real human concierge team, VIP table placement, reduced minimum spends, waived advance payments, waived valet, skip-the-line entry, and concierge consultancy. Alfred Centurion invite-only — dedicated personal agent on WhatsApp 24/7, worldwide VIP, airport-to-venue coordination, last-minute impossible reservations, full travel itinerary building. All plans cancel anytime.</p>
-        <h2>Download Alfred Concierge App</h2>
-        <p>Download Alfred on the App Store for iOS. Available in Miami Florida and Paris France. Coming soon to Dubai, London, New York, Monaco, Milan, Tokyo, Mykonos, Ibiza, St. Barts, and Aspen. Luxury concierge service, restaurant reservations, nightclub VIP tables, wellness bookings, supercar rentals, private chef hiring, yacht charters, and private jet bookings.</p>
-      </div>
       <style>{`*{margin:0;padding:0;box-sizing:border-box}::selection{background:#2C2C31;color:#F4F4F5}a{color:inherit;text-decoration:none}
 @keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-3%)}50%{transform:translate(3%,2%)}75%{transform:translate(-1%,3%)}}
 @keyframes lineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
@@ -813,10 +728,10 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
           <div style={{textAlign:"center",transform:"translateY("+(heroY+my)+"px) translateX("+mx+"px) scale("+heroScale+")",opacity:heroOp,filter:"blur("+heroBlur+"px)",willChange:"transform,opacity,filter",transition:"transform 0.5s cubic-bezier(0.16,1,0.3,1)"}}>
             <p className="hero-label" style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
-            <div style={{overflow:"hidden",lineHeight:0.88,position:"relative",whiteSpace:"nowrap"}}>
+            <h1 aria-label="Alfred Concierge" style={{overflow:"hidden",lineHeight:0.88,position:"relative",whiteSpace:"nowrap"}}>
               {LETTERS.map(function(ch,i){return <span key={i} className="hero-title" style={{display:"inline-block",...sf(160,700),letterSpacing:8,opacity:loaded?1:0,transform:loaded?"translateY(0) scale(1)":"translateY(100%) scale(0.9)",transition:"transform 1.1s cubic-bezier(0.16,1,0.3,1) "+(0.7+i*0.07)+"s, opacity 0.6s ease "+(0.7+i*0.07)+"s"}}>{ch}</span>})}
               {shimmer && <div style={{position:"absolute",top:0,bottom:0,width:"25%",background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.08) 50%,transparent)",animation:"shimmerSweep 1.2s cubic-bezier(0.16,1,0.3,1) forwards",pointerEvents:"none"}}/>}
-            </div>
+            </h1>
             <CityCarousel loaded={loaded}/>
             <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
             <div className="hero-cta" style={{marginTop:48,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
@@ -888,7 +803,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div className="exp-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,maxWidth:960,margin:"0 auto",padding:"0 40px",opacity:showVis?1:0,transform:showVis?"translateY(0)":"translateY(20px)",transition:"all 1s ease 0.3s"}}>
           {exps.map(function(e,i){
             var routes={"Dining":"/catalog/dining","Nightlife":"/catalog/nightlife","Accommodations":"/catalog/hotels","Wellness":"/catalog/wellness","Exotic Cars":"/catalog/exotic-cars","Jets":"/catalog/jets","Yachts":"/catalog/yachts"};
-            return <GridCard key={e.title} title={e.title} count={e.count} tag={e.tag} img={e.img} delay={0.1*i} onClick={function(){if(routes[e.title]){window.location.href=routes[e.title]}else{setModalCat(e.title)}}}/>;
+            return <GridCard key={e.title} title={e.title} count={e.count} tag={e.tag} img={e.img} delay={0.1*i} href={routes[e.title]} onClick={function(){setModalCat(e.title)}}/>;
           })}
         </div>
 
@@ -1205,10 +1120,6 @@ function AlfredPartners(){
   var [submitError,setSubmitError]=useState(null);
   var [openFaq,setOpenFaq]=useState(null);
 
-  /* Supabase config — partner_applications table */
-  var SUPABASE_URL="https://fbdgbnnkgyljehtccgaq.supabase.co";
-  var SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.REPLACE_WITH_YOUR_ANON_KEY";
-
   var whyRef=useRef(null); var whyVis=useVis(whyRef);
   var revenueRef=useRef(null); var revenueVis=useVis(revenueRef);
   var catRef=useRef(null); var catVis=useVis(catRef);
@@ -1222,30 +1133,14 @@ function AlfredPartners(){
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
 
-  useEffect(function(){
-    document.title="Partner with Alfred — Luxury Concierge Platform for Premium Businesses";
-    var setMeta=function(n,c,p){var s=p?'meta[property="'+n+'"]':'meta[name="'+n+'"]';var el=document.querySelector(s);if(!el){el=document.createElement("meta");if(p)el.setAttribute("property",n);else el.setAttribute("name",n);document.head.appendChild(el)}el.setAttribute("content",c)};
-    setMeta("description","Join Alfred's curated network of hotels, restaurants, nightlife, wellness, exotic cars, and private aviation. Reach ultra-high-net-worth clients. Zero upfront cost. Commission only.");
-    setMeta("og:title","Partner with Alfred — Premium Business Network",true);
-    setMeta("og:description","Get your venue in front of the world's most discerning clientele. Zero listing fees.",true);
-    setMeta("og:type","website",true);
-  },[]);
-
   var navOp=Math.min(scrollY/300,1);
   var heroOp=Math.max(1-scrollY/600,0);
   var handleInput=function(field){return function(e){var obj={};obj[field]=e.target.value;setFormData(Object.assign({},formData,obj))}};
-  var handleSubmit=function(){
+  var handleSubmit=async function(){
     if(!formData.business||!formData.email||submitting)return;
     setSubmitting(true);setSubmitError(null);
-    fetch(SUPABASE_URL+"/rest/v1/partner_applications",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "apikey":SUPABASE_ANON,
-        "Authorization":"Bearer "+SUPABASE_ANON,
-        "Prefer":"return=minimal"
-      },
-      body:JSON.stringify({
+    try{
+      var result=await supabase.from("partner_applications").insert({
         business_name:formData.business,
         contact_name:formData.contact,
         email:formData.email,
@@ -1254,14 +1149,14 @@ function AlfredPartners(){
         city:formData.city||null,
         website:formData.website||null,
         message:formData.message||null,
-        status:"new",
-      })
-    }).then(function(res){
-      if(res.ok){setSubmitted(true)}
-      else{res.text().then(function(t){setSubmitError("Something went wrong. Please WhatsApp us instead.");console.error(t)})}
-    }).catch(function(){
+        status:"new"
+      });
+      if(result.error)throw result.error;
+      setSubmitted(true);
+    }catch(e){
+      console.error(e);
       setSubmitError("Connection error. Please WhatsApp us instead.");
-    }).finally(function(){setSubmitting(false)});
+    }finally{setSubmitting(false)}
   };
   var inputStyle={width:"100%",padding:"14px 18px",borderRadius:14,background:C.el,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",transition:"border-color 0.3s"};
 
@@ -1686,7 +1581,7 @@ var CATEGORIES = [
     id: "dining",
     title: "Dining",
     subtitle: "The world's best tables",
-    count: "200+ restaurants",
+    count: "Curated restaurants",
     tag: "Most Popular",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/4497bfb501ea6d06db22e718479b90b4.jpg",
     items: [
@@ -1709,7 +1604,7 @@ var CATEGORIES = [
     id: "nightlife",
     title: "Nightlife",
     subtitle: "Tables, guestlists & VIP",
-    count: "23 exclusive venues",
+    count: "VIP venues and tables",
     tag: "Members Only",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Keinmusik.jpeg",
     items: [
@@ -1728,7 +1623,7 @@ var CATEGORIES = [
     id: "wellness",
     title: "Wellness",
     subtitle: "Spas, trainers & retreats",
-    count: "120+ partners",
+    count: "Spas and wellness partners",
     tag: "Popular",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(76).jpeg",
     items: [
@@ -1747,7 +1642,7 @@ var CATEGORIES = [
     id: "exotic-cars",
     title: "Exotic Cars",
     subtitle: "Supercars, classics & chauffeurs",
-    count: "45+ vehicles",
+    count: "Luxury and performance cars",
     tag: "On Demand",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/Aston%20Martin.jpeg",
     items: [
@@ -1767,7 +1662,7 @@ var CATEGORIES = [
     id: "accommodations",
     title: "Accommodations",
     subtitle: "Hotels, villas & residences",
-    count: "45 hotels",
+    count: "Luxury hotels and resorts",
     tag: "Luxury Hotels",
     img: "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/object/public/Website/_%20(82).jpeg",
     items: [],
@@ -1983,15 +1878,19 @@ body::-webkit-scrollbar{width:0}
         <div className="cat-grid">
           {CATEGORIES.map(function(cat, i){
             var isComingSoon = !cat.active;
+            var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets","yachts":"/catalog/yachts","accommodations":"/catalog/hotels"};
+            var href=cat.active?routes[cat.id]:null;
+            var CardTag=href?"a":"div";
             return (
-              <div key={cat.id} className="cat-card" style={{
+              <CardTag key={cat.id} href={href||undefined} className="cat-card" style={{
+                display:"block",textDecoration:"none",
                 borderRadius:20,overflow:"hidden",position:"relative",cursor:isComingSoon?"default":"pointer",
                 border:"1px solid "+C.bd,
                 opacity:loaded?1:0,
                 transform:loaded?"translateY(0)":"translateY(24px)",
                 transition:"all 0.7s cubic-bezier(0.16,1,0.3,1) "+(0.3+i*0.06)+"s",
                 filter:isComingSoon?"brightness(0.5)":"none",
-              }} onClick={function(){ if(cat.active){ var routes={"dining":"/catalog/dining","nightlife":"/catalog/nightlife","wellness":"/catalog/wellness","exotic-cars":"/catalog/exotic-cars","jets":"/catalog/jets","yachts":"/catalog/yachts","accommodations":"/catalog/hotels"}; if(routes[cat.id]){window.location.href=routes[cat.id]}else{setSelected(cat.id)} } }}
+              }} onClick={function(){ if(cat.active&&!href){setSelected(cat.id)} }}
                 onMouseEnter={function(e){ if(cat.active){ e.currentTarget.style.transform="translateY(-6px) scale(1.02)"; e.currentTarget.style.boxShadow="0 24px 60px rgba(0,0,0,0.5)"; e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"; }}}
                 onMouseLeave={function(e){ e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="none"; e.currentTarget.style.borderColor=C.bd; }}
               >
@@ -2023,7 +1922,7 @@ body::-webkit-scrollbar{width:0}
                     <div style={{...sf(12,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",padding:"8px 18px",borderRadius:10,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,0.06)"}}>Coming Soon</div>
                   </div>
                 )}
-              </div>
+              </CardTag>
             );
           })}
         </div>
@@ -2143,4 +2042,3 @@ function CarCard(p){
 }
 
 /* ExoticCarsPage is now imported from ./pages/ExoticCarsPage.jsx */
-

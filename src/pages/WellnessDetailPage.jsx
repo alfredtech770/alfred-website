@@ -6,6 +6,7 @@ import SEOHead from "../components/SEOHead";
 
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
@@ -36,7 +37,7 @@ function mapSpa(row,opts){
     type:row.type||row.category||"Wellness",
     address:row.address||row.city||"",
     city:row.city||"Miami",
-    rating:row.rating||4.7,reviewCount:null,
+    rating:row.rating||null,reviewCount:row.review_count||row.reviews||null,
     priceLevel:new Array(Math.min(4,row.price_level||3)+1).join(cur),
     imgs:imgs.length?imgs:FALLBACK_IMGS,
     hours:{open:row.availability||"Daily — priority appointments through Alfred",lastBooking:"Ask Alfred for same-day availability"},
@@ -65,7 +66,7 @@ export default function WellnessDetailPage(){
   var [lightbox,setLightbox]=useState(false);
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
-  var [date,setDate]=useState("2026-03-22");
+  var [date,setDate]=useState(function(){return dateFromToday(2)});
   var [time,setTime]=useState("10:00 AM");
   var [selTreat,setSelTreat]=useState(0);
   var [guests,setGuests]=useState("1");
@@ -74,6 +75,7 @@ export default function WellnessDetailPage(){
   useEffect(function(){
     var alive=true;
     (async function(){
+      try{
       var row=null;
       var bySlug=await supabase.from("wellness").select("*").eq("slug",slugParam).limit(1).maybeSingle();
       row=bySlug.data;
@@ -86,6 +88,7 @@ export default function WellnessDetailPage(){
       var opts=await supabase.from("wellness_booking_options").select("*").eq("wellness_id",row.id).order("sort_order",{ascending:true});
       if(!alive)return;
       setVenue(mapSpa(row,opts.data||[]));
+      }catch(e){if(alive)setNotFound(true)}
     })();
     return function(){alive=false};
   },[slugParam]);
@@ -108,7 +111,7 @@ export default function WellnessDetailPage(){
   if(notFound){
     return(
       <div style={{minHeight:"100vh",background:C.bg,color:C.s1,padding:"140px 24px",textAlign:"center",...sf(15)}}>
-        <SEOHead title="Venue Not Found | Alfred Concierge" path={"/catalog/wellness/"+slugParam}/>
+        <SEOHead title="Venue Not Found | Alfred Concierge" path={"/catalog/wellness/"+slugParam} noindex/>
         <h1 style={{...sf(34,700)}}>Venue not found</h1>
         <p style={{...sf(14),color:C.s5,marginTop:14}}>We couldn't find this venue. Browse the full wellness catalog instead.</p>
         <a href="/catalog/wellness" style={{...sf(13,600),color:C.s1,display:"inline-block",marginTop:22}}>← All wellness</a>
@@ -125,8 +128,8 @@ export default function WellnessDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" "+V.city+" — Book a Treatment | Alfred Concierge"}
-        description={"Book "+V.name+" in "+V.city+". "+V.type+" with premium treatments. "+V.priceLevel+" pricing. Priority appointments through Alfred Concierge."}
+        title={V.name+" "+V.city+" — Request a Treatment | Alfred Concierge"}
+        description={"View "+V.name+" in "+V.city+" and request current treatment times, pricing and availability through Alfred Concierge."}
         image={V.imgs&&V.imgs[0]?V.imgs[0]:"/og-wellness.jpg"}
         path={"/catalog/wellness/"+V.slug}
         jsonLd={[
@@ -136,7 +139,7 @@ export default function WellnessDetailPage(){
             "name":V.name,
             "description":V.tagline||V.type,
             "image":V.imgs[0],
-            "aggregateRating":V.rating?{"@type":"AggregateRating","ratingValue":String(V.rating),"reviewCount":String(V.reviewCount||1)}:undefined,
+            "aggregateRating":V.rating&&V.reviewCount?{"@type":"AggregateRating","ratingValue":String(V.rating),"reviewCount":String(V.reviewCount)}:undefined,
             "address":{"@type":"PostalAddress","streetAddress":V.address.split(",")[0],"addressLocality":V.city,"addressCountry":V.city==="Paris"?"FR":"US"}
           },
           {
@@ -258,16 +261,16 @@ input[type="date"]{-webkit-appearance:none;appearance:none}
           <div className="left-col">
             <div style={{marginBottom:40}}>
               <div style={{display:"flex",gap:6,marginBottom:14}}>
-                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
+                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED CATALOG</span>
               </div>
               <h1 className="wd-name" style={{...sf(38,700),letterSpacing:-1.5,marginBottom:8}}>{V.name}</h1>
               <p style={{...sf(16,300),color:C.s5,marginBottom:16}}>{V.tagline}</p>
               <div style={{display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
-                <div style={{display:"flex",alignItems:"center",gap:5}}>
+                {V.rating&&V.reviewCount?<div style={{display:"flex",alignItems:"center",gap:5}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                   <span style={{...sf(14,600),color:C.s1}}>{V.rating}</span>
                   {V.reviewCount?<span style={{...sf(12),color:C.s6}}>({V.reviewCount})</span>:null}
-                </div>
+                </div>:null}
                 <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13),color:C.s4}}>{V.type}</span>
                 <div style={{width:1,height:14,background:C.bd}}/>

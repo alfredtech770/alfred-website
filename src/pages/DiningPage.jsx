@@ -14,6 +14,7 @@ function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.cu
 
 var SORT_OPTIONS=["Featured","Rating","Price: Low","Price: High","Most Reviewed"];
 function capitalize(s){if(!s)return s;return s.charAt(0).toUpperCase()+s.slice(1)}
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 function FilterDrop(p){
   var [open,setOpen]=useState(false);
@@ -58,10 +59,10 @@ function RestCard(p){
   var [hover,setHover]=useState(false);
   var r=p.r;
   return(
-    <div onClick={function(){if(r.available){sessionStorage.setItem("alfred_restaurant_"+r.slug,JSON.stringify(r));window.location.href="/catalog/dining/"+r.slug}}} style={{borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:r.available?"pointer":"default",transform:hover&&r.available?"translateY(-6px)":"translateY(0)",boxShadow:hover&&r.available?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+p.i*0.08)+"s both",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
+    <a href={"/catalog/dining/"+r.slug} onClick={function(){try{sessionStorage.setItem("alfred_restaurant_"+r.slug,JSON.stringify(r))}catch(e){}}} style={{display:"block",textDecoration:"none",borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:"fadeIn 0.6s ease "+(0.1+Math.min(p.i,8)*0.08)+"s both",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
 
       <div style={{height:200,position:"relative",overflow:"hidden"}}>
-        <img src={r.img} alt={r.name} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.6s ease",filter:r.available?"none":"brightness(0.5)",...cropFor(r.crops,r.img,hover?1.05:1)}}/>
+        <img src={r.img} alt={r.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.6s ease",filter:r.available?"none":"brightness(0.5)",...cropFor(r.crops,r.img,hover?1.05:1)}}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 30%,rgba(10,10,11,0.85) 100%)"}}/>
         {/* Michelin */}
         {r.michelin>0&&<div style={{position:"absolute",top:16,left:16}}>
@@ -71,7 +72,7 @@ function RestCard(p){
         <div style={{position:"absolute",top:16,right:16}}>
           <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.4)",backdropFilter:"blur(12px)"}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:r.available?C.gn:"#FF453A"}}/>
-            <span style={{...sf(9,500),color:r.available?C.gn:"#FF453A"}}>{r.available?"Available":"Fully Booked"}</span>
+            <span style={{...sf(9,500),color:r.available?C.gn:"#FF453A"}}>{r.available?"Request":"Unavailable"}</span>
           </div>
         </div>
         {/* Bottom info on image */}
@@ -89,11 +90,11 @@ function RestCard(p){
             <h3 style={{...sf(20,600),color:C.s1,marginBottom:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.name}</h3>
             <p style={{...sf(12),color:C.s5,marginBottom:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.tagline}</p>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
+          {r.rating>0&&r.reviews>0&&<div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0,marginLeft:12}}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <span style={{...sf(13,600),color:C.s1}}>{r.rating}</span>
             <span style={{...sf(10),color:C.s6}}>({r.reviews})</span>
-          </div>
+          </div>}
         </div>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -104,11 +105,11 @@ function RestCard(p){
             {false&&<span style={{...sf(11),color:C.s6}}>Avg. {r.avg}</span>}
           </div>
           <div style={{...sf(11,500),color:hover&&r.available?C.s1:C.s5,transition:"color 0.3s"}}>
-            {r.available?"View →":"Notify me"}
+            {r.available?"View details →":"Unavailable"}
           </div>
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -122,8 +123,9 @@ export default function DiningPage(){
   var [price,setPrice]=useState("Price");
   var [vibe,setVibe]=useState("Vibe");
   var [sort,setSort]=useState("Featured");
+  var [visibleCount,setVisibleCount]=useState(24);
   var [guests,setGuests]=useState("2");
-  var [date,setDate]=useState("2026-03-20");
+  var [date,setDate]=useState(function(){return dateFromToday(2)});
 
   var gridRef=useRef(null);var gridVis=useVis(gridRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
@@ -210,6 +212,8 @@ export default function DiningPage(){
 
   var activeFilters=[city!=="All Cities"?city:null,cuisine!=="Cuisine"?cuisine:null,price!=="Price"?price:null,vibe!=="Vibe"?vibe:null].filter(Boolean);
   var clearAll=function(){setCity("All Cities");setCuisine("Cuisine");setPrice("Price");setVibe("Vibe")};
+  useEffect(function(){setVisibleCount(24)},[city,cuisine,price,vibe,sort]);
+  var visibleRestaurants=filtered.slice(0,visibleCount);
 
   var inputS={padding:"12px 16px",borderRadius:12,background:C.el,border:"1px solid "+C.bd,color:C.s1,...sf(14),outline:"none",width:"100%"};
   var iconCuisine=<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.s5} strokeWidth="1.5" strokeLinecap="round"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>;
@@ -313,8 +317,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
             <p style={{...sf(14),color:C.s5,marginBottom:24}}>Try adjusting your filters or location.</p>
             <div onClick={clearAll} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,cursor:"pointer",...sf(13,500),color:C.s4,transition:"all 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>Clear all filters</div>
           </div>
-        ):filtered.map(function(r,i){return <RestCard key={r.name} r={r} i={i} vis={gridVis}/>})}
+        ):visibleRestaurants.map(function(r,i){return <RestCard key={r.slug||r.name} r={r} i={i} vis={gridVis}/>})}
       </div>
+
+      {!fetching&&visibleCount<filtered.length&&<div style={{display:"flex",justifyContent:"center",marginTop:-44,marginBottom:80}}>
+        <button type="button" onClick={function(){setVisibleCount(function(n){return n+24})}} style={{padding:"13px 24px",borderRadius:12,border:"1px solid "+C.bd,background:C.el,color:C.s2,cursor:"pointer",...sf(13,600)}}>
+          Show more restaurants ({filtered.length-visibleCount} remaining)
+        </button>
+      </div>}
 
       <CatalogSeoBody category="dining"/>
 

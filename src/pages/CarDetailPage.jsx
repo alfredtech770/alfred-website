@@ -4,6 +4,7 @@ import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
 import { supabase } from "../lib/supabase";
 import { carJsonLd } from "../lib/jsonld";
+import ECARS_FALLBACK from "../data/cars";
 
 /* Match ExoticCarsPage's slugify + UI-shape transform so a car that was
  * clicked into from the catalog looks identical whether it arrived via
@@ -34,18 +35,14 @@ var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetic
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",red:"#FF453A",gold:"#FFD60A"};
 
 function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
-function useVis(ref){var[v,setV]=useState(false);useEffect(function(){if(!ref.current)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);return function(){o.disconnect()}},[]);return v}
+function useVis(ref){var[v,setV]=useState(false);useEffect(function(){var o=null,mo=null;function connect(){if(!ref.current)return false;o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);if(mo)mo.disconnect();return true}if(!connect()){mo=new MutationObserver(connect);mo.observe(document.body,{childList:true,subtree:true})}return function(){if(mo)mo.disconnect();if(o)o.disconnect()}},[]);return v}
 
 
 var TIERS=[{label:"1-2 days",min:1,max:2,disc:0},{label:"3-6 days",min:3,max:6,disc:5},{label:"7-13 days",min:7,max:13,disc:10},{label:"14-29 days",min:14,max:29,disc:15},{label:"30+ days",min:30,max:999,disc:20}];
 function getTier(d){return TIERS.find(function(t){return d>=t.min&&d<=t.max})||TIERS[0]}
 function dayRate(base,d){return Math.round(base*(1-getTier(d).disc/100))}
 
-var REVIEWS=[
-  {name:"Alexander K.",tier:"Noir",rating:5,text:"The handover experience alone is worth it. Alfred had it delivered to my hotel with a full walkthrough. Drove it to Key West — unforgettable.",date:"1 week ago"},
-  {name:"Marcus L.",tier:"Black",rating:5,text:"I've rented supercars before. This was different. The concierge handled everything — insurance, route suggestions, even restaurant recs.",date:"3 weeks ago"},
-  {name:"David R.",tier:"Member",rating:5,text:"Booked for my birthday. Alfred surprised me with a bottle of Dom in the passenger seat. Will be back for the Revuelto.",date:"1 month ago"},
-];
+function dateFromToday(offset){var d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().split("T")[0]}
 
 export default function CarDetailPage(){
   var params = useParams();
@@ -55,25 +52,27 @@ export default function CarDetailPage(){
   // render — we branch on `fetchStatus` at render time only.
   var initial=null;
   try { initial = JSON.parse(sessionStorage.getItem("alfred_car_"+params.slug)); } catch(e) {}
+  if(!initial)initial=ECARS_FALLBACK.find(function(c){return slugify(c.name)===params.slug})||null;
   var [storedCar,setStoredCar]=useState(initial);
   var [fetchStatus,setFetchStatus]=useState(initial?"ready":"loading");
   useEffect(function(){
-    if(storedCar) return;
     var cancelled=false;
+    var timer=setTimeout(function(){if(!cancelled&&!storedCar)setFetchStatus("not-found")},10000);
     supabase.from("cars").select("*").neq("is_active",false)
       .then(function(res){
         if(cancelled) return;
-        if(res.error||!res.data){setFetchStatus("not-found");return}
+        clearTimeout(timer);
+        if(res.error||!res.data){if(!storedCar)setFetchStatus("not-found");return}
         // Transform first, then match — the slug is built from the
         // UI-combined "Brand Name", not the raw DB column.
         var uiList=res.data.map(dbCarToUi);
         var ui=uiList.find(function(c){return slugify(c.name)===params.slug});
-        if(!ui){setFetchStatus("not-found");return}
+        if(!ui){if(!storedCar)setFetchStatus("not-found");return}
         try{ sessionStorage.setItem("alfred_car_"+params.slug, JSON.stringify(ui));}catch(e){}
         setStoredCar(ui);
         setFetchStatus("ready");
       });
-    return function(){cancelled=true};
+    return function(){cancelled=true;clearTimeout(timer)};
   },[params.slug]);
   // Safe fallback so the rest of the component can compute without null
   // checks; the actual "loading"/"not-found" UI is rendered at the end.
@@ -93,15 +92,13 @@ export default function CarDetailPage(){
     acceleration: _c.accel || "",
     weight: "",
     seats: _c.seats || 2,
-    rating: 5.0,
-    reviews: Math.floor(Math.random() * 20) + 5,
     available: _c.available !== false,
     color: "",
     location: (_c.locs || []).join(" \u00b7 "),
-    features: [(_c.locs||[]).some(function(l){return l.indexOf("Paris")!==-1})?"100 KM per day":"100 Miles per day","Full insurance included","Free delivery & pickup","24/7 roadside assistance"],
+    features: ["Mileage allowance confirmed before booking","Insurance options confirmed before booking","Delivery available by request","Concierge support during the rental"],
     deposit: _c.deposit || 1000,
-    alfredNote: "Contact Alfred for the best experience with the " + (_c.name||"car") + ". We handle delivery, insurance, and everything in between.",
-    alfredTip: "Book at least 48 hours in advance for guaranteed availability.",
+    alfredNote: "Contact Alfred to request the " + (_c.name||"car") + ". We coordinate the vehicle, delivery options and supplier terms for your dates.",
+    alfredTip: "Request early when possible and keep the dates flexible; the exact vehicle remains subject to supplier confirmation.",
   };
 
   var WA_NUM="33743713649";
@@ -110,8 +107,8 @@ export default function CarDetailPage(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [days,setDays]=useState(3);
-  var [pickup,setPickup]=useState("2026-03-20");
-  var [returnD,setReturnD]=useState("2026-03-23");
+  var [pickup,setPickup]=useState(function(){return dateFromToday(2)});
+  var [returnD,setReturnD]=useState(function(){return dateFromToday(5)});
   var [lightbox,setLightbox]=useState(false);
   function pickDays(d){setDays(d);var p=new Date(pickup);p.setDate(p.getDate()+d);setReturnD(p.toISOString().split("T")[0])}
   function pickPickup(v){setPickup(v);var p=new Date(v);p.setDate(p.getDate()+days);setReturnD(p.toISOString().split("T")[0])}
@@ -121,10 +118,10 @@ export default function CarDetailPage(){
   var noteRef=useRef(null);var noteVis=useVis(noteRef);
   var inclRef=useRef(null);var inclVis=useVis(inclRef);
   var priceRef=useRef(null);var priceVis=useVis(priceRef);
-  var revRef=useRef(null);var revVis=useVis(revRef);
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   var rate=dayRate(CAR.pricePerDay,days);var total=rate*days;var tier=getTier(days);
+  var requestUrl="https://wa.me/"+WA_NUM+"?text="+encodeURIComponent("Hi Alfred, I'd like to request the "+CAR.name+" from "+pickup+" to "+returnD+". Please confirm availability and final terms.");
 
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
@@ -145,7 +142,8 @@ export default function CarDetailPage(){
   if (fetchStatus === "not-found" || !storedCar) {
     return (
       <div style={{width:"100%",minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:20}}>
-        <h2 style={{color:C.s1,fontFamily:"system-ui",fontSize:24}}>Car not found</h2>
+        <SEOHead title="Car Not Found | Alfred Concierge" description="This car is not currently listed. Browse Alfred's available exotic and luxury cars." path={"/catalog/exotic-cars/"+params.slug} noindex/>
+        <h1 style={{color:C.s1,fontFamily:"system-ui",fontSize:24}}>Car not found</h1>
         <a href="/catalog/exotic-cars" style={{color:C.s4,fontFamily:"system-ui",fontSize:14}}>← Back to catalog</a>
       </div>
     );
@@ -154,13 +152,13 @@ export default function CarDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <SEOHead
-        title={CAR.name+" "+(CAR.location?CAR.location.split(" · ")[0]:"Miami")+" — Rent a Car | Alfred Concierge"}
-        description={"Rent the "+CAR.name+" in Miami. "+CAR.hp+"hp, "+CAR.transmission+", "+CAR.drive+". Full insurance included. Delivered to your door. Book through Alfred Concierge."}
+        title={CAR.name+" "+(CAR.location?CAR.location.split(" · ")[0]:"Miami")+" — Rental Request | Alfred Concierge"}
+        description={"Request the "+CAR.name+" in "+(CAR.location||"Miami")+" through Alfred Concierge. View specifications, indicative daily pricing and delivery details, then confirm current availability."}
         path={"/catalog/exotic-cars/"+params.slug}
         jsonLd={carJsonLd({
           name: CAR.name,
           brand: CAR.brand,
-          description: "Rent the "+CAR.name+" in "+(CAR.location||"Miami")+". "+CAR.hp+"hp, "+CAR.transmission+", "+CAR.drive+". Full insurance included.",
+          description: "Request the "+CAR.name+" in "+(CAR.location||"Miami")+" through Alfred Concierge. Current availability and final terms are confirmed on request.",
           hero_image_url: CAR.imgs && CAR.imgs[0],
           photos_order: CAR.imgs,
           engine: CAR.engine,
@@ -245,7 +243,7 @@ html,body{overflow-x:hidden;max-width:100vw}
         <div style={{position:"absolute",top:64,left:16,display:"flex",gap:6,zIndex:10,flexWrap:"wrap"}}>
           <span style={{...sf(9,600),letterSpacing:0.8,color:C.s3+"D9",padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)",textTransform:"uppercase"}}>{CAR.body}</span>
           <span style={{...sf(9,500),color:C.s5,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}>{CAR.drive}</span>
-          {CAR.available&&<span style={{display:"flex",alignItems:"center",gap:4,...sf(9,500),color:C.gn,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>Available</span>}
+          {CAR.available&&<span style={{display:"flex",alignItems:"center",gap:4,...sf(9,500),color:C.gn,padding:"4px 8px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(12px)"}}><div style={{width:5,height:5,borderRadius:"50%",background:C.gn}}/>On request</span>}
         </div>
         {CAR.imgs.length>1&&<div style={{position:"absolute",bottom:48,left:"50%",transform:"translateX(-50%)",display:"flex",gap:5,zIndex:10}}>
           {CAR.imgs.map(function(_,i){return <div key={i} onClick={function(){setIdx(i)}} style={{width:i===idx?20:5,height:4,borderRadius:2,background:"rgba(255,255,255,"+(i===idx?"0.85":"0.2")+")",transition:"all 0.3s",cursor:"pointer"}}/>})}
@@ -260,13 +258,13 @@ html,body{overflow-x:hidden;max-width:100vw}
           <div className="left-col">
             <div style={{marginBottom:40}}>
               <div style={{display:"flex",gap:6,marginBottom:14}}>
-                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED VERIFIED</span>
+                <span style={{...sf(9,600),letterSpacing:0.8,color:C.gn+"D9",padding:"4px 10px",borderRadius:8,background:C.gn+"0F",border:"0.5px solid "+C.gn+"1A"}}>✦ ALFRED CATALOG</span>
               </div>
               <h1 className="cd-name" style={{...sf(38,700),letterSpacing:-1.5,marginBottom:6}}>{CAR.name}</h1>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14,flexWrap:"wrap"}}>
                 <div style={{display:"flex",alignItems:"center",gap:5}}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span style={{...sf(12),color:C.s5}}>{CAR.location}</span></div>
                 <div style={{width:1,height:12,background:C.bd}}/>
-                <div style={{display:"flex",alignItems:"center",gap:4}}><svg width="11" height="11" viewBox="0 0 24 24" fill={C.gold} stroke={C.gold} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span style={{...sf(13,600),color:C.s1}}>{CAR.rating}</span><span style={{...sf(11),color:C.s6}}>({CAR.reviews})</span></div>
+                <span style={{...sf(12),color:C.s5}}>Availability confirmed on request</span>
                 {CAR.color&&<><div style={{width:1,height:12,background:C.bd}}/><span style={{...sf(12),color:C.s5}}>{CAR.color}</span></>}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:6}}>
@@ -317,12 +315,12 @@ html,body{overflow-x:hidden;max-width:100vw}
                   {[1,3,7,14,30].map(function(d){var active=days===d;return <div key={d} onClick={function(){pickDays(d)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer",transition:"all 0.2s"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{d}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>{d===1?"day":"days"}</div></div>})}
                 </div>
 
-                <div onClick={function(){window.open("https://wa.me/"+WA_NUM+"?text="+encodeURIComponent("Hi Alfred, I'm interested in renting the "+CAR.name+". Could you let me know about availability and pricing?"),"_blank")}} style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
-                  Book Now
-                </div>
+                <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"15px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
+                  Request this car
+                </a>
 
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:14}}>
-                  {["Free delivery","Full insurance","24/7 support"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+                  {["Live availability","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
                 </div>
               </div>
             </div>
@@ -330,8 +328,8 @@ html,body{overflow-x:hidden;max-width:100vw}
             <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderRadius:14,background:C.gn+"08",border:"0.5px solid "+C.gn+"1A",marginTop:12}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:C.gn,boxShadow:"0 0 8px "+C.gn+"66",flexShrink:0}}/>
               <div>
-                <div style={{...sf(12,600),color:C.s1}}>Available now</div>
-                <div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Next available: Tomorrow</div>
+                <div style={{...sf(12,600),color:C.s1}}>Availability on request</div>
+                <div style={{...sf(11),color:C.gn+"CC",marginTop:1}}>Alfred confirms the exact vehicle and dates before booking.</div>
               </div>
             </div>
 
@@ -365,9 +363,9 @@ html,body{overflow-x:hidden;max-width:100vw}
             <div style={{display:"flex",gap:4,marginBottom:16}}>
               {[1,3,7,14,30].map(function(d){var active=days===d;return <div key={d} onClick={function(){pickDays(d)}} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:10,background:active?"rgba(244,244,245,0.06)":"transparent",border:"1px solid "+(active?"rgba(244,244,245,0.12)":C.bd),cursor:"pointer"}}><div style={{...sf(14,active?600:400),color:active?C.s1:C.s6}}>{d}</div><div style={{...sf(9),color:active?C.s4:C.s7}}>{d===1?"day":"days"}</div></div>})}
             </div>
-            <div onClick={function(){window.open("https://wa.me/"+WA_NUM+"?text="+encodeURIComponent("Hi Alfred, I'm interested in renting the "+CAR.name+". Could you let me know about availability and pricing?"),"_blank")}} style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}}>Book Now</div>
+            <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}}>Request this car</a>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:12}}>
-              {["Free delivery","Full insurance","24/7 support"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+              {["Live availability","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
             </div>
           </div>
         </div>
@@ -407,7 +405,7 @@ html,body{overflow-x:hidden;max-width:100vw}
       {/* Pricing */}
       <div ref={priceRef} className="page-wrap" style={{paddingTop:60,marginBottom:40}}>
         {secDiv}
-        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Pricing</p>
+        <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,marginTop:32}}>Indicative pricing</p>
         <div style={{borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"18px 20px"}}>
           {TIERS.map(function(t,i){var active=tier.label===t.label;var dr=dayRate(CAR.pricePerDay,t.min);return(<div key={i}>{i>0&&<div style={{height:0.5,background:C.bd}}/>}<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"13px 4px"}}><div style={{display:"flex",alignItems:"center",gap:8}}>{active&&<div style={{width:4,height:4,borderRadius:"50%",background:C.s1}}/>}<span style={{...sf(13,active?500:400),color:active?C.s1:C.s6}}>{t.label}</span></div><div style={{display:"flex",alignItems:"center",gap:8}}>{t.disc>0&&<span style={{...sf(10,500),color:C.gn,padding:"2px 6px",borderRadius:6,background:C.gn+"14"}}>-{t.disc}%</span>}<span style={{...sf(15,active?600:400),color:active?C.s1:C.s6}}>${dr.toLocaleString()}</span><span style={{...sf(10),color:C.s7}}>/day</span></div></div></div>)})}
         </div>
@@ -418,34 +416,15 @@ html,body{overflow-x:hidden;max-width:100vw}
         </div>
       </div>
 
-      {/* Reviews */}
-      <div ref={revRef} className="page-wrap" style={{paddingTop:60,marginBottom:60}}>
-        {secDiv}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:32,marginBottom:20}}>
-          <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase"}}>From Members</p>
-          <span style={{...sf(12),color:C.s6}}>{CAR.reviews} reviews</span>
-        </div>
-        <div className="rev-row">
-          {REVIEWS.map(function(r,i){var isTop=r.tier==="Noir"||r.tier==="Black";return(<div key={i} style={{width:320,minWidth:280,flexShrink:0,borderRadius:20,background:C.el,border:"1px solid "+C.bd,padding:"22px 20px",transition:"border-color 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-              <div style={{width:32,height:32,borderRadius:"50%",background:C.srf,border:"0.5px solid "+C.bd,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{...sf(14,300),color:C.s5}}>{r.name.charAt(0)}</span></div>
-              <div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{...sf(12,600),color:C.s1}}>{r.name}</span><span style={{...sf(8,600),letterSpacing:0.8,color:isTop?C.s3:C.s5,padding:"2px 7px",borderRadius:6,background:isTop?"rgba(244,244,245,0.06)":C.srf,border:"0.5px solid "+(isTop?"rgba(244,244,245,0.1)":C.bd),textTransform:"uppercase"}}>{r.tier}</span></div>
-              <div style={{display:"flex",alignItems:"center",gap:2,marginTop:3}}>{Array.from({length:r.rating}).map(function(_,si){return <svg key={si} width="8" height="8" viewBox="0 0 24 24" fill={C.gold}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>})}<span style={{...sf(9),color:C.s6,marginLeft:4}}>{r.date}</span></div></div>
-            </div>
-            <p style={{...sf(12),color:C.s4,lineHeight:1.7,fontStyle:"italic"}}>"{r.text}"</p>
-          </div>)})}
-        </div>
-      </div>
-
       {/* Bottom CTA */}
       <section ref={ctaRef} style={{padding:"120px 0 100px",position:"relative"}}>
         <div style={{position:"absolute",top:0,left:"10%",right:"10%",height:1,background:"linear-gradient(90deg,transparent,"+C.bd+",transparent)"}}/>
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20}}>Reserve</p>
           <h2 style={{...sf(44,600),letterSpacing:-1.5,lineHeight:1.1}}>Ready to drive<br/>the {CAR.name}?</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36}}>Tell Alfred your dates and we'll deliver it to your door. Keys in hand, no paperwork.</p>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Book Now — ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></div>
-          <p style={{...sf(12),color:C.s6,marginTop:20}}>Free delivery · Full insurance · 24/7 concierge</p>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginTop:16,marginBottom:36}}>Tell Alfred your dates and delivery location. We'll confirm the vehicle, handover options and supplier paperwork before you book.</p>
+          <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 36px",borderRadius:14,background:C.s1,cursor:"pointer",textDecoration:"none",...sf(14,600),color:C.bg}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Request this car · estimated ${total.toLocaleString()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg></a>
+          <p style={{...sf(12),color:C.s6,marginTop:20}}>Final availability, delivery, insurance and deposit terms are confirmed before booking.</p>
         </div>
       </section>
 
