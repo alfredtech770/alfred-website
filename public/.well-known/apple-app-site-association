@@ -5,7 +5,11 @@
       {
         "appIDs": ["S33MH59G79.com.6Labs.AlfredApp"],
         "components": [
-          { "/": "/*", "comment": "Match every path on alfredconcierge.app" }
+          { "/": "/deck", "exclude": true, "comment": "The partnership deck must open in the browser, never the app" },
+          { "/": "/deck/*", "exclude": true, "comment": "Deck subpaths stay in the browser too" },
+          { "/": "/partners", "exclude": true, "comment": "Partner deck page stays in the browser" },
+          { "/": "/partners/*", "exclude": true, "comment": "Partner deck subpaths stay in the browser" },
+          { "/": "/*", "comment": "Match every other path on alfredconcierge.app" }
         ]
       }
     ]
