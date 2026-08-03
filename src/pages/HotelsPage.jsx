@@ -177,7 +177,7 @@ export default function HotelsPage(){
     }
   }
 
-  var controlStyle={padding:"12px 14px",borderRadius:10,border:`0.5px solid ${T.border2}`,background:T.surf1,...type.body(),color:T.text,outline:"none",minHeight:44};
+  var controlStyle={boxSizing:"border-box",width:"100%",minWidth:0,height:48,padding:"0 14px",borderRadius:10,border:`0.5px solid ${T.border2}`,background:T.surf1,...type.body(),color:T.text,outline:"none",colorScheme:"dark"};
 
   return (
     <div style={{minHeight:"100vh",background:T.bg,color:T.text}}>
@@ -197,6 +197,51 @@ export default function HotelsPage(){
         }}
       />
 
+      <style>{`
+        .hotel-itinerary-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          align-items: start;
+        }
+        .hotel-itinerary-field {
+          display: flex;
+          min-width: 0;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .hotel-itinerary-note {
+          grid-column: 1 / -1;
+          display: flex;
+          min-height: 18px;
+          align-items: center;
+          justify-content: flex-end;
+          text-align: right;
+        }
+        .hotel-filter-grid {
+          display: grid;
+          grid-template-columns: minmax(230px, 2fr) repeat(5, minmax(120px, 1fr));
+          gap: 10px;
+          align-items: stretch;
+          margin-bottom: 18px;
+        }
+        @media (max-width: 1100px) {
+          .hotel-filter-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        @media (max-width: 720px) {
+          .hotel-itinerary-grid,
+          .hotel-filter-grid {
+            grid-template-columns: 1fr;
+          }
+          .hotel-itinerary-note {
+            justify-content: flex-start;
+            text-align: left;
+          }
+        }
+      `}</style>
+
       <BrandNav mobile={mobile} links={[{label:"Catalog",href:"/catalog"},{label:"Destinations",href:"/city/ibiza"},{label:"Contact",href:"/contact"}]}/>
 
       <main style={{padding:mobile?"72px 20px 90px":"106px 44px 120px",maxWidth:1280,margin:"0 auto"}}>
@@ -209,27 +254,27 @@ export default function HotelsPage(){
         </div>
 
         <GlassCard style={{padding:mobile?18:22,marginBottom:18}}>
-          <div style={{display:"grid",gridTemplateColumns:mobile?"1fr 1fr":"1.2fr 1.2fr 0.7fr 0.6fr",gap:10,alignItems:"end"}}>
-            <label style={{display:"flex",flexDirection:"column",gap:7,...type.kicker(),color:T.textDim}}>
+          <div className="hotel-itinerary-grid">
+            <label className="hotel-itinerary-field" style={{...type.kicker(),color:T.textDim}}>
               Check-in
-              <input type="date" min={isoDate(1)} value={checkin} onChange={function(event){changeCheckin(event.target.value)}} style={{...controlStyle,width:"100%"}}/>
+              <input type="date" min={isoDate(1)} value={checkin} onChange={function(event){changeCheckin(event.target.value)}} style={controlStyle}/>
             </label>
-            <label style={{display:"flex",flexDirection:"column",gap:7,...type.kicker(),color:T.textDim}}>
+            <label className="hotel-itinerary-field" style={{...type.kicker(),color:T.textDim}}>
               Check-out
-              <input type="date" min={checkin} value={checkout} onChange={function(event){setCheckout(event.target.value)}} style={{...controlStyle,width:"100%"}}/>
+              <input type="date" min={checkin} value={checkout} onChange={function(event){setCheckout(event.target.value)}} style={controlStyle}/>
             </label>
-            <label style={{display:"flex",flexDirection:"column",gap:7,...type.kicker(),color:T.textDim}}>
+            <label className="hotel-itinerary-field" style={{...type.kicker(),color:T.textDim}}>
               Guests
-              <select value={adults} onChange={function(event){setAdults(Number(event.target.value))}} style={{...controlStyle,width:"100%"}}>
+              <select value={adults} onChange={function(event){setAdults(Number(event.target.value))}} style={controlStyle}>
                 {[1,2,3,4,5,6].map(function(number){return <option key={number} value={number}>{number} adult{number!==1?"s":""}</option>})}
               </select>
             </label>
-            <div style={{...type.caption(),color:T.textDim,paddingBottom:11,textAlign:mobile?"left":"right"}}>Rates can change until confirmed</div>
+            <div className="hotel-itinerary-note" style={{...type.caption(),color:T.textDim}}>Rates can change until confirmed</div>
           </div>
         </GlassCard>
 
-        <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:18,alignItems:"center"}}>
-          <input aria-label="Search hotels" placeholder="Search hotel or area" value={search} onChange={function(event){setSearch(event.target.value)}} style={{...controlStyle,flex:"1 1 220px",maxWidth:330}}/>
+        <div className="hotel-filter-grid">
+          <input aria-label="Search hotels" placeholder="Search hotel or area" value={search} onChange={function(event){setSearch(event.target.value)}} style={controlStyle}/>
           <select aria-label="Filter by city" value={city} onChange={function(event){setCity(event.target.value);setHood("")}} style={controlStyle}>
             <option value="">All destinations</option>
             {DESTINATIONS.map(function(name){return <option key={name} value={name}>{name}</option>})}
