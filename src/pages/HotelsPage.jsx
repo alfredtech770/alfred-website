@@ -3,154 +3,270 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import SEOHead from "../components/SEOHead";
 import CatalogSeoBody from "../components/CatalogSeoBody";
+import { T, type } from "../lib/brand";
+import { BrandNav, Eyebrow, GlassCard, useMobile } from "../components/brand";
 
-var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
-var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759",gd:"#FFD60A"};
+var DESTINATIONS = ["Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London"];
 
-function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
+function isoDate(offset){
+  var date = new Date();
+  date.setHours(12,0,0,0);
+  date.setDate(date.getDate()+offset);
+  return date.toISOString().slice(0,10);
+}
 
-function HotelCard({hotel}){
-  var [hover,setHover]=useState(false);
-  var href="/catalog/hotels/"+(hotel.slug||hotel.id);
-  return(
-    <a href={href} onClick={function(){try{sessionStorage.setItem("alfred_hotel_"+(hotel.slug||hotel.id),JSON.stringify(hotel))}catch(e){}}} onMouseEnter={function(){setHover(true)}} onMouseLeave={function(){setHover(false)}}
-      style={{display:"block",textDecoration:"none",borderRadius:18,overflow:"hidden",background:C.el,border:"1px solid "+C.bd,cursor:"pointer",transition:"all 0.3s",transform:hover?"translateY(-4px)":"none",boxShadow:hover?"0 12px 40px rgba(0,0,0,0.3)":"none"}}>
-      <div style={{position:"relative",height:220,overflow:"hidden"}}>
-        <img src={hotel.hero_image_url||""} alt={hotel.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.5s",transform:hover?"scale(1.05)":"scale(1)"}}/>
-        {hotel.status==="coming_soon"&&<div style={{position:"absolute",top:12,left:12,padding:"4px 11px",borderRadius:20,background:"rgba(0,0,0,0.55)",backdropFilter:"blur(8px)",border:"0.5px solid rgba(255,255,255,0.12)",...sf(10,600),color:C.s1,letterSpacing:1}}>COMING SOON</div>}
-        <div style={{position:"absolute",top:12,right:12,padding:"4px 10px",borderRadius:8,background:"rgba(0,0,0,0.5)",backdropFilter:"blur(8px)",...sf(11,600),color:C.s1}}>{"★".repeat(hotel.star_rating||5)}</div>
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:80,background:"linear-gradient(transparent,rgba(0,0,0,0.7))"}}/>
+function cityKey(value){
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+}
+
+function matchesCity(hotel, city){
+  if(!city) return true;
+  var actual = cityKey(hotel.city);
+  var wanted = cityKey(city);
+  return actual===wanted || actual.indexOf(wanted+" ")===0 || actual.indexOf(" "+wanted)!==-1;
+}
+
+function money(amount, currency){
+  try{
+    return new Intl.NumberFormat("en-US",{style:"currency",currency:currency||"USD",maximumFractionDigits:0}).format(amount);
+  }catch(error){
+    return "$"+Number(amount||0).toLocaleString("en-US");
+  }
+}
+
+function shortDate(value){
+  var date = new Date(value+"T12:00:00");
+  return date.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
+
+function HotelCard({hotel, rate, ratePending, checkin, checkout, adults}){
+  var [hover,setHover] = useState(false);
+  var query = "?checkin="+encodeURIComponent(checkin)+"&checkout="+encodeURIComponent(checkout)+"&adults="+adults;
+  var href = "/catalog/hotels/"+(hotel.slug||hotel.id)+query;
+  return (
+    <a
+      href={href}
+      onClick={function(){try{sessionStorage.setItem("alfred_hotel_"+(hotel.slug||hotel.id),JSON.stringify(hotel))}catch(error){}}}
+      onMouseEnter={function(){setHover(true)}}
+      onMouseLeave={function(){setHover(false)}}
+      style={{display:"flex",flexDirection:"column",textDecoration:"none",borderRadius:18,overflow:"hidden",background:T.surf1,border:`0.5px solid ${hover?T.border2:T.border}`,cursor:"pointer",transition:"transform 260ms ease, border-color 260ms ease",transform:hover?"translateY(-4px)":"none"}}
+    >
+      <div style={{position:"relative",height:220,overflow:"hidden",background:T.surf2}}>
+        <img src={hotel.hero_image_url||""} alt={hotel.name+" in "+(hotel.city||hotel.neighborhood||"Alfred's catalog")} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 500ms ease",transform:hover?"scale(1.04)":"scale(1)"}}/>
+        {hotel.status==="coming_soon"&&<div style={{position:"absolute",top:12,left:12,padding:"5px 10px",borderRadius:8,background:"rgba(10,10,11,0.72)",backdropFilter:"blur(10px)",...type.kicker(),color:T.text}}>Coming soon</div>}
+        <div style={{position:"absolute",top:12,right:12,padding:"5px 9px",borderRadius:8,background:"rgba(10,10,11,0.72)",backdropFilter:"blur(10px)",...type.caption(),color:T.text}}>{hotel.star_rating||5} star</div>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,height:80,background:"linear-gradient(transparent,rgba(0,0,0,0.82))"}}/>
       </div>
-      <div style={{padding:"16px 18px"}}>
-        <h3 style={{...sf(16,600),color:C.s1,margin:"0 0 4px"}}>{hotel.name}</h3>
-        <p style={{...sf(12),color:C.s5,margin:"0 0 10px"}}>{hotel.neighborhood}{hotel.city&&hotel.city!=="Miami"?" · "+hotel.city:""}</p>
-        {hotel.amenities&&hotel.amenities.length>0&&(
-          <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
-            {hotel.amenities.slice(0,4).map(function(a){return <span key={a} style={{...sf(10,500),padding:"3px 8px",borderRadius:6,background:C.srf,border:"1px solid "+C.bd,color:C.s4}}>{a}</span>})}
-            {hotel.amenities.length>4&&<span style={{...sf(10),color:C.s5}}>+{hotel.amenities.length-4}</span>}
+      <div style={{padding:"18px 18px 16px",display:"flex",flexDirection:"column",flex:1}}>
+        <Eyebrow>{hotel.city||hotel.neighborhood||"Hotel"}</Eyebrow>
+        <h2 style={{...type.cardSerif(18),color:T.text,margin:"10px 0 6px"}}>{hotel.name}</h2>
+        <p style={{...type.bodySm(),color:T.textDim,marginBottom:16}}>{hotel.neighborhood||hotel.city||"Location confirmed on request"}</p>
+
+        {hotel.amenities&&hotel.amenities.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:18}}>
+          {hotel.amenities.slice(0,3).map(function(amenity){return <span key={amenity} style={{...type.caption(),padding:"5px 8px",borderRadius:7,background:T.bg2,border:`0.5px solid ${T.border}`,color:T.textMid}}>{amenity}</span>})}
+          {hotel.amenities.length>3&&<span style={{...type.caption(),padding:"5px 3px",color:T.textDim}}>+{hotel.amenities.length-3}</span>}
+        </div>}
+
+        <div style={{borderTop:`0.5px solid ${T.border2}`,paddingTop:14,marginTop:"auto",display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:14}}>
+          <div>
+            {rate ? <>
+              <div style={{display:"flex",alignItems:"baseline",gap:5}}>
+                <span style={{...type.cardSerif(19),color:T.text}}>From {money(rate.perNight,rate.currency)}</span>
+                <span style={{...type.caption(),color:T.textDim}}>/ night</span>
+              </div>
+              <div style={{...type.caption(),color:T.textDim,marginTop:5}}>{shortDate(checkin)}–{shortDate(checkout)} · {adults} guest{adults!==1?"s":""}</div>
+            </> : <>
+              <div style={{...type.buttonSm(),color:ratePending?T.textMid:T.text}}>Price on request</div>
+              <div style={{...type.caption(),color:T.textDim,marginTop:5}}>{ratePending?"Checking lowest live price…":"Ask Alfred for current availability"}</div>
+            </>}
           </div>
-        )}
-        {hotel.perks&&hotel.perks.length>0&&(
-          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-            {hotel.perks.slice(0,2).map(function(p){return <span key={p} style={{...sf(10,500),padding:"3px 8px",borderRadius:6,background:C.gn+"10",color:C.gn+"E6"}}>{p}</span>})}
-            {hotel.perks.length>2&&<span style={{...sf(10),color:C.s4}}>+{hotel.perks.length-2} more</span>}
-          </div>
-        )}
+          <span aria-hidden style={{color:T.silverDim,flexShrink:0}}>→</span>
+        </div>
       </div>
     </a>
   );
 }
 
 export default function HotelsPage(){
-  var [searchParams,setSearchParams]=useSearchParams();
-  var [hotels,setHotels]=useState([]);
-  var [loading,setLoading]=useState(true);
-  var [search,setSearch]=useState("");
-  var [city,setCity]=useState(searchParams.get("city")||"");
-  var [hood,setHood]=useState("");
-  var [status,setStatus]=useState("");
-  var [visibleCount,setVisibleCount]=useState(24);
-  var [isMobile,setIsMobile]=useState(typeof window!=="undefined"&&window.innerWidth<=768);
+  var [searchParams,setSearchParams] = useSearchParams();
+  var mobile = useMobile();
+  var [hotels,setHotels] = useState([]);
+  var [loading,setLoading] = useState(true);
+  var [search,setSearch] = useState("");
+  var [city,setCity] = useState(searchParams.get("city")||"");
+  var [hood,setHood] = useState("");
+  var [status,setStatus] = useState("");
+  var [stars,setStars] = useState("");
+  var [sort,setSort] = useState("recommended");
+  var [visibleCount,setVisibleCount] = useState(24);
+  var [checkin,setCheckin] = useState(searchParams.get("checkin")||isoDate(21));
+  var [checkout,setCheckout] = useState(searchParams.get("checkout")||isoDate(22));
+  var [adults,setAdults] = useState(Number(searchParams.get("adults"))||2);
+  var [ratesByHotel,setRatesByHotel] = useState({});
+  var [ratesLoading,setRatesLoading] = useState(false);
 
   useEffect(function(){
-    function resize(){setIsMobile(window.innerWidth<=768)}
-    window.addEventListener("resize",resize);
-    return function(){window.removeEventListener("resize",resize)};
-  },[]);
-
-  useEffect(function(){
-    supabase.from("accommodations").select("*").neq("is_active",false).order("name").then(function(res){
-      setHotels(res.data||[]);setLoading(false);
+    supabase.from("accommodations").select("*").neq("is_active",false).order("name").then(function(result){
+      setHotels(result.data||[]);
+      setLoading(false);
     });
   },[]);
 
   useEffect(function(){
-    var p={};
-    if(city)p.city=city;
-    setSearchParams(p,{replace:true});
-  },[city]);
+    var params = {};
+    if(city) params.city=city;
+    params.checkin=checkin;
+    params.checkout=checkout;
+    params.adults=String(adults);
+    setSearchParams(params,{replace:true});
+  },[city,checkin,checkout,adults]);
 
-  var cityOptions=["Miami","Paris","Ibiza","Saint-Tropez","Mykonos","Dubai","London"];
-  var neighborhoods=[...new Set(hotels.map(function(h){return h.neighborhood}).filter(Boolean))].sort();
-  var filtered=hotels.filter(function(h){
-    if(search){var s=search.toLowerCase();if(!(h.name||"").toLowerCase().includes(s)&&!(h.neighborhood||"").toLowerCase().includes(s))return false;}
-    if(city){
-      var hCity=(h.city||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-      var wanted=city.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-      if(hCity!==wanted&&hCity.indexOf(wanted+" ")!==0&&hCity.indexOf(" "+wanted)===-1)return false;
+  var hotelsInCity = hotels.filter(function(hotel){return matchesCity(hotel,city)});
+  var neighborhoods = city ? [...new Set(hotelsInCity.map(function(hotel){return hotel.neighborhood}).filter(Boolean))].sort() : [];
+  var filtered = hotelsInCity.filter(function(hotel){
+    if(search){
+      var value=search.toLowerCase();
+      if(!(hotel.name||"").toLowerCase().includes(value)&&!(hotel.neighborhood||"").toLowerCase().includes(value)&&!(hotel.city||"").toLowerCase().includes(value)) return false;
     }
-    if(hood&&h.neighborhood!==hood)return false;
-    if(status==="open"&&h.status!=="open")return false;
-    if(status==="coming_soon"&&h.status!=="coming_soon")return false;
+    if(hood&&hotel.neighborhood!==hood) return false;
+    if(status==="open"&&hotel.status!=="open") return false;
+    if(status==="coming_soon"&&hotel.status!=="coming_soon") return false;
+    if(stars&&Number(hotel.star_rating||0)<Number(stars)) return false;
     return true;
   });
-  useEffect(function(){setVisibleCount(24)},[search,city,hood,status]);
-  var visibleHotels=filtered.slice(0,visibleCount);
 
-  return(
-    <div style={{minHeight:"100vh",background:C.bg}}>
+  filtered.sort(function(a,b){
+    if(sort==="name") return String(a.name).localeCompare(String(b.name));
+    if(sort==="rating") return Number(b.star_rating||0)-Number(a.star_rating||0)||String(a.name).localeCompare(String(b.name));
+    var ai=DESTINATIONS.indexOf(a.city),bi=DESTINATIONS.indexOf(b.city);
+    var aLive=ai===-1?1:0,bLive=bi===-1?1:0;
+    if(aLive!==bLive) return aLive-bLive;
+    if(!!a.is_featured!==!!b.is_featured) return a.is_featured?-1:1;
+    return Number(b.star_rating||0)-Number(a.star_rating||0)||String(a.name).localeCompare(String(b.name));
+  });
+
+  useEffect(function(){setVisibleCount(24)},[search,city,hood,status,stars,sort]);
+  var visibleHotels = filtered.slice(0,visibleCount);
+  var rateIdsKey = visibleHotels.map(function(hotel){return hotel.liteapi_id}).filter(Boolean).join(",");
+
+  useEffect(function(){
+    var hotelIds=rateIdsKey.split(",").filter(Boolean);
+    if(!hotelIds.length){setRatesByHotel({});setRatesLoading(false);return}
+    var alive=true;
+    setRatesLoading(true);
+    fetch("/api/hotel-min-rates",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({hotelIds:hotelIds,checkin:checkin,checkout:checkout,adults:adults})
+    }).then(function(response){return response.json()}).then(function(payload){
+      if(!alive)return;
+      var next={};
+      (payload.rates||[]).forEach(function(rate){next[rate.hotelId]=rate});
+      setRatesByHotel(next);
+      setRatesLoading(false);
+    }).catch(function(){if(alive){setRatesByHotel({});setRatesLoading(false)}});
+    return function(){alive=false};
+  },[rateIdsKey,checkin,checkout,adults]);
+
+  function changeCheckin(value){
+    setCheckin(value);
+    if(!checkout||checkout<=value){
+      var next=new Date(value+"T12:00:00");
+      next.setDate(next.getDate()+1);
+      setCheckout(next.toISOString().slice(0,10));
+    }
+  }
+
+  var controlStyle={padding:"12px 14px",borderRadius:10,border:`0.5px solid ${T.border2}`,background:T.surf1,...type.body(),color:T.text,outline:"none",minHeight:44};
+
+  return (
+    <div style={{minHeight:"100vh",background:T.bg,color:T.text}}>
       <SEOHead
         title="Hotels in Miami, Paris, Ibiza & More | Alfred Concierge"
-        description="Browse hotels in Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Request current rates, availability and provider terms through Alfred Concierge."
-        keywords="luxury hotels, Miami hotels, Paris hotels, Ibiza hotels, Saint Tropez hotels, Mykonos hotels, Dubai hotels, London hotels, Alfred concierge"
+        description="Compare hotels in Miami, Paris, Ibiza, Saint-Tropez, Mykonos, Dubai and London. Choose dates and request the lowest current public rate through Alfred Concierge."
+        keywords="luxury hotels, Miami hotels, Paris hotels, Ibiza hotels, Saint Tropez hotels, Mykonos hotels, Dubai hotels, London hotels, hotel prices, Alfred concierge"
         path="/catalog/hotels"
         image="/og-hotels.jpg"
         jsonLd={{
-          "@context":"https://schema.org",
-          "@type":"CollectionPage",
-          "name":"Luxury Hotels",
-          "url":"https://alfredconcierge.app/catalog/hotels",
-          "description":"Browse hotel listings across Alfred's destinations and request current rates, availability, eligible benefits and provider terms.",
+          "@context":"https://schema.org","@type":"CollectionPage","name":"Hotels and current rate requests","url":"https://alfredconcierge.app/catalog/hotels",
+          "description":"Browse hotel listings, choose an itinerary and request current public rates and availability through Alfred Concierge.",
           "breadcrumb":{"@type":"BreadcrumbList","itemListElement":[
             {"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app/"},
             {"@type":"ListItem","position":2,"name":"Hotels","item":"https://alfredconcierge.app/catalog/hotels"}
           ]}
         }}
       />
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:isMobile?"16px 20px":"20px 40px",display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(10,10,11,0.85)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(44,44,49,0.3)"}}>
-        <a href="/" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}><Mark size={20} color={C.s1}/><span style={{...sf(11,400),color:C.s4,letterSpacing:6,textTransform:"uppercase"}}>Alfred</span></a>
-        <a href="/catalog" style={{...sf(12,500),color:C.s4,textDecoration:"none",letterSpacing:1}}>Back to Catalog</a>
-      </nav>
 
-      <div style={{padding:isMobile?"90px 20px 40px":"110px 40px 60px",maxWidth:1200,margin:"0 auto"}}>
-        <h1 style={{...sf(isMobile?28:40,700),color:C.s1,marginBottom:8}}>Luxury Hotels</h1>
-        <p style={{...sf(isMobile?14:16),color:C.s5,marginBottom:32}}>Browse {hotels.length||"our selection of"} hotels and resorts across Alfred's destinations. Request current rates, eligible benefits, availability and provider terms from the concierge.</p>
+      <BrandNav mobile={mobile} links={[{label:"Catalog",href:"/catalog"},{label:"Destinations",href:"/city/ibiza"},{label:"Contact",href:"/contact"}]}/>
 
-        <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:28,alignItems:"center"}}>
-          <input placeholder="Search hotels..." value={search} onChange={function(e){setSearch(e.target.value)}}
-            style={{flex:"1 1 200px",maxWidth:320,padding:"10px 16px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(14),color:C.s1,outline:"none"}}/>
-          <select value={city} onChange={function(e){setCity(e.target.value);setHood("")}}
-            style={{padding:"10px 14px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
-            <option value="">All Cities</option>
-            {cityOptions.map(function(n){return <option key={n} value={n}>{n}</option>})}
-          </select>
-          <select value={hood} onChange={function(e){setHood(e.target.value)}}
-            style={{padding:"10px 14px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
-            <option value="">All Neighborhoods</option>
-            {neighborhoods.map(function(n){return <option key={n} value={n}>{n}</option>})}
-          </select>
-          <select value={status} onChange={function(e){setStatus(e.target.value)}}
-            style={{padding:"10px 14px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(13),color:C.s3,outline:"none",appearance:"auto"}}>
-            <option value="">All</option>
-            <option value="open">Open Now</option>
-            <option value="coming_soon">Coming Soon</option>
-          </select>
-          <span style={{...sf(13),color:C.s5}}>{filtered.length} hotel{filtered.length!==1?"s":""}</span>
+      <main style={{padding:mobile?"72px 20px 90px":"106px 44px 120px",maxWidth:1280,margin:"0 auto"}}>
+        <div style={{display:"grid",gridTemplateColumns:mobile?"1fr":"1.2fr 0.8fr",gap:mobile?22:80,alignItems:"end",marginBottom:42}}>
+          <div>
+            <Eyebrow>Alfred hotel catalog</Eyebrow>
+            <h1 style={{...(mobile?type.heroSerifMobile():type.heroSerif()),fontSize:mobile?42:64,color:T.text,margin:"18px 0 14px"}}>Find a hotel.<br/>Check the live rate.</h1>
+          </div>
+          <p style={{...type.bodyLg(),color:T.textMid}}>Choose a destination and itinerary. Where supplier coverage is available, Alfred displays the lowest current public rate found for those dates before you request the stay.</p>
         </div>
 
-        {loading?<div style={{padding:"80px",textAlign:"center",...sf(14),color:C.s5}}>Loading hotels...</div>:(
-          <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"repeat(auto-fill,minmax(320px,1fr))",gap:20}}>
-            {visibleHotels.map(function(h){
-              return <HotelCard key={h.id} hotel={h}/>;
-            })}
+        <GlassCard style={{padding:mobile?18:22,marginBottom:18}}>
+          <div style={{display:"grid",gridTemplateColumns:mobile?"1fr 1fr":"1.2fr 1.2fr 0.7fr 0.6fr",gap:10,alignItems:"end"}}>
+            <label style={{display:"flex",flexDirection:"column",gap:7,...type.kicker(),color:T.textDim}}>
+              Check-in
+              <input type="date" min={isoDate(1)} value={checkin} onChange={function(event){changeCheckin(event.target.value)}} style={{...controlStyle,width:"100%"}}/>
+            </label>
+            <label style={{display:"flex",flexDirection:"column",gap:7,...type.kicker(),color:T.textDim}}>
+              Check-out
+              <input type="date" min={checkin} value={checkout} onChange={function(event){setCheckout(event.target.value)}} style={{...controlStyle,width:"100%"}}/>
+            </label>
+            <label style={{display:"flex",flexDirection:"column",gap:7,...type.kicker(),color:T.textDim}}>
+              Guests
+              <select value={adults} onChange={function(event){setAdults(Number(event.target.value))}} style={{...controlStyle,width:"100%"}}>
+                {[1,2,3,4,5,6].map(function(number){return <option key={number} value={number}>{number} adult{number!==1?"s":""}</option>})}
+              </select>
+            </label>
+            <div style={{...type.caption(),color:T.textDim,paddingBottom:11,textAlign:mobile?"left":"right"}}>Rates can change until confirmed</div>
           </div>
-        )}
-        {!loading&&visibleCount<filtered.length&&<div style={{display:"flex",justifyContent:"center",marginTop:32}}>
-          <button type="button" onClick={function(){setVisibleCount(function(n){return n+24})}} style={{padding:"13px 24px",borderRadius:12,border:"1px solid "+C.bd,background:C.el,color:C.s2,cursor:"pointer",...sf(13,600)}}>
-            Show more hotels ({filtered.length-visibleCount} remaining)
-          </button>
+        </GlassCard>
+
+        <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:18,alignItems:"center"}}>
+          <input aria-label="Search hotels" placeholder="Search hotel or area" value={search} onChange={function(event){setSearch(event.target.value)}} style={{...controlStyle,flex:"1 1 220px",maxWidth:330}}/>
+          <select aria-label="Filter by city" value={city} onChange={function(event){setCity(event.target.value);setHood("")}} style={controlStyle}>
+            <option value="">All destinations</option>
+            {DESTINATIONS.map(function(name){return <option key={name} value={name}>{name}</option>})}
+          </select>
+          <select aria-label="Filter by neighborhood" value={hood} disabled={!city} onChange={function(event){setHood(event.target.value)}} style={{...controlStyle,color:city?T.text:T.textDim}}>
+            <option value="">{city?"All neighborhoods":"Choose city first"}</option>
+            {neighborhoods.map(function(name){return <option key={name} value={name}>{name}</option>})}
+          </select>
+          <select aria-label="Filter by star rating" value={stars} onChange={function(event){setStars(event.target.value)}} style={controlStyle}>
+            <option value="">Any rating</option><option value="5">5 stars</option><option value="4">4+ stars</option>
+          </select>
+          <select aria-label="Filter by status" value={status} onChange={function(event){setStatus(event.target.value)}} style={controlStyle}>
+            <option value="">Any status</option><option value="open">Open</option><option value="coming_soon">Coming soon</option>
+          </select>
+          <select aria-label="Sort hotels" value={sort} onChange={function(event){setSort(event.target.value)}} style={controlStyle}>
+            <option value="recommended">Recommended</option><option value="rating">Highest rated</option><option value="name">Name A–Z</option>
+          </select>
+        </div>
+
+        <div style={{display:"flex",justifyContent:"space-between",gap:16,alignItems:"center",marginBottom:24,borderTop:`0.5px solid ${T.border}`,paddingTop:16}}>
+          <span style={{...type.kickerLg(),color:T.textMid}}>{filtered.length} hotel{filtered.length!==1?"s":""}{city?" in "+city:""}</span>
+          <span style={{...type.caption(),color:T.textDim}}>{ratesLoading?"Checking lowest live prices":"Public rates shown where available"}</span>
+        </div>
+
+        {loading ? <div style={{padding:"90px 0",textAlign:"center",...type.body(),color:T.textMid}}>Loading hotels…</div> : visibleHotels.length ? <div style={{display:"grid",gridTemplateColumns:mobile?"1fr":"repeat(auto-fill,minmax(310px,1fr))",gap:18}}>
+          {visibleHotels.map(function(hotel){
+            return <HotelCard key={hotel.id} hotel={hotel} rate={ratesByHotel[hotel.liteapi_id]} ratePending={ratesLoading&&!!hotel.liteapi_id} checkin={checkin} checkout={checkout} adults={adults}/>;
+          })}
+        </div> : <GlassCard style={{padding:"60px 24px",textAlign:"center"}}>
+          <h2 style={{...type.sectionSerif(),color:T.text,marginBottom:10}}>No matching hotels</h2>
+          <p style={{...type.body(),color:T.textMid}}>Change the city, dates or filters and try again.</p>
+        </GlassCard>}
+
+        {!loading&&visibleCount<filtered.length&&<div style={{display:"flex",justifyContent:"center",marginTop:34}}>
+          <button type="button" onClick={function(){setVisibleCount(function(count){return count+24})}} style={{...controlStyle,cursor:"pointer",padding:"13px 24px",...type.buttonSm()}}>Show more hotels ({filtered.length-visibleCount} remaining)</button>
         </div>}
-      </div>
+      </main>
 
       <CatalogSeoBody category="hotels"/>
     </div>

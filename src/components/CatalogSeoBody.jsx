@@ -95,16 +95,16 @@ var CONTENT = {
   },
   hotels:{
     italic:"hotel stays",
-    intro:"Browse hotels by city and style, then send Alfred your dates, guest count and room preferences. The concierge confirms current rates, room availability, cancellation terms and any eligible benefits.",
+    intro:"Browse hotels by city and style, choose dates and guest count, then compare the lowest current public rate where supplier coverage is available. Alfred rechecks the room, final total, cancellation terms and eligible benefits before booking.",
     sections:[
       {title:"What to include in a hotel request",body:"Send the city, check-in and check-out dates, number of rooms, adults and children, preferred room type and approximate budget. Add bedding, accessibility and location requirements."},
-      {title:"Rates and room availability",body:"Hotel inventory and prices change frequently. A catalog page does not guarantee a room or rate. Alfred confirms a specific room category, rate plan, taxes and cancellation policy before booking."},
+      {title:"Rates and room availability",body:"A displayed starting price is tied to the selected dates and occupancy and can change until booking. When no supplier rate is available, the page says price on request. Alfred confirms the room category, final total, taxes and cancellation policy before booking."},
       {title:"Benefits and special requests",body:"Breakfast, credits, upgrades, early check-in and late checkout depend on the rate, property and availability. Alfred lists confirmed benefits separately; requests that are not confirmed remain subject to the hotel."}
     ],
     faqs:[
       {q:"How do I request a hotel through Alfred?",a:"Send the city, dates, guest count, room requirements and budget. Alfred returns current room and rate options for approval."},
       {q:"Are upgrades and hotel credits guaranteed?",a:"Only benefits explicitly confirmed in the booking are included. Upgrades and arrival or departure times may remain subject to availability."},
-      {q:"Are catalog hotel prices live?",a:"No. Rates change by date, occupancy and room type. Alfred confirms the current total, taxes and cancellation terms for your stay."}
+      {q:"Are catalog hotel prices live?",a:"Where supplier coverage is available, the displayed starting rate is fetched for the selected dates and guest count. Rates can change until booking, and Alfred rechecks the final total, taxes and cancellation terms. Hotels without a current supplier rate are marked price on request."}
     ]
   }
 };

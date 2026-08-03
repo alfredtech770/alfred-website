@@ -63,6 +63,7 @@ export function hotelJsonLd(h, slug){
     "@context":"https://schema.org",
     "@type": h.category==="resort" ? "Resort" : "Hotel",
     "@id": url,
+    "identifier": h.liteapi_id || h.id || slug,
     "name": h.name,
     "description": h.description || (h.name + " — luxury hotel in " + (h.neighborhood || h.city || "Miami") + ". Book through Alfred Concierge for member benefits."),
     "url": url,

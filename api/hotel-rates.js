@@ -1,6 +1,17 @@
 // Vercel serverless function: live hotel rates via LiteAPI.
 // The API key lives ONLY in the LITEAPI_KEY env var (server-side). If it's
-// not configured, we return 503 and the page silently hides live pricing.
+// not configured, we return 503 and the page explains that pricing is on request.
+function firstMoney(value) {
+  return value && Array.isArray(value) && value[0] && Number.isFinite(Number(value[0].amount))
+    ? { amount: Number(value[0].amount), currency: value[0].currency || "USD" }
+    : null;
+}
+
+function publicMoney(rate) {
+  const retail = (rate && rate.retailRate) || {};
+  return firstMoney(retail.suggestedSellingPrice) || firstMoney(retail.total);
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   const { hotelId, checkin, checkout, adults } = req.query || {};
@@ -28,16 +39,27 @@ module.exports = async (req, res) => {
     const h = (j.data || [])[0];
     if (!h || !Array.isArray(h.roomTypes)) return res.status(200).json({ offers: [] });
 
-    // Cheapest offer per distinct room name.
+    // Cheapest public offer per distinct room name. A room type can contain
+    // several rates, so inspect every rate rather than assuming the first is
+    // the cheapest. Respect suggestedSellingPrice when LiteAPI supplies it.
     const best = {};
     for (const rt of h.roomTypes) {
-      const rate = (rt.rates || [])[0];
-      if (!rate) continue;
-      const total = ((rate.retailRate || {}).total || [])[0];
-      if (!total || total.amount == null) continue;
-      const name = rate.name || "Room";
-      if (!best[name] || total.amount < best[name].total) {
-        best[name] = { name, total: Math.round(total.amount), currency: total.currency || "USD" };
+      for (const rate of (rt.rates || [])) {
+        const total = publicMoney(rate);
+        if (!total || total.amount <= 0) continue;
+        const name = rate.name || rt.name || "Room";
+        const fees = rate.retailRate && rate.retailRate.taxesAndFees;
+        if (!best[name] || total.amount < best[name].total) {
+          best[name] = {
+            name,
+            total: Math.round(total.amount),
+            currency: total.currency,
+            taxesIncluded: Array.isArray(fees) && fees.length > 0
+              ? fees.every((fee) => fee.included === true)
+              : null,
+            refundable: !!(rate.cancellationPolicies && rate.cancellationPolicies.refundableTag === "RFN")
+          };
+        }
       }
     }
     const nights = Math.max(1, Math.round((new Date(checkout) - new Date(checkin)) / 86400000));
@@ -46,7 +68,7 @@ module.exports = async (req, res) => {
       .slice(0, 4)
       .map((o) => ({ ...o, perNight: Math.round(o.total / nights) }));
     res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
-    return res.status(200).json({ offers, nights });
+    return res.status(200).json({ offers, nights, checkin, checkout, adults: Math.min(8, Number(adults) || 2) });
   } catch (e) {
     return res.status(200).json({ offers: [] });
   }

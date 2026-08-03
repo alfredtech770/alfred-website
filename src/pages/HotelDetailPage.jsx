@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import DarkDatePicker from "../components/DarkDatePicker";
 import SEOHead from "../components/SEOHead";
 import { supabase } from "../lib/supabase";
@@ -8,7 +8,7 @@ import { hotelJsonLd } from "../lib/jsonld";
 var sf=function(s,w){return{fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif",fontSize:s,fontWeight:w||400,WebkitFontSmoothing:"antialiased"}};
 var C={bg:"#0A0A0B",el:"#18181B",srf:"#1F1F23",bd:"#2C2C31",s1:"#F4F4F5",s2:"#E4E4E7",s3:"#D4D4D8",s4:"#A1A1AA",s5:"#71717A",s6:"#52525B",s7:"#3F3F46",gn:"#34C759"};
 
-function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100" fill="none" style={{display:"block"}}><text x="50" y="80" textAnchor="middle" fontFamily="'Times New Roman','Didot','Bodoni 72',Georgia,serif" fontSize="92" fontStyle="italic" fontWeight="500" fill={p.color||C.s1}>A</text></svg>)}
+function Mark(p){return <span aria-hidden style={{width:p.size,height:p.size,border:"1px solid rgba(255,255,255,0.18)",borderRadius:"50%",display:"inline-flex",alignItems:"center",justifyContent:"center",...sf(8,500),color:p.color||C.s1}}>A</span>}
 // Callback-ref based visibility: re-attaches the observer whenever the DOM node mounts,
 // so async-loaded content (hotel data from Supabase) animates correctly.
 function useVis(){var[el,setEl]=useState(null);var[v,setV]=useState(false);useEffect(function(){if(!el)return;var o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(el);return function(){o.disconnect()}},[el]);return{ref:setEl,vis:v}}
@@ -16,16 +16,28 @@ function useVis(){var[el,setEl]=useState(null);var[v,setV]=useState(false);useEf
 export default function HotelDetailPage(){
   var {slug}=useParams();
   var nav=useNavigate();
+  var [searchParams]=useSearchParams();
   var [hotel,setHotel]=useState(null);
   var [loading,setLoading]=useState(true);
   var [idx,setIdx]=useState(0);
   var [lightbox,setLightbox]=useState(false);
   var [scrollY,setScrollY]=useState(0);
   var [loaded,setLoaded]=useState(false);
-  // Default check-in: three weeks from today (was a hardcoded past date).
-  var [date,setDate]=useState(function(){var d=new Date();d.setDate(d.getDate()+21);return d.toISOString().slice(0,10)});
-  var [nights,setNights]=useState("3");
-  var [guests,setGuests]=useState("2");
+  // Keep the itinerary selected on the catalog page when a user opens a hotel.
+  var [date,setDate]=useState(function(){
+    var requested=searchParams.get("checkin");
+    if(/^\d{4}-\d{2}-\d{2}$/.test(requested||""))return requested;
+    var d=new Date();d.setDate(d.getDate()+21);return d.toISOString().slice(0,10);
+  });
+  var [nights,setNights]=useState(function(){
+    var ci=searchParams.get("checkin"),co=searchParams.get("checkout");
+    if(/^\d{4}-\d{2}-\d{2}$/.test(ci||"")&&/^\d{4}-\d{2}-\d{2}$/.test(co||"")){
+      var count=Math.round((new Date(co+"T12:00:00")-new Date(ci+"T12:00:00"))/86400000);
+      if(count>=1&&count<=7)return String(count);
+    }
+    return "3";
+  });
+  var [guests,setGuests]=useState(function(){var value=Number(searchParams.get("adults"));return value>=1&&value<=4?String(value):"2"});
 
   var noteV=useVis();var noteRef=noteV.ref;var noteVis=noteV.vis;
   var factsV=useVis();var factsRef=factsV.ref;var factsVis=factsV.vis;
@@ -108,15 +120,37 @@ export default function HotelDetailPage(){
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
         title={V.name+" — Luxury Hotel "+(V.city||"Miami")+" | Alfred Concierge"}
-        description={(V.description||V.name+" — luxury hotel in "+(V.neighborhood||V.city||"Miami")+". Book through Alfred Concierge for exclusive perks, room upgrades, and VIP treatment.").slice(0,160)}
+        description={(V.description||V.name+" — hotel in "+(V.neighborhood||V.city||"Miami")+". Choose dates and ask Alfred to confirm current public rates, room availability and eligible benefits.").slice(0,160)}
         image={imgs[0]}
         path={"/catalog/hotels/"+slug}
         jsonLd={(function(){
           var schema = hotelJsonLd(V, slug);
-          // Augment with HotelRoom containment if available
-          if(V.rooms && V.rooms.length){
+          // Google Hotel price annotations must match the visible itinerary and
+          // include all mandatory taxes/fees. Only annotate supplier offers
+          // that explicitly confirm included fees; otherwise omit the price.
+          var pricedRates = rates&&rates.offers ? rates.offers.filter(function(offer){return offer.taxesIncluded===true}) : [];
+          if(pricedRates.length){
+            var checkinClock=String(V.checkin_time||"15:00").slice(0,5);
+            var checkoutClock=String(V.checkout_time||"11:00").slice(0,5);
+            schema[0].containsPlace=pricedRates.slice(0,3).map(function(offer,index){
+              return {
+                "@type":["HotelRoom","Product"],
+                "name":offer.name,
+                "identifier":V.liteapi_id+"-rate-"+index,
+                "occupancy":{"@type":"QuantitativeValue","value":rates.adults||2},
+                "offers":{
+                  "@type":["Offer","LodgingReservation"],
+                  "checkinTime":rates.checkin+"T"+checkinClock+":00",
+                  "checkoutTime":rates.checkout+"T"+checkoutClock+":00",
+                  "availability":"https://schema.org/InStock",
+                  "priceSpecification":{"@type":"CompoundPriceSpecification","price":offer.total,"priceCurrency":offer.currency},
+                  "url":"https://alfredconcierge.app/catalog/hotels/"+slug+"?checkin="+rates.checkin+"&checkout="+rates.checkout+"&adults="+(rates.adults||2)
+                }
+              };
+            });
+          } else if(V.rooms && V.rooms.length){
             schema[0].containsPlace = V.rooms.map(function(r){
-              return {"@type":"HotelRoom","name":r.name,"description":r.description,"occupancy":{"@type":"QuantitativeValue","maxValue":r.max_guests}};
+              return {"@type":"HotelRoom","name":r.name||r.title||r.room_name||"Hotel room","description":r.description,"occupancy":{"@type":"QuantitativeValue","maxValue":r.max_guests}};
             });
           }
           return schema;
@@ -239,7 +273,7 @@ export default function HotelDetailPage(){
                 <div style={{height:0.5,background:C.bd,marginBottom:18}}/>
                 <div style={{display:"flex",gap:8,alignItems:"flex-start"}}>
                   <span style={{...sf(13),color:C.s6,marginTop:1}}>✨</span>
-                  <span style={{...sf(13),color:C.s5,lineHeight:1.6}}>Mention Alfred at check-in for VIP recognition, room upgrade subject to availability, and the perks listed below.</span>
+                  <span style={{...sf(13),color:C.s5,lineHeight:1.6}}>Ask Alfred to confirm which benefits apply to the selected rate; unconfirmed requests remain subject to the hotel.</span>
                 </div>
               </div>
             </div>}
@@ -278,8 +312,8 @@ export default function HotelDetailPage(){
                 {ratesLoading&&<div style={{...sf(11),color:C.s6,textAlign:"center",marginBottom:14}}>Checking live rates…</div>}
                 {!ratesLoading&&rates&&rates.offers&&rates.offers.length>0&&<div style={{marginBottom:18}}>
                   <div style={{display:"flex",alignItems:"baseline",gap:6,marginBottom:10}}>
-                    <span style={{...sf(20,700),color:C.s1}}>${rates.offers[0].perNight.toLocaleString("en-US")}</span>
-                    <span style={{...sf(11),color:C.s5}}>/ night · live rate</span>
+                    <span style={{...sf(20,700),color:C.s1}}>From ${rates.offers[0].perNight.toLocaleString("en-US")}</span>
+                    <span style={{...sf(11),color:C.s5}}>/ night · lowest public rate found</span>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:4}}>
                     {rates.offers.slice(0,3).map(function(o,i){return(
@@ -289,6 +323,13 @@ export default function HotelDetailPage(){
                       </div>
                     )})}
                   </div>
+                  <div style={{...sf(10),color:C.s6,lineHeight:1.5,marginTop:9}}>
+                    {rates.offers[0].taxesIncluded===true?"Taxes and fees included as returned by the supplier.":"Additional taxes or property fees may apply. Final total is rechecked before booking."}
+                  </div>
+                </div>}
+                {!ratesLoading&&(!rates||!rates.offers||!rates.offers.length)&&<div style={{marginBottom:16,padding:"11px 12px",borderRadius:10,background:"rgba(244,244,245,0.03)",border:"1px solid "+C.bd}}>
+                  <div style={{...sf(12,600),color:C.s2}}>Price on request</div>
+                  <div style={{...sf(10),color:C.s6,marginTop:4}}>No live supplier rate is available for this itinerary. Alfred can check alternatives.</div>
                 </div>}
 
                 {/* Primary CTA */}
@@ -348,12 +389,13 @@ export default function HotelDetailPage(){
         </div>
         <p style={{...sf(13),color:C.s5,marginBottom:18,opacity:roomsVis?1:0,transition:"all 0.8s ease 0.1s"}}>Tap any room to request the best available rate from your Alfred concierge.</p>
         <div className="rooms-g" style={{opacity:roomsVis?1:0,transform:roomsVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.15s"}}>
-          {V.rooms.map(function(r){
-            var msg=encodeURIComponent("Hi Alfred — I'd like to request the best available rate for the "+r.name+" at "+V.name+".");
-            return(<a key={r.id} href={"https://wa.me/33743713649?text="+msg} target="_blank" rel="noopener noreferrer" style={{display:"block",borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",textDecoration:"none",transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+          {V.rooms.map(function(r,roomIndex){
+            var roomName=r.name||r.title||r.room_name||r.category||"selected room";
+            var msg=encodeURIComponent("Hi Alfred — I'd like to request the best available rate for the "+roomName+" at "+V.name+".");
+            return(<a key={r.id||roomName+roomIndex} href={"https://wa.me/33743713649?text="+msg} target="_blank" rel="noopener noreferrer" style={{display:"block",borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",textDecoration:"none",transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
               {r.hero_image_url&&<div style={{height:180,background:"#222 url("+r.hero_image_url+") center/cover"}}/>}
               <div style={{padding:"22px 22px"}}>
-                <div style={{...sf(17,700),color:C.s1,marginBottom:6}}>{r.name}</div>
+                <div style={{...sf(17,700),color:C.s1,marginBottom:6}}>{roomName}</div>
                 <div style={{...sf(12),color:C.s5,marginBottom:12,lineHeight:1.5}}>
                   {r.bed_config}
                   {r.max_guests?" · "+r.max_guests+" guests":""}
@@ -394,7 +436,7 @@ export default function HotelDetailPage(){
         {secDiv}
         <div style={{paddingTop:48,textAlign:"center",opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease"}}>
           <h2 style={{...sf(28,700),letterSpacing:-1,color:C.s1,marginBottom:10}}>Ready to book {V.name}?</h2>
-          <p style={{...sf(14),color:C.s5,marginBottom:24,maxWidth:520,margin:"0 auto 24px"}}>Your Alfred concierge will secure the best available rate, room upgrade subject to availability, and every perk listed above.</p>
+          <p style={{...sf(14),color:C.s5,marginBottom:24,maxWidth:520,margin:"0 auto 24px"}}>Ask Alfred to confirm the current room, final total, cancellation terms and any eligible benefits before you commit.</p>
           <a href={waHref} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"15px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,textDecoration:"none",transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 36px rgba(244,244,245,0.12)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
             Contact Alfred on WhatsApp
