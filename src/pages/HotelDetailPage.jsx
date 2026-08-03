@@ -108,6 +108,7 @@ export default function HotelDetailPage(){
   var waHref="https://wa.me/33743713649?text="+waMsg;
   var stars=V.star_rating||5;
   var category=V.category==="resort"?"Resort":"Hotel";
+  var locationText=[V.neighborhood,V.city||"Miami"].filter(Boolean).filter(function(value,index,values){return values.indexOf(value)===index}).join(", ");
 
   var facts=[
     {icon:"★",label:"Rating",value:stars+" stars"},
@@ -241,13 +242,13 @@ export default function HotelDetailPage(){
                 {V.status==="coming_soon"&&<span style={{...sf(9,600),letterSpacing:0.8,color:C.s2,padding:"4px 10px",borderRadius:8,background:"rgba(255,255,255,0.05)",border:"0.5px solid rgba(255,255,255,0.1)"}}>COMING SOON{V.opening_date?" · "+V.opening_date:""}</span>}
               </div>
               <h1 className="hd-name" style={{...sf(38,700),letterSpacing:-1.5,marginBottom:8}}>{V.name}</h1>
-              <p style={{...sf(16,300),color:C.s5,marginBottom:16}}>{V.neighborhood}, {V.city||"Miami"} · {category}</p>
+              <p style={{...sf(16,300),color:C.s5,marginBottom:16}}>{locationText} · {category}</p>
               <div style={{display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
                 <div style={{display:"flex",alignItems:"center",gap:5}}>
                   {[1,2,3,4,5].slice(0,stars).map(function(i){return <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill={C.s3} stroke={C.s3} strokeWidth="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>})}
                 </div>
                 <div style={{width:1,height:14,background:C.bd}}/>
-                <span style={{...sf(13),color:C.s4}}>{V.neighborhood}</span>
+                <span style={{...sf(13),color:C.s4}}>{V.neighborhood||V.city||"—"}</span>
                 <div style={{width:1,height:14,background:C.bd}}/>
                 <span style={{...sf(13,500),color:C.s4}}>{category}</span>
               </div>
