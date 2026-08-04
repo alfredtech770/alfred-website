@@ -17,6 +17,7 @@ for (const match of xml.matchAll(/<url>\s*[\s\S]*?<\/url>/g)) {
     .replace(/\s*<priority>[^<]*<\/priority>/g, "");
   const loc = block.match(/<loc>([^<]+)<\/loc>/);
   if (!loc || !/^https:\/\/alfredconcierge\.app(?:\/|$)/.test(loc[1])) continue;
+  if (loc[1].replace(/\/$/, "") === "https://alfredconcierge.app/membership") continue;
   const key = loc[1].replace(/\/$/, "") || "https://alfredconcierge.app";
   if (seen.has(key)) continue;
   seen.add(key);

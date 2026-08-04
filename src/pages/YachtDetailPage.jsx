@@ -115,7 +115,7 @@ export default function YachtDetailPage(){
   };
 
   var tier=getTier(hours);var total=getPrice(yacht,tier);
-  var requestUrl="https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'd like to request the "+YACHT.name+" on "+pickup+" for "+hours+" hours. Please confirm availability, inclusions and final pricing.");
+  var requestUrl="https://wa.me/33650938152?text="+encodeURIComponent("Hi Alfred, I'd like to request the "+YACHT.name+" on "+pickup+" for "+hours+" hours. Please confirm availability, inclusions and final pricing.");
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var inputS={padding:"14px 16px",borderRadius:14,background:C.bg,border:"1px solid "+C.bd,color:C.s1,...sf(14,500),outline:"none",width:"100%",colorScheme:"dark",WebkitAppearance:"none",appearance:"none"};

@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/membership", "destination": "/pricing", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/((?!api/)(?!\\.well-known/).*)", "destination": "/index.html" }
   ],

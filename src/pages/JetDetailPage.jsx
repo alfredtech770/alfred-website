@@ -693,7 +693,7 @@ export default function JetDetailPage(){
 
   var navOp=Math.min(scrollY/250,1);var heroY=scrollY*0.25;var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
-  var requestUrl="https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'd like a charter quote for the "+J.name+" from "+from+" to "+to+" on "+date+" for "+pax+" passengers ("+tripType+"). Could you confirm options and pricing?");
+  var requestUrl="https://wa.me/33650938152?text="+encodeURIComponent("Hi Alfred, I'd like a charter quote for the "+J.name+" from "+from+" to "+to+" on "+date+" for "+pax+" passengers ("+tripType+"). Could you confirm options and pricing?");
 
   if(!foundJet){
     return <div style={{minHeight:"100vh",background:C.bg,color:C.s1,padding:"140px 24px",textAlign:"center",...sf(15)}}>

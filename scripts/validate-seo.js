@@ -41,6 +41,7 @@ const catalogBody = read("src/components/CatalogSeoBody.jsx");
 const jsonld = read("src/lib/jsonld.js");
 const llms = read("public/llms.txt");
 const sitemap = read("public/sitemap.xml");
+const sitemapGenerator = read("scripts/gen-product-sitemap.js");
 const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].replace(/\/$/, ""));
 
 if ((index.match(/rel="canonical"/g) || []).length !== 1) failures.push("index.html must contain exactly one canonical");
@@ -65,6 +66,7 @@ if (!/LITTLE_EMPERORS_RATES_ENDPOINT=/.test(envExample) || !/LITTLE_EMPERORS_API
 if (!/hotel-min-rates/.test(hotels) || !/From \{money\(rate\.perNight/.test(hotels)) failures.push("hotel cards are missing itinerary-specific starting prices");
 if (!/fetchPartnerRates/.test(hotelMinRates) || !/publicRate !== true/.test(hotelRateProvider) || !/bookable !== true/.test(hotelRateProvider)) failures.push("hotel listing rates are not restricted to authorised public, bookable partner offers");
 if (!/CompoundPriceSpecification/.test(hotelDetail) || !/taxesIncluded===true/.test(hotelDetail)) failures.push("hotel price schema must be limited to fee-inclusive supplier rates");
+if (!/Hotel Not Found \| Alfred Concierge[\s\S]{0,220}noindex/.test(hotelDetail)) failures.push("missing hotel detail pages must emit noindex metadata");
 if (/\+r\.name\+/.test(hotelDetail)) failures.push("hotel room requests can still contain an undefined room name");
 if (!/ad_user_data/.test(consent) || !/ad_personalization/.test(consent)) failures.push("Google consent mode v2 signals are incomplete");
 if (!/Necessary only/.test(cookieConsent) || !/Save choices/.test(cookieConsent)) failures.push("granular cookie choices are missing");
@@ -97,11 +99,15 @@ if (!/city\/ibiza\/hotels/.test(llms) || !/city\/saint-tropez\/restaurants/.test
 if (!/encodeURIComponent\(city\)/.test(cityData) || !/\?city=/.test(cityData)) failures.push("city guides do not deep-link to city-filtered catalogs");
 if (/LocalBusiness|streetAddress|openingHoursSpecification/.test(cityData)) failures.push("city schema invents a physical Alfred location");
 if (/direct relationships|guaranteed access|guaranteed entry|fixed price/i.test(cityData)) failures.push("unsupported city-page claims remain");
+if (/33743713649/.test(index + app + llms + hotelDetail + dining + nightlife + wellness + yachts + exoticCars)) failures.push("the retired WhatsApp number remains in public website content");
+if (!/33650938152/.test(index) || !/33650938152/.test(llms)) failures.push("the confirmed Alfred WhatsApp number is missing from index.html or llms.txt");
 if (/direct relationships at every venue|waived advance payments|VIP flags in venue systems|every door open/i.test(about)) failures.push("unsupported About-page claims remain");
 if (/booking confirmations in under|200\+ Michelin|concierge guarantee|valet is waived|VIP flag/i.test(howItWorks)) failures.push("unsupported How-it-Works claims remain");
 if (/waived advance payment|VIP table placement|pays for itself|Most Popular|Every door open/i.test(pricing)) failures.push("unsupported pricing claims remain");
 if (/Under (?:5|15) minutes|24\/7|Replies within four business hours/i.test(contact)) failures.push("unsupported contact response-time claims remain");
 if (locs.some((url) => /\/(?:events|blog)(?:\/|$)/.test(url))) failures.push("unverified event or editorial URLs remain in the sitemap");
+if (locs.includes("https://alfredconcierge.app/membership")) failures.push("the obsolete /membership URL remains in the sitemap");
+if (!/yachtIds/.test(sitemapGenerator) || !/inactive or renamed records becoming soft 404s/.test(sitemapGenerator)) failures.push("the sitemap generator does not replace stale data-driven yacht and catalog URLs");
 if (/X-Robots-Tag[\s\S]{0,120}index, follow/.test(vercel)) failures.push("Vercel forces index headers across noindex pages");
 if (!/X-Robots-Tag[\s\S]{0,80}noindex, nofollow/.test(vercel)) failures.push("private routes need an HTTP noindex header");
 for (const [name,source] of [["dining",dining],["nightlife",nightlife],["wellness",wellness],["yachts",yachts]]) {

@@ -46,3 +46,4 @@ scripts/.backfill-progress.ndjson
 scripts/.photo-updates/
 scripts/.photo-compact/
 scripts/.photo-fetch-done.txt
+.vercel

@@ -100,7 +100,7 @@ export default function CarPartnersPage(){
       <SectionHeader align="center" kicker="NEXT STEP" title="Tell us where you operate and how your inventory is managed" subtitle="We review the service area, licensing, insurance, fulfilment process and commercial terms before a listing or integration goes live."/>
       <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
         <PrimaryCTA href="/business?category=Exotic%20Cars#apply">Apply now</PrimaryCTA>
-        <GhostCTA href="https://wa.me/33743713649?text=Hi%20Alfred%2C%20I%27d%20like%20to%20discuss%20a%20car%20rental%20fleet%20partnership.">WhatsApp partnerships</GhostCTA>
+        <GhostCTA href="https://wa.me/33650938152?text=Hi%20Alfred%2C%20I%27d%20like%20to%20discuss%20a%20car%20rental%20fleet%20partnership.">WhatsApp partnerships</GhostCTA>
       </div>
       <p style={{...type.body(),color:T.textDim,marginTop:24}}>Approval, placement and request volume are not guaranteed. Commercial terms are agreed in writing before activation.</p>
     </section>

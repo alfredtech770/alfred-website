@@ -66,7 +66,7 @@ export default function JetsPage(){
             })}
           </div>
 
-          <a href="https://wa.me/33743713649?text=Hi%20Alfred%2C%20I%27d%20like%20help%20with%20a%20private%20jet%20request.%20Please%20confirm%20current%20aircraft%20options%2C%20pricing%20and%20terms." target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",padding:"14px 28px",borderRadius:12,background:C.gd,...sf(15,700),color:"#000",textDecoration:"none"}}>Send a jet request</a>
+          <a href="https://wa.me/33650938152?text=Hi%20Alfred%2C%20I%27d%20like%20help%20with%20a%20private%20jet%20request.%20Please%20confirm%20current%20aircraft%20options%2C%20pricing%20and%20terms." target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",padding:"14px 28px",borderRadius:12,background:C.gd,...sf(15,700),color:"#000",textDecoration:"none"}}>Send a jet request</a>
         </div>
       </div>
 

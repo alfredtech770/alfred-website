@@ -1512,7 +1512,7 @@ export var BLOG_POSTS=[
     date:"2026-04-13",readingTime:7,category:"Dining",
     keywords:"best steakhouses miami, papi steak, prime 112, steak miami",
     image:"https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&h=630&fit=crop",
-    content:`<h1>The Best Steakhouses in Miami 2026</h1><p>Miami takes its steak seriously. From celebrity-packed tables at Papi Steak to the timeless elegance of Prime 112, the city offers a steakhouse for every occasion.</p><h2>Papi Steak</h2><p>David Grutman's Papi Steak in South Beach has become the steakhouse of the moment. The wagyu tomahawk is legendary, the truffle mac and cheese is addictive, and the energy rivals any nightclub.</p><h2>Prime 112</h2><p>Located in the historic Browns Hotel on Collins Avenue, this South Beach institution has been serving perfect cuts since 2004. The bone-in filet is their signature.</p><h2>Meat Market</h2><p>On Lincoln Road, Meat Market combines prime cuts with a trendy atmosphere. The Japanese A5 wagyu is a splurge worth every penny.</p><h2>Red The Steakhouse</h2><p>Dark, moody, and sophisticated. Their surf and turf combinations are some of the best in the city.</p><p><a href="/catalog/dining" style="color:#FFD60A">Browse all restaurants</a> or contact Alfred on <a href="https://wa.me/33743713649" style="color:#FFD60A">WhatsApp</a>.</p>`
+    content:`<h1>The Best Steakhouses in Miami 2026</h1><p>Miami takes its steak seriously. From celebrity-packed tables at Papi Steak to the timeless elegance of Prime 112, the city offers a steakhouse for every occasion.</p><h2>Papi Steak</h2><p>David Grutman's Papi Steak in South Beach has become the steakhouse of the moment. The wagyu tomahawk is legendary, the truffle mac and cheese is addictive, and the energy rivals any nightclub.</p><h2>Prime 112</h2><p>Located in the historic Browns Hotel on Collins Avenue, this South Beach institution has been serving perfect cuts since 2004. The bone-in filet is their signature.</p><h2>Meat Market</h2><p>On Lincoln Road, Meat Market combines prime cuts with a trendy atmosphere. The Japanese A5 wagyu is a splurge worth every penny.</p><h2>Red The Steakhouse</h2><p>Dark, moody, and sophisticated. Their surf and turf combinations are some of the best in the city.</p><p><a href="/catalog/dining" style="color:#FFD60A">Browse all restaurants</a> or contact Alfred on <a href="https://wa.me/33650938152" style="color:#FFD60A">WhatsApp</a>.</p>`
   },
   {
     slug:"miami-art-basel-2026-guide",
@@ -1566,7 +1566,7 @@ export var BLOG_POSTS=[
     date:"2026-04-13",readingTime:9,category:"Travel",
     keywords:"luxury dubai, dubai concierge, dubai restaurants nightlife",
     image:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200&h=630&fit=crop",
-    content:`<h1>Dubai Luxury Concierge Guide 2026</h1><p>Dubai is the world's playground for luxury.</p><h2>Hotels</h2><p>Burj Al Arab, Atlantis The Royal, One&Only The Palm.</p><h2>Restaurants</h2><p>Nobu, Zuma DIFC, Cipriani, La Petite Maison.</p><h2>Nightlife</h2><p>White Dubai, Cavalli Club, Base.</p><h2>Supercars</h2><p>Lamborghini and Ferrari delivered to your hotel.</p><p>Contact Alfred on <a href="https://wa.me/33743713649" style="color:#FFD60A">WhatsApp</a>.</p>`
+    content:`<h1>Dubai Luxury Concierge Guide 2026</h1><p>Dubai is the world's playground for luxury.</p><h2>Hotels</h2><p>Burj Al Arab, Atlantis The Royal, One&Only The Palm.</p><h2>Restaurants</h2><p>Nobu, Zuma DIFC, Cipriani, La Petite Maison.</p><h2>Nightlife</h2><p>White Dubai, Cavalli Club, Base.</p><h2>Supercars</h2><p>Lamborghini and Ferrari delivered to your hotel.</p><p>Contact Alfred on <a href="https://wa.me/33650938152" style="color:#FFD60A">WhatsApp</a>.</p>`
   },
   {
     slug:"paris-michelin-restaurants-2026",
@@ -1584,7 +1584,7 @@ export var BLOG_POSTS=[
     date:"2026-04-13",readingTime:8,category:"Events",
     keywords:"luxury wedding miami, miami wedding venues, wedding planning miami",
     image:"https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=630&fit=crop",
-    content:`<h1>Planning a Luxury Wedding in Miami</h1><p>Miami offers everything for a dream wedding.</p><h2>Venues</h2><p>Vizcaya, Faena, 1 Hotel, PAMM.</p><h2>Yacht Weddings</h2><p><a href="/catalog/yachts" style="color:#FFD60A">Browse yachts</a>.</p><h2>After-Party</h2><p>VIP at LIV, private Wynwood venue, late-night yacht cruise. <a href="/catalog/nightlife" style="color:#FFD60A">See nightlife</a>.</p><p>Contact Alfred on <a href="https://wa.me/33743713649" style="color:#FFD60A">WhatsApp</a>.</p>`
+    content:`<h1>Planning a Luxury Wedding in Miami</h1><p>Miami offers everything for a dream wedding.</p><h2>Venues</h2><p>Vizcaya, Faena, 1 Hotel, PAMM.</p><h2>Yacht Weddings</h2><p><a href="/catalog/yachts" style="color:#FFD60A">Browse yachts</a>.</p><h2>After-Party</h2><p>VIP at LIV, private Wynwood venue, late-night yacht cruise. <a href="/catalog/nightlife" style="color:#FFD60A">See nightlife</a>.</p><p>Contact Alfred on <a href="https://wa.me/33650938152" style="color:#FFD60A">WhatsApp</a>.</p>`
   },
   {
     slug:"best-beach-clubs-miami-2026",
@@ -1593,7 +1593,7 @@ export var BLOG_POSTS=[
     date:"2026-04-13",readingTime:7,category:"Nightlife",
     keywords:"beach clubs miami, pool party miami, nikki beach, miami day party",
     image:"https://images.unsplash.com/photo-1540541338287-41700207dee6?w=1200&h=630&fit=crop",
-    content:`<h1>Best Beach Clubs in Miami 2026</h1><p>Miami's daytime scene is as legendary as its nightlife.</p><h2>Nikki Beach</h2><p>The original. Sunday brunch with champagne and international DJs.</p><h2>1 Beach Club</h2><p>Eco-luxury meets South Beach. Organic cocktails, farm-to-table food.</p><h2>Fontainebleau Pool</h2><p>Multiple pools, cabanas, bottle service. The Tidal Pool is VIP.</p><h2>Hyde Beach at SLS</h2><p>High-energy weekend pool parties with top DJs.</p><p>Contact Alfred on <a href="https://wa.me/33743713649" style="color:#FFD60A">WhatsApp</a> for cabana reservations.</p>`
+    content:`<h1>Best Beach Clubs in Miami 2026</h1><p>Miami's daytime scene is as legendary as its nightlife.</p><h2>Nikki Beach</h2><p>The original. Sunday brunch with champagne and international DJs.</p><h2>1 Beach Club</h2><p>Eco-luxury meets South Beach. Organic cocktails, farm-to-table food.</p><h2>Fontainebleau Pool</h2><p>Multiple pools, cabanas, bottle service. The Tidal Pool is VIP.</p><h2>Hyde Beach at SLS</h2><p>High-energy weekend pool parties with top DJs.</p><p>Contact Alfred on <a href="https://wa.me/33650938152" style="color:#FFD60A">WhatsApp</a> for cabana reservations.</p>`
   }
 ];
 

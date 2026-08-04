@@ -9,7 +9,7 @@ import {
 import CITY_GUIDES from "../data/cities";
 
 var APP_STORE = "https://apps.apple.com/app/id6759160130";
-var WHATSAPP = "https://wa.me/33743713649";
+var WHATSAPP = "https://wa.me/33650938152";
 
 var DESTINATIONS = [
   {name:"Miami", slug:"miami"},

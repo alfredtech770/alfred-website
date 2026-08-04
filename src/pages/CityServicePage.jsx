@@ -7,7 +7,7 @@ import CITY_GUIDES from "../data/cities";
 import CITY_SERVICES, { CITY_SERVICE_ORDER, catalogHref } from "../data/cityServices";
 
 var APP_STORE="https://apps.apple.com/app/id6759160130";
-var WHATSAPP="https://wa.me/33743713649";
+var WHATSAPP="https://wa.me/33650938152";
 var CITY_ORDER=["miami","paris","ibiza","saint-tropez","mykonos","dubai","london"];
 
 function requestUrl(city,service){

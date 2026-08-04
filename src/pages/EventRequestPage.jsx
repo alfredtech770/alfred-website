@@ -22,7 +22,7 @@ export default function EventRequestPage(){
       <p style={{fontSize:16,lineHeight:1.7,color:"#A1A1AA",margin:"0 0 16px"}}>Alfred can check current event, ticket and hospitality options using your date, group size and preferences. This page does not represent live inventory or guaranteed access.</p>
       <p style={{fontSize:14,lineHeight:1.7,color:"#71717A",margin:"0 0 30px"}}>The provider must confirm the event date, ticket source, seat or hospitality details, price, fees and cancellation terms before you approve a request.</p>
       <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-        <a href={"https://wa.me/33743713649?text="+encodeURIComponent(message)} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",padding:"14px 22px",borderRadius:12,background:"#F4F4F5",color:"#0A0A0B",fontSize:14,fontWeight:650,textDecoration:"none"}}>Ask Alfred on WhatsApp</a>
+        <a href={"https://wa.me/33650938152?text="+encodeURIComponent(message)} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",padding:"14px 22px",borderRadius:12,background:"#F4F4F5",color:"#0A0A0B",fontSize:14,fontWeight:650,textDecoration:"none"}}>Ask Alfred on WhatsApp</a>
         <a href="/catalog" style={{display:"inline-flex",padding:"14px 22px",borderRadius:12,border:"1px solid #3F3F46",color:"#D4D4D8",fontSize:14,fontWeight:600,textDecoration:"none"}}>Browse the catalog</a>
       </div>
     </div>

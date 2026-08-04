@@ -95,6 +95,7 @@ export default function HotelDetailPage(){
   }
   if(!hotel){
     return(<div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
+      <SEOHead title="Hotel Not Found | Alfred Concierge" description="This hotel is not currently listed. Browse Alfred's available hotel catalog." path={"/catalog/hotels/"+slug} noindex/>
       <p style={{...sf(18),color:C.s3}}>Hotel not found</p>
       <button onClick={function(){nav("/catalog/hotels")}} style={{padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(14,500),color:C.s3,cursor:"pointer"}}>Browse Hotels</button>
     </div>);
@@ -106,7 +107,7 @@ export default function HotelDetailPage(){
   var heroScale=1+scrollY*0.0003;
   var secDiv=<div style={{height:1,background:"linear-gradient(90deg,transparent,"+C.bd+" 20%,"+C.bd+" 80%,transparent)"}}/>;
   var waMsg=encodeURIComponent("Hi Alfred, I'd like to arrange a stay at "+V.name+" — check-in "+date+", "+nights+" night(s), "+guests+" guest(s)"+(rates&&rates.offers&&rates.offers[0]?" (I saw from $"+rates.offers[0].perNight+"/night)":"")+". Could you help with availability and the best rate?");
-  var waHref="https://wa.me/33743713649?text="+waMsg;
+  var waHref="https://wa.me/33650938152?text="+waMsg;
   var stars=V.star_rating||5;
   var category=V.category==="resort"?"Resort":"Hotel";
   var locationText=[V.neighborhood,V.city||"Miami"].filter(Boolean).filter(function(value,index,values){return values.indexOf(value)===index}).join(", ");
@@ -394,7 +395,7 @@ export default function HotelDetailPage(){
           {V.rooms.map(function(r,roomIndex){
             var roomName=r.name||r.title||r.room_name||r.category||"selected room";
             var msg=encodeURIComponent("Hi Alfred — I'd like to request the best available rate for the "+roomName+" at "+V.name+".");
-            return(<a key={r.id||roomName+roomIndex} href={"https://wa.me/33743713649?text="+msg} target="_blank" rel="noopener noreferrer" style={{display:"block",borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",textDecoration:"none",transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
+            return(<a key={r.id||roomName+roomIndex} href={"https://wa.me/33650938152?text="+msg} target="_blank" rel="noopener noreferrer" style={{display:"block",borderRadius:20,background:C.el,border:"1px solid "+C.bd,overflow:"hidden",textDecoration:"none",transition:"all 0.4s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s7;e.currentTarget.style.transform="translateY(-4px)"}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.transform="translateY(0)"}}>
               {r.hero_image_url&&<div style={{height:180,background:"#222 url("+r.hero_image_url+") center/cover"}}/>}
               <div style={{padding:"22px 22px"}}>
                 <div style={{...sf(17,700),color:C.s1,marginBottom:6}}>{roomName}</div>

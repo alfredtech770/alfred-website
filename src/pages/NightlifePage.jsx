@@ -25,7 +25,7 @@ function mapNightclub(row){
     rating:row.rating||null,
     reviews:row.review_count||null,
     tableMin:row.price_level||"$$$$",
-    img:row.hero_image_url||"",
+    img:row.hero_image_url||"/og-nightlife.jpg",
     tagline:row.crowd_type||row.best_night||"",
     slug:row.slug||String(row.id),
     available:row.is_active!==false,
@@ -182,7 +182,7 @@ export default function NightlifePage(){
       try{
         var {data,error:err}=await supabase
           .from("nightclubs")
-          .select("id,name,slug,city,category,hero_image_url,rating,review_count,vibe,music,reservation,entry_type,price_level,crowd_type,best_night,opening_hours,capacity,is_active,is_featured")
+          .select("*")
           .eq("is_active",true)
           .order("is_featured",{ascending:false})
           .order("name",{ascending:true});
@@ -335,7 +335,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.6);cursor:
           <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:16,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Need a table<br/>tonight?</h2>
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Last-minute tables, private rooms, and guestlists. Alfred handles the door — you just show up.</p>
           <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}}>
-            <div onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I need a table or guestlist spot tonight. Could you help arrange it?"),"_blank")}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Ask Alfred</div>
+            <div onClick={function(){window.open("https://wa.me/33650938152?text="+encodeURIComponent("Hi Alfred, I need a table or guestlist spot tonight. Could you help arrange it?"),"_blank")}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Ask Alfred</div>
             <a href="/catalog" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>Back to Catalog</a>
           </div>
         </div>

@@ -52,7 +52,7 @@ Alfred provides a browsable catalog and concierge request service. A visitor can
 ## Contact and official links
 
 - Website: https://alfredconcierge.app/
-- WhatsApp requests: https://wa.me/33743713649
+- WhatsApp requests: https://wa.me/33650938152
 - iOS app: https://apps.apple.com/app/alfred-concierge/id6759160130
 - About: https://alfredconcierge.app/about
 - How it works: https://alfredconcierge.app/how-it-works

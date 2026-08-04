@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Adds product detail URLs (exotic cars + hotels) to public/sitemap.xml.
+ * Rebuilds all data-driven detail URLs in public/sitemap.xml.
  *
  * - Cars: slug must match the site's routing exactly — slugify(brand+name),
  *   skipping the brand prefix when the name already starts with it
@@ -73,6 +73,10 @@ const entry = (loc) => `  <url><loc>${loc}</loc></url>`;
   const spas = await fetchAll('wellness', 'slug,is_active');
   const spaSlugs = [...new Set(spas.filter((r) => r.slug && r.is_active !== false).map((r) => r.slug))].sort();
 
+  // Yacht details resolve by the database id used in the route.
+  const yachts = await fetchAll('yachts', 'id,is_active');
+  const yachtIds = [...new Set(yachts.filter((r) => r.id && r.is_active !== false).map((r) => String(r.id)))].sort();
+
   // Restaurants: slugs are unique (backfilled), DiningDetailPage fetches by slug.
   const rests = await fetchAll('restaurants', 'slug,is_active');
   const restSlugs = [...new Set(rests.filter((r) => r.slug && r.is_active !== false).map((r) => r.slug))].sort();
@@ -84,20 +88,18 @@ const entry = (loc) => `  <url><loc>${loc}</loc></url>`;
     ...hotelSlugs.map((s) => entry(`${BASE}/catalog/hotels/${s}`, '0.7')),
     ...clubSlugs.map((s) => entry(`${BASE}/catalog/nightlife/${s}`, '0.8')),
     ...spaSlugs.map((s) => entry(`${BASE}/catalog/wellness/${s}`, '0.7')),
+    ...yachtIds.map((id) => entry(`${BASE}/catalog/yachts/${id}`, '0.8')),
     '  <!-- END generated -->',
   ].join('\n');
 
   let xml = fs.readFileSync(SITEMAP, 'utf8');
   xml = xml.replace(/\s*<!-- BEGIN generated:[\s\S]*?<!-- END generated -->/g, '');
-  // Drop legacy hand-written nightlife detail entries (pre-DB pretty slugs that
-  // rendered a hardcoded placeholder); the generated block replaces them.
-  xml = xml.replace(/\s*<url>\s*<loc>https:\/\/alfredconcierge\.app\/catalog\/nightlife\/[a-z0-9-]+<\/loc>[\s\S]*?<\/url>/g, '');
-  // Drop legacy dining detail entries too — they covered only 521 of the 741
-  // slugged restaurants; the generated block covers all active ones.
-  xml = xml.replace(/\s*<url>\s*<loc>https:\/\/alfredconcierge\.app\/catalog\/dining\/[^<]+<\/loc>[\s\S]*?<\/url>/g, '');
+  // Remove every previous data-driven detail entry before adding the fresh
+  // database set. This prevents inactive or renamed records becoming soft 404s.
+  xml = xml.replace(/\s*<url>\s*<loc>https:\/\/alfredconcierge\.app\/catalog\/(?:dining|exotic-cars|hotels|nightlife|wellness|yachts)\/[^<]+<\/loc>[\s\S]*?<\/url>/g, '');
   xml = xml.replace(/<\/urlset>/, `${block}\n</urlset>`);
   fs.writeFileSync(SITEMAP, xml, 'utf8');
 
-  console.log(`cars: ${carSlugs.length}, hotels: ${hotelSlugs.length}, nightlife: ${clubSlugs.length}, wellness: ${spaSlugs.length}`);
+  console.log(`restaurants: ${restSlugs.length}, cars: ${carSlugs.length}, hotels: ${hotelSlugs.length}, nightlife: ${clubSlugs.length}, wellness: ${spaSlugs.length}, yachts: ${yachtIds.length}`);
   console.log(`total <loc>: ${(xml.match(/<loc>/g) || []).length}`);
 })();

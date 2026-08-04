@@ -344,8 +344,8 @@ function AlfredLoader(p){
             <div style={{height:"100%",width:percent+"%",background:"linear-gradient(90deg,#3F3F46,#71717A)",borderRadius:1,transition:"width 0.1s linear"}} />
           </div>
         </div>
-        {/* "Your concierge is ready" — fades in */}
-        <p style={{...sf(13,300),color:"#A1A1AA",letterSpacing:1,opacity:ready?1:0,transform:ready?"translateY(0)":"translateY(10px)",transition:"opacity 1.4s ease 0.3s, transform 1.4s ease 0.3s",position:ready?"relative":"absolute"}}>Your concierge is ready</p>
+        {/* Render the ready message only when it is fully legible. */}
+        {ready&&<p style={{...sf(13,300),color:"#D4D4D8",letterSpacing:1,position:"relative"}}>Your concierge is ready</p>}
       </div>
 
       {/* Dots */}
@@ -364,7 +364,7 @@ function AlfredLoader(p){
               <span key={rep} style={{display:"inline-flex",alignItems:"center"}}>
                 {LOADER_CITIES.map(function(city,ci){return(
                   <span key={rep+"-"+ci} style={{display:"inline-flex",alignItems:"center"}}>
-                    <span style={{...sf(9,300),color:"#3F3F46",letterSpacing:4,textTransform:"uppercase",whiteSpace:"nowrap"}}>{city}</span>
+                    <span style={{...sf(9,300),color:"#A1A1AA",letterSpacing:4,textTransform:"uppercase",whiteSpace:"nowrap"}}>{city}</span>
                     <span style={{display:"inline-block",width:2,height:2,borderRadius:"50%",background:"#2C2C31",margin:"0 24px",flexShrink:0}} />
                   </span>
                 )})}
@@ -729,22 +729,22 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:-80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:"50%",left:"50%",width:"70%",height:1,marginLeft:"-35%",marginTop:80,background:"linear-gradient(90deg,transparent,#1F1F23 30%,#1F1F23 70%,transparent)",transformOrigin:"center",animation:loaded?"lineGrow 1.4s cubic-bezier(0.16,1,0.3,1) 0.8s both":"none",zIndex:2}}/>
         <div style={{position:"absolute",top:32,left:40,zIndex:10,animation:loaded?"slideFromLeft 1s cubic-bezier(0.16,1,0.3,1) 0.3s both":"none"}}><DrawMark size={22} color={C.s1} active={loaded} delay={0.5} id="mg1"/></div>
-        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Contact"?"https://wa.me/33743713649":"#"+item.toLowerCase();return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
+        <nav className="hero-nav" style={{position:"absolute",top:36,right:40,zIndex:10,display:"flex",alignItems:"center",gap:28,animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>{["Membership","Catalog","Business","Contact"].map(function(item){var href=item==="Business"?"/business":item==="Catalog"?"/catalog":item==="Contact"?"https://wa.me/33650938152":"#"+item.toLowerCase();return <a key={item} href={href} target={item==="Contact"?"_blank":undefined} rel={item==="Contact"?"noopener":undefined} style={{...sf(11,400),color:C.s6,letterSpacing:0.3,cursor:"pointer",transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>{item}</a>})}</nav>
         {/* Mobile hamburger button */}
         <div className="mob-menu-btn" onClick={function(){setMobileMenu(true)}} style={{position:"absolute",top:32,right:20,zIndex:110,display:"none",alignItems:"center",justifyContent:"center",width:44,height:44,borderRadius:12,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer",animation:loaded?"slideFromRight 1s cubic-bezier(0.16,1,0.3,1) 0.4s both":"none"}}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.s1} strokeWidth="1.5" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
         </div>
         <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
           <div style={{textAlign:"center",transform:"translateY("+(heroY+my)+"px) translateX("+mx+"px) scale("+heroScale+")",opacity:heroOp,filter:"blur("+heroBlur+"px)",willChange:"transform,opacity,filter",transition:"transform 0.5s cubic-bezier(0.16,1,0.3,1)"}}>
-            <p className="hero-label" style={{...sf(10,400),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
+            <p className="hero-label" style={{...sf(10,400),color:C.s4,letterSpacing:5,textTransform:"uppercase",marginBottom:28,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(12px)",transition:"all 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s"}}>Luxury Concierge</p>
             <h1 style={{overflow:"hidden",lineHeight:0.88,position:"relative",whiteSpace:"nowrap"}}>
               <span style={{position:"absolute",width:1,height:1,padding:0,margin:-1,overflow:"hidden",clip:"rect(0, 0, 0, 0)",whiteSpace:"nowrap",border:0}}>Alfred Concierge for restaurants, hotels, cars and luxury services</span>
               {LETTERS.map(function(ch,i){return <span aria-hidden="true" key={i} className="hero-title" style={{display:"inline-block",...sf(160,700),letterSpacing:8,opacity:loaded?1:0,transform:loaded?"translateY(0) scale(1)":"translateY(100%) scale(0.9)",transition:"transform 1.1s cubic-bezier(0.16,1,0.3,1) "+(0.7+i*0.07)+"s, opacity 0.6s ease "+(0.7+i*0.07)+"s"}}>{ch}</span>})}
               {shimmer && <div aria-hidden="true" style={{position:"absolute",top:0,bottom:0,width:"25%",background:"linear-gradient(90deg,transparent,rgba(244,244,245,0.08) 50%,transparent)",animation:"shimmerSweep 1.2s cubic-bezier(0.16,1,0.3,1) forwards",pointerEvents:"none"}}/>}
             </h1>
             <CityCarousel loaded={loaded}/>
-            <p className="hero-tagline" style={{...sf(15,400),color:C.s6,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
-            <div className="hero-cta" style={{marginTop:48,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(20px)",transition:"all 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
+            <p className="hero-tagline" style={{...sf(15,400),color:C.s4,lineHeight:1.7,maxWidth:360,margin:"36px auto 0"}}>{tagWords.map(function(word,i){return <span key={i} style={{display:"inline-block",marginRight:4,opacity:loaded?1:0,transform:loaded?"translateY(0)":"translateY(10px)",transition:"all 0.6s cubic-bezier(0.16,1,0.3,1) "+(1.6+i*0.03)+"s"}}>{word}</span>})}</p>
+            <div className="hero-cta" style={{marginTop:48,opacity:1,transform:loaded?"translateY(0)":"translateY(20px)",transition:"transform 0.9s cubic-bezier(0.16,1,0.3,1) 2.2s"}}>
               <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:10,padding:"14px 28px",borderRadius:14,background:hoverCta?C.s1:C.el,border:"1px solid "+(hoverCta?C.s1:C.bd),cursor:"pointer",transform:hoverCta?"translateY(-2px)":"translateY(0)",boxShadow:hoverCta?"0 8px 30px rgba(244,244,245,0.1)":"none",transition:"all 0.4s cubic-bezier(0.16,1,0.3,1)",...sf(14,600),color:hoverCta?C.bg:C.s1,textDecoration:"none"}} onMouseEnter={function(){setHoverCta(true)}} onMouseLeave={function(){setHoverCta(false)}}>
                 <svg width="16" height="16" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
                 Download on the App Store
@@ -752,8 +752,8 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             </div>
           </div>
         </div>
-        <div className="hero-scroll-l" style={{position:"absolute",bottom:36,left:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.4s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr",transform:"rotate(180deg)"}}>Scroll</span></div>
-        <div className="hero-scroll-r" style={{position:"absolute",bottom:36,right:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.5s both":"none"}}><span style={{...sf(9,400),color:C.s7,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr"}}>{"©"+new Date().getFullYear()}</span></div>
+        <div className="hero-scroll-l" style={{position:"absolute",bottom:36,left:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.4s both":"none"}}><span style={{...sf(9,400),color:C.s4,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr",transform:"rotate(180deg)"}}>Scroll</span></div>
+        <div className="hero-scroll-r" style={{position:"absolute",bottom:36,right:40,zIndex:10,animation:loaded?"slideFromBottom 1s cubic-bezier(0.16,1,0.3,1) 2.5s both":"none"}}><span style={{...sf(9,400),color:C.s4,letterSpacing:2,textTransform:"uppercase",writingMode:"vertical-lr"}}>{"©"+new Date().getFullYear()}</span></div>
       </section>
 
       {/* ═══ MOBILE MENU OVERLAY ═══ */}
@@ -904,7 +904,7 @@ input::placeholder{color:#52525B}input:focus{outline:none}
                 </div>
               })}
               <div style={{flex:1}}/>
-              <a href="https://wa.me/33743713649" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",cursor:"pointer",...sf(14,600),color:C.s2,marginTop:24,transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
+              <a href="https://wa.me/33650938152" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:"rgba(244,244,245,0.06)",border:"1px solid rgba(244,244,245,0.08)",cursor:"pointer",...sf(14,600),color:C.s2,marginTop:24,transition:"all 0.3s",textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.background="rgba(244,244,245,0.1)";e.currentTarget.style.borderColor="rgba(244,244,245,0.15)"}} onMouseLeave={function(e){e.currentTarget.style.background="rgba(244,244,245,0.06)";e.currentTarget.style.borderColor="rgba(244,244,245,0.08)"}}>
                 Apply for Centurion
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.s2} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
               </a>
@@ -967,31 +967,31 @@ input::placeholder{color:#52525B}input:focus{outline:none}
             {/* Description */}
             <div>
               <div style={{marginBottom:20}}><DrawMark size={28} color={C.s4} active={true} delay={0} id="mg3"/></div>
-              <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,maxWidth:260}}>Alfred is the luxury concierge app for people who value their time above everything else.</p>
+              <p style={{...sf(15,400),color:C.s4,lineHeight:1.7,maxWidth:260}}>Alfred is the luxury concierge app for people who value their time above everything else.</p>
             </div>
 
             {/* Explore */}
             <div>
-              <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
-              {["About","How it Works","Pricing","Catalog","Restaurants","Hotels","Business","Contact"].map(function(l){var href=l==="About"?"/about":l==="How it Works"?"/how-it-works":l==="Pricing"?"/pricing":l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Restaurants"?"/catalog/dining":l==="Hotels"?"/catalog/hotels":l==="Contact"?"/contact":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s5,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s5}}>{l}</a>})}
+              <div style={{...sf(10,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Explore</div>
+              {["About","How it Works","Pricing","Catalog","Restaurants","Hotels","Business","Contact"].map(function(l){var href=l==="About"?"/about":l==="How it Works"?"/how-it-works":l==="Pricing"?"/pricing":l==="Business"?"/business":l==="Catalog"?"/catalog":l==="Restaurants"?"/catalog/dining":l==="Hotels"?"/catalog/hotels":l==="Contact"?"/contact":"#";return <a key={l} href={href} style={{...sf(14,400),color:C.s4,display:"block",marginBottom:14,transition:"color 0.2s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s4}}>{l}</a>})}
             </div>
 
             {/* Follow us */}
             <div>
-              <div style={{...sf(10,600),color:C.s7,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Follow us</div>
+              <div style={{...sf(10,600),color:C.s4,letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Follow us</div>
               <div style={{display:"flex",flexDirection:"column",gap:12}}>
                 {[
                   {name:"@askalfred.app",platform:"Instagram",href:"https://www.instagram.com/askalfred.app",icon:<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke={C.s5} strokeWidth="1.5"/><circle cx="12" cy="12" r="5" stroke={C.s5} strokeWidth="1.5"/><circle cx="18" cy="6" r="1.2" fill={C.s5}/></svg>},
                   {name:"@alfred.app",platform:"TikTok",href:"https://www.tiktok.com/@alfred.app",icon:<svg width="14" height="14" viewBox="0 0 24 24" fill={C.s5}><path d="M9 12C9 13.66 7.66 15 6 15C4.34 15 3 13.66 3 12C3 10.34 4.34 9 6 9V7C3.24 7 1 9.24 1 12C1 14.76 3.24 17 6 17C8.76 17 11 14.76 11 12V6C12.5 7.5 14.5 8 17 8V6C14.5 6 12 4 12 1H10V12C10 12 10 12 9 12Z"/></svg>},
-                ].map(function(s){return <a key={s.platform} href={s.href} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:10,...sf(13,400),color:C.s5,textDecoration:"none",transition:"color 0.2s"}} onMouseEnter={function(e){e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.color=C.s5}}>{s.icon}<span>{s.name}</span></a>})}
+                ].map(function(s){return <a key={s.platform} href={s.href} target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:10,...sf(13,400),color:C.s4,textDecoration:"none",transition:"color 0.2s"}} onMouseEnter={function(e){e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.color=C.s4}}>{s.icon}<span>{s.name}</span></a>})}
               </div>
             </div>
 
             {/* Newsletter + Download */}
             <div>
               <div style={{...sf(15,600),color:C.s1,marginBottom:6}}>Request something from Alfred</div>
-              <p style={{...sf(12,400),color:C.s6,marginBottom:16,lineHeight:1.5}}>Share the city, dates and what you need. A concierge can check current options.</p>
-              <a href="https://wa.me/33743713649" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",...sf(12,600),color:C.bg,background:C.s1,padding:"10px 18px",borderRadius:10,marginBottom:28,textDecoration:"none"}}>Request on WhatsApp</a>
+              <p style={{...sf(12,400),color:C.s4,marginBottom:16,lineHeight:1.5}}>Share the city, dates and what you need. A concierge can check current options.</p>
+              <a href="https://wa.me/33650938152" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",...sf(12,600),color:C.bg,background:C.s1,padding:"10px 18px",borderRadius:10,marginBottom:28,textDecoration:"none"}}>Request on WhatsApp</a>
 
               {/* App Store */}
               <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 18px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid "+C.bd,cursor:"pointer",transition:"border-color 0.2s",...sf(13,600),color:C.s1,textDecoration:"none"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd}}>
@@ -1012,9 +1012,9 @@ input::placeholder{color:#52525B}input:focus{outline:none}
         {/* Bottom bar */}
         <div style={{maxWidth:1060,margin:"0 auto",padding:"20px 40px 36px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderTop:"1px solid "+C.bd,paddingTop:24}}>
-            <span style={{...sf(12,400),color:C.s7}}>Alfred Concierge Inc. {"©"+new Date().getFullYear()}</span>
+            <span style={{...sf(12,400),color:C.s4}}>Alfred Concierge Inc. {"©"+new Date().getFullYear()}</span>
             <div style={{display:"flex",gap:24}}>
-              {[{l:"Privacy Policy",h:"/privacy"},{l:"Terms",h:"/terms"}].map(function(it){return <a key={it.l} href={it.h} style={{...sf(12,400),color:C.s7,transition:"color 0.2s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.color=C.s5}} onMouseLeave={function(e){e.target.style.color=C.s7}}>{it.l}</a>})}
+              {[{l:"Privacy Policy",h:"/privacy"},{l:"Terms",h:"/terms"}].map(function(it){return <a key={it.l} href={it.h} style={{...sf(12,400),color:C.s4,transition:"color 0.2s",textDecoration:"none"}} onMouseEnter={function(e){e.target.style.color=C.s2}} onMouseLeave={function(e){e.target.style.color=C.s4}}>{it.l}</a>})}
             </div>
           </div>
         </div>
@@ -1231,7 +1231,7 @@ textarea{resize:vertical;min-height:100px}
           </div>
         </div>
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Home",href:"/"},{label:"Restaurants",href:"/catalog/dining"},{label:"Hotels",href:"/catalog/hotels"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33743713649",ext:true}].map(function(item,i){
+          {[{label:"Home",href:"/"},{label:"Restaurants",href:"/catalog/dining"},{label:"Hotels",href:"/catalog/hotels"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33650938152",ext:true}].map(function(item,i){
             return <a key={item.label} href={item.href} target={item.ext?"_blank":undefined} rel={item.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{item.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1264,7 +1264,7 @@ textarea{resize:vertical;min-height:100px}
                 Apply to Partner
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12H19M12 5L19 12L12 19"/></svg>
               </a>
-              <a href="https://wa.me/33743713649" target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,background:"transparent",border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
+              <a href="https://wa.me/33650938152" target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,background:"transparent",border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.918l4.458-1.495A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.278 0-4.403-.733-6.13-1.976l-.44-.324-2.644.887.887-2.644-.324-.44A9.717 9.717 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
                 WhatsApp Us
               </a>
@@ -1450,7 +1450,7 @@ textarea{resize:vertical;min-height:100px}
             <div style={{...sf(16,600),color:C.s1,marginBottom:4}}>Prefer to talk first?</div>
             <div style={{...sf(13,400),color:C.s5}}>Reach our partnerships team directly — no forms, no wait.</div>
           </div>
-          <a href="https://wa.me/33743713649" target="_blank" rel="noopener" style={{display:"flex",alignItems:"center",gap:8,padding:"12px 22px",borderRadius:12,background:C.gn+"14",border:"1px solid "+C.gn+"30",...sf(13,600),color:C.gn,flexShrink:0,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.gn+"22"}} onMouseLeave={function(e){e.currentTarget.style.background=C.gn+"14"}}>
+          <a href="https://wa.me/33650938152" target="_blank" rel="noopener" style={{display:"flex",alignItems:"center",gap:8,padding:"12px 22px",borderRadius:12,background:C.gn+"14",border:"1px solid "+C.gn+"30",...sf(13,600),color:C.gn,flexShrink:0,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.background=C.gn+"22"}} onMouseLeave={function(e){e.currentTarget.style.background=C.gn+"14"}}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
             WhatsApp
           </a>
@@ -1473,7 +1473,7 @@ textarea{resize:vertical;min-height:100px}
               <div style={{width:56,height:56,borderRadius:"50%",background:C.gn+"14",border:"1px solid "+C.gn+"30",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px"}}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={C.gn} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
               <h3 style={{...sf(24,600),marginBottom:10}}>Application received.</h3>
               <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,maxWidth:400,margin:"0 auto 24px"}}>Our partnerships team will review the information and contact you about the next step.</p>
-              <p style={{...sf(13,400),color:C.s6}}>Want to skip the wait? <a href="https://wa.me/33743713649" target="_blank" rel="noopener" style={{color:C.gn,textDecoration:"underline"}}>WhatsApp us now</a></p>
+              <p style={{...sf(13,400),color:C.s6}}>Want to skip the wait? <a href="https://wa.me/33650938152" target="_blank" rel="noopener" style={{color:C.gn,textDecoration:"underline"}}>WhatsApp us now</a></p>
             </div>
           ) : (
             <div style={{borderRadius:24,background:C.el,border:"1px solid "+C.bd,padding:"36px 36px 40px",opacity:formVis?1:0,transform:formVis?"translateY(0)":"translateY(20px)",transition:"all 0.9s ease 0.3s"}}>
@@ -1537,7 +1537,7 @@ textarea{resize:vertical;min-height:100px}
           <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36}}>Tell us what your business offers and how your team handles requests. We will confirm fit, terms and onboarding requirements with you.</p>
           <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
             <a href="#apply" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Apply Now</a>
-            <a href="https://wa.me/33743713649" target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>WhatsApp Us</a>
+            <a href="https://wa.me/33650938152" target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>WhatsApp Us</a>
           </div>
         </div>
       </section>
@@ -1787,7 +1787,7 @@ body::-webkit-scrollbar{width:0}
           </div>
         </div>
         <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"0 36px"}}>
-          {[{label:"Home",href:"/"},{label:"Restaurants",href:"/catalog/dining"},{label:"Hotels",href:"/catalog/hotels"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33743713649",ext:true}].map(function(link,i){
+          {[{label:"Home",href:"/"},{label:"Restaurants",href:"/catalog/dining"},{label:"Hotels",href:"/catalog/hotels"},{label:"Catalog",href:"/catalog"},{label:"Business",href:"/business"},{label:"Contact",href:"https://wa.me/33650938152",ext:true}].map(function(link,i){
             return <a key={link.label} href={link.href} target={link.ext?"_blank":undefined} rel={link.ext?"noopener":undefined} onClick={function(){setMobileMenu(false)}} style={{...sf(36,300),color:C.s2,letterSpacing:-0.5,textDecoration:"none",padding:"18px 0",borderBottom:"1px solid rgba(255,255,255,0.04)",display:"flex",alignItems:"center",justifyContent:"space-between",opacity:0,animation:"menuItemIn 0.5s cubic-bezier(0.16,1,0.3,1) "+(0.15+i*0.07)+"s forwards"}}>
               <span>{link.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.s6} strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

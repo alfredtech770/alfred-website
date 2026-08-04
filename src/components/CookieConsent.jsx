@@ -51,6 +51,6 @@ export default function CookieConsent(){
         {!customizing&&<button type="button" onClick={function(){save({analytics:true,advertising:true})}} style={{...baseButton,color:"#0A0A0B",background:"#F4F4F5",border:"1px solid #F4F4F5"}}>Accept all</button>}
       </div>
     </div>}
-    {!open&&saved&&<button type="button" onClick={openPreferences} aria-label="Open cookie preferences" style={{position:"fixed",left:12,bottom:12,zIndex:99990,padding:"7px 10px",borderRadius:9,border:"1px solid #3F3F46",background:"rgba(18,18,20,0.94)",color:"#A1A1AA",fontSize:11,cursor:"pointer"}}>Cookie preferences</button>}
+    {!open&&saved&&<button type="button" onClick={openPreferences} aria-label="Open cookie preferences" style={{position:"fixed",left:12,bottom:12,zIndex:99990,minHeight:40,padding:"9px 12px",borderRadius:9,border:"1px solid #3F3F46",background:"rgba(18,18,20,0.94)",color:"#A1A1AA",fontSize:11,cursor:"pointer"}}>Cookie preferences</button>}
   </>;
 }

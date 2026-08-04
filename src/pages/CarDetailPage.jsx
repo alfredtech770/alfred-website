@@ -103,7 +103,7 @@ export default function CarDetailPage(){
     alfredTip: "Request early when possible and keep the dates flexible; the exact vehicle remains subject to supplier confirmation.",
   };
 
-  var WA_NUM="33743713649";
+  var WA_NUM="33650938152";
 
   var [idx,setIdx]=useState(0);
   var [loaded,setLoaded]=useState(false);

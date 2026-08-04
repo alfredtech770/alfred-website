@@ -119,7 +119,7 @@ export default function SupportPage() {
             title="WhatsApp Concierge"
             detail="Available for members"
             sub="Real-time concierge chat"
-            href="https://wa.me/33743713649"
+            href="https://wa.me/33650938152"
           />
         </div>
 
