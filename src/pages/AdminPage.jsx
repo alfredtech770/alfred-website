@@ -18,59 +18,10 @@ var C = {
   gdGrad:"linear-gradient(135deg,#FFD60A 0%,#FFF1A8 50%,#FFD60A 100%)"
 };
 
-/* ═══ Slack Integration ═══ */
-var SLACK_HOOKS = {
-  bookings: import.meta.env.VITE_SLACK_BOOKINGS || import.meta.env.VITE_SLACK_WEBHOOK || "",
-  signups: import.meta.env.VITE_SLACK_SIGNUPS || "",
-  downloads: import.meta.env.VITE_SLACK_DOWNLOADS || "",
-  inventory: import.meta.env.VITE_SLACK_INVENTORY || "",
-  vip: import.meta.env.VITE_SLACK_VIP || ""
-};
-
-function getWebhook(action){
-  if(action==="booking")return SLACK_HOOKS.bookings;
-  if(action==="signup")return SLACK_HOOKS.signups||SLACK_HOOKS.bookings;
-  if(action==="download")return SLACK_HOOKS.downloads||SLACK_HOOKS.bookings;
-  if(action==="created"||action==="updated"||action==="deleted"||action==="bulk"||action==="image")return SLACK_HOOKS.inventory||SLACK_HOOKS.bookings;
-  if(action==="vip")return SLACK_HOOKS.vip||SLACK_HOOKS.bookings;
-  return SLACK_HOOKS.bookings;
-}
-
-async function notifySlack(action, category, name, details){
-  var emoji = {
-    created:":white_check_mark:",updated:":pencil2:",deleted:":wastebasket:",
-    status:":arrows_counterclockwise:",image:":frame_with_picture:",
-    booking:":calendar:",bulk:":package:",signup:":wave:",download:":arrow_down:",vip:":star2:"
-  }[action]||":bell:";
-  var color = {
-    created:"#34C759",updated:"#007AFF",deleted:"#FF3B30",
-    status:"#FF9500",image:"#D4A853",booking:"#D4A853",bulk:"#FF9500"
-  }[action]||"#A1A1AA";
-  var actionLabel = {
-    created:"New Record Added",updated:"Record Updated",deleted:"Record Deleted",
-    status:"Status Changed",image:"Images Updated",booking:"Booking Updated",bulk:"Bulk Action",
-    signup:"New Member Signed Up",download:"New App Download",vip:"VIP Client Update"
-  }[action]||action;
-  var webhook=getWebhook(action);
-  if(!webhook)return;
-  try{
-    await fetch(webhook,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        blocks:[
-          {type:"header",text:{type:"plain_text",text:emoji+" "+actionLabel}},
-          {type:"section",fields:[
-            {type:"mrkdwn",text:"*Category:*\n"+category},
-            {type:"mrkdwn",text:"*Name:*\n"+(name||"-")}
-          ]},
-          ...(details?[{type:"section",text:{type:"mrkdwn",text:details}}]:[]),
-          {type:"context",elements:[{type:"mrkdwn",text:":clock1: "+new Date().toLocaleString("en-US",{dateStyle:"medium",timeStyle:"short"})+" | Alfred Admin"}]}
-        ]
-      })
-    });
-  }catch(e){console.log("Slack notify error:",e);}
-}
+/* Slack webhook URLs must never be exposed through VITE_ variables. Admin
+ * notifications stay disabled until they are routed through an authenticated
+ * server/Edge Function. Database changes still complete normally. */
+async function notifySlack(){ return; }
 
 /* ═══ Icons (inline SVG) ═══ */
 function Icon({name,size,color}){
@@ -373,38 +324,75 @@ var btn = function(bg,color,opts){
   };
 };
 
-/* ═══ Password Gate ═══ */
-function PasswordGate({onAuth}){
-  var [pw,setPw]=useState("");
-  var [err,setErr]=useState(false);
-  var [shake,setShake]=useState(false);
+/* ═══ Admin Sign-In ═══
+ * The browser uses the public anon key and Supabase email OTP. Access is
+ * granted only when the signed-in account passes the server-side is_admin()
+ * allow-list/RLS check. No shared password or service key ships in the app. */
+function AuthGate({onAuth}){
+  var [step,setStep]=useState("email");
+  var [email,setEmail]=useState("");
+  var [code,setCode]=useState("");
+  var [busy,setBusy]=useState(false);
+  var [err,setErr]=useState("");
 
-  function submit(e){
+  async function sendCode(e){
     e.preventDefault();
-    if(pw==="alfred2026"){onAuth();}
-    else{setErr(true);setShake(true);setTimeout(function(){setShake(false);},500);}
+    setErr("");setBusy(true);
+    var result=await supabase.auth.signInWithOtp({
+      email:email.trim().toLowerCase(),
+      options:{shouldCreateUser:false}
+    });
+    setBusy(false);
+    if(result.error){setErr(result.error.message||"Could not send the code");return;}
+    setStep("code");
   }
+
+  async function verify(e){
+    e.preventDefault();
+    setErr("");setBusy(true);
+    var result=await supabase.auth.verifyOtp({
+      email:email.trim().toLowerCase(),token:code.trim(),type:"email"
+    });
+    if(result.error){setBusy(false);setErr(result.error.message||"That code did not work");return;}
+    var admin=await supabase.rpc("is_admin");
+    setBusy(false);
+    if(admin.error||!admin.data){
+      await supabase.auth.signOut();
+      setStep("email");setCode("");
+      setErr("This account is not approved for admin access.");
+      return;
+    }
+    onAuth();
+  }
+
+  var inputStyle={width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+(err?C.rd:C.bd),borderRadius:12,padding:"14px 16px",...sf(15),color:C.s1,outline:"none",marginBottom:err?8:16,transition:"border-color 0.2s"};
+  var submitStyle={width:"100%",padding:"14px",background:C.gd,border:"none",borderRadius:12,...sf(15,700),color:"#000",cursor:busy?"default":"pointer",opacity:busy?0.6:1,transition:"opacity 0.2s"};
 
   return(
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div style={{width:"100%",maxWidth:420,background:C.el,border:"1px solid "+C.bd,borderRadius:24,padding:"48px 40px",animation:shake?"shake 0.5s ease":undefined}}>
-        <style>{`@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}`}</style>
+      <div style={{width:"100%",maxWidth:420,background:C.el,border:"1px solid "+C.bd,borderRadius:24,padding:"48px 40px"}}>
         <div style={{textAlign:"center",marginBottom:36}}>
           <div style={{...sf(12,700),letterSpacing:4,textTransform:"uppercase",background:C.gdGrad,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:16}}>ALFRED</div>
           <h1 style={{...sf(28,600),color:C.s1,margin:0}}>Admin Portal</h1>
-          <p style={{...sf(14),color:C.s5,marginTop:10}}>Sign in to manage your platform</p>
+          <p style={{...sf(14),color:C.s5,marginTop:10}}>{step==="email"?"Sign in with your approved admin email":"Enter the code sent to "+email}</p>
         </div>
-        <form onSubmit={submit}>
-          <input type="password" placeholder="Password" value={pw}
-            onChange={function(e){setPw(e.target.value);setErr(false);}} autoFocus
-            style={{width:"100%",boxSizing:"border-box",background:C.srf,border:"1px solid "+(err?C.rd:C.bd),borderRadius:12,padding:"14px 16px",...sf(15),color:C.s1,outline:"none",marginBottom:err?8:16,transition:"border-color 0.2s"}}/>
-          {err&&<p style={{...sf(13),color:C.rd,marginBottom:12,textAlign:"center"}}>Incorrect password</p>}
-          <button type="submit" style={{width:"100%",padding:"14px",background:C.gd,border:"none",borderRadius:12,...sf(15,700),color:"#000",cursor:"pointer",transition:"opacity 0.2s"}}
-            onMouseEnter={function(e){e.currentTarget.style.opacity="0.85"}}
-            onMouseLeave={function(e){e.currentTarget.style.opacity="1"}}>
-            Sign In
-          </button>
-        </form>
+        {step==="email"?(
+          <form onSubmit={sendCode}>
+            <input type="email" placeholder="you@alfredconcierge.app" value={email} autoFocus required
+              onChange={function(e){setEmail(e.target.value);setErr("");}} style={inputStyle}/>
+            {err&&<p style={{...sf(13),color:C.rd,marginBottom:12,textAlign:"center"}}>{err}</p>}
+            <button type="submit" disabled={busy} style={submitStyle}>{busy?"Sending…":"Email me a code"}</button>
+          </form>
+        ):(
+          <form onSubmit={verify}>
+            <input type="text" inputMode="numeric" autoComplete="one-time-code" placeholder="6-digit code" value={code} autoFocus required
+              onChange={function(e){setCode(e.target.value);setErr("");}} style={{...inputStyle,letterSpacing:6,textAlign:"center",...sf(20,600)}}/>
+            {err&&<p style={{...sf(13),color:C.rd,marginBottom:12,textAlign:"center"}}>{err}</p>}
+            <button type="submit" disabled={busy} style={submitStyle}>{busy?"Verifying…":"Sign In"}</button>
+            <button type="button" onClick={function(){setStep("email");setCode("");setErr("");}}
+              style={{width:"100%",marginTop:12,background:"none",border:"none",...sf(13),color:C.s5,cursor:"pointer"}}>← Use another email</button>
+          </form>
+        )}
       </div>
     </div>
   );
@@ -3813,7 +3801,8 @@ function ClientsView(){
   function memberName(u){return ((u.first_name||"")+" "+(u.last_name||"")).trim()||u.email||"this member";}
 
   // Change a member's subscription. Optimistic local update; the deployed
-  // admin persists via the service key (anon is read-only under RLS).
+  // Authenticated admin writes are authorised by the server-side is_admin()
+  // RLS policies; the browser continues to use the public anon key.
   async function changeTier(u,newTier){
     if(newTier===tierVal(u.tier))return;
     setBusyId(u.id);
@@ -5050,21 +5039,35 @@ function AdminDashboard({onLogout}){
 
 /* ═══ AdminPage (Default Export) ═══ */
 export default function AdminPage(){
-  var [authed,setAuthed]=useState(function(){
-    return sessionStorage.getItem("alfred_admin_auth")==="1";
-  });
+  var [authed,setAuthed]=useState(false);
+  var [checking,setChecking]=useState(true);
+
+  useEffect(function(){
+    var cancelled=false;
+    async function restore(){
+      var session=await supabase.auth.getSession();
+      if(cancelled)return;
+      if(!session.data||!session.data.session){setChecking(false);return;}
+      var admin=await supabase.rpc("is_admin");
+      if(cancelled)return;
+      if(!admin.error&&admin.data)setAuthed(true);
+      else await supabase.auth.signOut();
+      setChecking(false);
+    }
+    restore();
+    return function(){cancelled=true;};
+  },[]);
 
   function handleAuth(){
-    sessionStorage.setItem("alfred_admin_auth","1");
     setAuthed(true);
   }
-  function handleLogout(){
-    sessionStorage.removeItem("alfred_admin_auth");
+  async function handleLogout(){
+    await supabase.auth.signOut();
     setAuthed(false);
   }
 
   return <>
     <SEOHead title="Admin | Alfred Concierge" description="Internal Alfred administration." path="/admin" noindex/>
-    {authed?<AdminDashboard onLogout={handleLogout}/>:<PasswordGate onAuth={handleAuth}/>}
+    {checking?<div style={{minHeight:"100vh",background:C.bg}}/>:authed?<AdminDashboard onLogout={handleLogout}/>:<AuthGate onAuth={handleAuth}/>}
   </>;
 }

@@ -56,18 +56,19 @@ export default function HotelDetailPage(){
     });
   },[slug]);
 
-  // Live rates via LiteAPI — only for hotels mapped to a liteapi_id. The key
-  // stays server-side (Vercel function /api/hotel-rates; localhost proxy in dev).
+  // Public rates are requested only for hotels mapped to Alfred's authorised
+  // Little Emperors integration. Partner credentials remain server-side.
   var [rates,setRates]=useState(null);
   var [ratesLoading,setRatesLoading]=useState(false);
   useEffect(function(){
-    if(!hotel||!hotel.liteapi_id){setRates(null);return}
+    var providerId=hotel&&(hotel.little_emperors_id||hotel.partner_rate_id);
+    if(!providerId){setRates(null);return}
     var n=nights==="7+"?7:Number(nights)||3;
     var a=guests==="4+"?4:Number(guests)||2;
     var co=(function(){var d=new Date(date+"T12:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)})();
     var base=(typeof location!=="undefined"&&location.hostname==="localhost")?"http://localhost:4956/api/hotel-rates":"/api/hotel-rates";
     var alive=true;setRatesLoading(true);
-    fetch(base+"?hotelId="+encodeURIComponent(hotel.liteapi_id)+"&checkin="+date+"&checkout="+co+"&adults="+a)
+    fetch(base+"?hotelId="+encodeURIComponent(providerId)+"&checkin="+date+"&checkout="+co+"&adults="+a)
       .then(function(r){return r.json()})
       .then(function(j){if(alive){setRates(j&&j.offers&&j.offers.length?j:null);setRatesLoading(false)}})
       .catch(function(){if(alive){setRates(null);setRatesLoading(false)}});
@@ -137,7 +138,7 @@ export default function HotelDetailPage(){
               return {
                 "@type":["HotelRoom","Product"],
                 "name":offer.name,
-                "identifier":V.liteapi_id+"-rate-"+index,
+                "identifier":(V.little_emperors_id||V.partner_rate_id||V.id)+"-rate-"+index,
                 "occupancy":{"@type":"QuantitativeValue","value":rates.adults||2},
                 "offers":{
                   "@type":["Offer","LodgingReservation"],
@@ -309,7 +310,7 @@ export default function HotelDetailPage(){
                   </div>
                 </div>
 
-                {/* Live rates (LiteAPI) */}
+                {/* Public partner rates, when an authorised feed is configured */}
                 {ratesLoading&&<div style={{...sf(11),color:C.s6,textAlign:"center",marginBottom:14}}>Checking live rates…</div>}
                 {!ratesLoading&&rates&&rates.offers&&rates.offers.length>0&&<div style={{marginBottom:18}}>
                   <div style={{display:"flex",alignItems:"baseline",gap:6,marginBottom:10}}>

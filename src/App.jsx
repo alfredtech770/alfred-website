@@ -34,6 +34,7 @@ const CityPage=lazy(function(){return import("./pages/CityPage")});
 const CityServicePage=lazy(function(){return import("./pages/CityServicePage")});
 const HotelsPage=lazy(function(){return import("./pages/HotelsPage")});
 const HotelDetailPage=lazy(function(){return import("./pages/HotelDetailPage")});
+const CarPartnersPage=lazy(function(){return import("./pages/CarPartnersPage")});
 const AdminPage=lazy(function(){return import("./pages/AdminPage")});
 const ProposalBuilderPage=lazy(function(){return import("./pages/ProposalBuilderPage")});
 const TermsPage=lazy(function(){return import("./pages/TermsPage")});
@@ -445,6 +446,7 @@ export default function App(){
       <Routes>
         <Route path="/" element={<HomePage/>}/>
         <Route path="/business" element={<AlfredPartners/>}/>
+        <Route path="/partners/car-rentals" element={<CarPartnersPage/>}/>
         <Route path="/catalog" element={<AlfredCatalog/>}/>
         <Route path="/catalog/exotic-cars" element={<ExoticCarsPage/>}/>
         <Route path="/catalog/exotic-cars/:slug" element={<CarDetailPage/>}/>
@@ -1103,7 +1105,10 @@ var CATS=[
 function AlfredPartners(){
   var [loaded,setLoaded]=useState(false);
   var [scrollY,setScrollY]=useState(0);
-  var [formData,setFormData]=useState({business:"",contact:"",email:"",phone:"",category:"",city:"",website:"",message:""});
+  var [formData,setFormData]=useState(function(){
+    var category=new URLSearchParams(window.location.search).get("category")||"";
+    return {business:"",contact:"",email:"",phone:"",category:category,city:"",website:"",message:""};
+  });
   var [submitted,setSubmitted]=useState(false);
   var [submitting,setSubmitting]=useState(false);
   var [submitError,setSubmitError]=useState(null);

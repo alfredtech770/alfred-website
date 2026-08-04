@@ -59,7 +59,8 @@ function details(route) {
     "/catalog/exotic-cars":"Exotic Cars", "/catalog/nightlife":"VIP Nightlife", "/catalog/yachts":"Yacht Charters",
     "/catalog/jets":"Private Jet Charters", "/catalog/wellness":"Wellness and Spas", "/events":"VIP Event Hospitality",
     "/blog":"Alfred Concierge Journal", "/about":"About Alfred Concierge", "/how-it-works":"How Alfred Works",
-    "/pricing":"Alfred Membership", "/contact":"Contact Alfred Concierge", "/business":"Partner with Alfred"
+    "/pricing":"Alfred Membership", "/contact":"Contact Alfred Concierge", "/business":"Partner with Alfred",
+    "/partners/car-rentals":"Car Rental Partners"
   };
   const h1 = labels[route] || name;
   return {title:`${h1} | Alfred Concierge`, h1, description:`Explore ${h1.toLowerCase()} and send a request to Alfred Concierge.`, parent:parent === "/" ? "/" : parent, parentLabel:"Back to Alfred"};

@@ -201,7 +201,7 @@ export default function EventDetailPage(){
         keywords={"tickets "+V.name+", "+V.name+" VIP, "+V.name+" hospitality, "+V.name+" 2026"}
         jsonLd={(function(){
           var schema = [
-            {"@context":"https://schema.org","@type":"Event","name":V.name,"description":V.desc,"startDate":V.date.split(" ")[0],"location":{"@type":"Place","name":V.location},"image":V.hero,"offers":{"@type":"Offer","url":"https://alfredconcierge.app/events/"+V.slug,"availability":"https://schema.org/PreOrder","priceCurrency":"USD"},"organizer":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"}},
+            {"@context":"https://schema.org","@type":"Event","name":V.name,"description":V.desc,"startDate":V.date.split(" ")[0],"location":{"@type":"Place","name":V.location},"image":V.hero,"eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","organizer":{"@type":"Organization","name":"Alfred Concierge","url":"https://alfredconcierge.app"}},
             {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://alfredconcierge.app"},{"@type":"ListItem","position":2,"name":"Events","item":"https://alfredconcierge.app/events"},{"@type":"ListItem","position":3,"name":V.name,"item":"https://alfredconcierge.app/events/"+V.slug}]}
           ];
           if(V.faq&&V.faq.length){

@@ -26,6 +26,10 @@ function matchesCity(hotel, city){
   return actual===wanted || actual.indexOf(wanted+" ")===0 || actual.indexOf(" "+wanted)!==-1;
 }
 
+function partnerRateId(hotel){
+  return hotel && (hotel.little_emperors_id || hotel.partner_rate_id) || "";
+}
+
 function money(amount, currency){
   try{
     return new Intl.NumberFormat("en-US",{style:"currency",currency:currency||"USD",maximumFractionDigits:0}).format(amount);
@@ -147,7 +151,7 @@ export default function HotelsPage(){
 
   useEffect(function(){setVisibleCount(24)},[search,city,hood,status,stars,sort]);
   var visibleHotels = filtered.slice(0,visibleCount);
-  var rateIdsKey = visibleHotels.map(function(hotel){return hotel.liteapi_id}).filter(Boolean).join(",");
+  var rateIdsKey = visibleHotels.map(partnerRateId).filter(Boolean).join(",");
 
   useEffect(function(){
     var hotelIds=rateIdsKey.split(",").filter(Boolean);
@@ -301,7 +305,8 @@ export default function HotelsPage(){
 
         {loading ? <div style={{padding:"90px 0",textAlign:"center",...type.body(),color:T.textMid}}>Loading hotels…</div> : visibleHotels.length ? <div style={{display:"grid",gridTemplateColumns:mobile?"1fr":"repeat(auto-fill,minmax(310px,1fr))",gap:18}}>
           {visibleHotels.map(function(hotel){
-            return <HotelCard key={hotel.id} hotel={hotel} rate={ratesByHotel[hotel.liteapi_id]} ratePending={ratesLoading&&!!hotel.liteapi_id} checkin={checkin} checkout={checkout} adults={adults}/>;
+            var providerId=partnerRateId(hotel);
+            return <HotelCard key={hotel.id} hotel={hotel} rate={ratesByHotel[providerId]} ratePending={ratesLoading&&!!providerId} checkin={checkin} checkout={checkout} adults={adults}/>;
           })}
         </div> : <GlassCard style={{padding:"60px 24px",textAlign:"center"}}>
           <h2 style={{...type.sectionSerif(),color:T.text,marginBottom:10}}>No matching hotels</h2>

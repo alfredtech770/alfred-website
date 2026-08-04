@@ -63,7 +63,7 @@ export function hotelJsonLd(h, slug){
     "@context":"https://schema.org",
     "@type": h.category==="resort" ? "Resort" : "Hotel",
     "@id": url,
-    "identifier": h.liteapi_id || h.id || slug,
+    "identifier": h.little_emperors_id || h.partner_rate_id || h.id || slug,
     "name": h.name,
     "description": h.description || (h.name + " — luxury hotel in " + (h.neighborhood || h.city || "Miami") + ". Book through Alfred Concierge for member benefits."),
     "url": url,
@@ -160,13 +160,17 @@ export function carJsonLd(c, slug){
     "bodyType": c.body || c.type || c.category || "Coupe",
     "speed": c.top_speed ? clean({"@type":"QuantitativeValue","value": String(c.top_speed), "unitCode":"KMH"}) : undefined,
     "accelerationTime": c.acceleration || undefined,
-    "offers": c.price_1_day ? clean({
+    /* Only publish Offer markup when an authorised supplier has confirmed
+     * that the rate is live and bookable. Catalogue guide prices alone are
+     * intentionally not presented to search engines as inventory. */
+    "offers": c.live_bookable === true && c.price_1_day ? clean({
       "@type":"Offer",
       "price": String(c.price_1_day),
       "priceCurrency": c.price_currency || "USD",
       "priceSpecification": clean({"@type":"UnitPriceSpecification","price": String(c.price_1_day), "priceCurrency": c.price_currency || "USD", "unitCode":"DAY"}),
       "seller": ORG,
-      "areaServed": c.city ? {"@type":"City","name":c.city} : undefined
+      "areaServed": c.city ? {"@type":"City","name":c.city} : undefined,
+      "availability":"https://schema.org/InStock"
     }) : undefined
   });
 
@@ -207,7 +211,7 @@ export function yachtJsonLd(y, id){
       y.year ? {"@type":"PropertyValue","name":"Year","value": String(y.year)} : null,
       y.captain_included ? {"@type":"PropertyValue","name":"Captain","value":"Included"} : null
     ].filter(Boolean),
-    "offers": (lowPrice || highPrice) ? clean({
+    "offers": y.live_bookable === true && (lowPrice || highPrice) ? clean({
       "@type":"AggregateOffer",
       "lowPrice": lowPrice ? String(lowPrice) : undefined,
       "highPrice": highPrice ? String(highPrice) : undefined,

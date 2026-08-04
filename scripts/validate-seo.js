@@ -14,6 +14,7 @@ const dining = read("src/pages/DiningPage.jsx");
 const hotels = read("src/pages/HotelsPage.jsx");
 const hotelDetail = read("src/pages/HotelDetailPage.jsx");
 const hotelMinRates = read("api/hotel-min-rates.js");
+const hotelRateProvider = read("server/hotelRatesProvider.js");
 const nightlife = read("src/pages/NightlifePage.jsx");
 const wellness = read("src/pages/WellnessPage.jsx");
 const yachts = read("src/pages/YachtsPage.jsx");
@@ -32,6 +33,7 @@ const about = read("src/pages/AboutPage.jsx");
 const howItWorks = read("src/pages/HowItWorksPage.jsx");
 const pricing = read("src/pages/PricingPage.jsx");
 const contact = read("src/pages/ContactPage.jsx");
+const carPartners = read("src/pages/CarPartnersPage.jsx");
 const supabase = read("src/lib/supabase.js");
 const envExample = read(".env.example");
 const vercel = read("vercel.json");
@@ -48,8 +50,10 @@ if (/aggregateRating/.test(index)) failures.push("unsubstantiated homepage aggre
 if (/clip:\s*"rect\(0,0,0,0\)"/.test(app)) failures.push("hidden crawler-only content remains");
 if (/Math\.random\(\).*reviews|var REVIEWS=/.test(car)) failures.push("fabricated car reviews remain");
 if (/direct relationships|guaranteed placement|insurance included|full crew, catering|instant quotes/i.test(catalogBody)) failures.push("unsupported AEO claims remain in visible catalog copy");
-if (/schema\.org\/InStock/.test(jsonld)) failures.push("request inventory is incorrectly marked InStock");
+if (!/c\.live_bookable === true/.test(jsonld) || !/y\.live_bookable === true/.test(jsonld)) failures.push("request-only car or yacht prices are still exposed as live Offer inventory");
 if (/VITE_SUPABASE_SERVICE_KEY/.test(admin)) failures.push("admin page could expose a Supabase service-role key");
+if (/VITE_SLACK|hooks\.slack\.com|alfred2026/.test(admin)) failures.push("admin page contains a browser-exposed webhook or shared password");
+if (!/signInWithOtp/.test(admin) || !/rpc\("is_admin"\)/.test(admin)) failures.push("admin page is missing server-verified email OTP access");
 if (!/path="\/admin" noindex/.test(admin)) failures.push("admin page must be noindex");
 if (!/path="\/proposal" noindex/.test(proposal)) failures.push("proposal page must be noindex");
 if (!/<CookieConsent\/>/.test(app)) failures.push("cookie consent UI is not mounted");
@@ -57,9 +61,9 @@ if (!/import\("posthog-js"\)/.test(analytics) || /from\s+["']posthog-js["']/.tes
 if (/phc_[A-Za-z0-9]+/.test(analytics)) failures.push("a hardcoded PostHog project key remains");
 if (/eyJhbGciOiJ/.test(supabase)) failures.push("a hardcoded Supabase key remains");
 if (!/VITE_SUPABASE_URL=/.test(envExample) || !/VITE_SUPABASE_ANON_KEY=/.test(envExample)) failures.push("Supabase deployment variables are undocumented");
-if (!/LITEAPI_KEY=/.test(envExample)) failures.push("the server-side hotel-rate variable is undocumented");
+if (!/LITTLE_EMPERORS_RATES_ENDPOINT=/.test(envExample) || !/LITTLE_EMPERORS_API_KEY=/.test(envExample)) failures.push("the server-side Little Emperors adapter variables are undocumented");
 if (!/hotel-min-rates/.test(hotels) || !/From \{money\(rate\.perNight/.test(hotels)) failures.push("hotel cards are missing itinerary-specific starting prices");
-if (!/suggestedSellingPrice/.test(hotelMinRates) || !/maxRatesPerHotel:1/.test(hotelMinRates)) failures.push("hotel listing rates must use the lowest public LiteAPI offer");
+if (!/fetchPartnerRates/.test(hotelMinRates) || !/publicRate !== true/.test(hotelRateProvider) || !/bookable !== true/.test(hotelRateProvider)) failures.push("hotel listing rates are not restricted to authorised public, bookable partner offers");
 if (!/CompoundPriceSpecification/.test(hotelDetail) || !/taxesIncluded===true/.test(hotelDetail)) failures.push("hotel price schema must be limited to fee-inclusive supplier rates");
 if (/\+r\.name\+/.test(hotelDetail)) failures.push("hotel room requests can still contain an undefined room name");
 if (!/ad_user_data/.test(consent) || !/ad_personalization/.test(consent)) failures.push("Google consent mode v2 signals are incomplete");
@@ -74,6 +78,8 @@ for (const slug of ["miami", "paris", "ibiza", "saint-tropez", "mykonos", "dubai
   }
 }
 if (!/path="\/city\/:city\/:service"/.test(app)) failures.push("city-by-service landing-page route is missing");
+if (!/path="\/partners\/car-rentals"/.test(app) || !/live availability and pricing integration/i.test(carPartners)) failures.push("car-rental partner onboarding page or route is missing");
+if (!locs.includes("https://alfredconcierge.app/partners/car-rentals")) failures.push("car-rental partner page is missing from the sitemap");
 if (!/FAQPage/.test(cityServicePage) || !/BreadcrumbList/.test(cityServicePage) || !/Service/.test(cityServicePage)) failures.push("city-service pages are missing required structured data");
 if (!/CITY_SERVICE_ORDER/.test(cityServicePage) || !/catalogHref/.test(cityServicePage)) failures.push("city-service pages are missing cross-links or filtered catalog links");
 for (const service of ["hotels", "restaurants", "nightlife", "exotic-cars", "yachts", "jets", "wellness"]) {

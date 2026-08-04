@@ -2,8 +2,9 @@
 /**
  * Local dev stand-in for the Vercel function at /api/hotel-rates.
  * Vite doesn't run serverless functions, so during `npm run dev` the page
- * calls http://localhost:4956/api/hotel-rates instead. Reads LITEAPI_KEY
- * from .env.local (gitignored). Run: node scripts/rates-proxy.js
+ * calls http://localhost:4956/api/hotel-rates instead. Reads the authorised
+ * Little Emperors adapter settings from .env.local (gitignored).
+ * Run: node scripts/rates-proxy.js
  */
 const http = require('http');
 const fs = require('fs');
@@ -30,4 +31,4 @@ http
     if (u.pathname === '/api/hotel-rates') return handler(req, res);
     res.status(404).json({ error: 'not found' });
   })
-  .listen(4956, () => console.log('rates proxy on http://localhost:4956 (key: ' + (process.env.LITEAPI_KEY ? 'loaded' : 'MISSING') + ')'));
+  .listen(4956, () => console.log('rates proxy on http://localhost:4956 (Little Emperors endpoint: ' + (process.env.LITTLE_EMPERORS_RATES_ENDPOINT ? 'configured' : 'pending') + ')'));

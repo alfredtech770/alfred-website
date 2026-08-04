@@ -38,7 +38,9 @@ function Mark(p){return(<svg width={p.size} height={p.size} viewBox="0 0 100 100
 function useVis(ref){var[v,setV]=useState(false);useEffect(function(){var o=null,mo=null;function connect(){if(!ref.current)return false;o=new IntersectionObserver(function(e){if(e[0].isIntersecting)setV(true)},{threshold:0.08});o.observe(ref.current);if(mo)mo.disconnect();return true}if(!connect()){mo=new MutationObserver(connect);mo.observe(document.body,{childList:true,subtree:true})}return function(){if(mo)mo.disconnect();if(o)o.disconnect()}},[]);return v}
 
 
-var TIERS=[{label:"1-2 days",min:1,max:2,disc:0},{label:"3-6 days",min:3,max:6,disc:5},{label:"7-13 days",min:7,max:13,disc:10},{label:"14-29 days",min:14,max:29,disc:15},{label:"30+ days",min:30,max:999,disc:20}];
+/* Catalogue prices are guide rates, not supplier-confirmed promotions. Do not
+ * invent duration discounts; the operator confirms any eligible adjustment. */
+var TIERS=[{label:"1-2 days",min:1,max:2,disc:0},{label:"3-6 days",min:3,max:6,disc:0},{label:"7-13 days",min:7,max:13,disc:0},{label:"14-29 days",min:14,max:29,disc:0},{label:"30+ days",min:30,max:999,disc:0}];
 function getTier(d){return TIERS.find(function(t){return d>=t.min&&d<=t.max})||TIERS[0]}
 function dayRate(base,d){return Math.round(base*(1-getTier(d).disc/100))}
 
@@ -269,7 +271,7 @@ html,body{overflow-x:hidden;max-width:100vw}
               </div>
               <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                 <span style={{...sf(34,700),color:C.s1}}>${CAR.pricePerDay.toLocaleString()}</span>
-                <span style={{...sf(14),color:C.s6}}>/day</span>
+                <span style={{...sf(14),color:C.s6}}>/day guide</span>
               </div>
             </div>
 
@@ -320,7 +322,7 @@ html,body{overflow-x:hidden;max-width:100vw}
                 </a>
 
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:14}}>
-                  {["Live availability","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+                  {["Availability checked","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
                 </div>
               </div>
             </div>
@@ -365,7 +367,7 @@ html,body{overflow-x:hidden;max-width:100vw}
             </div>
             <a href={requestUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"14px 0",borderRadius:14,background:C.s1,cursor:"pointer",...sf(14,600),color:C.bg}}>Request this car</a>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginTop:12}}>
-              {["Live availability","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
+              {["Availability checked","Final terms confirmed","Concierge request"].map(function(t,i){return <span key={i} style={{...sf(10),color:C.s6}}>{t}</span>})}
             </div>
           </div>
         </div>

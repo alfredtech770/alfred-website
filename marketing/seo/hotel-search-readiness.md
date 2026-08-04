@@ -1,24 +1,30 @@
-# Hotel price and Google travel readiness
+# Hotel search and distribution readiness
 
-## What is live on the website
+The public hotel catalogue is request-based until Alfred receives an authorised
+Little Emperors rate endpoint and property mapping. It must never display
+private/member-only rates or advertise a public “lowest price” that cannot be
+booked for the visible dates and occupancy.
 
-- Hotel cards request the lowest current public LiteAPI offer for the selected dates and occupancy when `LITEAPI_KEY` is configured.
-- The UI says `From` and explains that price, room, taxes and cancellation terms can change until booking.
-- Hotels without a current supplier rate show `Price on request`; the site does not invent a low price.
-- Product price schema is limited to supplier rates whose fees are confirmed as included.
+## Already implemented
 
-## What must happen before Google Hotel Ads
+- Searchable city, date and guest controls with crawlable hotel detail pages.
+- Public price markup appears only for supplier responses explicitly marked
+  `publicRate: true`, `bookable: true` and `taxesIncluded: true`.
+- Partner credentials stay in Vercel server-side variables.
+- Missing or unavailable rates fall back to “Price on request”.
 
-Google's hotel surfaces require accurate property data, continuously maintained prices and landing pages that match the selected itinerary and rate. Alfred currently coordinates requests rather than completing a direct hotel booking, so normal Search ads should be used first.
+## Required before public rates go live
 
-Do not claim `lowest price`, `best price` or a price guarantee. A low starting rate may be advertised only when it is currently returned for the searched dates and occupancy and the landing page can reproduce it with the same taxes and conditions.
+1. Written permission from Little Emperors for Alfred's intended website use.
+2. An approved API or adapter endpoint and authentication method.
+3. A mapping from each Alfred accommodation to its Little Emperors property ID.
+4. Confirmation of which returned prices are public, bookable and fee-inclusive.
+5. Booking, cancellation and customer-support responsibilities.
+6. Production monitoring for price accuracy and partner endpoint failures.
 
-Before a Hotel Center connection, the account owner must provide:
+## Environment variables
 
-1. A production `LITEAPI_KEY` and stable hotel/property identifiers.
-2. A rate feed or approved connectivity partner that can maintain price, room, tax and availability accuracy.
-3. Itinerary-specific landing URLs and a compliant booking or referral flow.
-4. Reconciliation monitoring for price mismatches and unavailable rates.
-5. Google Hotel Center, Ads and billing access.
+- `LITTLE_EMPERORS_RATES_ENDPOINT`
+- `LITTLE_EMPERORS_API_KEY`
 
-Until those items exist, bid on high-intent city hotel-concierge searches and send traffic to `/city/{city}/hotels`. Optimize for qualified requests, not raw clicks.
+Both values are server-side only and must never use the `VITE_` prefix.

@@ -158,10 +158,11 @@ function CarCard(p){
             <span style={{...sf(12),color:C.s5}}>{car.locs.join(" · ")}</span>
           </div>
         </div>
-        <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:12}}>
+        <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
           <div style={{...sf(24,700),color:C.s1}}>${car.price.toLocaleString()}</div>
-          <div style={{...sf(12),color:C.s6}}>/day</div>
+          <div style={{...sf(12),color:C.s6}}>/day guide</div>
         </div>
+        <div style={{...sf(10),color:C.s7,marginBottom:12}}>Supplier confirms the final all-in quote.</div>
         <div style={{display:"flex",gap:6}}>
           {[{v:car.hp+"hp",icon:"⚡"},{v:car.accel,icon:"⏱"},{v:car.seats+" seats",icon:"💺"}].map(function(s,si){
             return(
@@ -397,7 +398,7 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
         <div style={{textAlign:"center",maxWidth:500,margin:"0 auto",padding:"0 40px"}}>
           <p style={{...sf(10,500),color:C.s7,letterSpacing:5,textTransform:"uppercase",marginBottom:20,opacity:ctaVis?1:0,transition:"all 0.8s ease"}}>Concierge</p>
           <h2 style={{...sf(40,600),letterSpacing:-1.5,lineHeight:1.1,marginBottom:16,opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(24px)",transition:"all 0.9s ease 0.15s"}}>Can't find<br/>your dream car?</h2>
-          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred what you're looking for. We source any car, anywhere — from Paganis to vintage Porsches.</p>
+          <p style={{...sf(15,400),color:C.s5,lineHeight:1.7,marginBottom:36,opacity:ctaVis?1:0,transition:"opacity 0.8s ease 0.3s"}}>Tell Alfred what you're looking for. We check suitable supplier options for your city and dates, then confirm the vehicle and final terms.</p>
           <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",opacity:ctaVis?1:0,transform:ctaVis?"translateY(0)":"translateY(16px)",transition:"all 0.9s ease 0.4s"}}>
             <div onClick={function(){window.open("https://wa.me/33743713649?text="+encodeURIComponent("Hi Alfred, I'm looking for a specific exotic car. Could you help me source it?"),"_blank")}} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 32px",borderRadius:14,background:C.s1,...sf(14,600),color:C.bg,transition:"transform 0.3s,box-shadow 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(244,244,245,0.1)"}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none"}}>Ask Alfred</div>
             <a href="/catalog" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"16px 28px",borderRadius:14,border:"1px solid "+C.bd,...sf(14,500),color:C.s4,transition:"all 0.3s",cursor:"pointer"}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.s5;e.currentTarget.style.color=C.s1}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.bd;e.currentTarget.style.color=C.s4}}>Back to Catalog</a>
@@ -411,6 +412,7 @@ input[type="date"]::-webkit-inner-spin-button,input[type="date"]::-webkit-outer-
           <a href="/" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Home</a>
           <a href="/catalog" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Catalog</a>
           <a href="/business" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>Business</a>
+          <a href="/partners/car-rentals" style={{...sf(11),color:C.s6,transition:"color 0.3s"}} onMouseEnter={function(e){e.target.style.color=C.s1}} onMouseLeave={function(e){e.target.style.color=C.s6}}>List Your Fleet</a>
         </div>
       </footer>
     </div>

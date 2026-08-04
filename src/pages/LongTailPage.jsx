@@ -81,7 +81,7 @@ function buildJsonLd(slug, cfg, vert, rows){
       } else if(vert.type==="Product"){
         item.brand = r.brand ? {"@type":"Brand","name": r.brand} : undefined;
         item.category = "Luxury & Exotic Car Rental";
-        if(r.price_1_day){ item.offers = {"@type":"Offer","price": r.price_1_day, "priceCurrency":"USD","url": url}; }
+        if(r.live_bookable===true&&r.price_1_day){ item.offers = {"@type":"Offer","price": r.price_1_day, "priceCurrency":"USD","url": url,"availability":"https://schema.org/InStock"}; }
       } else if(vert.type==="Hotel"){
         if(r.star_rating){ item.starRating = {"@type":"Rating","ratingValue": r.star_rating}; }
         item.priceRange = dollars(r.price_level) || "$$$$";
