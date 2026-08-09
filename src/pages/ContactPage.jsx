@@ -5,6 +5,7 @@ import {
   Hero, BrandNav, SilverText, SectionHeader, PrimaryCTA, GhostCTA,
   GlassCard, Eyebrow, Divider, useReveal, revealStyle, useMobile
 } from "../components/brand";
+import { appStoreUrl } from "../lib/appStore";
 
 var T_ = T;
 
@@ -32,7 +33,7 @@ var CHANNELS = [
     title:"Inside the app",
     body:"Members chat directly with the concierge from inside Alfred. Every booking, receipt and conversation lives there. Download the app to start.",
     cta:"Download Alfred",
-    href:"https://apps.apple.com/app/id6759160130",
+    href:appStoreUrl(),
     target:"_blank",
     rel:"noopener noreferrer",
     accent:T.silver

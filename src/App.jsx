@@ -7,11 +7,12 @@ import SiteAnalytics, { trackLead } from "./components/SiteAnalytics";
 import CookieConsent from "./components/CookieConsent";
 import { supabase } from "./lib/supabase";
 import { readStoredConsent } from "./lib/consent";
+import { appStoreUrl } from "./lib/appStore";
 
 /* Apple App Store deep-link for Alfred Concierge. Universal URL (no
  * country code) so users land on their regional storefront and
  * Smart App Banners can deep-link if they already have the app. */
-const APP_STORE_URL = "https://apps.apple.com/app/id6759160130";
+const APP_STORE_URL = appStoreUrl();
 const openAppStore = function(){ window.open(APP_STORE_URL,"_blank","noopener,noreferrer"); };
 
 /* Route pages are loaded on demand so the homepage does not ship every

@@ -7,8 +7,9 @@ import {
   Eyebrow, useMobile
 } from "../components/brand";
 import CITY_GUIDES from "../data/cities";
+import { appStoreUrl } from "../lib/appStore";
 
-var APP_STORE = "https://apps.apple.com/app/id6759160130";
+var APP_STORE = appStoreUrl();
 var WHATSAPP = "https://wa.me/33743713649";
 
 var DESTINATIONS = [

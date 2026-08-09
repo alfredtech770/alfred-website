@@ -5,8 +5,9 @@ import { T, type } from "../lib/brand";
 import { BrandNav, SectionHeader, GlassCard, PrimaryCTA, GhostCTA, Eyebrow, useMobile } from "../components/brand";
 import CITY_GUIDES from "../data/cities";
 import CITY_SERVICES, { CITY_SERVICE_ORDER, catalogHref } from "../data/cityServices";
+import { appStoreUrl } from "../lib/appStore";
 
-var APP_STORE="https://apps.apple.com/app/id6759160130";
+var APP_STORE=appStoreUrl();
 var WHATSAPP="https://wa.me/33743713649";
 var CITY_ORDER=["miami","paris","ibiza","saint-tropez","mykonos","dubai","london"];
 

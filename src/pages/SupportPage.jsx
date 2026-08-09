@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SEOHead from "../components/SEOHead";
+import { appStoreUrl } from "../lib/appStore";
 
 var sf = function(size, weight){
   return {fontFamily:"-apple-system,'SF Pro Display','Helvetica Neue',sans-serif", fontSize:size, fontWeight:weight||400, WebkitFontSmoothing:"antialiased"};
@@ -139,7 +140,7 @@ export default function SupportPage() {
           <h3 style={{...sf(24,700),color:C.s1,margin:"0 0 10px"}}>Download Alfred</h3>
           <p style={{...sf(14,400),color:C.s5,margin:"0 0 28px",lineHeight:1.6}}>Available exclusively on the App Store for iPhone and iPad.</p>
           <a
-            href="https://apps.apple.com/app/alfred-concierge/id6759160130"
+            href={appStoreUrl()}
             target="_blank"
             rel="noopener noreferrer"
             style={{display:"inline-flex",alignItems:"center",gap:10,background:C.s1,color:C.bg,borderRadius:12,padding:"14px 28px",textDecoration:"none",...sf(15,600)}}

@@ -8,6 +8,7 @@ import {
   SectionHeader, PrimaryCTA, GhostCTA, GlassCard, Eyebrow, Divider,
   useReveal, revealStyle, useMobile
 } from "../components/brand";
+import { appStoreUrl } from "../lib/appStore";
 
 var T_ = T; // shadow alias for nested closures
 
@@ -25,7 +26,7 @@ var TIERS = [
       "Review request updates",
       "Keep request details in one place"
     ],
-    cta:"View Gold in the app", ctaHref:"https://apps.apple.com/app/id6759160130"
+    cta:"View Gold in the app", ctaHref:appStoreUrl()
   },
   {
     id:"platinum", label:"Concierge",
@@ -45,7 +46,7 @@ var TIERS = [
       "WhatsApp request support",
       "Special-occasion planning"
     ],
-    cta:"View Platinum in the app", ctaHref:"https://apps.apple.com/app/id6759160130",
+    cta:"View Platinum in the app", ctaHref:appStoreUrl(),
     featured: true
   },
   {
