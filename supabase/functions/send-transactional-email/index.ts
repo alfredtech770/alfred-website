@@ -1,9 +1,12 @@
-// send-transactional-email (v4)
+// send-transactional-email (v5)
 //
 // Booking-lifecycle emails (confirmed / cancelled / modified / custom) via
 // Resend. Called by the notify_booking_status_change DB trigger (members) and
 // by confirm-booking (any guest with an email, incl. WhatsApp-only clients).
 //
+// v5: ALWAYS DARK. Backgrounds also painted as images, Gmail iOS blend
+//     wrappers on text, Outlook.com [data-ogsc]/[data-ogsb] overrides,
+//     dark outlined buttons (no dark-on-white text to flip).
 // v4: one photo only; kind "reminder" (day-of email, same design).
 // v3: redesigned to match the site (dark editorial, detail tiles, 16:10
 //     venue photo, car upsell card, footer with Instagram).
@@ -150,6 +153,19 @@ const C = {
 };
 const SANS = "-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif";
 const INSTAGRAM = "https://www.instagram.com/askalfred.app";
+
+// ---- always dark ----------------------------------------------------------
+// Mail apps recolour emails in dark/light mode. To keep this one dark:
+//  - backgrounds are also painted as a background-image (a flat gradient),
+//    which Gmail and Outlook never invert;
+//  - light text is wrapped for Gmail iOS (mix-blend trick) so it stays light;
+//  - Outlook.com gets [data-ogsc]/[data-ogsb] overrides;
+//  - Apple Mail honours color-scheme: dark.
+const BG = (c: string) => `background-color:${c};background-image:linear-gradient(${c},${c});`;
+/** Keep light text light in Gmail's forced dark mode. */
+const T = (html: string, inline = false) => inline
+  ? `<span class="gs" style="display:inline-block;"><span class="gd" style="display:inline-block;">${html}</span></span>`
+  : `<div class="gs"><div class="gd">${html}</div></div>`;
 // One of our own Miami cars (Ferrari 296 GTS), cropped 2:1 for the evening offer.
 const CAR_IMAGE = "https://fbdgbnnkgyljehtccgaq.supabase.co/storage/v1/render/image/public/car-photos/miami/ferrari-296-gts/1.jpeg?width=1120&height=520&resize=cover&quality=72";
 
@@ -177,29 +193,32 @@ function gallery(v: Venue): string {
 function shell(preheader: string, inner: string): string {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><title>Alfred Concierge</title>
-<style>:root{color-scheme:dark;supported-color-schemes:dark}a{text-decoration:none}@media (max-width:600px){.px{padding-left:22px!important;padding-right:22px!important}.h1{font-size:30px!important;line-height:34px!important}.tile{display:block!important;width:100%!important}.gap{display:none!important}}</style></head>
-<body style="margin:0;padding:0;background:${C.canvas};" bgcolor="${C.canvas}">
+<style>:root{color-scheme:dark;supported-color-schemes:dark}body{margin:0;padding:0}a{text-decoration:none}
+u + .body .gs{background:#000;mix-blend-mode:screen}u + .body .gd{background:#000;mix-blend-mode:difference}
+[data-ogsb] .bgc{background-color:#0A0A0B!important}[data-ogsb] .bgk{background-color:#111113!important}[data-ogsb] .bgt{background-color:#18181B!important}
+[data-ogsc] .ct{color:#FAFAFA!important}[data-ogsc] .cm{color:#A1A1AA!important}[data-ogsc] .cd{color:#71717A!important}@media (max-width:600px){.px{padding-left:22px!important;padding-right:22px!important}.h1{font-size:30px!important;line-height:34px!important}.tile{display:block!important;width:100%!important}.gap{display:none!important}}</style></head>
+<body class="body" style="margin:0;padding:0;${BG(C.canvas)}" bgcolor="${C.canvas}">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${C.canvas};">${esc(preheader)}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.canvas}" style="background:${C.canvas};"><tr><td align="center" style="padding:32px 12px 40px;">
+<table role="presentation" class="bgc" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.canvas}" style="${BG(C.canvas)}"><tr><td align="center" class="bgc" bgcolor="${C.canvas}" style="${BG(C.canvas)}padding:32px 12px 40px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;font-family:${SANS};color:${C.text};">
-<tr><td align="center" style="padding:0 0 26px;"><a href="${SITE}" style="color:${C.text};font:600 15px/1 ${SANS};letter-spacing:7px;">ALFRED</a><div style="margin-top:7px;color:${C.dim};font:500 10px/1 ${SANS};letter-spacing:4px;">CONCIERGE</div></td></tr>
-<tr><td bgcolor="${C.card}" style="background:${C.card};border:1px solid ${C.line};border-radius:24px;overflow:hidden;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${inner}</table>
+<tr><td align="center" style="padding:0 0 26px;">${T(`<a href="${SITE}" class="ct" style="color:${C.text};font:600 15px/1 ${SANS};letter-spacing:7px;">ALFRED</a><div class="cd" style="margin-top:7px;color:${C.dim};font:500 10px/1 ${SANS};letter-spacing:4px;">CONCIERGE</div>`)}</td></tr>
+<tr><td class="bgk" bgcolor="${C.card}" style="${BG(C.card)}border:1px solid ${C.line};border-radius:24px;overflow:hidden;">
+<table role="presentation" class="bgk" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.card}" style="${BG(C.card)}">${inner}</table>
 </td></tr>
-<tr><td align="center" style="padding:28px 20px 0;color:${C.dim};font:400 12px/20px ${SANS};">
-<a href="https://wa.me/${WA_NUMBER}" style="color:${C.mid};">WhatsApp</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${INSTAGRAM}" style="color:${C.mid};">Instagram</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${SITE}" style="color:${C.mid};">alfredconcierge.app</a><br>
-<span style="color:${C.dim};">Alfred Concierge, Inc. · Your concierge in Miami, Paris, Saint-Tropez, Ibiza, Mykonos, London &amp; Dubai</span>
+<tr><td align="center" class="cd" style="padding:28px 20px 0;color:${C.dim};font:400 12px/20px ${SANS};">${T(`
+<a href="https://wa.me/${WA_NUMBER}" class="cm" style="color:${C.mid};">WhatsApp</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${INSTAGRAM}" class="cm" style="color:${C.mid};">Instagram</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${SITE}" class="cm" style="color:${C.mid};">alfredconcierge.app</a><br>
+<span class="cd" style="color:${C.dim};">Alfred Concierge, Inc. · Your concierge in Miami, Paris, Saint-Tropez, Ibiza, Mykonos, London &amp; Dubai</span>`)}
 </td></tr></table></td></tr></table></body></html>`;
 }
 
 const button = (href: string, text: string, primary = true) =>
-  `<a href="${esc(href)}" style="display:inline-block;margin:0 10px 10px 0;padding:14px 22px;border-radius:999px;font:600 14px/1 ${SANS};letter-spacing:.2px;${primary ? `background:${C.text};color:${C.canvas};` : `background:transparent;color:${C.text};border:1px solid #3F3F46;`}">${esc(text)}</a>`;
+  `<a href="${esc(href)}" class="ct bgt" style="display:inline-block;margin:0 10px 10px 0;padding:13px 22px;border-radius:999px;font:600 14px/1 ${SANS};letter-spacing:.2px;color:${C.text};${BG(primary ? "#202024" : C.card)}border:1.5px solid ${primary ? C.text : "#3F3F46"};">${T(esc(text), true)}</a>`;
 
 /** One detail tile: small caps label over a large value. */
 const tile = (k: string, v: string) =>
-  `<td class="tile" width="50%" valign="top" style="padding:0 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td bgcolor="${C.tile}" style="background:${C.tile};border:1px solid ${C.line};border-radius:16px;padding:16px 18px;">
-<div style="color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">${esc(k)}</div>
-<div style="margin-top:9px;color:${C.text};font:600 17px/22px ${SANS};letter-spacing:-.2px;">${esc(v)}</div></td></tr></table></td>`;
+  `<td class="tile" width="50%" valign="top" style="padding:0 0 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td class="bgt" bgcolor="${C.tile}" style="${BG(C.tile)}border:1px solid ${C.line};border-radius:16px;padding:16px 18px;">${T(`
+<div class="cd" style="color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">${esc(k)}</div>
+<div class="ct" style="margin-top:9px;color:${C.text};font:600 17px/22px ${SANS};letter-spacing:-.2px;">${esc(v)}</div>`)}</td></tr></table></td>`;
 
 function tiles(items: [string, string][]): string {
   const kept = items.filter(([, v]) => v);
@@ -211,9 +230,9 @@ function tiles(items: [string, string][]): string {
   return out ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${out}</table>` : "";
 }
 
-const rule = `<tr><td class="px" style="padding:8px 36px;"><div style="height:1px;line-height:1px;background:${C.line};">&nbsp;</div></td></tr>`;
+const rule = `<tr><td class="px" style="padding:8px 36px;"><div style="height:1px;line-height:1px;${BG(C.line)}">&nbsp;</div></td></tr>`;
 const kicker = (t: string, color = C.mid) =>
-  `<div style="color:${color};font:600 11px/1 ${SANS};letter-spacing:3px;text-transform:uppercase;">${t}</div>`;
+  T(`<div class="${color === C.text ? "ct" : "cm"}" style="color:${color};font:600 11px/1 ${SANS};letter-spacing:3px;text-transform:uppercase;">${t}</div>`);
 
 function renderConfirmed(p: Body, v: Venue, cal: ReturnType<typeof calendar>, reminder = false) {
   const dining = !p.service || /dining|nightlife|restaurant/i.test(p.service);
@@ -233,34 +252,34 @@ function renderConfirmed(p: Body, v: Venue, cal: ReturnType<typeof calendar>, re
 ${v.image ? `<tr><td style="padding:0;line-height:0;"><img src="${esc(heroUrl(v.image))}" width="600" alt="${esc(v.name)}" style="display:block;width:100%;max-width:600px;height:auto;border:0;border-radius:24px 24px 0 0;"></td></tr>` : ""}
 <tr><td class="px" style="padding:34px 36px 6px;">
 ${kicker(`<span style="color:${C.ok};">●</span>&nbsp;&nbsp;${reminder ? "Today" : "Confirmed"}`, C.text)}
-<h1 class="h1" style="margin:16px 0 0;color:${C.text};font:600 36px/40px ${SANS};letter-spacing:-1.4px;">${esc(v.name)}</h1>
-<p style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${reminder
+${T(`<h1 class="h1 ct" style="margin:16px 0 0;color:${C.text};font:600 36px/40px ${SANS};letter-spacing:-1.4px;">${esc(v.name)}</h1>`)}
+${T(`<p class="cm" style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${reminder
   ? (dining ? `A quick reminder${p.first_name ? `, ${esc(p.first_name)}` : ""}: your table is today${time ? ` at ${esc(time)}` : ""}. Enjoy your evening.` : `A quick reminder${p.first_name ? `, ${esc(p.first_name)}` : ""}: your booking starts today.`)
-  : (dining ? `${hello} table is booked${v.city ? ` in ${esc(v.city)}` : ""}. Everything is arranged; all that's left is to enjoy it.` : `${hello} booking is confirmed${v.city ? ` in ${esc(v.city)}` : ""}.`)}</p>
+  : (dining ? `${hello} table is booked${v.city ? ` in ${esc(v.city)}` : ""}. Everything is arranged; all that's left is to enjoy it.` : `${hello} booking is confirmed${v.city ? ` in ${esc(v.city)}` : ""}.`)}</p>`)}
 </td></tr>
 <tr><td class="px" style="padding:24px 36px 4px;">
 ${tiles(dining
   ? [["Date", date], ["Time", time], ["Guests", `${party} ${party > 1 ? "guests" : "guest"}`], ["Reference", p.reference ?? (p.first_name ? `Under ${p.first_name}` : "")]]
   : [["Dates", dates], ["Reference", p.reference ?? ""]])}
 </td></tr>
-${p.note ? `<tr><td class="px" style="padding:6px 36px 4px;"><p style="margin:0;padding:16px 18px;border-left:2px solid ${C.silver};background:${C.tile};border-radius:0 14px 14px 0;color:${C.text};font:400 15px/23px ${SANS};">${esc(p.note)}</p></td></tr>` : ""}
-${v.address || v.dress ? `<tr><td class="px" style="padding:18px 36px 4px;">
-${v.address ? `<p style="margin:0 0 6px;color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">Where</p><p style="margin:0 0 16px;color:${C.text};font:500 15px/22px ${SANS};">${maps ? `<a href="${esc(maps)}" style="color:${C.text};border-bottom:1px solid #3F3F46;">${esc(v.address)}</a>` : esc(v.address)}</p>` : ""}
-${v.dress ? `<p style="margin:0 0 6px;color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">Dress code</p><p style="margin:0;color:${C.text};font:500 15px/22px ${SANS};">${esc(v.dress)}</p>` : ""}
+${p.note ? `<tr><td class="px" style="padding:6px 36px 4px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td class="bgt" bgcolor="${C.tile}" style="${BG(C.tile)}border-left:2px solid ${C.silver};border-radius:0 14px 14px 0;padding:16px 18px;">${T(`<p class="ct" style="margin:0;color:${C.text};font:400 15px/23px ${SANS};">${esc(p.note)}</p>`)}</td></tr></table></td></tr>` : ""}
+${v.address || v.dress ? `<tr><td class="px" style="padding:18px 36px 4px;">${T(`
+${v.address ? `<p class="cd" style="margin:0 0 6px;color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">Where</p><p class="ct" style="margin:0 0 16px;color:${C.text};font:500 15px/22px ${SANS};">${maps ? `<a href="${esc(maps)}" style="color:${C.text};border-bottom:1px solid #3F3F46;">${esc(v.address)}</a>` : esc(v.address)}</p>` : ""}
+${v.dress ? `<p class="cd" style="margin:0 0 6px;color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">Dress code</p><p class="ct" style="margin:0;color:${C.text};font:500 15px/22px ${SANS};">${esc(v.dress)}</p>` : ""}`)}
 </td></tr>` : ""}
 <tr><td class="px" style="padding:26px 36px 8px;">${cal && !reminder ? button(cal.google, "Add to calendar") : ""}${maps ? button(maps, "Directions", reminder) : ""}</td></tr>
-${v.tip ? `${rule}<tr><td class="px" style="padding:18px 36px 6px;">${kicker("Alfred's note")}<p style="margin:12px 0 0;color:${C.text};font:400 16px/26px Georgia,'Times New Roman',serif;font-style:italic;">“${esc(v.tip)}”</p></td></tr>` : ""}
+${v.tip ? `${rule}<tr><td class="px" style="padding:18px 36px 6px;">${kicker("Alfred's note")}${T(`<p class="ct" style="margin:12px 0 0;color:${C.text};font:400 16px/26px Georgia,'Times New Roman',serif;font-style:italic;">“${esc(v.tip)}”</p>`)}</td></tr>` : ""}
 ${rule}
 <tr><td class="px" style="padding:18px 36px 30px;">
-<p style="margin:0;color:${C.mid};font:400 14px/22px ${SANS};">${dining ? `Running late, adding a guest or changing the time? Message us and we'll handle it with ${esc(v.name)}.` : `Any question or change before the day? Message us and we'll handle it.`}</p>
-<p style="margin:16px 0 0;">${button(waChange, "Message your concierge", false)}${venueLink ? `<a href="${esc(venueLink)}" style="display:inline-block;margin:0 0 10px;padding:14px 4px;color:${C.mid};font:500 14px/1 ${SANS};">About ${esc(v.name)} →</a>` : ""}</p>
+${T(`<p class="cm" style="margin:0;color:${C.mid};font:400 14px/22px ${SANS};">${dining ? `Running late, adding a guest or changing the time? Message us and we'll handle it with ${esc(v.name)}.` : `Any question or change before the day? Message us and we'll handle it.`}</p>`)}
+<p style="margin:16px 0 0;">${button(waChange, "Message your concierge", false)}${venueLink ? `<a href="${esc(venueLink)}" class="cm" style="display:inline-block;margin:0 0 10px;padding:14px 4px;color:${C.mid};font:500 14px/1 ${SANS};">${T(`About ${esc(v.name)} →`, true)}</a>` : ""}</p>
 </td></tr>
-${dining ? `<tr><td style="padding:0 12px 12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.tile}" style="background:${C.tile};border:1px solid ${C.line};border-radius:18px;">
+${dining ? `<tr><td style="padding:0 12px 12px;"><table role="presentation" class="bgt" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.tile}" style="${BG(C.tile)}border:1px solid ${C.line};border-radius:18px;">
 <tr><td style="padding:0;line-height:0;"><a href="${esc(waCar)}"><img src="${esc(CAR_IMAGE)}" width="574" alt="Ferrari 296 GTS" style="display:block;width:100%;height:auto;border:0;border-radius:18px 18px 0 0;"></a></td></tr>
 <tr><td style="padding:24px 24px 16px;">
 ${kicker("Make it an evening", C.silver)}
-<p style="margin:12px 0 0;color:${C.text};font:600 22px/27px ${SANS};letter-spacing:-.5px;">Arrive in style.</p>
-<p style="margin:8px 0 18px;color:${C.mid};font:400 14px/21px ${SANS};">A chauffeur to the door, or an exotic car for the night. One message and it's arranged.</p>
+${T(`<p class="ct" style="margin:12px 0 0;color:${C.text};font:600 22px/27px ${SANS};letter-spacing:-.5px;">Arrive in style.</p>
+<p class="cm" style="margin:8px 0 18px;color:${C.mid};font:400 14px/21px ${SANS};">A chauffeur to the door, or an exotic car for the night. One message and it's arranged.</p>`)}
 ${button(waCar, "Arrange a car")}
 </td></tr></table></td></tr>` : ""}`;
 
@@ -288,21 +307,21 @@ function renderSimple(kind: "cancelled" | "modified", p: Body, v: Venue) {
     const subject = `Updated: ${v.name}, ${date}${time ? ` at ${time}` : ""}`;
     const inner = `${v.image ? `<tr><td style="padding:0;line-height:0;"><img src="${esc(heroUrl(v.image))}" width="600" alt="${esc(v.name)}" style="display:block;width:100%;max-width:600px;height:auto;border:0;border-radius:24px 24px 0 0;"></td></tr>` : ""}
 <tr><td class="px" style="padding:34px 36px 6px;">${kicker(`<span style="color:#60A5FA;">●</span>&nbsp;&nbsp;Updated`, C.text)}
-<h1 class="h1" style="margin:16px 0 0;color:${C.text};font:600 36px/40px ${SANS};letter-spacing:-1.4px;">${esc(v.name)}</h1>
-<p style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${hello} reservation has moved. Everything else is unchanged.</p></td></tr>
+${T(`<h1 class="h1 ct" style="margin:16px 0 0;color:${C.text};font:600 36px/40px ${SANS};letter-spacing:-1.4px;">${esc(v.name)}</h1>`)}
+${T(`<p class="cm" style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${hello} reservation has moved. Everything else is unchanged.</p>`)}</td></tr>
 <tr><td class="px" style="padding:24px 36px 4px;">${tiles([["New date", date], ["New time", time]])}</td></tr>
 <tr><td class="px" style="padding:20px 36px 32px;">${button(wa, "Message your concierge", false)}</td></tr>`;
     return { subject, html: shell(`Your reservation at ${v.name} is now ${date}.`, inner),
       text: `${p.first_name ? `${p.first_name}, your` : "Your"} reservation at ${v.name} is now ${date}${time ? ` at ${time}` : ""}. Everything else is unchanged.\n\nWhatsApp ${WA_DISPLAY}\n\nAlfred Concierge` };
   }
   const reason = p.reason ?? "due to a venue-side conflict";
-  const alts = (p.alternatives ?? []).map((a) => `<tr><td style="padding:0 0 8px;"><a href="${esc(`${wa}?text=${encodeURIComponent(`Hi Alfred, please book: ${a}`)}`)}" style="display:block;padding:14px 16px;background:${C.tile};border:1px solid ${C.line};border-radius:14px;color:${C.text};font:500 15px/20px ${SANS};">${esc(a)}&nbsp;&nbsp;<span style="color:${C.dim};">→</span></a></td></tr>`).join("");
+  const alts = (p.alternatives ?? []).map((a) => `<tr><td style="padding:0 0 8px;"><a href="${esc(`${wa}?text=${encodeURIComponent(`Hi Alfred, please book: ${a}`)}`)}" class="ct bgt" style="display:block;padding:14px 16px;${BG(C.tile)}border:1px solid ${C.line};border-radius:14px;color:${C.text};font:500 15px/20px ${SANS};">${T(`${esc(a)}&nbsp;&nbsp;<span style="color:${C.dim};">→</span>`, true)}</a></td></tr>`).join("");
   const subject = `${v.name}: let us make this right`;
   const inner = `<tr><td class="px" style="padding:36px 36px 6px;">${kicker(`<span style="color:#F87171;">●</span>&nbsp;&nbsp;Cancelled`, C.text)}
-<h1 class="h1" style="margin:16px 0 0;color:${C.text};font:600 32px/36px ${SANS};letter-spacing:-1.2px;">${esc(v.name)}</h1>
-<p style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${hello} reservation has been cancelled ${esc(reason)}. No card was charged.</p></td></tr>
+${T(`<h1 class="h1 ct" style="margin:16px 0 0;color:${C.text};font:600 32px/36px ${SANS};letter-spacing:-1.2px;">${esc(v.name)}</h1>`)}
+${T(`<p class="cm" style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${hello} reservation has been cancelled ${esc(reason)}. No card was charged.</p>`)}</td></tr>
 ${alts ? `<tr><td class="px" style="padding:22px 36px 6px;">${kicker("We can secure instead")}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">${alts}</table></td></tr>` : ""}
-<tr><td class="px" style="padding:18px 36px 32px;"><p style="margin:0 0 16px;color:${C.mid};font:400 14px/22px ${SANS};">Reply on WhatsApp and we'll find you something just as good.</p>${button(wa, "Message your concierge")}</td></tr>`;
+<tr><td class="px" style="padding:18px 36px 32px;">${T(`<p class="cm" style="margin:0 0 16px;color:${C.mid};font:400 14px/22px ${SANS};">Reply on WhatsApp and we'll find you something just as good.</p>`)}${button(wa, "Message your concierge")}</td></tr>`;
   return { subject, html: shell(`Your reservation at ${v.name} was cancelled. We'll find an alternative.`, inner),
     text: `${p.first_name ? `${p.first_name}, your` : "Your"} reservation at ${v.name} has been cancelled ${reason}. No card was charged.\n${(p.alternatives ?? []).map((a) => `- ${a}`).join("\n")}\n\nWhatsApp ${WA_DISPLAY}\n\nAlfred Concierge` };
 }
