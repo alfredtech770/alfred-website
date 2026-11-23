@@ -59,7 +59,7 @@ function readRetired() {
   const add = (route) => {
     if (present.has(route)) return;
     // Only clean, URL-safe slugs go in the sitemap ("El dorado hôtel" doesn't).
-    if (!/^\/catalog\/[a-z-]+\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(route)) { badSlugs.push(route); return; }
+    if (!/^\/(catalog\/[a-z-]+|best)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(route)) { badSlugs.push(route); return; }
     present.add(route); additions.push(route);
   };
   for (const r of data.lists.restaurants) if (r.slug) add(`/catalog/dining/${r.slug}`);
@@ -74,6 +74,8 @@ function readRetired() {
     add(`/catalog/exotic-cars/${slug}`);
   }
   for (const n of data.lists.clubs) if (n.slug) add(`/catalog/nightlife/${n.slug}`);
+  // Long-tail guides (src/data/longtail.js) that render a full page.
+  for (const slug of Object.keys(data.longtail || {})) add(`/best/${slug}`);
   for (const y of data.lists.yachts) add(`/catalog/yachts/${y.slug}`);
   for (const w of data.lists.wellness) add(`/catalog/wellness/${w.slug}`);
 

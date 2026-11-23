@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { track as vercelTrack } from "@vercel/analytics";
 import { applyGoogleConsent, DENIED_CONSENT, readStoredConsent } from "../lib/consent";
 
 var posthogClient=null;
@@ -42,6 +43,16 @@ export function trackLead(options){
     window.gtag("event","conversion",{send_to:adsId+"/"+conversionLabel});
   }
   capturePosthog(method==="whatsapp"?"concierge_chat_opened":"lead_generated",props);
+  // Vercel Web Analytics is cookieless and counts every visitor, so this is
+  // the number to read per page: Analytics → Events in the Vercel dashboard.
+  // Only the page and the venue/label are sent, never personal data.
+  try{ vercelTrack(method==="whatsapp"?"WhatsApp request":"Lead",{page:props.page_path.slice(0,200),label:props.label||"",method:method}); }catch(e){}
+}
+
+/* The venue or request a WhatsApp link is about, read from its pre-filled
+ * message ("Hi Alfred, I'd like a table at Diep (Paris)…"). */
+function whatsAppLabel(url){
+  try{ return (new URL(String(url)).searchParams.get("text")||"").replace(/\s+/g," ").trim().slice(0,120); }catch(e){ return ""; }
 }
 
 export function trackAppStoreClick(){
@@ -193,7 +204,7 @@ export default function SiteAnalytics(){
       if(href.indexOf("apps.apple.com")!==-1){
         trackAppStoreClick();
       } else if(/wa\.me|whatsapp/i.test(href)){
-        trackLead({method:"whatsapp",label:label});
+        trackLead({method:"whatsapp",label:whatsAppLabel(href)||label});
       } else if(/^mailto:/i.test(href)){
         trackLead({method:"email",label:label});
       } else if(/opentable|thefork|resy|sevenrooms|zenchef|tock|quandoo|covermanager/i.test(href)){
@@ -211,7 +222,7 @@ export default function SiteAnalytics(){
       if(typeof url==="string"&&url.indexOf("apps.apple.com")!==-1){
         trackAppStoreClick();
       } else if(typeof url==="string"&&/wa\.me|whatsapp/i.test(url)){
-        trackLead({method:"whatsapp",label:"Concierge request"});
+        trackLead({method:"whatsapp",label:whatsAppLabel(url)||"Concierge request"});
       }
       return originalOpen.apply(window,arguments);
     };

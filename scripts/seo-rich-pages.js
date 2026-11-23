@@ -14,6 +14,7 @@
  */
 const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
 
 const BASE = "https://alfredconcierge.app";
 const WHATSAPP = "33743713649";
@@ -94,8 +95,28 @@ async function loadCatalog() {
   // WellnessDetailPage hides inactive venues.
   for (const y of yachts) if (y.slug) data.yachts.set(y.slug, y);
   for (const w of live(wellness)) if (w.slug) data.wellness.set(w.slug, w);
+  data.longtail = loadLongtail();
+  // Link to the car URL the sitemap lists (e.g. "mercedes-benz-glc63s"), so
+  // guides point at the one canonical page for each car.
+  const sm = path.join(ROOT, "public", "sitemap.xml");
+  data.sitemapCars = new Set(fs.existsSync(sm) ? [...fs.readFileSync(sm, "utf8").matchAll(/\/catalog\/exotic-cars\/([^<]+)</g)].map((m) => m[1]) : []);
   console.log(`rich SEO: loaded ${restaurants.length} restaurants, ${cars.length} cars, ${hotels.length} hotels, ${clubs.length} nightlife venues, ${yachts.length} yachts, ${wellness.length} wellness venues`);
   return data;
+}
+
+/* src/data/longtail.js is an ES module the app imports; read it here as a
+ * plain script so the guides' copy and filters stay in one place. */
+function loadLongtail() {
+  try {
+    const src = fs.readFileSync(path.join(ROOT, "src", "data", "longtail.js"), "utf8")
+      .replace(/export default LONGTAIL;\s*$/, "module.exports = LONGTAIL;");
+    const mod = { exports: {} };
+    vm.runInNewContext(src, { module: mod });
+    return mod.exports || {};
+  } catch (e) {
+    console.warn(`rich SEO: long-tail guides skipped (${e.message})`);
+    return {};
+  }
 }
 
 /* ── helpers ─────────────────────────────────────────────────────────── */
@@ -513,9 +534,123 @@ ${related(`More wellness in ${city}`, links)}`;
   return { meta: { title, description, h1: `${n} — ${city}` }, body, ld };
 }
 
+/* ── car lists: guides, city page, catalog ──────────────────────────── */
+
+function liveCarSlug(c, data) {
+  const s = carSlug(c);
+  if (data.sitemapCars.has(s)) return s;
+  const benz = slugify(carName({ ...c, brand: "Mercedes-Benz" }));
+  return data.sitemapCars.has(benz) ? benz : s;
+}
+function carRows(cars, data) {
+  const seen = new Set(), out = [];
+  for (const c of cars) {
+    const slug = liveCarSlug(c, data);
+    if (seen.has(slug) || !data.cars.has(slug)) continue;
+    seen.add(slug);
+    out.push({ c, slug, name: carName(c) });
+  }
+  return out;
+}
+function carTable(rows) {
+  if (!rows.length) return "";
+  return `<table><thead><tr><th>Car</th><th>From / day</th><th>Week</th><th>Deposit</th><th>Power</th></tr></thead><tbody>${rows.map(({ c, slug, name }) =>
+    `<tr><td><a href="/catalog/exotic-cars/${esc(slug)}" style="${S.a}">${esc(name)}</a></td><td>${esc(money(c.price_1_day, c.city) || "On request")}</td><td>${esc(money(c.price_7_day, c.city) || "—")}</td><td>${esc(money(c.deposit, c.city) || "—")}</td><td>${esc(c.hp ? `${c.hp} hp` : "—")}</td></tr>`).join("")}</tbody></table>`;
+}
+function priceFacts(rows, city, noun) {
+  const priced = rows.filter((r) => r.c.price_1_day).sort((a, b) => a.c.price_1_day - b.c.price_1_day);
+  if (!priced.length) return null;
+  const lo = priced[0], hi = priced[priced.length - 1];
+  const deps = rows.map((r) => Number(r.c.deposit)).filter(Boolean).sort((a, b) => a - b);
+  return `${noun} rentals in ${city} start at ${money(lo.c.price_1_day, city)} a day (${lo.name})` +
+    (hi !== lo ? ` and go up to ${money(hi.c.price_1_day, city)} a day (${hi.name})` : "") + "." +
+    (deps.length ? ` Refundable deposits run from ${money(deps[0], city)}${deps.length > 1 && deps[deps.length - 1] !== deps[0] ? ` to ${money(deps[deps.length - 1], city)}` : ""}.` : "") +
+    " Alfred confirms the final price for your dates before you pay.";
+}
+function itemListLd(name, url, links) {
+  return links.length ? { "@context": "https://schema.org", "@type": "ItemList", name, url: BASE + url, numberOfItems: links.length, itemListElement: links.map(([n, href], i) => ({ "@type": "ListItem", position: i + 1, name: n, url: BASE + href })) } : null;
+}
+
+const GUIDE_TABLES = {
+  cars: { list: "cars" },
+  restaurants: { list: "restaurants", href: (r) => `/catalog/dining/${r.slug}`, note: (r) => [r.cuisine, r.neighborhood, r.avg_spend].filter(Boolean).join(", ") },
+  accommodations: { list: "hotels", href: (r) => `/catalog/hotels/${r.slug}`, note: (r) => [r.neighborhood, r.star_rating ? `${r.star_rating}★` : null].filter(Boolean).join(", ") }
+};
+
+function guidePage(slug, data) {
+  const cfg = data.longtail[slug];
+  const table = GUIDE_TABLES[cfg.table || "restaurants"];
+  if (!table) return null;
+  const pool = (data.lists[table.list] || []).filter((r) => { try { return cfg.filter(r); } catch (e) { return false; } });
+  const city = cfg.city || "";
+  const url = `/best/${slug}`;
+  let listHtml = "", links = [], faqs = (cfg.faqs || []).slice();
+
+  if (cfg.table === "cars") {
+    const rows = carRows(pool.sort((a, b) => (b.price_1_day || 0) - (a.price_1_day || 0)), data);
+    if (!rows.length) return null;
+    links = rows.map(({ slug: s, name }) => [name, `/catalog/exotic-cars/${s}`]);
+    listHtml = `<h2>${esc(rows.length)} cars to rent${city ? ` in ${esc(city)}` : ""}</h2>${carTable(rows)}`;
+    const facts = priceFacts(rows, city || "Miami", cfg.h1.replace(/ Rental in .*$/, "").replace(/^Exotic & Luxury Car$/, "Exotic car"));
+    if (facts && faqs.length) faqs[0] = { q: faqs[0].q, a: facts };
+  } else {
+    const rows = pool.filter((r) => r.slug).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, cfg.maxItems || 20);
+    if (!rows.length) return null;
+    links = rows.map((r) => [String(r.name).trim(), table.href(r), table.note(r)]);
+    listHtml = `<h2>${esc(cfg.h1)}</h2><ol>${links.map(([n, href, note]) => `<li><a href="${esc(href)}" style="${S.a}">${esc(n)}</a>${note ? " — " + esc(note) : ""}</li>`).join("")}</ol>`;
+  }
+
+  const body = `
+<nav><a href="/" style="${S.a}">Alfred</a> › <a href="/catalog" style="${S.a}">Catalog</a>${city ? ` › <a href="/city/${slugify(city)}" style="${S.a}">${esc(city)}</a>` : ""}</nav>
+<h1>${esc(cfg.h1)}</h1>
+${(cfg.intro || []).map((p) => `<p>${esc(p)}</p>`).join("")}
+${listHtml}
+${ctaBlock(`Request on WhatsApp`, `Send Alfred your dates and what you are looking for. A concierge confirms availability and the full terms.`, `Hi Alfred, I'm looking at ${cfg.h1}. Dates: `)}
+${faqBlock(faqs)}
+${related("Related guides", (cfg.related || []).map((r) => [r.label, r.href]))}`;
+
+  const ld = [itemListLd(cfg.h1, url, links), crumbs([["Home", "/"], ["Catalog", "/catalog"], [cfg.h1, url]]), faqLd(faqs)].filter(Boolean);
+  return { meta: { title: cfg.title, description: cfg.description, h1: cfg.h1 }, body, ld };
+}
+
+const CITY_NAMES = { miami: "Miami", paris: "Paris", "saint-tropez": "Saint-Tropez", ibiza: "Ibiza", mykonos: "Mykonos", monaco: "Monaco", dubai: "Dubai", london: "London" };
+
+function carListPage(city, data) {
+  const pool = data.lists.cars.filter((c) => !city || c.city === city);
+  const rows = carRows(pool.sort((a, b) => (b.price_1_day || 0) - (a.price_1_day || 0)), data);
+  if (!rows.length) return null;
+  const url = city ? `/city/${slugify(city)}/exotic-cars` : "/catalog/exotic-cars";
+  const cities = [...new Set(data.lists.cars.map((c) => c.city).filter(Boolean))];
+  const facts = priceFacts(rows, city || "Miami", "Exotic car");
+  const guides = Object.entries(data.longtail).filter(([, g]) => g.table === "cars" && (!city || g.city === city)).map(([s, g]) => [g.h1, `/best/${s}`]);
+  const faqs = [];
+  if (facts) faqs.push({ q: `How much does it cost to rent an exotic car${city ? ` in ${city}` : ""}?`, a: facts });
+  faqs.push({ q: "How do I book a car through Alfred?", a: "Send Alfred the car, dates and delivery location on WhatsApp. A concierge confirms availability with the rental partner and sends the final quote and a secure payment link." });
+  if (!city) faqs.push({ q: "Where does Alfred arrange exotic car rentals?", a: `${cities.join(", ")}.` });
+
+  const title = city ? `Exotic Car Rental ${city} — ${rows.length} Cars from ${money(Math.min(...rows.map((r) => r.c.price_1_day || 1e9)), city)}/day | Alfred` : `Exotic Car Rental — Lamborghini, Ferrari, Rolls-Royce | Alfred`;
+  const h1 = city ? `Exotic car rental in ${city}` : "Exotic and luxury car rental";
+  const body = `
+<nav><a href="/" style="${S.a}">Alfred</a> › <a href="/catalog/exotic-cars" style="${S.a}">Exotic cars</a>${city ? ` › ${esc(city)}` : ""}</nav>
+<h1>${esc(h1)}</h1>
+<p>${esc(`${rows.length} cars${city ? ` in ${city}` : ` across ${cities.join(", ")}`}, from everyday luxury to hypercars. Prices are indicative per day; Alfred confirms the exact car, dates, delivery and deposit before you pay.`)}</p>
+${guides.length ? related("Browse by brand", guides) : ""}
+<h2>All cars${city ? ` in ${esc(city)}` : ""}</h2>
+${carTable(rows)}
+${ctaBlock("Request a car", "Tell Alfred the car, dates and where you want it delivered.", `Hi Alfred, I'd like to rent a car${city ? ` in ${city}` : ""}. Car: , dates: , delivery: `)}
+${faqBlock(faqs)}`;
+  const ld = [itemListLd(h1, url, rows.map(({ slug, name }) => [name, `/catalog/exotic-cars/${slug}`])), crumbs([["Home", "/"], ["Exotic cars", "/catalog/exotic-cars"]].concat(city ? [[city, url]] : [])), faqLd(faqs)].filter(Boolean);
+  return { meta: { title: pickTitle([title, `Exotic Car Rental ${city} | Alfred`]), description: trimSentence(`Rent ${rows.length} exotic and luxury cars${city ? ` in ${city}` : ""} — Lamborghini, Ferrari, Rolls-Royce, Porsche and more. ${facts || ""}`), h1 }, body, ld };
+}
+
 /* ── routing + HTML injection ────────────────────────────────────────── */
 
 function renderRoute(route, data) {
+  const guide = route.match(/^\/best\/([^/]+)\/?$/);
+  if (guide) return data.longtail && data.longtail[guide[1]] ? guidePage(guide[1], data) : null;
+  const cityCars = route.match(/^\/city\/([^/]+)\/exotic-cars\/?$/);
+  if (cityCars) return CITY_NAMES[cityCars[1]] ? carListPage(CITY_NAMES[cityCars[1]], data) : null;
+  if (route === "/catalog/exotic-cars") return carListPage(null, data);
   const m = route.match(/^\/catalog\/(dining|exotic-cars|hotels|nightlife|yachts|wellness)\/([^/]+)\/?$/);
   if (!m) return null;
   const slug = decodeURIComponent(m[2]);
