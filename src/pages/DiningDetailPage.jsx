@@ -139,7 +139,7 @@ export default function DiningDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" "+(V.city||"Restaurant")+" — Request a Table | Alfred Concierge"}
+        title={V.name+" "+(V.city||"")+" — Reservations & Hours | Alfred"}
         description={"Request a table at "+V.name+(V.city?" in "+V.city:"")+" through Alfred Concierge. View cuisine, location and venue details, then confirm date, time and party size."}
         image={V.imgs&&V.imgs[0]?V.imgs[0]:undefined}
         path={"/catalog/dining/"+slug}

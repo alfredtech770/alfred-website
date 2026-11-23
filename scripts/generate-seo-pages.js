@@ -83,12 +83,31 @@ function replaceMeta(html, route, meta) {
     .replace(/<div id="root">[\s\S]*?<\/div>/, `<div id="root">${fallback}</div>`);
 }
 
-let written = 0;
-for (const route of [...new Set(routes)]) {
-  if (route.includes("..")) continue;
-  const output = path.join(DIST, route.replace(/^\//, ""), "index.html");
-  fs.mkdirSync(path.dirname(output), {recursive:true});
-  fs.writeFileSync(output, replaceMeta(template, route, details(route)), "utf8");
-  written += 1;
-}
-console.log(`static SEO pages: ${written}`);
+const rich = require("./seo-rich-pages.js");
+
+(async function main(){
+  let data = null;
+  try { data = await rich.loadCatalog(); }
+  catch (error) { console.warn("rich SEO: catalog fetch failed, using generic shells -", error.message); }
+  let written = 0, enriched = 0; const orphaned = [];
+  for (const route of [...new Set(routes)]) {
+    if (route.includes("..")) continue;
+    const output = path.join(DIST, route.replace(/^\//, ""), "index.html");
+    fs.mkdirSync(path.dirname(output), {recursive:true});
+    const page = data ? rich.renderRoute(route, data) : null;
+    let html = page
+      ? rich.applyRich(replaceMeta(template, route, {...details(route), ...page.meta}), page)
+      : replaceMeta(template, route, details(route));
+    // Catalog detail URL with no active record behind it: the app shows
+    // "not found", so keep it out of the index instead of serving a soft 404.
+    if (!page && data && rich.isCatalogDetail(route)) {
+      html = html.replace("</head>", '<meta name="robots" content="noindex, follow"></head>');
+      orphaned.push(route);
+    }
+    if (page) enriched += 1;
+    fs.writeFileSync(output, html, "utf8");
+    written += 1;
+  }
+  console.log(`static SEO pages: ${written} (${enriched} with full catalog content, ${orphaned.length} orphaned URLs set to noindex)`);
+  if (orphaned.length) fs.writeFileSync(path.join(ROOT, "dist", "seo-orphaned-urls.txt"), orphaned.join("\n") + "\n");
+})().catch(function(error){ console.error(error); process.exit(1); });

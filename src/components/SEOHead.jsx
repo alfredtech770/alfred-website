@@ -16,9 +16,22 @@ function absoluteUrl(value){
   try{return new URL(value||DEFAULT_IMG,BASE).href}catch(e){return DEFAULT_IMG}
 }
 
+/* Pages built with full catalog content (scripts/seo-rich-pages.js) carry a
+ * data-driven title/description tuned to search intent ("Diep Paris —
+ * Reservations, Menu & Hours"). Keep those on the first render of that same
+ * URL so Google's rendered page matches the static HTML. */
+var STATIC_SEO=(function(){
+  if(typeof document==="undefined")return null;
+  if(!document.querySelector('meta[name="alfred-rich"]'))return null;
+  var d=document.querySelector('meta[name="description"]');
+  return {path:window.location.pathname.replace(/\/+$/,""),title:document.title,description:d?d.getAttribute("content"):""};
+})();
+
 export default function SEOHead(p){
-  var title=p.title||(SITE+" — Luxury Concierge App");
-  var desc=p.description||"Browse restaurants, hotels, nightlife, exotic cars, yachts, private jets and wellness, then send your request to Alfred Concierge.";
+  var pathNow=typeof window!=="undefined"?window.location.pathname.replace(/\/+$/,""):"";
+  var keepStatic=!p.noindex&&STATIC_SEO&&STATIC_SEO.path===pathNow;
+  var title=keepStatic?STATIC_SEO.title:(p.title||(SITE+" — Luxury Concierge App"));
+  var desc=keepStatic&&STATIC_SEO.description?STATIC_SEO.description:p.description||"Browse restaurants, hotels, nightlife, exotic cars, yachts, private jets and wellness, then send your request to Alfred Concierge.";
   var path=p.path||(typeof window!=="undefined"?window.location.pathname:"/");
   var canonical=canonicalUrl(path);
   var image=absoluteUrl(p.image);

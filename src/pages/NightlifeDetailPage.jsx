@@ -123,7 +123,7 @@ export default function NightlifeDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" "+V.city+" — Request a VIP Table | Alfred Concierge"}
+        title={V.name+" "+V.city+" — Table Booking & Guest List | Alfred"}
         description={"View "+V.name+" in "+V.city+" and request current table, bottle-service or guest-list options through Alfred Concierge."}
         image={V.imgs&&V.imgs[0]?V.imgs[0]:"/og-nightlife.jpg"}
         path={"/catalog/nightlife/"+V.slug}

@@ -95,6 +95,7 @@ export default function HotelDetailPage(){
   }
   if(!hotel){
     return(<div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
+      <SEOHead title="Hotel Not Found | Alfred Concierge" description="This hotel is not currently listed. Browse Alfred's luxury hotel catalog." path={"/catalog/hotels/"+slug} noindex/>
       <p style={{...sf(18),color:C.s3}}>Hotel not found</p>
       <button onClick={function(){nav("/catalog/hotels")}} style={{padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(14,500),color:C.s3,cursor:"pointer"}}>Browse Hotels</button>
     </div>);
@@ -121,7 +122,7 @@ export default function HotelDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" — Luxury Hotel "+(V.city||"Miami")+" | Alfred Concierge"}
+        title={V.name+" "+(V.city||"")+" — Rates, Rooms & Member Perks | Alfred"}
         description={(V.description||V.name+" — hotel in "+(V.neighborhood||V.city||"Miami")+". Choose dates and ask Alfred to confirm current public rates, room availability and eligible benefits.").slice(0,160)}
         image={imgs[0]}
         path={"/catalog/hotels/"+slug}

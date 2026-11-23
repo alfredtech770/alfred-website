@@ -154,7 +154,7 @@ export default function CarDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <SEOHead
-        title={CAR.name+" "+(CAR.location?CAR.location.split(" · ")[0]:"Miami")+" — Rental Request | Alfred Concierge"}
+        title={"Rent a "+CAR.name+" in "+(CAR.location?CAR.location.split(" · ")[0]:"Miami")+" | Alfred"}
         description={"Request the "+CAR.name+" in "+(CAR.location||"Miami")+" through Alfred Concierge. View specifications, indicative daily pricing and delivery details, then confirm current availability."}
         path={"/catalog/exotic-cars/"+params.slug}
         jsonLd={carJsonLd({
