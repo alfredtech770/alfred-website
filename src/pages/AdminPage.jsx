@@ -14,8 +14,8 @@ var C = {
   bg:"#09090B", bg2:"#0F0F12", el:"#18181B", srf:"#1F1F23", bd:"#2C2C31", bd2:"#3F3F46",
   s1:"#F4F4F5", s2:"#E4E4E7", s3:"#D4D4D8", s4:"#A1A1AA",
   s5:"#71717A", s6:"#52525B", s7:"#3F3F46",
-  gn:"#34C759", rd:"#FF3B30", gd:"#FFD60A", bl:"#007AFF", or:"#FF9500",
-  gdGrad:"linear-gradient(135deg,#FFD60A 0%,#FFF1A8 50%,#FFD60A 100%)"
+  gn:"#34C759", rd:"#FF3B30", gd:"#ECECEF", bl:"#007AFF", or:"#FF9500",
+  gdGrad:"linear-gradient(135deg,#F4F4F5 0%,#B8B8BF 50%,#F4F4F5 100%)"
 };
 
 /* Slack webhook URLs must never be exposed through VITE_ variables. Admin
@@ -539,7 +539,7 @@ function InboxView({initialPhone}){
               return(
                 <div key={c.phone} onClick={function(){setActivePhone(c.phone);setSendMsg(null);}}
                   style={{padding:"11px 14px",cursor:"pointer",borderBottom:"1px solid "+C.bd,
-                    background:on?"rgba(212,168,83,0.10)":"none",display:"flex",gap:10,alignItems:"center"}}>
+                    background:on?"rgba(228,228,231,0.10)":"none",display:"flex",gap:10,alignItems:"center"}}>
                   <div style={{width:34,height:34,borderRadius:"50%",background:C.srf,flexShrink:0,
                     display:"flex",alignItems:"center",justifyContent:"center",...sf(13,600),color:C.s3}}>
                     {(c.name||"?").slice(0,1).toUpperCase()}
@@ -582,8 +582,8 @@ function InboxView({initialPhone}){
                   return(
                     <div key={m.id} style={{alignSelf:out?"flex-end":"flex-start",maxWidth:"72%"}}>
                       <div style={{padding:"9px 13px",borderRadius:14,
-                        background:out?"rgba(212,168,83,0.16)":C.srf,
-                        border:"1px solid "+(out?"rgba(212,168,83,0.25)":C.bd),
+                        background:out?"rgba(228,228,231,0.16)":C.srf,
+                        border:"1px solid "+(out?"rgba(228,228,231,0.25)":C.bd),
                         ...sf(13),color:C.s1,whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
                         {m.body||"—"}
                       </div>
@@ -827,7 +827,7 @@ function RequestsView({onOpenChat}){
             return(
               <div key={r.key} onClick={function(){setOpenKey(on?null:r.key);}}
                 style={{padding:"13px 16px",borderBottom:"1px solid "+C.bd,cursor:"pointer",
-                  background:on?"rgba(255,214,10,0.07)":"none",display:"flex",gap:14,alignItems:"center"}}>
+                  background:on?"rgba(228,228,231,0.07)":"none",display:"flex",gap:14,alignItems:"center"}}>
                 <div style={{width:74,flexShrink:0}}>
                   {r.wait!=null?(
                     <>
@@ -929,8 +929,8 @@ function RequestsView({onOpenChat}){
                     var out=m.direction==="outbound";
                     return(
                       <div key={m.id} style={{alignSelf:out?"flex-end":"flex-start",maxWidth:"88%"}}>
-                        <div style={{padding:"7px 11px",borderRadius:12,background:out?"rgba(212,168,83,0.16)":C.srf,
-                          border:"1px solid "+(out?"rgba(212,168,83,0.25)":C.bd),...sf(12),color:C.s1,whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
+                        <div style={{padding:"7px 11px",borderRadius:12,background:out?"rgba(228,228,231,0.16)":C.srf,
+                          border:"1px solid "+(out?"rgba(228,228,231,0.25)":C.bd),...sf(12),color:C.s1,whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
                           {m.body||"—"}
                         </div>
                         <div style={{...sf(9),color:C.s6,marginTop:2,textAlign:out?"right":"left"}}>{new Date(m.created_at).toLocaleString()}</div>
@@ -1145,7 +1145,7 @@ function GiftsView(){
             return(
               <div key={u.id} onClick={function(){toggle(u.id);}}
                 style={{display:"flex",alignItems:"center",gap:10,padding:"8px 14px",cursor:"pointer",
-                  borderTop:ix?"1px solid "+C.bd:"none",background:on?"rgba(212,168,83,0.08)":"none"}}>
+                  borderTop:ix?"1px solid "+C.bd:"none",background:on?"rgba(228,228,231,0.08)":"none"}}>
                 <span style={{width:16,height:16,borderRadius:4,border:"1px solid "+(on?C.gd:C.bd2),
                   background:on?C.gd:"none",display:"flex",alignItems:"center",justifyContent:"center",
                   ...sf(10,700),color:"#000",flexShrink:0}}>{on?"✓":""}</span>
@@ -1907,7 +1907,7 @@ function ImageGalleryManager({record,cat,onUpdate}){
               {isHero&&<div style={{position:"absolute",top:6,left:6,background:C.gd,borderRadius:6,padding:"2px 8px",...sf(10,700),color:"#000"}}>HERO</div>}
               {!isDefaultCrop(crops[url])&&<div style={{position:"absolute",top:6,right:6,background:"rgba(0,0,0,0.62)",borderRadius:6,padding:"2px 7px",...sf(9,700),color:C.gd,display:"flex",alignItems:"center",gap:3,letterSpacing:0.4}}><Icon name="crop" size={10} color={C.gd}/>FRAMED</div>}
               <div style={{position:"absolute",bottom:0,left:0,right:0,background:"linear-gradient(transparent,rgba(0,0,0,0.85))",padding:"24px 6px 6px",display:"flex",gap:4,justifyContent:"center",flexWrap:"wrap"}}>
-                <button onClick={function(){setCropUrl(url);}} style={{width:26,height:26,borderRadius:6,background:"rgba(255,214,10,0.28)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Reframe / crop">
+                <button onClick={function(){setCropUrl(url);}} style={{width:26,height:26,borderRadius:6,background:"rgba(228,228,231,0.28)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Reframe / crop">
                   <Icon name="crop" size={14} color={C.gd}/>
                 </button>
                 <button onClick={function(){moveImage(url,-1);}} style={{width:26,height:26,borderRadius:6,background:"rgba(255,255,255,0.15)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Move left">
@@ -1916,7 +1916,7 @@ function ImageGalleryManager({record,cat,onUpdate}){
                 <button onClick={function(){moveImage(url,1);}} style={{width:26,height:26,borderRadius:6,background:"rgba(255,255,255,0.15)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Move right">
                   <Icon name="down" size={14} color="#fff"/>
                 </button>
-                {!isHero&&<button onClick={function(){setHero(url);}} style={{width:26,height:26,borderRadius:6,background:"rgba(212,168,83,0.3)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Set as hero">
+                {!isHero&&<button onClick={function(){setHero(url);}} style={{width:26,height:26,borderRadius:6,background:"rgba(228,228,231,0.3)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Set as hero">
                   <Icon name="star" size={14} color={C.gd}/>
                 </button>}
                 <button onClick={function(){removeImage(url);}} style={{width:26,height:26,borderRadius:6,background:"rgba(255,59,48,0.3)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Remove">
@@ -2109,7 +2109,7 @@ function FieldInput({field,value,record,onChange}){
             var active=vip.indexOf(s)>=0;
             return <button key={s} type="button" onClick={function(){toggleVip(s);}}
               style={{padding:"6px 12px",borderRadius:8,border:"1px solid "+(active?C.gd+"80":C.bd),
-                background:active?"rgba(245,197,76,0.14)":C.srf,...sf(12,active?600:400),
+                background:active?"rgba(228,228,231,0.14)":C.srf,...sf(12,active?600:400),
                 color:active?C.gd:C.s5,cursor:"pointer",transition:"all 0.15s",minWidth:52,textAlign:"center"}}>
               {s}{active&&" ★"}
             </button>;
@@ -2500,7 +2500,7 @@ function CellVal({col,row}){
   );
   if(col==="reservation_required")return(
     <span style={{...sf(11,600),padding:"3px 10px",borderRadius:20,letterSpacing:0.5,
-      background:v?"rgba(52,199,89,0.1)":"rgba(245,197,76,0.12)",color:v?C.gn:C.gd}}>
+      background:v?"rgba(52,199,89,0.1)":"rgba(228,228,231,0.12)",color:v?C.gn:C.gd}}>
       {v?"Reserve":"Walk-in"}
     </span>
   );
@@ -2687,7 +2687,7 @@ function CityOverviewView({city,onClearCity}){
   // closure can reference the parent's state setters directly.
   function Chip({on,onClick,tone,children}){
     var goldOn=tone!=="kosher";
-    var onBg=goldOn?"rgba(245,197,76,0.12)":"rgba(90,200,250,0.12)";
+    var onBg=goldOn?"rgba(228,228,231,0.12)":"rgba(90,200,250,0.12)";
     var onBorder=goldOn?C.gd:"#5AC8FA";
     var onColor=goldOn?C.gd:"#5AC8FA";
     return(
@@ -2732,7 +2732,7 @@ function CityOverviewView({city,onClearCity}){
         <div style={{flex:1,minWidth:0}}>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <span style={{...sf(14,600),color:C.s1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{row.name}</span>
-            <span style={{...sf(10,600),padding:"2px 8px",borderRadius:10,background:"rgba(212,168,83,0.10)",color:C.gd,letterSpacing:0.4,whiteSpace:"nowrap"}}>{item.catLabel}</span>
+            <span style={{...sf(10,600),padding:"2px 8px",borderRadius:10,background:"rgba(228,228,231,0.10)",color:C.gd,letterSpacing:0.4,whiteSpace:"nowrap"}}>{item.catLabel}</span>
           </div>
           {meta&&<div style={{...sf(11),color:C.s5,marginTop:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{meta}</div>}
         </div>
@@ -2765,7 +2765,7 @@ function CityOverviewView({city,onClearCity}){
       {/* Active-city pill */}
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}>
         <span style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 10px 6px 12px",
-          borderRadius:20,background:"rgba(212,168,83,0.10)",border:"1px solid rgba(212,168,83,0.30)",
+          borderRadius:20,background:"rgba(228,228,231,0.10)",border:"1px solid rgba(228,228,231,0.30)",
           ...sf(12,600),color:C.gd,letterSpacing:0.3}}>
           <Icon name="pin" size={12} color={C.gd}/>
           {cityLabel}
@@ -3067,7 +3067,7 @@ function CategoryView({cat,globalCity,onClearCity}){
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:18}}>
           <span style={{...sf(10,700),color:C.s6,letterSpacing:1.2,textTransform:"uppercase"}}>Filtered by</span>
           <span style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 10px 6px 12px",
-            borderRadius:20,background:"rgba(212,168,83,0.10)",border:"1px solid rgba(212,168,83,0.30)",
+            borderRadius:20,background:"rgba(228,228,231,0.10)",border:"1px solid rgba(228,228,231,0.30)",
             ...sf(12,600),color:C.gd,letterSpacing:0.3}}>
             <Icon name="pin" size={12} color={C.gd}/>
             {globalCityLabel}
@@ -3134,7 +3134,7 @@ function CategoryView({cat,globalCity,onClearCity}){
             return(
               <button key={opt.v||"all"} onClick={function(){setDiningTypeFilter(opt.v);}}
                 style={{...sf(12,600),padding:"6px 12px",borderRadius:20,border:"1px solid "+(on?C.gd:C.bd),
-                  background:on?"rgba(245,197,76,0.12)":"transparent",color:on?C.gd:C.s3,
+                  background:on?"rgba(228,228,231,0.12)":"transparent",color:on?C.gd:C.s3,
                   cursor:"pointer",letterSpacing:0.3,transition:"all 0.15s"}}>
                 {opt.l}
               </button>
@@ -3276,7 +3276,7 @@ var SERVICE_TYPES=[
   {id:"Wellness",       label:"Wellness",   icon:"wellness",   color:"#34C759"},
   {id:"Cars",           label:"Cars",       icon:"car",        color:"#FF3B30"},
   {id:"Jets",           label:"Jets",       icon:"yacht",      color:"#5AC8FA"},
-  {id:"Accommodations", label:"Hotels",     icon:"star",       color:"#FFD60A"}
+  {id:"Accommodations", label:"Hotels",     icon:"star",       color:"#C7C7CC"}
 ];
 var STATUSES=["pending","requested","confirmed","completed","cancelled","no_show"];
 
@@ -4135,7 +4135,7 @@ function ClientsView(){
     switch(t){case "gold":return "Gold";case "plat":case "platinum":return "Platinum";case "cent":case "centurion":return "Centurion";case "free":return "Free";default:return t;}
   }
   function tierColor(t){
-    switch(t){case "gold":return C.gd;case "plat":case "platinum":return C.s2;case "cent":case "centurion":return C.s1;default:return C.s5;}
+    switch(t){case "gold":return "#B4B4BC";case "plat":case "platinum":return C.s2;case "cent":case "centurion":return C.s1;default:return C.s5;}
   }
   function hasWhatsApp(u){
     return !!(u.whatsapp_number&&String(u.whatsapp_number).trim().length>=5);
@@ -5007,13 +5007,13 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
         style={{
           width:"100%",display:"flex",alignItems:"center",gap:10,
           padding:collapsed?"10px":"9px 14px",
-          background:isActive?"rgba(212,168,83,0.10)":"none",
+          background:isActive?"rgba(228,228,231,0.10)":"none",
           border:"none",borderRadius:10,cursor:"pointer",
           transition:"all 0.12s",marginBottom:1,
           justifyContent:collapsed?"center":"space-between"
         }}
         onMouseEnter={function(e){if(!isActive)e.currentTarget.style.background=C.srf;}}
-        onMouseLeave={function(e){e.currentTarget.style.background=isActive?"rgba(212,168,83,0.10)":"none";}}>
+        onMouseLeave={function(e){e.currentTarget.style.background=isActive?"rgba(228,228,231,0.10)":"none";}}>
         <span style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
           {icon&&<Icon name={icon} size={18} color={isActive?C.gd:(muted?C.s6:C.s5)}/>}
           {!collapsed&&<span style={{...sf(13,isActive?600:400),color:isActive?C.s1:(muted?C.s5:C.s4),whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>}
@@ -5123,7 +5123,7 @@ function DrawerRow({label,icon,count,isActive,onClick,depth,leadingArrow}){
   return(
     <button onClick={onClick}
       style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,
-        padding:pad,background:isActive?"rgba(212,168,83,0.10)":"none",
+        padding:pad,background:isActive?"rgba(228,228,231,0.10)":"none",
         border:"none",borderRadius:10,cursor:"pointer",marginBottom:1}}>
       <span style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
         {leadingArrow&&<span style={{...sf(10),color:C.s5,width:10,display:"inline-flex",justifyContent:"center"}}>{leadingArrow}</span>}
