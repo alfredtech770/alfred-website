@@ -3,7 +3,8 @@
  * Keep public/sitemap.xml in step with the live catalog.
  *
  * - Adds catalog pages that exist in Supabase but were missing from the
- *   sitemap (new cars, restaurants, nightlife venues).
+ *   sitemap (cars, restaurants, nightlife, yachts, wellness, and hotels —
+ *   one page per property, duplicates skipped).
  * - Retires catalog URLs the live app can't render ("not found"). They are
  *   recorded in scripts/seo-retired-routes.txt so generate-seo-pages.js keeps
  *   serving them a noindex page instead of the homepage shell.
@@ -73,8 +74,23 @@ function readRetired() {
     add(`/catalog/exotic-cars/${slug}`);
   }
   for (const n of data.lists.clubs) if (n.slug) add(`/catalog/nightlife/${n.slug}`);
-  const hotelCandidates = data.lists.hotels.filter((h) => h.slug && !present.has(`/catalog/hotels/${h.slug}`)).length;
-  if (ADD_HOTELS) for (const h of data.lists.hotels) if (h.slug) add(`/catalog/hotels/${h.slug}`);
+  for (const y of data.lists.yachts) add(`/catalog/yachts/${y.slug}`);
+  for (const w of data.lists.wellness) add(`/catalog/wellness/${w.slug}`);
+
+  // Hotels: the table holds many copies of the same property ("Six Senses
+  // Laamu" four times). Add a hotel only when no other record for the same
+  // name in the same city is already listed, so each property has one page.
+  const hotelKey = (h) => `${rich.slugify(h.name)}|${rich.slugify(h.city)}`;
+  const listedHotels = new Set();
+  for (const h of data.lists.hotels) if (h.slug && present.has(`/catalog/hotels/${h.slug}`)) listedHotels.add(hotelKey(h));
+  let hotelDuplicates = 0;
+  const hotelOrder = data.lists.hotels.slice().sort((a, b) => (/-\d+$/.test(a.slug || "") - /-\d+$/.test(b.slug || "")) || String(a.slug).length - String(b.slug).length);
+  for (const h of hotelOrder) {
+    if (!h.slug || present.has(`/catalog/hotels/${h.slug}`)) continue;
+    if (listedHotels.has(hotelKey(h)) && !ADD_HOTELS) { hotelDuplicates++; continue; }
+    listedHotels.add(hotelKey(h));
+    add(`/catalog/hotels/${h.slug}`);
+  }
 
   // Every new URL must render a full page, or it doesn't go in.
   const unrenderable = additions.filter((route) => !rich.renderRoute(route, data));
@@ -90,7 +106,7 @@ function readRetired() {
   console.log(`sitemap sync: ${blocks.length} → ${kept.length + additions.length} URLs`);
   console.log(`  added   ${additions.length} ${JSON.stringify(byType(additions))}`);
   console.log(`  retired ${retired.length} ${JSON.stringify(byType(retired))}`);
-  if (!ADD_HOTELS && hotelCandidates) console.log(`  (${hotelCandidates} active hotels not in the sitemap were left out; many are duplicates — dedupe first, then run with --with-hotels)`);
+  if (hotelDuplicates) console.log(`  (${hotelDuplicates} hotel records left out as duplicates of a listed property)`);
   if (badSlugs.length) console.log(`  skipped ${badSlugs.length} records with non-URL-safe slugs (fix the slug in Supabase): ${badSlugs.slice(0, 10).join(", ")}`);
   if (DRY) { console.log("  dry run: nothing written"); return; }
 

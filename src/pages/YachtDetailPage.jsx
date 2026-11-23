@@ -39,10 +39,22 @@ export default function YachtDetailPage(){
   var ctaRef=useRef(null);var ctaVis=useVis(ctaRef);
 
   useEffect(function(){
-    supabase.from("yachts").select("*").eq("id",id).single().then(function(res){
-      setYacht(res.data||null);
+    // URLs use the yacht's slug (sitemap, Google); older links used the
+    // row's uuid. Look up by slug first, then by id when it is a uuid.
+    var cancelled=false;
+    (async function(){
+      var row=null;
+      var bySlug=await supabase.from("yachts").select("*").eq("slug",id).limit(1).maybeSingle();
+      row=bySlug.data||null;
+      if(!row&&/^[0-9a-f-]{36}$/i.test(id||"")){
+        var byId=await supabase.from("yachts").select("*").eq("id",id).limit(1).maybeSingle();
+        row=byId.data||null;
+      }
+      if(cancelled)return;
+      setYacht(row);
       setLoading(false);
-    });
+    })();
+    return function(){cancelled=true;};
   },[id]);
   useEffect(function(){setTimeout(function(){setLoaded(true)},200)},[]);
   useEffect(function(){var h=function(){setScrollY(window.scrollY)};window.addEventListener("scroll",h,{passive:true});return function(){window.removeEventListener("scroll",h)}},[]);
@@ -124,11 +136,11 @@ export default function YachtDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden",maxWidth:"100vw"}}>
       <SEOHead
-        title={yacht.name+" "+(yacht.city||"")+" — Request a Yacht Charter | Alfred Concierge"}
+        title={yacht.name+" Yacht Charter "+(yacht.city||"Miami")+" | Alfred"}
         description={"View "+yacht.name+" charter details in "+(yacht.city||"the listed destination")+" and request current availability, inclusions and final terms through Alfred Concierge."}
         image={yacht.hero_image_url||undefined}
-        path={"/catalog/yachts/"+id}
-        jsonLd={yachtJsonLd(yacht, id)}
+        path={"/catalog/yachts/"+(yacht.slug||id)}
+        jsonLd={yachtJsonLd(yacht, yacht.slug||id)}
       />
       <style>{`
 *{margin:0;padding:0;box-sizing:border-box}::selection{background:${C.s7};color:${C.s1}}a{color:inherit;text-decoration:none}body::-webkit-scrollbar{width:0}

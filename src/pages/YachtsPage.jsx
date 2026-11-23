@@ -66,7 +66,7 @@ function YachtCard(p){
   var price=y.price_4hr||y.price_weekday_4hr||null;
   var hasImg=!!y.hero_image_url;
   return(
-    <a href={"/catalog/yachts/"+y.id} style={{display:"block",textDecoration:"none",borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.05+p.i*0.06)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
+    <a href={"/catalog/yachts/"+(y.slug||y.id)} style={{display:"block",textDecoration:"none",borderRadius:24,background:C.el,border:"1px solid "+(hover?C.s7:C.bd),overflow:"hidden",cursor:"pointer",transform:hover?"translateY(-6px)":"translateY(0)",boxShadow:hover?"0 20px 60px rgba(0,0,0,0.4)":"0 4px 20px rgba(0,0,0,0.15)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)",opacity:1,animation:p.vis?"fadeIn 0.6s ease "+(0.05+p.i*0.06)+"s both":"none",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}} onPointerEnter={function(e){if(e.pointerType==="mouse")setHover(true)}} onPointerLeave={function(e){if(e.pointerType==="mouse")setHover(false)}}>
       <div style={{height:220,position:"relative",overflow:"hidden",background:hasImg?"transparent":"linear-gradient(135deg,#0f1923,#1a2535)"}}>
         {hasImg
           ? <img src={y.hero_image_url} alt={y.name} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover",transform:hover?"scale(1.05)":"scale(1)",transition:"transform 0.6s ease"}}/>
@@ -207,7 +207,7 @@ export default function YachtsPage(){
       try{
         var {data,error:err}=await supabase
           .from("yachts")
-          .select("id,name,brand,size_ft,max_passengers,location,city,price_4hr,price_6hr,price_8hr,price_weekday_4hr,price_weekday_6hr,price_weekday_8hr,hero_image_url,tags,available,is_featured,is_active")
+          .select("id,slug,name,brand,size_ft,max_passengers,location,city,price_4hr,price_6hr,price_8hr,price_weekday_4hr,price_weekday_6hr,price_weekday_8hr,hero_image_url,tags,available,is_featured,is_active")
           .eq("is_active",true)
           .order("is_featured",{ascending:false})
           .order("name",{ascending:true});
