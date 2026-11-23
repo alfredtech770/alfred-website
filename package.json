@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "vite",
     "clean:sitemap": "node scripts/clean-sitemap.js",
+    "sync:sitemap": "node scripts/sync-sitemap.js --dry",
     "test:seo": "node scripts/validate-seo.js",
     "test:ads": "node scripts/validate-google-ads.js",
-    "build": "node scripts/clean-sitemap.js && node scripts/validate-seo.js && node scripts/validate-google-ads.js && vite build && node scripts/validate-bundle.js && node scripts/generate-seo-pages.js && node scripts/validate-dist-seo.js",
+    "build": "node scripts/clean-sitemap.js && node scripts/sync-sitemap.js && node scripts/validate-seo.js && node scripts/validate-google-ads.js && vite build && node scripts/validate-bundle.js && node scripts/generate-seo-pages.js && node scripts/validate-dist-seo.js",
     "build:seo": "npm run build && node prerender.js",
     "preview": "vite preview"
   },

@@ -15,6 +15,10 @@ const BASE = "https://alfredconcierge.app";
 const template = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
 const sitemap = fs.readFileSync(path.join(ROOT, "public", "sitemap.xml"), "utf8");
 
+const retiredFile = path.join(__dirname, "seo-retired-routes.txt");
+const retiredRoutes = fs.existsSync(retiredFile)
+  ? fs.readFileSync(retiredFile, "utf8").split("\n").map((l) => l.trim()).filter((l) => l.startsWith("/"))
+  : [];
 const routes = [...sitemap.matchAll(/<loc>(https:\/\/alfredconcierge\.app(?:\/[^<]*)?)<\/loc>/g)]
   .map((m) => new URL(m[1].replace(/&amp;/g, "&")).pathname)
   .filter((route) => route !== "/");
@@ -90,7 +94,9 @@ const rich = require("./seo-rich-pages.js");
   try { data = await rich.loadCatalog(); }
   catch (error) { console.warn("rich SEO: catalog fetch failed, using generic shells -", error.message); }
   let written = 0, enriched = 0; const orphaned = [];
-  for (const route of [...new Set(routes)]) {
+  // Retired URLs aren't in the sitemap any more but may still be indexed:
+  // keep serving them a noindex page rather than the homepage shell.
+  for (const route of [...new Set(routes.concat(retiredRoutes))]) {
     if (route.includes("..")) continue;
     const output = path.join(DIST, route.replace(/^\//, ""), "index.html");
     fs.mkdirSync(path.dirname(output), {recursive:true});

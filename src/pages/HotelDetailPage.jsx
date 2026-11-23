@@ -122,7 +122,7 @@ export default function HotelDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" "+(V.city||"")+" — Rates, Rooms & Member Perks | Alfred"}
+        title={(V.city&&V.name.toLowerCase().indexOf(V.city.toLowerCase())===-1?V.name+" "+V.city:V.name)+" — Rates, Rooms & Member Perks | Alfred"}
         description={(V.description||V.name+" — hotel in "+(V.neighborhood||V.city||"Miami")+". Choose dates and ask Alfred to confirm current public rates, room availability and eligible benefits.").slice(0,160)}
         image={imgs[0]}
         path={"/catalog/hotels/"+slug}

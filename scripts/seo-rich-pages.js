@@ -76,6 +76,16 @@ async function loadCatalog() {
   // the live app renders one: HotelDetailPage matches slug only (any status),
   // DiningDetailPage matches slug (any status), NightlifeDetailPage hides
   // inactive venues.
+  // Legacy car URLs (from src/data/cars.js) with misspelt slugs that are
+  // already indexed: serve them the real car's content, and never list the
+  // correctly spelt slug as a second page.
+  const LEGACY_CAR_SLUGS = {
+    "mercedes-mayback-650": "mercedes-maybach-650",
+    "mercedes-maybback": "mercedes-maybach",
+    "porsche-718-boxter": "porsche-718-boxster",
+    "mini-s-convertoble": "mini-cooper-s-convertible"
+  };
+  for (const [legacy, real] of Object.entries(LEGACY_CAR_SLUGS)) if (data.cars.has(real) && !data.cars.has(legacy)) data.cars.set(legacy, data.cars.get(real));
   for (const h of hotels) if (h.slug) data.hotels.set(h.slug, h);
   for (const n of live(clubs)) if (n.slug) data.clubs.set(n.slug, n);
   console.log(`rich SEO: loaded ${restaurants.length} restaurants, ${cars.length} cars, ${hotels.length} hotels, ${clubs.length} nightlife venues`);
@@ -163,7 +173,7 @@ function ctaBlock(heading, text, waText, extra) {
 
 function restaurantPage(r, data) {
   const city = r.city || "";
-  const n = r.name;
+  const n = String(r.name || "").replace(/\s+/g, " ").trim();
   const where = r.address ? r.address : city;
   const hours = r.opening_hours || [r.hours_lunch && `Lunch ${r.hours_lunch}`, r.hours_dinner && `Dinner ${r.hours_dinner}`, r.hours_closed && `Closed ${r.hours_closed}`].filter(Boolean).join(" · ");
   const dress = r.dress_code ? label(r.dress_code) : null;
@@ -292,7 +302,7 @@ ${related(`More cars to rent in ${city}`, links)}`;
 /* ── hotels ──────────────────────────────────────────────────────────── */
 
 function hotelPage(h, slug, data) {
-  const n = h.name, city = h.city || "";
+  const n = String(h.name || "").replace(/\s+/g, " ").trim(), city = h.city || "";
   const area = h.neighborhood ? `${h.neighborhood}, ${city}` : city;
   const perks = list(h.perks), amenities = list(h.amenities);
   const rooms = (Array.isArray(h.rooms) ? h.rooms : []).map((r) => (typeof r === "string" ? r : r && r.name)).filter(Boolean);
@@ -308,10 +318,11 @@ function hotelPage(h, slug, data) {
   peers.sort((a, b) => (b.neighborhood === h.neighborhood) - (a.neighborhood === h.neighborhood) || (b.star_rating || 0) - (a.star_rating || 0));
   const links = peers.slice(0, 8).map((x) => [x.name, `/catalog/hotels/${x.slug}`, [x.neighborhood, x.star_rating ? `${x.star_rating}★` : null].filter(Boolean).join(", ")]);
 
+  const nc = city && !n.toLowerCase().includes(city.toLowerCase()) ? `${n} ${city}` : n;
   const title = pickTitle([
-    `${n} ${city} — Rates, Rooms & Member Perks | Alfred`,
-    `${n} ${city} — Rates & Perks | Alfred`,
-    `${n} ${city} | Alfred Concierge`,
+    `${nc} — Rates, Rooms & Member Perks | Alfred`,
+    `${nc} — Rates & Perks | Alfred`,
+    `${nc} | Alfred Concierge`,
     `${n} | Alfred`
   ]);
   const description = trimSentence(`Book ${n}${h.star_rating ? `, a ${h.star_rating}-star hotel` : ""} in ${area}.${from ? ` From ${from}/night.` : ""} Rooms, amenities and member perks — request your stay through Alfred Concierge.`);
@@ -347,7 +358,7 @@ ${related(`More hotels in ${city}`, links)}`;
 /* ── nightlife ───────────────────────────────────────────────────────── */
 
 function clubPage(v, slug, data) {
-  const n = v.name, city = v.city || "";
+  const n = String(v.name || "").replace(/\s+/g, " ").trim(), city = v.city || "";
   const music = list(v.music).join(", ") || (typeof v.music === "string" ? v.music : "");
   const faqs = [];
   faqs.push({ q: `How do I get a table at ${n}?`, a: `Message Alfred on WhatsApp with your date and group size. A concierge confirms table or guest-list options and minimum spend with ${n}.` });
@@ -408,4 +419,6 @@ function applyRich(html, page) {
 // falls back to src/data/cars.js, so an unmatched car URL still works.
 function isCatalogDetail(route) { return /^\/catalog\/(dining|hotels|nightlife)\/[^/]+\/?$/.test(route); }
 
-module.exports = { loadCatalog, renderRoute, applyRich, isCatalogDetail };
+function carSlug(c) { return slugify(carName(c)); }
+
+module.exports = { loadCatalog, renderRoute, applyRich, isCatalogDetail, carSlug };
