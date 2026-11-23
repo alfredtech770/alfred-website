@@ -414,11 +414,11 @@ function StatCard({label,value,icon,color}){
 }
 
 /* ═══ Dashboard View ═══ */
-function InboxView(){
+function InboxView({initialPhone}){
   var [msgs,setMsgs]=useState([]);
   var [users,setUsers]=useState([]);
   var [loading,setLoading]=useState(true);
-  var [activePhone,setActivePhone]=useState(null);
+  var [activePhone,setActivePhone]=useState(initialPhone||null);
   var [draft,setDraft]=useState("");
   var [sending,setSending]=useState(false);
   var [sendMsg,setSendMsg]=useState(null);
@@ -626,6 +626,323 @@ function InboxView(){
             </>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ Requests (WhatsApp concierge pipeline) ═══
+ * Every request Alfred captured on WhatsApp, with the one question the team
+ * needs answered first: who is waiting on us, and for how long.
+ * "Waiting" = handed to the team (needs_human / ready), not booked, not
+ * approved, date not passed, and no team reply since the handover — the same
+ * rule the Slack nudges and morning summary use (request-nudges, slack-digest).
+ * Repeated messages about the same thing (same phone + venue + date) are
+ * folded into one row. */
+var TEAM_REPLY_KINDS=["team_slack","team_app","payment_link","booking_confirmation","agent_reply"];
+var REQ_SERVICE={dining:"Dining",nightlife:"Nightlife",cars:"Cars",hotels:"Hotels",wellness:"Wellness",yachts:"Yachts"};
+var REQ_STATUS={
+  collecting:{l:"Alfred collecting",c:C.s5},
+  needs_human:{l:"With the team",c:C.or},
+  ready:{l:"Ready to book",c:C.bl},
+  failed:{l:"Booking failed",c:C.rd},
+  booked:{l:"Booked",c:C.gn},
+  past:{l:"Date passed",c:C.s6}
+};
+
+function RequestsView({onOpenChat}){
+  var [intents,setIntents]=useState([]);
+  var [replies,setReplies]=useState([]);
+  var [users,setUsers]=useState([]);
+  var [loading,setLoading]=useState(true);
+  var [err,setErr]=useState(null);
+  var [filter,setFilter]=useState("waiting");
+  var [service,setService]=useState("all");
+  var [search,setSearch]=useState("");
+  var [openKey,setOpenKey]=useState(null);
+  var [thread,setThread]=useState([]);
+  var [now,setNow]=useState(Date.now());
+
+  async function load(){
+    var since=new Date(Date.now()-60*86400000).toISOString();
+    var i=await supabase.from("concierge_intents")
+      .select("id,phone,user_id,venue_text,city,service_type,reservation_date,reservation_time,party_size,special_requests,missing_fields,status,human_reason,booking_id,approved_at,approved_by,created_at,updated_at,slack_channel,slack_thread_ts,details")
+      .gte("created_at",since).order("updated_at",{ascending:false}).limit(1000);
+    if(i.error){setErr(i.error.message);setLoading(false);return;}
+    var r=await supabase.from("whatsapp_messages").select("phone,kind,created_at")
+      .eq("direction","outbound").in("kind",TEAM_REPLY_KINDS).gte("created_at",since).limit(5000);
+    var u=await supabase.from("users").select("id,first_name,last_name");
+    setIntents(i.data||[]); setReplies(r.data||[]); setUsers(u.data||[]); setErr(null); setLoading(false);
+  }
+  useEffect(function(){
+    load();
+    var t=setInterval(function(){load();setNow(Date.now());},30000);
+    return function(){clearInterval(t);};
+  },[]);
+
+  var today=new Date().toISOString().slice(0,10);
+  var byUser={}; users.forEach(function(u){byUser[u.id]=u;});
+  var lastReply={}; // phone -> latest team reply time
+  replies.forEach(function(m){var t=Date.parse(m.created_at); if(!lastReply[m.phone]||t>lastReply[m.phone])lastReply[m.phone]=t;});
+
+  function clientName(it){
+    var d=it.details||{};
+    var n=((d.guest_first||"")+" "+(d.guest_last||"")).trim();
+    if(n)return n;
+    var u=it.user_id?byUser[it.user_id]:null;
+    if(u){n=((u.first_name||"")+" "+(u.last_name||"")).trim(); if(n)return n;}
+    return null;
+  }
+  function stateOf(it){
+    if(it.booking_id)return "booked";
+    if(it.reservation_date&&it.reservation_date<today)return "past";
+    return REQ_STATUS[it.status]?it.status:"collecting";
+  }
+  function waitingMins(it){
+    if(it.booking_id||it.approved_at)return null;
+    if(it.status!=="needs_human"&&it.status!=="ready")return null;
+    if(it.reservation_date&&it.reservation_date<today)return null;
+    var handover=Date.parse(it.updated_at);
+    if((lastReply[it.phone]||0)>handover)return null;
+    return Math.floor((now-handover)/60000);
+  }
+
+  // Fold duplicates: same client + same venue/service + same date.
+  var groups={};
+  intents.forEach(function(it){
+    var key=[it.phone,(it.venue_text||it.service_type||"").toLowerCase().trim(),it.reservation_date||""].join("|");
+    var g=groups[key];
+    if(!g){groups[key]={key:key,main:it,all:[it]};return;}
+    g.all.push(it);
+    // Keep the most advanced record as the one we show.
+    var rank=function(x){return x.booking_id?4:x.status==="ready"?3:x.status==="needs_human"?2:x.status==="failed"?1:0;};
+    if(rank(it)>rank(g.main)||(rank(it)===rank(g.main)&&Date.parse(it.updated_at)>Date.parse(g.main.updated_at)))g.main=it;
+  });
+  var rows=Object.values(groups).map(function(g){
+    var it=g.main;
+    return {key:g.key,it:it,count:g.all.length,name:clientName(it)||g.all.map(clientName).find(Boolean)||null,
+      state:stateOf(it),wait:waitingMins(it)};
+  });
+
+  var counts={
+    waiting:rows.filter(function(r){return r.wait!=null;}).length,
+    open:rows.filter(function(r){return r.state!=="booked"&&r.state!=="past";}).length,
+    booked:rows.filter(function(r){return r.state==="booked";}).length,
+    all:rows.length
+  };
+  var shown=rows.filter(function(r){
+    if(filter==="waiting"&&r.wait==null)return false;
+    if(filter==="open"&&(r.state==="booked"||r.state==="past"))return false;
+    if(filter==="booked"&&r.state!=="booked")return false;
+    if(service!=="all"&&r.it.service_type!==service)return false;
+    if(search){
+      var q=search.toLowerCase();
+      var hay=[r.name,r.it.phone,r.it.venue_text,r.it.city,r.it.service_type,r.it.special_requests].join(" ").toLowerCase();
+      if(hay.indexOf(q)<0)return false;
+    }
+    return true;
+  }).sort(function(a,b){
+    if(filter==="waiting")return (b.wait||0)-(a.wait||0);
+    return Date.parse(b.it.updated_at)-Date.parse(a.it.updated_at);
+  });
+
+  var open=rows.find(function(r){return r.key===openKey;})||null;
+  useEffect(function(){
+    if(!open){setThread([]);return;}
+    var phone=open.it.phone;
+    supabase.from("whatsapp_messages").select("id,direction,kind,body,created_at")
+      .eq("phone",phone).order("created_at",{ascending:false}).limit(12)
+      .then(function(res){setThread((res.data||[]).reverse());});
+  },[openKey]);
+
+  function waitLabel(m){
+    if(m<60)return m+" min";
+    if(m<2880)return Math.floor(m/60)+" h"+(m%60&&m<600?" "+(m%60)+" min":"");
+    return Math.floor(m/1440)+" days";
+  }
+  function waitColor(m){return m>=120?C.rd:m>=30?C.or:C.s4;}
+  function ago(ts){
+    var m=Math.floor((now-Date.parse(ts))/60000);
+    if(m<60)return m+"m"; if(m<1440)return Math.floor(m/60)+"h"; return Math.floor(m/1440)+"d";
+  }
+  function fmtDate(d){
+    if(!d)return null;
+    return new Date(d+"T12:00:00Z").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
+  }
+  function what(it){
+    return [it.venue_text||REQ_SERVICE[it.service_type]||"Request",it.city].filter(Boolean).join(", ");
+  }
+  function when(it){
+    var guests=it.party_size||(it.details&&it.details.adults);
+    return [fmtDate(it.reservation_date),it.reservation_time?String(it.reservation_time).slice(0,5):null,
+      guests?guests+(Number(guests)===1?" guest":" guests"):null].filter(Boolean).join(" · ");
+  }
+  function slackUrl(it){return it.slack_channel?"https://slack.com/app_redirect?channel="+it.slack_channel:null;}
+
+  var chip=function(on){return {padding:"7px 14px",borderRadius:20,border:"1px solid "+(on?C.gd:C.bd),
+    background:on?C.gd+"18":"transparent",color:on?C.gd:C.s4,...sf(12,on?600:500),cursor:"pointer",whiteSpace:"nowrap"};};
+  var linkBtn={display:"inline-flex",alignItems:"center",gap:6,padding:"8px 14px",borderRadius:10,border:"1px solid "+C.bd,
+    background:C.srf,color:C.s2,...sf(12,600),textDecoration:"none",cursor:"pointer"};
+
+  if(loading)return <div style={{padding:"60px",textAlign:"center",color:C.s5}}>Loading requests…</div>;
+  if(err)return <div style={{padding:"60px",textAlign:"center",color:C.rd}}>Couldn't load requests: {err}</div>;
+
+  return(
+    <div>
+      <div style={{display:"flex",alignItems:"baseline",gap:12,marginBottom:6,flexWrap:"wrap"}}>
+        <h2 style={{...sf(24,600),color:C.s1,margin:0}}>Requests</h2>
+        <span style={{...sf(12),color:C.s5}}>WhatsApp requests from the last 60 days · repeats of the same request are folded together</span>
+      </div>
+      {counts.waiting>0&&(
+        <p style={{...sf(13,600),color:C.rd,margin:"0 0 14px"}}>
+          {counts.waiting} {counts.waiting===1?"client is":"clients are"} waiting on a reply from the team.
+        </p>
+      )}
+
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",margin:"14px 0 10px"}}>
+        {[["waiting","Waiting on us"],["open","Open"],["booked","Booked"],["all","All"]].map(function(f){
+          return <button key={f[0]} onClick={function(){setFilter(f[0]);}} style={chip(filter===f[0])}>{f[1]} · {counts[f[0]]}</button>;
+        })}
+        <div style={{flex:1}}/>
+        <input value={search} onChange={function(e){setSearch(e.target.value);}} placeholder="Search name, phone, venue…"
+          style={{minWidth:220,padding:"8px 12px",borderRadius:10,border:"1px solid "+C.bd,background:C.srf,color:C.s2,...sf(12)}}/>
+      </div>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
+        {["all"].concat(Object.keys(REQ_SERVICE)).map(function(s){
+          return <button key={s} onClick={function(){setService(s);}}
+            style={{...chip(service===s),padding:"5px 11px",...sf(11,service===s?600:500)}}>{s==="all"?"All services":REQ_SERVICE[s]}</button>;
+        })}
+      </div>
+
+      <div style={{display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
+        {/* ── List ── */}
+        <div style={{flex:"1 1 520px",minWidth:0,background:C.el,border:"1px solid "+C.bd,borderRadius:16,overflow:"hidden"}}>
+          {!shown.length&&(
+            <p style={{...sf(13),color:C.s5,padding:28,textAlign:"center",margin:0}}>
+              {filter==="waiting"?"Nobody is waiting on the team right now. 👌":"No requests match."}
+            </p>
+          )}
+          {shown.map(function(r){
+            var it=r.it, st=REQ_STATUS[r.state], on=r.key===openKey;
+            return(
+              <div key={r.key} onClick={function(){setOpenKey(on?null:r.key);}}
+                style={{padding:"13px 16px",borderBottom:"1px solid "+C.bd,cursor:"pointer",
+                  background:on?"rgba(255,214,10,0.07)":"none",display:"flex",gap:14,alignItems:"center"}}>
+                <div style={{width:74,flexShrink:0}}>
+                  {r.wait!=null?(
+                    <>
+                      <div style={{...sf(14,700),color:waitColor(r.wait)}}>{waitLabel(r.wait)}</div>
+                      <div style={{...sf(9,600),color:C.s6,letterSpacing:0.8,textTransform:"uppercase"}}>waiting</div>
+                    </>
+                  ):(
+                    <div style={{...sf(11),color:C.s6}}>{ago(it.updated_at)} ago</div>
+                  )}
+                </div>
+                <div style={{minWidth:0,flex:1}}>
+                  <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+                    <span style={{...sf(14,600),color:C.s1}}>{what(it)}</span>
+                    {r.count>1&&<span title={r.count+" messages about this request"} style={{...sf(10,600),color:C.s5,border:"1px solid "+C.bd,borderRadius:6,padding:"1px 6px"}}>×{r.count}</span>}
+                  </div>
+                  <div style={{...sf(12),color:C.s4,marginTop:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                    {[r.name||("+"+it.phone),when(it)].filter(Boolean).join("  ·  ")}
+                  </div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:5,flexShrink:0}}>
+                  <span style={{...sf(10,600),color:st.c,background:st.c+"1A",borderRadius:6,padding:"3px 8px",whiteSpace:"nowrap"}}>{st.l}</span>
+                  {it.service_type&&<span style={{...sf(10),color:C.s6}}>{REQ_SERVICE[it.service_type]||it.service_type}</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Detail ── */}
+        {open&&(function(){
+          var it=open.it, d=it.details||{}, pl=d.payment_link||null;
+          var facts=[
+            ["Client",open.name?open.name+" · +"+it.phone:"+"+it.phone],
+            ["Email",d.guest_email],
+            ["Service",REQ_SERVICE[it.service_type]||it.service_type],
+            ["Venue",it.venue_text],
+            ["City",it.city],
+            ["Date",fmtDate(it.reservation_date)],
+            ["Time",it.reservation_time?String(it.reservation_time).slice(0,5):null],
+            ["Guests",it.party_size||d.adults],
+            ["Check-in / out",d.check_in?(d.check_in+(d.check_out?" → "+d.check_out:"")):null],
+            ["Pick-up",d.pickup_location],
+            ["Vehicle",d.vehicle_type],
+            ["Budget",d.budget],
+            ["Special requests",it.special_requests],
+            ["Still missing",(it.missing_fields&&it.missing_fields.length)?it.missing_fields.join(", "):null],
+            ["Approved",it.approved_at?new Date(it.approved_at).toLocaleString()+(it.approved_by?" by "+it.approved_by:""):null],
+            ["Booking",it.booking_id?"Confirmed ("+String(it.booking_id).slice(0,8)+")":null],
+            ["Received",new Date(it.created_at).toLocaleString()]
+          ].filter(function(f){return f[1]!=null&&f[1]!=="";});
+          return(
+            <div style={{flex:"1 1 360px",maxWidth:520,background:C.el,border:"1px solid "+C.bd,borderRadius:16,padding:20,position:"sticky",top:16}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
+                <div>
+                  <div style={{...sf(18,600),color:C.s1}}>{what(it)}</div>
+                  <div style={{...sf(12),color:C.s4,marginTop:4}}>{when(it)}</div>
+                </div>
+                <button onClick={function(){setOpenKey(null);}} style={{background:"none",border:"none",cursor:"pointer",padding:4}}>
+                  <Icon name="close" size={18} color={C.s5}/>
+                </button>
+              </div>
+
+              {open.wait!=null&&(
+                <div style={{marginTop:14,padding:"10px 12px",borderRadius:10,background:C.rd+"14",border:"1px solid "+C.rd+"40",...sf(12,600),color:C.rd}}>
+                  Waiting {waitLabel(open.wait)} for a reply from the team
+                </div>
+              )}
+              {it.human_reason&&(
+                <div style={{marginTop:12,...sf(12),color:C.s3,fontStyle:"italic"}}>Why Alfred handed it over: {it.human_reason}</div>
+              )}
+              {pl&&(
+                <div style={{marginTop:12,padding:"10px 12px",borderRadius:10,background:C.srf,border:"1px solid "+C.bd,...sf(12),color:C.s2}}>
+                  💳 Payment link {it.booking_id?"paid":"sent, not paid yet"}
+                  {pl.amount_cents?" · "+(String(pl.currency||"usd").toUpperCase())+" "+Math.round(pl.amount_cents/100).toLocaleString("en-US"):""}
+                  {pl.created_by?" · by "+pl.created_by:""}
+                </div>
+              )}
+
+              <div style={{display:"grid",gridTemplateColumns:"120px 1fr",gap:"8px 12px",marginTop:16}}>
+                {facts.map(function(f){
+                  return [
+                    <span key={f[0]+"l"} style={{...sf(11,600),color:C.s6,textTransform:"uppercase",letterSpacing:0.6,paddingTop:1}}>{f[0]}</span>,
+                    <span key={f[0]+"v"} style={{...sf(13),color:C.s2,wordBreak:"break-word"}}>{String(f[1])}</span>
+                  ];
+                })}
+              </div>
+
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:18}}>
+                <button onClick={function(){onOpenChat&&onOpenChat(it.phone);}} style={{...linkBtn,borderColor:C.gd,color:C.gd,background:C.gd+"14"}}>Reply in Messages</button>
+                {slackUrl(it)&&<a href={slackUrl(it)} target="_blank" rel="noreferrer" style={linkBtn}><Icon name="slack" size={13} color={C.s2}/>Slack</a>}
+                <a href={"https://wa.me/"+it.phone} target="_blank" rel="noreferrer" style={linkBtn}>WhatsApp</a>
+              </div>
+              <p style={{...sf(11),color:C.s6,margin:"10px 0 0"}}>Send a payment link or mark it as booked from the request's Slack card.</p>
+
+              <div style={{marginTop:18,borderTop:"1px solid "+C.bd,paddingTop:14}}>
+                <div style={{...sf(11,600),color:C.s6,textTransform:"uppercase",letterSpacing:0.6,marginBottom:10}}>Latest messages</div>
+                <div style={{display:"flex",flexDirection:"column",gap:7,maxHeight:320,overflowY:"auto"}}>
+                  {thread.map(function(m){
+                    var out=m.direction==="outbound";
+                    return(
+                      <div key={m.id} style={{alignSelf:out?"flex-end":"flex-start",maxWidth:"88%"}}>
+                        <div style={{padding:"7px 11px",borderRadius:12,background:out?"rgba(212,168,83,0.16)":C.srf,
+                          border:"1px solid "+(out?"rgba(212,168,83,0.25)":C.bd),...sf(12),color:C.s1,whiteSpace:"pre-wrap",wordBreak:"break-word"}}>
+                          {m.body||"—"}
+                        </div>
+                        <div style={{...sf(9),color:C.s6,marginTop:2,textAlign:out?"right":"left"}}>{new Date(m.created_at).toLocaleString()}</div>
+                      </div>
+                    );
+                  })}
+                  {!thread.length&&<span style={{...sf(12),color:C.s6}}>No messages.</span>}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
@@ -4662,6 +4979,7 @@ function Sidebar({active,onNav,onLogout,collapsed,onToggle,
   // Operations — daily workflow items at the top of the sidebar.
   var opsItems=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
+    {id:"requests",label:"Requests",icon:"filter"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"inbox",label:"Messages",icon:"star"},
     {id:"points",label:"Points",icon:"star"},
@@ -4820,6 +5138,7 @@ function MobileDrawer({active,onNav,onClose,globalCity,onCityClick,cityCounts}){
   var cityKeys=PRIMARY_CITIES.concat(["__other__"]);
   var opsItems=[
     {id:"dashboard",label:"Dashboard",icon:"dashboard"},
+    {id:"requests",label:"Requests",icon:"filter"},
     {id:"bookings",label:"Bookings",icon:"bookings"},
     {id:"inbox",label:"Messages",icon:"star"},
     {id:"points",label:"Points",icon:"star"},
@@ -4911,6 +5230,7 @@ var CITY_CATEGORIES=[
 
 function AdminDashboard({onLogout}){
   var [page,setPage]=useState("dashboard");
+  var [inboxPhone,setInboxPhone]=useState(null);
   var [collapsed,setCollapsed]=useState(false);
   var [isMobile,setIsMobile]=useState(window.innerWidth<=768);
   var [drawer,setDrawer]=useState(false);
@@ -4980,7 +5300,8 @@ function AdminDashboard({onLogout}){
         onClearCity={function(){setGlobalCity("");setPage("dashboard");}}/>;
     }
     if(page==="bookings")return <BookingsView/>;
-    if(page==="inbox")return <InboxView/>;
+    if(page==="requests")return <RequestsView onOpenChat={function(ph){setInboxPhone(ph);setPage("inbox");}}/>;
+    if(page==="inbox")return <InboxView key={inboxPhone||"inbox"} initialPhone={inboxPhone}/>;
     if(page==="points")return <PointsView/>;
     if(page==="gifts")return <GiftsView/>;
     if(page==="clients")return <ClientsView/>;
