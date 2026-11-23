@@ -1,9 +1,10 @@
-// send-transactional-email (v3)
+// send-transactional-email (v4)
 //
 // Booking-lifecycle emails (confirmed / cancelled / modified / custom) via
 // Resend. Called by the notify_booking_status_change DB trigger (members) and
 // by confirm-booking (any guest with an email, incl. WhatsApp-only clients).
 //
+// v4: one photo only; kind "reminder" (day-of email, same design).
 // v3: redesigned to match the site (dark editorial, detail tiles, 16:10
 //     venue photo, car upsell card, footer with Instagram).
 // v2:
@@ -46,7 +47,7 @@ async function internalSecret(): Promise<string> {
   return (cachedSecret = data?.value ?? "");
 }
 
-type Kind = "confirmed" | "cancelled" | "modified" | "custom";
+type Kind = "confirmed" | "reminder" | "cancelled" | "modified" | "custom";
 interface Body {
   kind: Kind; to: string; booking_id?: string; first_name?: string; venue_name?: string;
   date?: string; time?: string; party_size?: number; reason?: string; alternatives?: string[];
@@ -214,7 +215,7 @@ const rule = `<tr><td class="px" style="padding:8px 36px;"><div style="height:1p
 const kicker = (t: string, color = C.mid) =>
   `<div style="color:${color};font:600 11px/1 ${SANS};letter-spacing:3px;text-transform:uppercase;">${t}</div>`;
 
-function renderConfirmed(p: Body, v: Venue, cal: ReturnType<typeof calendar>) {
+function renderConfirmed(p: Body, v: Venue, cal: ReturnType<typeof calendar>, reminder = false) {
   const dining = !p.service || /dining|nightlife|restaurant/i.test(p.service);
   const date = prettyDate(p.date), time = dining ? prettyTime(p.time) : "", party = p.party_size ?? 2;
   const dates = p.end_date && p.end_date !== p.date ? `${date} to ${prettyDate(p.end_date)}` : date;
@@ -222,17 +223,20 @@ function renderConfirmed(p: Body, v: Venue, cal: ReturnType<typeof calendar>) {
     : v.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${v.name} ${v.address}`)}` : "";
   const waChange = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Hi Alfred, about my booking at ${v.name} on ${date}: `)}`;
   const waCar = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Hi Alfred, I'd like a car or chauffeur for my dinner at ${v.name} on ${date}.`)}`;
-  const subject = `Confirmed: ${v.name}, ${date}${time ? ` at ${time}` : ""}`;
+  const subject = reminder
+    ? `Today: ${v.name}${time ? ` at ${time}` : ""}`
+    : `Confirmed: ${v.name}, ${date}${time ? ` at ${time}` : ""}`;
   const hello = p.first_name ? `${esc(p.first_name)}, your` : "Your";
   const venueLink = v.slug ? `${SITE}/catalog/dining/${v.slug}` : "";
 
   const inner = `
 ${v.image ? `<tr><td style="padding:0;line-height:0;"><img src="${esc(heroUrl(v.image))}" width="600" alt="${esc(v.name)}" style="display:block;width:100%;max-width:600px;height:auto;border:0;border-radius:24px 24px 0 0;"></td></tr>` : ""}
-${dining ? gallery(v) : ""}
 <tr><td class="px" style="padding:34px 36px 6px;">
-${kicker(`<span style="color:${C.ok};">●</span>&nbsp;&nbsp;Confirmed`, C.text)}
+${kicker(`<span style="color:${C.ok};">●</span>&nbsp;&nbsp;${reminder ? "Today" : "Confirmed"}`, C.text)}
 <h1 class="h1" style="margin:16px 0 0;color:${C.text};font:600 36px/40px ${SANS};letter-spacing:-1.4px;">${esc(v.name)}</h1>
-<p style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${dining ? `${hello} table is booked${v.city ? ` in ${esc(v.city)}` : ""}. Everything is arranged; all that's left is to enjoy it.` : `${hello} booking is confirmed${v.city ? ` in ${esc(v.city)}` : ""}.`}</p>
+<p style="margin:12px 0 0;color:${C.mid};font:400 16px/25px ${SANS};">${reminder
+  ? (dining ? `A quick reminder${p.first_name ? `, ${esc(p.first_name)}` : ""}: your table is today${time ? ` at ${esc(time)}` : ""}. Enjoy your evening.` : `A quick reminder${p.first_name ? `, ${esc(p.first_name)}` : ""}: your booking starts today.`)
+  : (dining ? `${hello} table is booked${v.city ? ` in ${esc(v.city)}` : ""}. Everything is arranged; all that's left is to enjoy it.` : `${hello} booking is confirmed${v.city ? ` in ${esc(v.city)}` : ""}.`)}</p>
 </td></tr>
 <tr><td class="px" style="padding:24px 36px 4px;">
 ${tiles(dining
@@ -244,7 +248,7 @@ ${v.address || v.dress ? `<tr><td class="px" style="padding:18px 36px 4px;">
 ${v.address ? `<p style="margin:0 0 6px;color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">Where</p><p style="margin:0 0 16px;color:${C.text};font:500 15px/22px ${SANS};">${maps ? `<a href="${esc(maps)}" style="color:${C.text};border-bottom:1px solid #3F3F46;">${esc(v.address)}</a>` : esc(v.address)}</p>` : ""}
 ${v.dress ? `<p style="margin:0 0 6px;color:${C.dim};font:600 10px/1 ${SANS};letter-spacing:2.4px;text-transform:uppercase;">Dress code</p><p style="margin:0;color:${C.text};font:500 15px/22px ${SANS};">${esc(v.dress)}</p>` : ""}
 </td></tr>` : ""}
-<tr><td class="px" style="padding:26px 36px 8px;">${cal ? button(cal.google, "Add to calendar") : ""}${maps ? button(maps, "Directions", false) : ""}</td></tr>
+<tr><td class="px" style="padding:26px 36px 8px;">${cal && !reminder ? button(cal.google, "Add to calendar") : ""}${maps ? button(maps, "Directions", reminder) : ""}</td></tr>
 ${v.tip ? `${rule}<tr><td class="px" style="padding:18px 36px 6px;">${kicker("Alfred's note")}<p style="margin:12px 0 0;color:${C.text};font:400 16px/26px Georgia,'Times New Roman',serif;font-style:italic;">“${esc(v.tip)}”</p></td></tr>` : ""}
 ${rule}
 <tr><td class="px" style="padding:18px 36px 30px;">
@@ -261,7 +265,8 @@ ${button(waCar, "Arrange a car")}
 </td></tr></table></td></tr>` : ""}`;
 
   const text = [
-    `${p.first_name ? `${p.first_name}, your` : "Your"} ${dining ? "table" : "booking"} is confirmed.`, "",
+    reminder ? `A reminder: ${v.name} is today${time ? ` at ${time}` : ""}.`
+             : `${p.first_name ? `${p.first_name}, your` : "Your"} ${dining ? "table" : "booking"} is confirmed.`, "",
     v.name, `${dining ? "Date" : "Dates"}: ${dining ? date : dates}`, time ? `Time: ${time}` : "",
     dining ? `Guests: ${party}` : "", p.reference ? `Reference: ${p.reference}` : "",
     v.address ? `Where: ${v.address}` : "", v.dress ? `Dress code: ${v.dress}` : "",
@@ -270,7 +275,9 @@ ${button(waCar, "Arrange a car")}
     `\nAny change: WhatsApp ${WA_DISPLAY} (https://wa.me/${WA_NUMBER})`, "", "Alfred Concierge",
   ].filter((l) => l !== "").join("\n");
 
-  return { subject, html: shell(dining ? `Your table at ${v.name} is confirmed for ${date}${time ? ` at ${time}` : ""}.` : `${v.name} is confirmed.`, inner), text };
+  const preheader = reminder ? `See you today${time ? ` at ${time}` : ""} at ${v.name}.`
+    : dining ? `Your table at ${v.name} is confirmed for ${date}${time ? ` at ${time}` : ""}.` : `${v.name} is confirmed.`;
+  return { subject, html: shell(preheader, inner), text };
 }
 
 function renderSimple(kind: "cancelled" | "modified", p: Body, v: Venue) {
@@ -328,10 +335,11 @@ serve(async (req) => {
 
     let subject: string, html: string, text: string;
     let attachments: { filename: string; content: string }[] | undefined;
-    if (p.kind === "confirmed") {
+    if (p.kind === "confirmed" || p.kind === "reminder") {
       const cal = calendar(v, p.date, p.time, p.reference, !p.service || /dining|nightlife|restaurant/i.test(p.service));
-      ({ subject, html, text } = renderConfirmed(p, v, cal));
-      if (cal) attachments = [{ filename: "reservation.ics", content: btoa(unescape(encodeURIComponent(cal.ics))) }];
+      ({ subject, html, text } = renderConfirmed(p, v, cal, p.kind === "reminder"));
+      // The calendar file only goes with the confirmation, not the day-of reminder.
+      if (cal && p.kind === "confirmed") attachments = [{ filename: "reservation.ics", content: btoa(unescape(encodeURIComponent(cal.ics))) }];
     } else if (p.kind === "cancelled" || p.kind === "modified") {
       ({ subject, html, text } = renderSimple(p.kind, p, v));
     } else if (p.kind === "custom") {
