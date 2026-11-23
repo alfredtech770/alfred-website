@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
   for (const it of open ?? []) {
     const { count } = await supa.from("whatsapp_messages").select("id", { count: "exact", head: true })
       .eq("phone", it.phone).eq("direction", "outbound")
-      .in("kind", ["team_slack", "team_app", "payment_link", "booking_confirmation"]).gt("created_at", it.updated_at);
+      .in("kind", ["team_slack", "team_app", "agent_reply", "payment_link", "booking_confirmation"]).gt("created_at", it.updated_at);
     if (!count) waiting.push(it);
   }
 

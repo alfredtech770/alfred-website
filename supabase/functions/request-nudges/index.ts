@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
     const { count } = await supa.from("whatsapp_messages")
       .select("id", { count: "exact", head: true })
       .eq("phone", it.phone).eq("direction", "outbound")
-      .in("kind", ["team_slack", "team_app", "payment_link", "booking_confirmation"]).gt("created_at", handoverAt);
+      .in("kind", ["team_slack", "team_app", "agent_reply", "payment_link", "booking_confirmation"]).gt("created_at", handoverAt);
     if ((count ?? 0) > 0) continue;
 
     // Highest level not sent yet for this handover.
