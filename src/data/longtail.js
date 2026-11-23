@@ -308,7 +308,8 @@ var LONGTAIL = {
     ]
   }
 
-  /* To add another long-tail page, append a new entry:
+  /* To add another long-tail page, append a new entry (or, for a Miami car
+   * brand page, a milesCar() line below):
    *
    * "private-dining-miami": {
    *   city: "Miami",
@@ -323,5 +324,63 @@ var LONGTAIL = {
    * }
    */
 };
+
+/* Miami car pages built from one template. Each targets the search people
+ * actually type ("g wagon rental miami") and lists every matching car. */
+var MIAMI_CAR_PAGES = [
+  ["g-wagon-rental-miami", "G-Wagon Rental in Miami", "G-Wagon Rental Miami — G63 AMG & G550 | Alfred", /g63|g550|g ?wagon|g-class/, "Mercedes G63 AMG and G550", "g wagon rental miami, g63 rental miami, mercedes g wagon rental miami, rent a g wagon miami, g550 rental miami"],
+  ["porsche-rental-miami", "Porsche Rental in Miami", "Porsche Rental Miami — 911, Cayenne, Macan | Alfred", /porsche/, "Porsche 911 Carrera, Cayenne, Macan, Panamera and Boxster", "porsche rental miami, rent a porsche miami, porsche 911 rental miami, porsche cayenne rental miami"],
+  ["mercedes-rental-miami", "Mercedes-Benz Rental in Miami", "Mercedes Rental Miami — AMG, S-Class, G-Wagon | Alfred", /mercedes|maybach|amg/, "Mercedes-AMG, S-Class, G-Wagon, GLS and Maybach", "mercedes rental miami, mercedes benz rental miami, amg rental miami, s class rental miami, maybach rental miami"],
+  ["bentley-rental-miami", "Bentley Rental in Miami", "Bentley Rental Miami — Continental GT, Bentayga | Alfred", /bentley/, "Bentley Continental GT, GTC and Bentayga", "bentley rental miami, rent a bentley miami, bentley bentayga rental miami, bentley continental gt rental miami"],
+  ["bmw-rental-miami", "BMW Rental in Miami", "BMW Rental Miami — M4, X7, XM & More | Alfred", /\bbmw\b/, "BMW M2, M3, M4, X5, X7 and XM", "bmw rental miami, rent a bmw miami, bmw m4 rental miami, bmw x7 rental miami"],
+  ["range-rover-rental-miami", "Range Rover Rental in Miami", "Range Rover Rental Miami — Sport, LWB & Velar | Alfred", /range rover|land rover|defender/, "Range Rover, Range Rover Sport and Velar", "range rover rental miami, rent a range rover miami, range rover sport rental miami"],
+  ["corvette-rental-miami", "Corvette Rental in Miami", "Corvette Rental Miami — C8 Stingray & Z06 | Alfred", /corvette/, "Chevrolet Corvette C8 Stingray and Z06", "corvette rental miami, c8 corvette rental miami, corvette z06 rental miami"],
+  ["escalade-rental-miami", "Cadillac Escalade Rental in Miami", "Escalade Rental Miami — Escalade & Escalade V | Alfred", /escalade/, "Cadillac Escalade and Escalade V", "escalade rental miami, cadillac escalade rental miami, suv rental miami"],
+  ["convertible-rental-miami", "Convertible Car Rental in Miami", "Convertible Rental Miami — Ferrari, Porsche, Rolls | Alfred", null, "convertibles and spyders from Ferrari, Lamborghini, Rolls-Royce, Porsche and Mercedes", "convertible rental miami, convertible car rental miami beach, luxury convertible rental miami"]
+];
+MIAMI_CAR_PAGES.forEach(function(p){
+  var slug = p[0], h1 = p[1], title = p[2], re = p[3], models = p[4], keywords = p[5];
+  var noun = h1.replace(/ Rental in Miami$/, "").replace(/ Car$/, "");
+  LONGTAIL[slug] = {
+    table: "cars",
+    city: "Miami",
+    h1: h1,
+    title: title,
+    description: "Compare " + models + " for rent in Miami with daily prices and deposits, then ask Alfred to confirm the exact car, dates and delivery.",
+    keywords: keywords,
+    intro: [
+      "Browse " + models + " currently listed in Alfred's Miami catalog, with indicative daily prices and deposits. A listing does not guarantee live availability for your dates.",
+      "Send the dates, preferred model, delivery location, driver age and licence country. Alfred confirms the exact car or an agreed alternative, plus price, deposit, mileage, insurance and delivery terms.",
+      "Here's the current collection in Miami. Tap any car for specs, pricing and to request it through Alfred."
+    ],
+    filter: function(r){
+      if(!r || r.is_active===false) return false;
+      if((r.city||"").toLowerCase().indexOf("miami") === -1) return false;
+      if(!re) return r.is_convertible === true || /convertible|cabrio|spyder|spider|roadster|dawn|\bcab\b|gtc|volante|boxster/.test(((r.brand||"")+" "+(r.name||"")).toLowerCase());
+      return re.test(((r.brand||"")+" "+(r.name||"")).toLowerCase());
+    },
+    faqs: [
+      { q: "How much does a " + noun + " rental cost in Miami?", a: "Each car below shows its indicative daily price and deposit. The final quote depends on dates, mileage, driver eligibility and delivery, and Alfred confirms it before you pay." },
+      { q: "Can the " + noun + " be delivered to my hotel in Miami?", a: "Yes, include the address and timing in your request. The supplier confirms delivery availability and any fee." },
+      { q: "What do I need to rent a " + noun + " in Miami?", a: "A valid licence, minimum age and a refundable deposit, which vary by car and supplier. Alfred confirms the exact requirements before booking." }
+    ],
+    related: [
+      { label: "Exotic Car Rental in Miami", href: "/best/exotic-car-rental-miami" },
+      { label: "Rent a Lamborghini in Miami", href: "/best/lamborghini-rental-miami" },
+      { label: "Rent a Ferrari in Miami", href: "/best/ferrari-rental-miami" },
+      { label: "Rent a Rolls-Royce in Miami", href: "/best/rolls-royce-rental-miami" }
+    ]
+  };
+});
+// Every Miami car page links to every other one.
+var MIAMI_CAR_HUB = ["exotic-car-rental-miami", "lamborghini-rental-miami", "ferrari-rental-miami", "rolls-royce-rental-miami"].concat(MIAMI_CAR_PAGES.map(function(p){return p[0];}));
+MIAMI_CAR_HUB.forEach(function(slug){
+  var have = {};
+  LONGTAIL[slug].related.forEach(function(l){ have[l.href] = true; });
+  MIAMI_CAR_HUB.forEach(function(other){
+    var href = "/best/" + other;
+    if(other !== slug && !have[href]) LONGTAIL[slug].related.push({ label: LONGTAIL[other].h1, href: href });
+  });
+});
 
 export default LONGTAIL;
