@@ -37,7 +37,7 @@ function readEnvFiles() {
 async function fetchAll(url, key, table, select) {
   const rows = [];
   for (let from = 0; ; from += 1000) {
-    const res = await fetch(`${url}/rest/v1/${table}?select=${select}&is_active=not.is.false&order=id`, {
+    const res = await fetch(`${url}/rest/v1/${table}?select=${select}&order=id`, {
       headers: { apikey: key, Authorization: `Bearer ${key}`, Range: `${from}-${from + 999}`, "Range-Unit": "items" }
     });
     if (!res.ok) throw new Error(`${table}: HTTP ${res.status}`);
@@ -59,21 +59,25 @@ async function loadCatalog() {
     fetchAll(url, key, "accommodations", "*"),
     fetchAll(url, key, "nightclubs", "*")
   ]);
-  const data = { restaurants: new Map(), cars: new Map(), hotels: new Map(), clubs: new Map(), lists: { restaurants, cars, hotels, clubs } };
+  const live = (rows) => rows.filter((r) => r.is_active !== false);
+  const data = { restaurants: new Map(), cars: new Map(), hotels: new Map(), clubs: new Map(), lists: { restaurants: live(restaurants), cars: live(cars), hotels: live(hotels), clubs: live(clubs) } };
   for (const r of restaurants) if (r.slug) data.restaurants.set(r.slug, r);
-  for (const c of cars) {
-    const slug = slugify(carName(c));
-    if (!data.cars.has(slug)) data.cars.set(slug, []);
-    data.cars.get(slug).push(c);
+  for (const c of live(cars)) {
+    // Legacy URLs come from src/data/cars.js, which spells the brand
+    // "Mercedes-Benz" where the DB says "Mercedes" — index both spellings.
+    const slugs = new Set([slugify(carName(c))]);
+    if (/^mercedes$/i.test((c.brand || "").trim())) slugs.add(slugify(carName({ ...c, brand: "Mercedes-Benz" })));
+    for (const slug of slugs) {
+      if (!data.cars.has(slug)) data.cars.set(slug, []);
+      data.cars.get(slug).push(c);
+    }
   }
-  for (const h of hotels) {
-    if (h.slug) data.hotels.set(h.slug, h);
-    if (h.web_slug && !data.hotels.has(h.web_slug)) data.hotels.set(h.web_slug, h);
-  }
-  for (const n of clubs) {
-    if (n.slug) data.clubs.set(n.slug, n);
-    data.clubs.set(String(n.id), n);
-  }
+  // Mirror each detail page's own lookup so a static page exists exactly when
+  // the live app renders one: HotelDetailPage matches slug only (any status),
+  // DiningDetailPage matches slug (any status), NightlifeDetailPage hides
+  // inactive venues.
+  for (const h of hotels) if (h.slug) data.hotels.set(h.slug, h);
+  for (const n of live(clubs)) if (n.slug) data.clubs.set(n.slug, n);
   console.log(`rich SEO: loaded ${restaurants.length} restaurants, ${cars.length} cars, ${hotels.length} hotels, ${clubs.length} nightlife venues`);
   return data;
 }
@@ -179,7 +183,7 @@ function restaurantPage(r, data) {
   const links = sameCity.slice(0, 8).map((x) => [x.name, `/catalog/dining/${x.slug}`, [x.cuisine, x.avg_spend].filter(Boolean).join(", ")]);
 
   const title = pickTitle([
-    `${n} ${city} — Reservations, Menu & Hours | Alfred`,
+    `${n} ${city} — Reservations & Hours | Alfred`,
     `${n} ${city} — Reservations & Hours | Alfred`,
     `${n} ${city} Reservations | Alfred`,
     `${n} Reservations | Alfred`
@@ -400,6 +404,8 @@ function applyRich(html, page) {
   return out.replace("</head>", () => `<meta name="alfred-rich" content="1">${ld}</head>`);
 }
 
-function isCatalogDetail(route) { return /^\/catalog\/(dining|exotic-cars|hotels|nightlife)\/[^/]+\/?$/.test(route); }
+// Only routes the live app cannot render. Cars are excluded: CarDetailPage
+// falls back to src/data/cars.js, so an unmatched car URL still works.
+function isCatalogDetail(route) { return /^\/catalog\/(dining|hotels|nightlife)\/[^/]+\/?$/.test(route); }
 
 module.exports = { loadCatalog, renderRoute, applyRich, isCatalogDetail };
