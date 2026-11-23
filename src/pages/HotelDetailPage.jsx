@@ -95,6 +95,7 @@ export default function HotelDetailPage(){
   }
   if(!hotel){
     return(<div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
+      <SEOHead title="Hotel Not Found | Alfred Concierge" description="This hotel is not currently listed. Browse Alfred's luxury hotel catalog." path={"/catalog/hotels/"+slug} noindex/>
       <p style={{...sf(18),color:C.s3}}>Hotel not found</p>
       <button onClick={function(){nav("/catalog/hotels")}} style={{padding:"12px 24px",borderRadius:12,border:"1px solid "+C.bd,background:C.srf,...sf(14,500),color:C.s3,cursor:"pointer"}}>Browse Hotels</button>
     </div>);

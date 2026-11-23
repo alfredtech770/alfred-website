@@ -400,4 +400,6 @@ function applyRich(html, page) {
   return out.replace("</head>", () => `<meta name="alfred-rich" content="1">${ld}</head>`);
 }
 
-module.exports = { loadCatalog, renderRoute, applyRich };
+function isCatalogDetail(route) { return /^\/catalog\/(dining|exotic-cars|hotels|nightlife)\/[^/]+\/?$/.test(route); }
+
+module.exports = { loadCatalog, renderRoute, applyRich, isCatalogDetail };
