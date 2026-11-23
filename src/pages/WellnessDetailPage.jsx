@@ -128,7 +128,7 @@ export default function WellnessDetailPage(){
   return(
     <div style={{width:"100%",minHeight:"100vh",background:C.bg,...sf(15),color:C.s1,overflowX:"hidden"}}>
       <SEOHead
-        title={V.name+" "+V.city+" — Request a Treatment | Alfred Concierge"}
+        title={(V.city&&V.name.toLowerCase().indexOf(String(V.city).toLowerCase())<0?V.name+" "+V.city:V.name)+" — Booking, Prices & Classes | Alfred"}
         description={"View "+V.name+" in "+V.city+" and request current treatment times, pricing and availability through Alfred Concierge."}
         image={V.imgs&&V.imgs[0]?V.imgs[0]:"/og-wellness.jpg"}
         path={"/catalog/wellness/"+V.slug}

@@ -1,80 +1,1879 @@
 {
   "rewrites": [
-    { "source": "/((?!api/)(?!\\.well-known/).*)", "destination": "/index.html" }
+    {
+      "source": "/((?!api/)(?!\\.well-known/).*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
       ]
     },
     {
       "source": "/admin",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     },
     {
       "source": "/proposal",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     },
     {
       "source": "/(blog|events)(/.*)?",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     },
     {
       "source": "/(deck|paganimiami|summer)(/.*)?",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     },
     {
       "source": "/photo-admin.html",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     },
     {
       "source": "/.well-known/apple-developer-merchantid-domain-association",
       "headers": [
-        { "key": "Content-Type", "value": "application/json" },
-        { "key": "Cache-Control", "value": "public, max-age=300" }
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300"
+        }
       ]
     },
     {
       "source": "/.well-known/apple-app-site-association",
       "headers": [
-        { "key": "Content-Type", "value": "application/json" },
-        { "key": "Cache-Control", "value": "public, max-age=3600" }
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
       ]
     },
     {
       "source": "/sitemap.xml",
       "headers": [
-        { "key": "Content-Type", "value": "application/xml" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        {
+          "key": "Content-Type",
+          "value": "application/xml"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
     },
     {
       "source": "/robots.txt",
       "headers": [
-        { "key": "Content-Type", "value": "text/plain" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        {
+          "key": "Content-Type",
+          "value": "text/plain"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
     },
     {
       "source": "/llms.txt",
       "headers": [
-        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/catalog/exotic-cars/488-spyder",
+      "destination": "/catalog/exotic-cars/ferrari-488-spyder",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/aventador-s",
+      "destination": "/catalog/exotic-cars/lamborghini-aventador-s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/c300-convertible",
+      "destination": "/catalog/exotic-cars/mercedes-c300-convertible",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/r8-spyder",
+      "destination": "/catalog/exotic-cars/audi-r8-spyder",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/urus",
+      "destination": "/catalog/exotic-cars/lamborghini-urus",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/chiron",
+      "destination": "/catalog/exotic-cars/bugatti-chiron",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/hurac-n-evo-spyder",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-evo-spyder",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/huracn-evo-spyder",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-evo-spyder",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gls450",
+      "destination": "/catalog/exotic-cars/mercedes-gls450",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/glc63s",
+      "destination": "/catalog/exotic-cars/mercedes-benz-glc63s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/panamera-4",
+      "destination": "/catalog/exotic-cars/porsche-panamera-4",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/sf90-spider",
+      "destination": "/catalog/exotic-cars/ferrari-sf90-spider",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/corvette-z06",
+      "destination": "/catalog/exotic-cars/chevrolet-corvette-z06",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/continental-gtc-speed",
+      "destination": "/catalog/exotic-cars/bentley-continental-gtc-speed",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gls63-amg",
+      "destination": "/catalog/exotic-cars/mercedes-benz-gls63-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/mustang-ecoboost",
+      "destination": "/catalog/exotic-cars/ford-mustang-ecoboost",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/xm",
+      "destination": "/catalog/exotic-cars/bmw-xm",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/portofino",
+      "destination": "/catalog/exotic-cars/ferrari-portofino",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/macan-gts",
+      "destination": "/catalog/exotic-cars/porsche-macan-gts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x7-2025",
+      "destination": "/catalog/exotic-cars/bmw-x7-2025",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x3",
+      "destination": "/catalog/exotic-cars/bmw-x3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gls-maybach",
+      "destination": "/catalog/exotic-cars/mercedes-benz-gls-maybach",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/model-3",
+      "destination": "/catalog/exotic-cars/tesla-model-3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/sl55-amg",
+      "destination": "/catalog/exotic-cars/mercedes-sl55-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-sport",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-sport",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/amg-gt",
+      "destination": "/catalog/exotic-cars/mercedes-benz-amg-gt",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/992-carrera-4s",
+      "destination": "/catalog/exotic-cars/porsche-992-carrera-4s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/718-boxster",
+      "destination": "/catalog/exotic-cars/porsche-718-boxter",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gle53-amg-coupe",
+      "destination": "/catalog/exotic-cars/mercedes-benz-gle53-amg-coupe",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/m2",
+      "destination": "/catalog/exotic-cars/bmw-m2",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/s580",
+      "destination": "/catalog/exotic-cars/mercedes-benz-s580",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/emira-v6-first-edition",
+      "destination": "/catalog/exotic-cars/lotus-emira-v6-first-edition",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/991-2-carrera",
+      "destination": "/catalog/exotic-cars/porsche-991-2-carrera",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/z4",
+      "destination": "/catalog/exotic-cars/bmw-z4",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/glc300",
+      "destination": "/catalog/exotic-cars/mercedes-glc300",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/488-gtb",
+      "destination": "/catalog/exotic-cars/ferrari-488-gtb",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/992-carrera-s",
+      "destination": "/catalog/exotic-cars/porsche-992-carrera-s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/g63",
+      "destination": "/catalog/exotic-cars/mercedes-amg-g63",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cayenne-hybrid",
+      "destination": "/catalog/exotic-cars/porsche-cayenne-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/hurac-n-lp610",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-lp610",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/huracn-lp610",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-lp610",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/718-cayman",
+      "destination": "/catalog/exotic-cars/porsche-718-cayman",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/roma",
+      "destination": "/catalog/exotic-cars/ferrari-roma",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x4m",
+      "destination": "/catalog/exotic-cars/bmw-x4m",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/570s",
+      "destination": "/catalog/exotic-cars/mclaren-570s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/g550-amg-kit",
+      "destination": "/catalog/exotic-cars/mercedes-benz-g550-amg-kit",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/escalade",
+      "destination": "/catalog/exotic-cars/cadillac-escalade",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x7",
+      "destination": "/catalog/exotic-cars/bmw-x7",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/california",
+      "destination": "/catalog/exotic-cars/ferrari-california",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/hurac-n-evo",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-evo",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/huracn-evo",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-evo",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/model-y",
+      "destination": "/catalog/exotic-cars/tesla-model-y",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/hurac-n-sto",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-sto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/huracn-sto",
+      "destination": "/catalog/exotic-cars/lamborghini-hurac-n-sto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/camaro-lt1",
+      "destination": "/catalog/exotic-cars/chevrolet-camaro-lt1",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/f8-tributo",
+      "destination": "/catalog/exotic-cars/ferrari-f8-tributo",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/c43-amg",
+      "destination": "/catalog/exotic-cars/mercedes-c43-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/bentayga",
+      "destination": "/catalog/exotic-cars/bentley-bentayga",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-velar",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-velar",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/vantage",
+      "destination": "/catalog/exotic-cars/aston-martin-vantage",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/charger-daytona-r-t",
+      "destination": "/catalog/exotic-cars/dodge-charger-daytona-r-t",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/macan",
+      "destination": "/catalog/exotic-cars/porsche-macan",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/escalade-v",
+      "destination": "/catalog/exotic-cars/cadillac-escalade-v",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/g550",
+      "destination": "/catalog/exotic-cars/mercedes-benz-g550",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gv70",
+      "destination": "/catalog/exotic-cars/genesis-gv70",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/a5-cabriolet",
+      "destination": "/catalog/exotic-cars/audi-a5-cabriolet",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/sienna",
+      "destination": "/catalog/exotic-cars/toyota-sienna",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/purosangue",
+      "destination": "/catalog/exotic-cars/ferrari-purosangue",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/m4-competition-cab",
+      "destination": "/catalog/exotic-cars/bmw-m4-competition-cab",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/m850i-gran-cabriolet",
+      "destination": "/catalog/exotic-cars/bmw-m850i-gran-cabriolet",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/f-type-r-convertible",
+      "destination": "/catalog/exotic-cars/jaguar-f-type-r-convertible",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/992-carrera-s-cab",
+      "destination": "/catalog/exotic-cars/porsche-992-carrera-s-cab",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/s63-amg",
+      "destination": "/catalog/exotic-cars/mercedes-s63-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/s550",
+      "destination": "/catalog/exotic-cars/mercedes-s550",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/continental-gt",
+      "destination": "/catalog/exotic-cars/bentley-continental-gt",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/aventador-svj",
+      "destination": "/catalog/exotic-cars/lamborghini-aventador-svj",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/5-series",
+      "destination": "/catalog/exotic-cars/bmw-5-series",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x6",
+      "destination": "/catalog/exotic-cars/bmw-x6",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/m3",
+      "destination": "/catalog/exotic-cars/bmw-m3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cullinan",
+      "destination": "/catalog/exotic-cars/rolls-royce-cullinan",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/296-gts",
+      "destination": "/catalog/exotic-cars/ferrari-296-gts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/dawn",
+      "destination": "/catalog/exotic-cars/rolls-royce-dawn",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/db11-volante",
+      "destination": "/catalog/exotic-cars/aston-martin-db11-volante",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/qx80",
+      "destination": "/catalog/exotic-cars/infiniti-qx80",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cayenne-coup-hybrid",
+      "destination": "/catalog/exotic-cars/porsche-cayenne-coup-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/corvette-stingray-c8",
+      "destination": "/catalog/exotic-cars/chevrolet-corvette-stingray-c8",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x6m",
+      "destination": "/catalog/exotic-cars/bmw-x6m",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/i8",
+      "destination": "/catalog/exotic-cars/bmw-i8",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/992-carrera-cab",
+      "destination": "/catalog/exotic-cars/porsche-992-carrera-cab",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/ghost",
+      "destination": "/catalog/exotic-cars/rolls-royce-ghost",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/c63-s-amg",
+      "destination": "/catalog/exotic-cars/mercedes-benz-c63-s-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/rx350",
+      "destination": "/catalog/exotic-cars/lexus-rx350",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/macan-s",
+      "destination": "/catalog/exotic-cars/porsche-macan-s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-lwb",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-lwb",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/clio-auto",
+      "destination": "/catalog/exotic-cars/renault-clio-auto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-autobiography",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-autobiography",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/rsq8",
+      "destination": "/catalog/exotic-cars/audi-rsq8",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/revuelto",
+      "destination": "/catalog/exotic-cars/lamborghini-revuelto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/7-series-hybrid",
+      "destination": "/catalog/exotic-cars/bmw-7-series-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/renegade",
+      "destination": "/catalog/exotic-cars/jeep-renegade",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/500-cabrio",
+      "destination": "/catalog/exotic-cars/fiat-500-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/sl63-amg",
+      "destination": "/catalog/exotic-cars/mercedes-sl63-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-vogue",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-vogue",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/db12-volante",
+      "destination": "/catalog/exotic-cars/aston-martin-db12-volante",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/g-63-amg-hybrid",
+      "destination": "/catalog/exotic-cars/mercedes-amg-g-63-amg-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gle-53-amg-coupe",
+      "destination": "/catalog/exotic-cars/mercedes-gle-53-amg-coupe",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/aventador-s-roadster",
+      "destination": "/catalog/exotic-cars/lamborghini-aventador-s-roadster",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler-diesel",
+      "destination": "/catalog/exotic-cars/jeep-wrangler-diesel",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/911-gt3",
+      "destination": "/catalog/exotic-cars/porsche-911-gt3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/purosangue-v12",
+      "destination": "/catalog/exotic-cars/ferrari-purosangue-v12",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/huracan-sto",
+      "destination": "/catalog/exotic-cars/lamborghini-huracan-sto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/mulsanne",
+      "destination": "/catalog/exotic-cars/bentley-mulsanne",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x2",
+      "destination": "/catalog/exotic-cars/bmw-x2",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/maybach-650",
+      "destination": "/catalog/exotic-cars/mercedes-mayback-650",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cla45s",
+      "destination": "/catalog/exotic-cars/mercedes-cla45s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler-hybrid",
+      "destination": "/catalog/exotic-cars/jeep-wrangler-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/stonic",
+      "destination": "/catalog/exotic-cars/kia-stonic",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/speranza-g-cab-mansory",
+      "destination": "/catalog/exotic-cars/mercedes-speranza-g-cab-mansory",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/992-gts-cab",
+      "destination": "/catalog/exotic-cars/porsche-992-gts-cab",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cle",
+      "destination": "/catalog/exotic-cars/mercedes-cle",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/sandero",
+      "destination": "/catalog/exotic-cars/dacia-sandero",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/huracan-evo-spyder",
+      "destination": "/catalog/exotic-cars/lamborghini-huracan-evo-spyder",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/t-roc-cabrio",
+      "destination": "/catalog/exotic-cars/volkswagen-t-roc-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/yaris",
+      "destination": "/catalog/exotic-cars/toyota-yaris",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/urus-s",
+      "destination": "/catalog/exotic-cars/lamborghini-urus-s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cle-53-amg-cabrio",
+      "destination": "/catalog/exotic-cars/mercedes-amg-cle-53-amg-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/a-class-35-amg",
+      "destination": "/catalog/exotic-cars/mercedes-a-class-35-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/650cc",
+      "destination": "/catalog/exotic-cars/segway-650cc",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/s-class",
+      "destination": "/catalog/exotic-cars/mercedes-s-class",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/urus-se",
+      "destination": "/catalog/exotic-cars/lamborghini-urus-se",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-defender-90-v8",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-defender-90-v8",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler-sky-one-touch",
+      "destination": "/catalog/exotic-cars/jeep-wrangler-sky-one-touch",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/296-gts-fiorano",
+      "destination": "/catalog/exotic-cars/ferrari-296-gts-fiorano",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/roma-spider",
+      "destination": "/catalog/exotic-cars/ferrari-roma-spider",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler-rubicon",
+      "destination": "/catalog/exotic-cars/jeep-wrangler-rubicon",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/maybach",
+      "destination": "/catalog/exotic-cars/mercedes-maybback",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/f8-spider",
+      "destination": "/catalog/exotic-cars/ferrari-f8-spider",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/850-convertible",
+      "destination": "/catalog/exotic-cars/bmw-850-convertible",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/huracan-performante-spyder",
+      "destination": "/catalog/exotic-cars/lamborghini-huracan-performante-spyder",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/296-gtb",
+      "destination": "/catalog/exotic-cars/ferrari-296-gtb",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/450cc",
+      "destination": "/catalog/exotic-cars/segway-450cc",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/c-class",
+      "destination": "/catalog/exotic-cars/mercedes-c-class",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/vclass",
+      "destination": "/catalog/exotic-cars/mercedes-vclass",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler-petrol",
+      "destination": "/catalog/exotic-cars/jeep-wrangler-petrol",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/rsq3",
+      "destination": "/catalog/exotic-cars/audi-rsq3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/e-class",
+      "destination": "/catalog/exotic-cars/mercedes-e-class",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/750s-spider",
+      "destination": "/catalog/exotic-cars/mclaren-750s-spider",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gls",
+      "destination": "/catalog/exotic-cars/mercedes-gls",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/glc",
+      "destination": "/catalog/exotic-cars/mercedes-benz-glc",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/992-gt3",
+      "destination": "/catalog/exotic-cars/porsche-992-gt3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-evoque-cabrio",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-evoque-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gtc",
+      "destination": "/catalog/exotic-cars/bentley-gtc",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cle-cabrio",
+      "destination": "/catalog/exotic-cars/mercedes-benz-cle-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/yaris-auto",
+      "destination": "/catalog/exotic-cars/toyota-yaris-auto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/sl43-amg",
+      "destination": "/catalog/exotic-cars/mercedes-sl43-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/amg-gtr",
+      "destination": "/catalog/exotic-cars/mercedes-amg-gtr",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/giulia",
+      "destination": "/catalog/exotic-cars/alfa-romeo-giulia",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler-auto-roof",
+      "destination": "/catalog/exotic-cars/jeep-wrangler-auto-roof",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gls-63-amg",
+      "destination": "/catalog/exotic-cars/mercedes-gls-63-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/glc-coupe",
+      "destination": "/catalog/exotic-cars/mercedes-glc-coupe",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-defender-110-v6",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-defender-110-v6",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/forfour-auto-roof",
+      "destination": "/catalog/exotic-cars/smart-forfour-auto-roof",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/zs",
+      "destination": "/catalog/exotic-cars/mg-zs",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/g63-amg",
+      "destination": "/catalog/exotic-cars/mercedes-g63-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/temerario-superleggera",
+      "destination": "/catalog/exotic-cars/lamborghini-temerario-superleggera",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/sf90-stradale",
+      "destination": "/catalog/exotic-cars/ferrari-sf90-stradale",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler-4xe-hybrid",
+      "destination": "/catalog/exotic-cars/jeep-wrangler-4xe-hybrid",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/675lt-spider",
+      "destination": "/catalog/exotic-cars/mclaren-675lt-spider",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/vito",
+      "destination": "/catalog/exotic-cars/mercedes-benz-vito",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/rs6",
+      "destination": "/catalog/exotic-cars/audi-rs6",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/corolla",
+      "destination": "/catalog/exotic-cars/toyota-corolla",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/phantom-drophead",
+      "destination": "/catalog/exotic-cars/rolls-royce-phantom-drophead",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/dbx-707",
+      "destination": "/catalog/exotic-cars/aston-martin-dbx-707",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cooper-cabrio",
+      "destination": "/catalog/exotic-cars/mini-cooper-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/defender-d250-mhev",
+      "destination": "/catalog/exotic-cars/land-rover-defender-d250-mhev",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-sport-my22",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-sport-my22",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-evoque",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-evoque",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cooper-s-convertible",
+      "destination": "/catalog/exotic-cars/mini-s-convertoble",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/x5",
+      "destination": "/catalog/exotic-cars/bmw-x5",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/range-rover-sport-first-edition",
+      "destination": "/catalog/exotic-cars/land-rover-range-rover-sport-first-edition",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/i10",
+      "destination": "/catalog/exotic-cars/hyundai-i10",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/s3",
+      "destination": "/catalog/exotic-cars/audi-s3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/renegade-auto",
+      "destination": "/catalog/exotic-cars/jeep-renegade-auto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/wrangler",
+      "destination": "/catalog/exotic-cars/jeep-wrangler",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/c-43-amg-cabrio",
+      "destination": "/catalog/exotic-cars/mercedes-amg-c-43-amg-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/550cc",
+      "destination": "/catalog/exotic-cars/cf-moto-550cc",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/i10-auto",
+      "destination": "/catalog/exotic-cars/hyundai-i10-auto",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/911-gt3-rs",
+      "destination": "/catalog/exotic-cars/porsche-911-gt3-rs",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/gls-600-maybach",
+      "destination": "/catalog/exotic-cars/mercedes-benz-gls-600-maybach",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/992-2-carrera-4-gts",
+      "destination": "/catalog/exotic-cars/porsche-992-2-carrera-4-gts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/m4-competition-cabrio",
+      "destination": "/catalog/exotic-cars/bmw-m4-competition-cabrio",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/cayenne-turbo-gt",
+      "destination": "/catalog/exotic-cars/porsche-cayenne-turbo-gt",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/benz-glc63s",
+      "destination": "/catalog/exotic-cars/mercedes-benz-glc63s",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/benz-gls63-amg",
+      "destination": "/catalog/exotic-cars/mercedes-benz-gls63-amg",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/benz-s580",
+      "destination": "/catalog/exotic-cars/mercedes-benz-s580",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/benz-gle53-amg-coupe",
+      "destination": "/catalog/exotic-cars/mercedes-benz-gle53-amg-coupe",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/exotic-cars/9912-carrera",
+      "destination": "/catalog/exotic-cars/porsche-991-2-carrera",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/100-azimut",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/100-azimut-jumbo-flybridge",
+      "destination": "/catalog/yachts/100-azimut-jumbo-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/103-azimut-flybridge-includes-jetski-seabob-750-for-40-foot-pool",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/103-maiora",
+      "destination": "/catalog/yachts/103-maiora-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/103-sunseeker-flybridge",
+      "destination": "/catalog/yachts/103-sunseeker-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/103-tecnomar-flybridge",
+      "destination": "/catalog/yachts/103-tecnomar-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/105-aqua-includes-jaccuzi",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/105-azimut-flybridge",
+      "destination": "/catalog/yachts/105-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/105-azimut-flybridge-includes-jetski-and-seabob",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/110-horizon-flybridge",
+      "destination": "/catalog/yachts/110-horizon-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/116-azimut",
+      "destination": "/catalog/yachts/116-azimut-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/116-pershing-gtx",
+      "destination": "/catalog/yachts/116-pershing-gtx-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/118-azimut",
+      "destination": "/catalog/yachts/118-azimut-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/120-tecnomar",
+      "destination": "/catalog/yachts/120-tecnomar-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/150-palmer-johnson",
+      "destination": "/catalog/yachts/150-palmer-johnson-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/166-trinity-flybridge",
+      "destination": "/catalog/yachts/166-trinity-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/26-searay-sundeck",
+      "destination": "/catalog/yachts/26-searay-sundeck-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/27-black-monterey",
+      "destination": "/catalog/yachts/27-black-monterey-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/38-axopar",
+      "destination": "/catalog/yachts/38-axopar-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/38-monterey-white",
+      "destination": "/catalog/yachts/38-monterey-white-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/38-pardo",
+      "destination": "/catalog/yachts/38-pardo-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/40-formula",
+      "destination": "/catalog/yachts/40-formula-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/40-vandutch",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/40-vandutch-sb",
+      "destination": "/catalog/yachts/40-vandutch-sb-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/42-azimut-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/44-searay-sundancer",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/45-galeon-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/45-prestige-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/47-carver-flybridge",
+      "destination": "/catalog/yachts/47-carver-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/47-sunseeker",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/48-cruiser-sport-flybridge",
+      "destination": "/catalog/yachts/48-cruiser-sport-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/48-searay-flybridge-blue",
+      "destination": "/catalog/yachts/48-searay-flybridge-blue-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/50-meridian-flybridge",
+      "destination": "/catalog/yachts/50-meridian-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/50-sealine-flybridge",
+      "destination": "/catalog/yachts/50-sealine-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/50-searay-express-flybridge",
+      "destination": "/catalog/yachts/50-searay-express-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/50-searay-express-flybridge-c2c",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/50-searay-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/50-sunseeker-manhattan-flybridge",
+      "destination": "/catalog/yachts/50-sunseeker-manhattan-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/52-beneteau-flybridge",
+      "destination": "/catalog/yachts/52-beneteau-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/53-azimut-flybridge",
+      "destination": "/catalog/yachts/53-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/55-azimut-flybridge",
+      "destination": "/catalog/yachts/55-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/55-fairline-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/55-princess-viking-flybridge",
+      "destination": "/catalog/yachts/55-princess-viking-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/55-searay-flybridge",
+      "destination": "/catalog/yachts/55-searay-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/55-searay-sundancer",
+      "destination": "/catalog/yachts/55-searay-sundancer-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/58-aicon-flybridge",
+      "destination": "/catalog/yachts/58-aicon-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/60-azimut-flybridge",
+      "destination": "/catalog/yachts/60-azimut-flybridge-miami-2",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/60-fairline-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/60-rodman-flybridge",
+      "destination": "/catalog/yachts/60-rodman-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/62-azimut-flybridge",
+      "destination": "/catalog/yachts/62-azimut-flybridge-miami-3",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/62-sunseeker-flybridge",
+      "destination": "/catalog/yachts/62-sunseeker-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/64-pershing",
+      "destination": "/catalog/yachts/64-pershing-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/65-aicon-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/65-numarine-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/66-azimut-flybridge",
+      "destination": "/catalog/yachts/66-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/66-marquis-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/68-galeon",
+      "destination": "/catalog/yachts/68-galeon-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/70-azimut-flybridge",
+      "destination": "/catalog/yachts/70-azimut-flybridge-miami-2",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/70-sunreef-power-cat",
+      "destination": "/catalog/yachts/70-sunreef-power-cat-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/70-sunreef-power-cat-2026",
+      "destination": "/catalog/yachts/70-sunreef-power-cat-2026-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/70-sunseeker-manhattan-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/72-s7-azimut-flybridge",
+      "destination": "/catalog/yachts/72-s7-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/74-princess-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/74-sunseeker-manhattan-flybridge",
+      "destination": "/catalog/yachts/74-sunseeker-manhattan-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/75-aicon-flybridge",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/80-numarine-includes-jacuzzi",
+      "destination": "/catalog/yachts/80-numarine-includes-jacuzzi-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/80-sunseeker-flybridge-smu",
+      "destination": "/catalog/yachts/80-sunseeker-flybridge-smu-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/82-sunseeker-flybridge",
+      "destination": "/catalog/yachts/82-sunseeker-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/86-s-azimut-includes-jetski-tender-and-seabob",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/88-azimut-flybridge",
+      "destination": "/catalog/yachts/88-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/88-azimut-flybridge-2023-includes-jetski-and-seasbob",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/88-princess-flybridge-includes-jaccuzi",
+      "destination": "/catalog/yachts/88-princess-flybridge-includes-jaccuzi-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/92-pershing",
+      "destination": "/catalog/yachts/92-pershing-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/94-azimut-flybridge",
+      "destination": "/catalog/yachts/94-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/94-pershing",
+      "destination": "/catalog/yachts",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/94-sunseeker-flybridge",
+      "destination": "/catalog/yachts/94-sunseeker-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/95-dominator-flybridge",
+      "destination": "/catalog/yachts/95-dominator-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/96-sunseeker-flybridge",
+      "destination": "/catalog/yachts/96-sunseeker-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/97-san-lorenzo-flybridge",
+      "destination": "/catalog/yachts/97-san-lorenzo-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/yachts/98-azimut-flybridge",
+      "destination": "/catalog/yachts/98-azimut-flybridge-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/1-hotel-south-beach-spa",
+      "destination": "/catalog/wellness/1-hotel-south-beach-spa-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/727-pilates",
+      "destination": "/catalog/wellness/727-pilates-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/acqualina-spa",
+      "destination": "/catalog/wellness/acqualina-spa-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/activesoul",
+      "destination": "/catalog/wellness/activesoul-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/alive-miami",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/anatomy",
+      "destination": "/catalog/wellness/anatomy-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/anatomy-aventura",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/anatomy-coconut-grove",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/anatomy-doral",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/anatomy-midtown",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/babe-hot-pilates",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/barrys-bootcamp-miami-beach",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/biltmore-spa",
+      "destination": "/catalog/wellness/biltmore-spa-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/carillon-miami-wellness-resort",
+      "destination": "/catalog/wellness/carillon-miami-wellness-resort-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/centner-gables-longevity-hub",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/cinq-mondes-spa",
+      "destination": "/catalog/wellness/cinq-mondes-spa-paris",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/equinox",
+      "destination": "/catalog/wellness/equinox-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/esencia-wellness-spa",
+      "destination": "/catalog/wellness/esencia-wellness-spa-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/faena-spa",
+      "destination": "/catalog/wellness/faena-spa-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/form50",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/four-seasons-surf-club-spa",
+      "destination": "/catalog/wellness/four-seasons-surf-club-spa-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/fuze-house",
+      "destination": "/catalog/wellness/fuze-house-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/gitelcare",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/glow-pilates-reformer",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/hammam-de-la-mosque",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/hurrem-hammam",
+      "destination": "/catalog/wellness/hurrem-hammam-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/hydrology-wellness",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/jetset-pilates-downtown-miami",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/jetset-pilates-north-miami",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/jetset-pilates-sofi",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/jetset-pilates-south-miami",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/jetset-pilates-sunset-harbour",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/ken-club",
+      "destination": "/catalog/wellness/ken-club-paris",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/lapis-spa-at-fontainebleau",
+      "destination": "/catalog/wellness/lapis-spa-at-fontainebleau-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/le-tigre-yoga-club",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/libre-aerial-fitness",
+      "destination": "/catalog/wellness/libre-aerial-fitness-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/life-time-miami",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/maison-codage",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/mandarin-oriental-spa",
+      "destination": "/catalog/wellness/mandarin-oriental-spa-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/megalit-fitness",
+      "destination": "/catalog/wellness/megalit-fitness-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/molitor-spa-by-clarins",
+      "destination": "/catalog/wellness/molitor-spa-by-clarins-paris",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/nofar-method",
+      "destination": "/catalog/wellness/nofar-method-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/padel-x",
+      "destination": "/catalog/wellness/padel-x-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/pilates-in-the-grove",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/pilathon",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/portal-pilates",
+      "destination": "/catalog/wellness/portal-pilates-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/posh-life-pilates",
+      "destination": "/catalog/wellness/posh-life-pilates-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/reforming-pilates",
+      "destination": "/catalog/wellness/reforming-pilates-bay-harbor-islands",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/rserve-padel",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/restore-hyper-wellness",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/reviv-pilates",
+      "destination": "/catalog/wellness/reviv-pilates-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/sattva-holistic-center",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/sol-yoga",
+      "destination": "/catalog/wellness/sol-yoga-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/spa-diane-barrire",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/studio-three",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/the-floating-padel-court",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/the-standard-spa-miami-beach",
+      "destination": "/catalog/wellness/the-standard-spa-miami-beach-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/the-well",
+      "destination": "/catalog/wellness/the-well-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/tracy-anderson",
+      "destination": "/catalog/wellness/tracy-anderson-coral-gables",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/ultra-padel-club",
+      "destination": "/catalog/wellness/ultra-padel-club-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/wellness-wonderland",
+      "destination": "/catalog/wellness/wellness-wonderland-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/wild-thing",
+      "destination": "/catalog/wellness/wild-thing-miami",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/hammam-de-la-mosqu-e-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/le-tigre-yoga-club-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/maison-codage-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/midtown-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/sattva-holistic-center-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/show-me-paris-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/sportfield-paris-16-padel-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
+    },
+    {
+      "source": "/catalog/wellness/welness-plaza-athens-paris",
+      "destination": "/catalog/wellness",
+      "permanent": true
     }
   ]
 }
