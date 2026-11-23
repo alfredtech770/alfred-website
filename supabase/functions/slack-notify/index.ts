@@ -1,4 +1,4 @@
-// slack-notify (v19)
+// slack-notify (v20)
 //
 // The team's actual inbox. Nobody sits in the admin portal all day.
 //
@@ -12,6 +12,9 @@
 //      switch the machine off, so it talked across the human. Every card now
 //      carries Take over, and Hand back once paused, and says plainly which
 //      state it is in.
+// v20: MARK AS BOOKED. Dining/nightlife cards that need a human carry
+//      "Mark as booked": records the booking and confirms by email + WhatsApp
+//      (slack-interactions → confirm-booking).
 // v19: PAY TO CONFIRM. Priced requests (cars, yachts, hotels, wellness) that
 //      need a human carry "Send payment link": the colleague enters the
 //      agreed price and the client gets a Stripe link on WhatsApp
@@ -203,6 +206,16 @@ function paymentLinkButton(intentId: string, existing?: { url?: string; amount_c
   };
 }
 
+function markBookedButton(intentId: string) {
+  return {
+    type: "actions", block_id: `booked:${intentId}`,
+    elements: [{
+      type: "button", style: "primary", action_id: "open_mark_booked", value: intentId,
+      text: { type: "plain_text", text: "✅ Mark as booked", emoji: true },
+    }],
+  };
+}
+
 function decisionPanel(title: string, instruction: string, intentId: string, venue: string) {
   return [
     { type: "divider" },
@@ -217,6 +230,8 @@ function decisionPanel(title: string, instruction: string, intentId: string, ven
           deny: { type: "plain_text", text: "Cancel" } } },
       { type: "button", action_id: "decline_booking", value: intentId,
         text: { type: "plain_text", text: "Handle manually", emoji: true } },
+      { type: "button", action_id: "open_mark_booked", value: intentId,
+        text: { type: "plain_text", text: "✅ I booked it myself", emoji: true } },
     ] },
   ];
 }
@@ -378,8 +393,9 @@ serve(async (req) => {
           reason ? `*Why it stopped:* ${reason}` : "*Why it stopped:* the run could not complete.",
           venuePhone ? `*1.* Call ${venueName} on ${venuePhone} and book it manually.`
                      : `*1.* Book ${venueName} manually, no phone number on file.`,
-          `*2.* Tell them once it is done.`,
+          `*2.* Click *Mark as booked*: they get the confirmation by email and WhatsApp.`,
         ].join("\n"), it?.phone ? { text: "Message on WhatsApp", url: `https://wa.me/${it.phone}` } : undefined));
+        if (id) blocks.push(markBookedButton(id));
       }
 
       blocks.push({ type: "context", elements: [{ type: "mrkdwn",
@@ -468,9 +484,11 @@ serve(async (req) => {
              missing.length && !isDining ? `_Still unknown: ${pretty(missing)}._` : "",
              win.open ? `*Do:* write here and it reaches them on WhatsApp.`
                       : `*Do:* the free reply window is shut, send a template first.`,
-             priced ? `*Once the price is agreed with the partner:* send them a payment link. Paying it confirms the booking.` : "",
+             priced ? `*Once the price is agreed with the partner:* send them a payment link. Paying it confirms the booking.`
+                    : `*Once the table is secured:* click *Mark as booked*. They get the confirmation by email and WhatsApp.`,
             ].filter(Boolean).join("\n")));
           if (priced) blocks.push(paymentLinkButton(intentId, (intent.details as any)?.payment_link ?? null));
+          else blocks.push(markBookedButton(intentId));
         } else if (intent.approved_at) {
           blocks.push(...actionPanel("⏳ Approved, booking in progress",
             `Approved by ${intent.approved_by ?? "a colleague"}.`));
@@ -482,7 +500,8 @@ serve(async (req) => {
           const venueName = String(intent.venue_text ?? "this venue");
           if (venueUnmatched) {
             blocks.push(...actionPanel("🔴 Cannot be booked automatically",
-              `*${venueName}* is not in the catalogue. Book it manually, then say so here.`));
+              `*${venueName}* is not in the catalogue. Book it manually, then click *Mark as booked*.`));
+            blocks.push(markBookedButton(intentId));
           } else {
             blocks.push(...decisionPanel("🟢 Waiting on you to approve",
               "*Approving books exactly what is written above.*", intentId, venueName));

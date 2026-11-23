@@ -1,4 +1,4 @@
-// slack-interactions (v4)
+// slack-interactions (v5)
 //
 // Approve, decline, reopen a closed WhatsApp window, and TAKE OVER from
 // Alfred, with one tap inside Slack.
@@ -18,6 +18,9 @@
 // total, amount now, currency). On submit, payment-link creates a Stripe
 // Checkout link and sends it to the client on WhatsApp; the result is posted
 // back in the same thread. stripe-webhook confirms the booking when paid.
+//
+// v5 adds MARK AS BOOKED: a form with the final details; confirm-booking
+// records the booking and confirms to the client by email and WhatsApp.
 //
 // Requires Interactivity & Shortcuts ON with the Request URL pointing here.
 //
@@ -216,6 +219,118 @@ async function submitPaymentLink(payload: any) {
   } };
 }
 
+// ---- mark as booked -------------------------------------------------------
+
+async function openMarkBookedModal(payload: any, intentId: string) {
+  const { data: it } = await supabase.from("concierge_intents")
+    .select("id, venue_text, restaurant_id, reservation_date, reservation_time, party_size, booking_id, details")
+    .eq("id", intentId).maybeSingle();
+  if (!it) return { ok: false, error: "request not found" };
+  if (it.booking_id) return { ok: false, error: "already booked" };
+  let venue = it.venue_text ?? "";
+  if (it.restaurant_id) {
+    const { data: r } = await supabase.from("restaurants").select("name").eq("id", it.restaurant_id).maybeSingle();
+    venue = r?.name ?? venue;
+  }
+  const d = (it.details ?? {}) as Record<string, any>;
+  const guest = [d.guest_first, d.guest_last].filter(Boolean).join(" ");
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(String(it.reservation_date ?? "")) ? String(it.reservation_date) : undefined;
+  const time = it.reservation_time ? String(it.reservation_time).slice(0, 5) : undefined;
+
+  return await slackApi("views.open", {
+    trigger_id: payload.trigger_id,
+    view: {
+      type: "modal",
+      callback_id: "mark_booked_submit",
+      private_metadata: JSON.stringify({
+        intent: intentId,
+        channel: payload.channel?.id ?? payload.container?.channel_id ?? null,
+        thread: payload.message?.thread_ts ?? payload.message?.ts ?? payload.container?.message_ts ?? null,
+      }),
+      title: { type: "plain_text", text: "Mark as booked" },
+      submit: { type: "plain_text", text: "Confirm to client" },
+      close: { type: "plain_text", text: "Cancel" },
+      blocks: [
+        { type: "context", elements: [{ type: "mrkdwn",
+          text: "Check the final details. The client gets the confirmation by email and WhatsApp, and the booking appears in the admin." }] },
+        { type: "input", block_id: "venue", label: { type: "plain_text", text: "Venue" },
+          element: { type: "plain_text_input", action_id: "v", initial_value: venue || undefined } },
+        { type: "input", block_id: "date", label: { type: "plain_text", text: "Date" },
+          element: { type: "datepicker", action_id: "v", ...(date ? { initial_date: date } : {}) } },
+        { type: "input", block_id: "time", label: { type: "plain_text", text: "Time" },
+          element: { type: "timepicker", action_id: "v", ...(time ? { initial_time: time } : {}) } },
+        { type: "input", block_id: "party", label: { type: "plain_text", text: "Guests" },
+          element: { type: "number_input", action_id: "v", is_decimal_allowed: false, min_value: "1", max_value: "50",
+            ...(it.party_size ? { initial_value: String(it.party_size) } : {}) } },
+        { type: "input", block_id: "name", optional: true, label: { type: "plain_text", text: "Booked under (guest name)" },
+          element: { type: "plain_text_input", action_id: "v", initial_value: guest || undefined } },
+        { type: "input", block_id: "email", optional: true, label: { type: "plain_text", text: "Guest email" },
+          hint: { type: "plain_text", text: "The confirmation email goes here." },
+          element: { type: "email_text_input", action_id: "v",
+            // Slack rejects the whole form if the initial value isn't a valid email.
+            initial_value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(d.guest_email ?? "").trim()) ? String(d.guest_email).trim() : undefined } },
+        { type: "input", block_id: "ref", optional: true, label: { type: "plain_text", text: "Venue reference" },
+          element: { type: "plain_text_input", action_id: "v", placeholder: { type: "plain_text", text: "Confirmation number, if any" } } },
+        { type: "input", block_id: "note", optional: true, label: { type: "plain_text", text: "Note for the client" },
+          element: { type: "plain_text_input", action_id: "v", multiline: true,
+            placeholder: { type: "plain_text", text: "e.g. Terrace table requested. Table held 15 minutes." } } },
+      ],
+    },
+  });
+}
+
+function submitMarkBooked(payload: any) {
+  const v = payload.view?.state?.values ?? {};
+  const meta = JSON.parse(payload.view?.private_metadata || "{}");
+  const who = String(payload.user?.name || payload.user?.username || payload.user?.id || "a colleague");
+  const body = {
+    intent_id: meta.intent,
+    venue_name: String(v.venue?.v?.value ?? "").trim(),
+    date: String(v.date?.v?.selected_date ?? ""),
+    time: String(v.time?.v?.selected_time ?? ""),
+    party_size: Number(v.party?.v?.value ?? 0),
+    guest_name: String(v.name?.v?.value ?? "").trim(),
+    guest_email: String(v.email?.v?.value ?? "").trim(),
+    reference: String(v.ref?.v?.value ?? "").trim(),
+    note: String(v.note?.v?.value ?? "").trim(),
+    created_by: who,
+  };
+  const errors: Record<string, string> = {};
+  if (!body.venue_name) errors.venue = "Enter the venue.";
+  if (!body.date) errors.date = "Pick the date.";
+  if (!body.time) errors.time = "Pick the time.";
+  if (!(body.party_size >= 1)) errors.party = "At least 1 guest.";
+  if (Object.keys(errors).length) return { errors };
+
+  return { work: async () => {
+    const post = async (text: string) => {
+      if (!meta.channel) return;
+      await slackApi("chat.postMessage", { channel: meta.channel, text,
+        ...(meta.thread ? { thread_ts: meta.thread } : {}), unfurl_links: false });
+    };
+    try {
+      const secret = await setting("notifications_internal_secret", "NOTIFICATIONS_INTERNAL_SECRET");
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/confirm-booking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-internal-secret": secret },
+        body: JSON.stringify(body),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out?.ok) {
+        await post(`:x: *Not marked as booked:* ${String(out?.error ?? res.status).slice(0, 200)}`);
+        return;
+      }
+      await post([
+        `:white_check_mark: *Booked by ${who}:* ${out.venue}, ${out.date} at ${out.time}, ${out.party_size} ${out.party_size > 1 ? "guests" : "guest"}`,
+        `Email: ${out.email}  ·  WhatsApp: ${out.whatsapp}`,
+        `<${ADMIN_INBOX}|Open in the admin>`,
+      ].join("\n"));
+    } catch (e) {
+      await post(`:x: *Mark as booked failed:* ${String((e as Error)?.message ?? e).slice(0, 200)}`);
+    }
+  } };
+}
+
 serve(async (req) => {
   try {
     if (req.method !== "POST") return new Response("method not allowed", { status: 405 });
@@ -245,6 +360,14 @@ serve(async (req) => {
       return okJson({ response_action: "clear" });
     }
 
+    if (payload.type === "view_submission" && payload.view?.callback_id === "mark_booked_submit") {
+      const r = submitMarkBooked(payload);
+      if ("errors" in r) return okJson({ response_action: "errors", errors: r.errors });
+      // @ts-ignore EdgeRuntime is provided by Supabase.
+      EdgeRuntime.waitUntil(r.work());
+      return okJson({ response_action: "clear" });
+    }
+
     if (payload.type !== "block_actions") return ok();
 
     const action = (payload.actions ?? [])[0] ?? {};
@@ -261,6 +384,14 @@ serve(async (req) => {
     if (kind === "open_payment_link") {
       const r = await openPaymentModal(payload, value);
       if (!r?.ok) await inThread(responseUrl, `:x: Could not open the payment form (${r?.error ?? "unknown"}).`);
+      return ok();
+    }
+
+    if (kind === "open_mark_booked") {
+      const r = await openMarkBookedModal(payload, value);
+      if (!r?.ok) await inThread(responseUrl, r?.error === "already booked"
+        ? ":white_check_mark: This request is already booked."
+        : `:x: Could not open the form (${r?.error ?? "unknown"}).`);
       return ok();
     }
 
